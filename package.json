@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint-kit/eslint-config-base": "^5.0.2",
+    "@eslint-kit/eslint-config-node": "^2.0.0",
     "@eslint-kit/eslint-config-patch": "^1.0.0",
     "@eslint-kit/eslint-config-prettier": "^5.0.0",
     "@eslint-kit/eslint-config-react": "^3.0.0",

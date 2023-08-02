@@ -283,6 +283,11 @@
     eslint-plugin-sonarjs "0.7.0"
     eslint-plugin-unicorn "32.0.1"
 
+"@eslint-kit/eslint-config-node@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@eslint-kit/eslint-config-node/-/eslint-config-node-2.0.0.tgz#17999d0c20c5c5be0d043ba4f2afa6dce4c1e4d3"
+  integrity sha512-NijY2BJkQGDvch7EHTmfOpKhvuYaItiBV+a56kwTB9uPh969Nqp5AumVcGcP9ZKrT8DJh7FOTw9B1CuGY3SyGA==
+
 "@eslint-kit/eslint-config-patch@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@eslint-kit/eslint-config-patch/-/eslint-config-patch-1.0.0.tgz#e367c68c05cf0d18ddc3b0e13f77fd91025f99da"
