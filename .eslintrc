@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "@eslint-kit/patch",
+    "@eslint-kit/base",
+    "@eslint-kit/typescript",
+    "@eslint-kit/node",
+    "@eslint-kit/react",
+    "@eslint-kit/prettier"
+  ],
+  "parser": "@typescript-eslint/parser"
+}
