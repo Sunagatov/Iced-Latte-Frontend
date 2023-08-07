@@ -5,9 +5,7 @@ import Counter from '../../../../components/Counter'
 import pic from '../../../img/Coffee.png'
 
 async function getItemById(id: string) {
-  const response = await fetch(
-    `http://localhost:8083/api/v1/products/${id}`
-  )
+  const response = await fetch(`http://localhost:8083/api/v1/products/${id}`)
 
   return response.json()
 }
@@ -31,7 +29,7 @@ export async function generateMetadata({
 async function ProductPage({ params: { id } }: Props) {
   const item = await getItemById(id)
 
-  // Здесь определите функции decrement и increment, если они используются.
+
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -51,7 +49,6 @@ async function ProductPage({ params: { id } }: Props) {
             </span>
           </div>
           <div className="flex items-center gap-2 mb-12">
-            {/* Добавьте функции decrement и increment в кнопки */}
             <Counter />
             <button className="flex w-64 px-6 py-4 justify-center items-center gap-3 rounded-full bg-indigo-600 text-white text-lg font-medium">
               Add to Cart &#8226; 45 USD
