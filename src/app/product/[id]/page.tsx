@@ -49,13 +49,14 @@ async function ProductPage({ params: { id } }: Props) {
           <div className="flex items-center gap-2 mb-12">
             <Counter />
             <button className="flex w-64 px-6 py-4 justify-center items-center gap-3 rounded-full bg-indigo-600 text-white text-lg font-medium">
-              Add to Cart &#8226; 45 USD
+              Add to Cart &#8226; {item.priceDetails.price} {item.priceDetails.currency}
             </button>
           </div>
           <p className="w-[532px] mb-4 text-2xl font-medium">
-            Описание продукта lorem ipsum dolor sit amet, consectetur adipiscing
+            {/* Описание продукта lorem ipsum dolor sit amet, consectetur adipiscing
             elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-            aliqua.
+            aliqua. */}
+            {item.description}
           </p>
         </div>
       </div>
