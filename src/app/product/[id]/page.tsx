@@ -29,8 +29,6 @@ export async function generateMetadata({
 async function ProductPage({ params: { id } }: Props) {
   const item = await getItemById(id)
 
-
-
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="flex p-4 bg-white">
