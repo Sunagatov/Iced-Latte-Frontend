@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import React from 'react'
 import Counter from '../../../../components/Counter'
-import pic from '../../../../public/img/Coffee.png'
+import pic from '../../../img/Coffee.png'
 
 async function getItemById(id: string) {
   const response = await fetch(
