@@ -10,6 +10,6 @@ export const getAllProducts = async () => {
     const response: AxiosResponse = await $api.get('/api/products')
     return response.data
   } catch (e) {
-    return e
+    console.error(e)
   }
 }
