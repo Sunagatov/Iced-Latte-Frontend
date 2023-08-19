@@ -8,14 +8,16 @@ interface RegistrForm{
   password: string
 }
 
+interface Props {
+  LoginVisibleChange: Function
+}
+
 const RegistrSubmit = (data:RegistrForm) => {
   //fetch registr
   console.log(data)
 }
 
-interface Props {
-  LoginVisibleChange: Function
-}
+
 
 export const Login = ({LoginVisibleChange}:Props) => {
   const {register,handleSubmit} = useForm()
