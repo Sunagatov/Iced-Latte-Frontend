@@ -5,7 +5,7 @@
     "@eslint-kit/typescript",
     "@eslint-kit/node",
     "@eslint-kit/react",
-    "@eslint-kit/prettier"
+    "@next/eslint-plugin-next"
   ],
   "parser": "@typescript-eslint/parser"
 }
