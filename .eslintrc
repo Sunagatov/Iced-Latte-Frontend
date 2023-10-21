@@ -1,11 +1,75 @@
 {
-  "extends": [
-    "@eslint-kit/patch",
-    "@eslint-kit/base",
-    "@eslint-kit/typescript",
-    "@eslint-kit/node",
-    "@eslint-kit/react",
-    "@next/eslint-plugin-next"
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json", // tells parser relative path of tsconfig.json
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+
+  // all plugins (eslint-plugin-xxx) go here:
+  "plugins": [
+    "@typescript-eslint",
+    "@next/eslint-plugin-next" // https://github.com/vercel/next.js/blob/canary/packages/eslint-plugin-next/lib/index.js
   ],
-  "parser": "@typescript-eslint/parser"
+
+  // all configs (eslint-config-xxx) go here:
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking", // contains rules that specifically require type information
+    "plugin:@next/next/recommended",
+    "next", // https://github.com/vercel/next.js/blob/canary/packages/eslint-config-next/package.json
+    "next/core-web-vitals",
+    "plugin:testing-library/react",
+    "plugin:jest-dom/recommended",
+    "prettier"
+  ],
+  "rules": {
+    "indent": ["error", 2],
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"],
+    "func-style": 0,
+    "max-len": 0,
+    "no-magic-numbers": 0,
+    "max-lines-per-function": 0,
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "never",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "function-call-argument-newline": 0,
+    "padded-blocks": 0,
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "return" },
+      { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
+      {
+        "blankLine": "any",
+        "prev": ["const", "let", "var"],
+        "next": ["const", "let", "var"]
+      }
+    ],
+    "object-curly-spacing": ["error", "always"],
+    "one-var": ["error", "never"],
+    "quote-props": 0
+  }
 }

@@ -5,8 +5,5 @@
   "quoteProps": "consistent",
   "endOfLine": "lf",
 
-  "experimentalBabelParserPluginsList": [
-    "jsx",
-    "typescript"
-  ]
+  "experimentalBabelParserPluginsList": ["jsx", "typescript"]
 }
