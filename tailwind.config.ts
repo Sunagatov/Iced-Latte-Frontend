@@ -9,6 +9,37 @@ module.exports = {
   ],
   theme: {
     extend: {
+      textColor: {
+        primary: '#04121B',
+        secondary: '#04121BA3',
+        tertiary: '#04121B7A',
+        placeholder: '#04121B5C',
+        disabled: '#04121B3D',
+        brand: '682EFF',
+        positive: '#00A30E',
+        negative: '#E12E3C',
+      },
+      backgroundColor: {
+        'primary': '#FFFFFF',
+        'secondary': '#F4F5F6',
+        'tertiary': '#E9ECED',
+        'fullpage-tint': '#00000059',
+        'inverted': '#000000',
+        'brand-solid': '#682EFF',
+        'brand-second': '#F0EAFF',
+      },
+      borderColor: {
+        primary: '#242D3429',
+        secondary: '#F4F5F6',
+        error: '#EB5757',
+        focus: '#682EFF',
+      },
+      fontSize: {
+        '6XL': ['64px', '78px'],
+      },
+      width: {
+        list: '71.5rem',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
