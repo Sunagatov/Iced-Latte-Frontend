@@ -35,6 +35,14 @@ module.exports = {
         focus: '#682EFF',
       },
       fontSize: {
+        'XS': ['14px', '18px'],
+        'M': ['16px', '20px'],
+        'L': ['18px', '22px'],
+        'XL': ['20px', '24px'],
+        '2XL': ['24px', '28px'],
+        '3XL': ['30px', '36px'],
+        '4XL': ['36px', '44px'],
+        '5XL': ['48px', '58px'],
         '6XL': ['64px', '78px'],
       },
       width: {
