@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import cardLogo from '../../assets/images/card_logo.png'
+import star from '../../../public/star.png'
+import cardLogo from '../../../public/card_logo.png'
 import CircleAddBtn from './CircleAddBtn'
-import star from '../../assets/images/star.png'
 import { IProduct } from '@/models/Products'
 import { productRating } from '@/constants/product'
 

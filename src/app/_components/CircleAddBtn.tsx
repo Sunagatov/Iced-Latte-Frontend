@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import circle_btn from '../../assets/images/circle_btn.png'
+import circle_btn from '../../../public/circle_btn.png'
 
 export default function CircleAddBtn() {
   return (
