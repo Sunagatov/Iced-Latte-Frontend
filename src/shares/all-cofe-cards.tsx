@@ -1,7 +1,7 @@
-import Image from 'next/image'
-import React from 'react'
 // eslint-disable-next-line import/no-cycle
 import { ICards } from '../app/page'
+import Image from 'next/image'
+import React from 'react'
 
 interface Props {
   data: ICards
