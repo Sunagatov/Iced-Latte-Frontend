@@ -31,6 +31,7 @@ export function useProducts() {
     data: flattenProducts,
     fetchNext,
     hasNextPage,
+    isLoading,
     isFetchingNextPage,
     error,
   }
