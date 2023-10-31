@@ -9,7 +9,11 @@ export default function ProductList() {
     useProducts()
 
   if (error)
-    return <h1 className={'text-red-500'}>Error occured: {error.message}</h1>
+    return (
+      <h1 className={'text-red-500 text-center text-3xl'}>
+        Error occured: {error.message}
+      </h1>
+    )
 
   return (
     <section className={'flex flex-col items-center mb-5 mt-5'}>
