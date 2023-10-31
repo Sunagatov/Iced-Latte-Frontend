@@ -1,7 +1,10 @@
+import ProductList from './_components/ProductList'
+
 export default function Home() {
   return (
-    <div>
-      <h1>Hello Online Store</h1>
-    </div>
+    <>
+      <nav className={'h-[98px] bg-black'}></nav>
+      <ProductList />
+    </>
   )
 }

@@ -42,7 +42,7 @@
   ],
   "rules": {
     "indent": ["error", 2],
-    "quotes": ["error", "single"],
+    "quotes": ["error", "single", { "allowTemplateLiterals": true }],
     "semi": ["error", "never"],
     "func-style": 0,
     "max-len": 0,
@@ -70,6 +70,7 @@
     ],
     "object-curly-spacing": ["error", "always"],
     "one-var": ["error", "never"],
-    "quote-props": 0
+    "quote-props": 0,
+    "@typescript-eslint/no-unsafe-assignment": "off"
   }
 }
