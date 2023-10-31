@@ -13,7 +13,9 @@ export default function ProductList() {
 
   return (
     <section className={'flex flex-col items-center mb-5 mt-5'}>
-      <ul className={'grid grid-cols-3 gap-y-12 gap-x-8 w-list m-auto'}>
+      <ul
+        className={'grid grid-cols-3 gap-y-12 gap-x-8 w-list m-auto mb-[116px]'}
+      >
         {data.map((product) => (
           <li key={product.id}>
             <ProductCard
