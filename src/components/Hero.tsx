@@ -3,10 +3,9 @@ import hero from '../../public/hero.png'
 
 export const Hero = () => {
   return (
-    <section className="    sh-screen flex justify-center mx-36 mt-24">
-      <div className="dddd"></div>
+    <section className=" mx-36 flex h-screen  justify-center ">
       <div>
-        <div className="sm:rounded-none rounded-2xl w-[572px] h-[200px] sm:w-[1144px] sm:h-[400px]">
+        <div className="h-[200px] w-[572px] rounded-2xl sm:h-[400px] sm:w-[1144px] sm:rounded-none">
           <Image src={hero} width={1144} height={400} alt="Hero" priority />
         </div>
       </div>

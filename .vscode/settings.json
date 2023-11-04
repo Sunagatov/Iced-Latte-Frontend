@@ -9,6 +9,9 @@
   "javascript.preferences.quoteStyle": "single",
   "editor.tabSize": 2,
   "deepscan.enable": true,
-  "prettier.quoteProps": "consistent",
-  "prettier.singleQuote": true
+  "prettier.quoteProps": "as-needed",
+  "prettier.singleQuote": true,
+  "reactSnippets.settings.prettierEnabled": true,
+  "vs-code-prettier-eslint.prettierLast": true,
+  "html.completion.attributeDefaultValue": "singlequotes"
 }
