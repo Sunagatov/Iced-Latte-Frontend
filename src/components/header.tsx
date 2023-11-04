@@ -32,9 +32,6 @@ export const Header = () => {
           <p className="hidden items-center sm:flex ">Cart</p>
         </button>
       </div>
-
-     
     </section>
-    
   )
 }
