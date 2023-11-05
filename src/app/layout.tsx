@@ -20,7 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={inter.className}>
         <Header />
-        {children}
+        <main className={'min-w-[392px]'}>{children}</main>
       </body>
     </html>
   )
