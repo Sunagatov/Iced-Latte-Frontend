@@ -2,14 +2,9 @@
 
 import Image from 'next/image'
 import cart_icon from '../../public/cart_icon.svg'
-import { useRouter } from 'next/navigation'
 
 export default function CartButton() {
-  const router = useRouter()
-
-  const handleClick = () => {
-    router.push('/cart')
-  }
+  const handleClick = () => {}
 
   return (
     <button
