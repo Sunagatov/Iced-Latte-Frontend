@@ -12,7 +12,7 @@ export const Header = () => {
       }
     >
       <Link href="/">
-        <div className={'flex items-center gap-4'}>
+        <div className={' flex items-center gap-4'}>
           <div className={'h-[21px] w-[19px] sm:h-[31px] sm:w-[28px]'}>
             <Image src={logo} width={28} height={31} alt="Logo" priority />
           </div>
