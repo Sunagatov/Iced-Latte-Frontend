@@ -10,26 +10,31 @@ export default function ProductList() {
 
   if (error)
     return (
-      <h1 className={'text-red-500 text-4xl  h-screen grid place-items-center'}>
+      <h1 className={'grid h-screen  place-items-center text-4xl text-red-500'}>
         Error occured: {error.message}
       </h1>
     )
   if (isLoading) {
     return (
-      <div className={'h-[54px] flex items-center justify-center mt-14'}>
+      <div className={'mt-14 flex h-[54px] items-center justify-center'}>
         <Loader />
       </div>
     )
   }
 
   return (
-    <>
-      <h1 className={'text-6XL w-[1144px] m-auto mb-10 mt-14'}>All Coffee</h1>
-
-      <section className={'flex flex-col items-center mb-5'}>
+    <section className={'mb-5 mt-6 text-center min-[1124px]:mt-16'}>
+      <div className={'inline-flex flex-col items-center text-left'}>
+        <h1
+          className={
+            'mb-8 mr-auto text-5XL min-[1124px]:mb-10 min-[1124px]:text-6XL'
+          }
+        >
+          All Coffee
+        </h1>
         <ul
           className={
-            'grid grid-cols-3 gap-y-12 gap-x-8 w-list m-auto mb-[116px]'
+            'grid grid-cols-2 gap-x-[6px] gap-y-14 min-[1124px]:grid-cols-3 min-[1124px]:gap-x-8 min-[1124px]:gap-y-12'
           }
         >
           {data.map((product) => (
@@ -44,7 +49,9 @@ export default function ProductList() {
         </ul>
         {hasNextPage && !isFetchingNextPage && (
           <button
-            className={' w-[145px] h-[54px] rounded-[46px] bg-secondary'}
+            className={
+              ' mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
+            }
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
             }}
@@ -53,11 +60,11 @@ export default function ProductList() {
           </button>
         )}
         {isFetchingNextPage && (
-          <div className={'h-[54px] flex items-center'}>
+          <div className={'mt-[24px] flex h-[54px] items-center'}>
             <Loader />
           </div>
         )}
-      </section>
-    </>
+      </div>
+    </section>
   )
 }
