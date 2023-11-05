@@ -29,9 +29,7 @@ export default function Header() {
           </span>
         </div>
       </Link>
-      <div>
-        <CartButton />
-      </div>
+      <CartButton />
     </section>
   )
 }
