@@ -7,11 +7,5 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode", // Tell VSCode to use Prettier as default file formatter
   "typescript.preferences.quoteStyle": "single",
   "javascript.preferences.quoteStyle": "single",
-  "editor.tabSize": 2,
-  "deepscan.enable": true,
-  "prettier.quoteProps": "as-needed",
-  "prettier.singleQuote": true,
-  "reactSnippets.settings.prettierEnabled": true,
-  "vs-code-prettier-eslint.prettierLast": true,
-  "html.completion.attributeDefaultValue": "singlequotes"
+  "editor.tabSize": 2
 }
