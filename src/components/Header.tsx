@@ -6,7 +6,7 @@ import CartButton from './CartButton'
 
 export default function Header() {
   return (
-    <section
+    <header
       className={
         'sticky left-0 top-0 mx-auto flex h-14 w-full items-center justify-between bg-primary pl-9 pr-6 sm:h-24'
       }
@@ -30,6 +30,6 @@ export default function Header() {
         </div>
       </Link>
       <CartButton />
-    </section>
+    </header>
   )
 }
