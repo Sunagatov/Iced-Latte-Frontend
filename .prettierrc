@@ -5,5 +5,6 @@
   "quoteProps": "consistent",
   "endOfLine": "lf",
 
-  "experimentalBabelParserPluginsList": ["jsx", "typescript"]
+  "prettier.singleQuote": true,
+  "plugins": ["prettier-plugin-tailwindcss"]
 }

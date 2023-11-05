@@ -1,0 +1,3 @@
+NEXT_PUBLIC_API_HOST_LOCAL=http://localhost:3000/api
+NEXT_PUBLIC_API_HOST_DOCKER=http://localhost:8083/api/v1
+NEXT_PUBLIC_API_HOST_REMOTE=https://dev.api.it-sl.ru:8443/api/v1
