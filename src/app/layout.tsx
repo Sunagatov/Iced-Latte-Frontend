@@ -19,9 +19,9 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className + ' flex min-h-screen flex-col'}>
         <Header />
-        <main className={'min-w-[392px]'}>{children}</main>
+        <main className={'min-w-[392px] grow'}>{children}</main>
         <Footer />
       </body>
     </html>
