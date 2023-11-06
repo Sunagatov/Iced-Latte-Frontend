@@ -18,6 +18,7 @@ module.exports = {
         brand: '682EFF',
         positive: '#00A30E',
         negative: '#E12E3C',
+        inverted: '#FFFFFF',
       },
       backgroundColor: {
         'primary': '#FFFFFF',

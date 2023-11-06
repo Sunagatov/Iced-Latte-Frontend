@@ -2,11 +2,17 @@ export default function Footer() {
   return (
     <footer
       className={
-        'flex h-48 w-full items-center justify-start bg-black text-white sm:h-36 sm:flex-row'
+        'flex h-48 w-full items-center justify-start bg-black text-inverted sm:h-36 sm:flex-row'
       }
     >
-      <div className={' ml-6 text-lg sm:mx-36 sm:flex sm:gap-36'}>
-        <ul className={'flex flex-wrap sm:order-2 sm:flex-col'}>
+      <div
+        className={' ml-6 text-lg sm:mx-36 sm:flex sm:items-center sm:gap-36'}
+      >
+        <ul
+          className={
+            'flex flex-wrap gap-x-3 sm:order-2 sm:flex-col sm:justify-center'
+          }
+        >
           <li>
             <a href="tel:(555) 123-45675" rel="noopener noreferrer">
               Phone Number: (555) 123-4567
@@ -24,9 +30,7 @@ export default function Footer() {
             </span>
           </li>
         </ul>
-        <p className={'mt-6 sm:order-1 sm:mb-0 sm:mr-6'}>
-          © 2023 Good Folks Roasters
-        </p>
+        <p className={'sm:order-1 sm:mb-0'}>© 2023 Good Folks Roasters</p>
       </div>
     </footer>
   )
