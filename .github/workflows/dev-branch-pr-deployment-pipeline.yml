@@ -1,9 +1,10 @@
 name: Build & deploy image
+
 on:
   push:
     branches: [ development ]
   pull_request:
-    branches: [ development ]
+    types: [closed]
 
 env:
   IMAGE_NAME: s083r/latte-frontend
@@ -44,7 +45,7 @@ jobs:
   pull:
     runs-on: self-hosted
     needs: push
-    steps:    
+    steps:
     - name: Pull and deploy
       uses: appleboy/ssh-action@v1.0.0
       with:
