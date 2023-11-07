@@ -43,6 +43,6 @@ jobs:
         script: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker pull s083r/latte-frontend:dev-latest
-          cd /opt/project/actions-runner# cd _work/Online-Store-Frontend/Online-Store-Frontend/ && docker-compose -f docker-compose.dev.yml up -d
+          cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
           docker ps
           ls -al
