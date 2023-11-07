@@ -1,0 +1,59 @@
+name: Build & deploy image
+on:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+
+env:
+  IMAGE_NAME: s083r/latte-frontend
+  DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
+
+jobs:
+  prepare:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Create env file'
+      run: |
+        echo "${{ secrets.ENV_FILE }}" > .env
+    - name: Create envs
+      shell: bash
+      run: |
+        echo "BRANCH=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
+        echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+  build:
+    runs-on: self-hosted
+    needs: prepare
+    steps:
+    - name: Build the docker image
+      run: |
+        export TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+        docker-compose -f $DEV_DOCKER_COMPOSE_FILE  build
+  push:
+    runs-on: self-hosted
+    needs: build
+    steps:
+    - name: Log in to docker hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push image
+      run: docker push $IMAGE_NAME:${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+  pull:
+    runs-on: self-hosted
+    needs: push
+    steps:    
+    - name: Pull and deploy
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.DEV_SSH_HOST }}
+        port: ${{ secrets.DEV_SSH_PORT }}
+        username: ${{ secrets.DEV_SSH_USER }}
+        key: ${{ secrets.DEV_SSH_PRIV_KEY }}
+        script: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          export TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+          docker pull s083r/latte-frontend:$TAG
+          cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
