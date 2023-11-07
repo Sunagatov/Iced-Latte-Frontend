@@ -33,3 +33,14 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push image
       run: docker push s083r/latte-frontend:dev-latest
+    - name: multiple command
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.DEV_SSH_HOST }}
+        port: ${{ secrets.DEV_SSH_PORT }}
+        username: ${{ secrets.DEV_SSH_USER }}
+        key: ${{ secrets.DEV_SSH_PRIV_KEY }}
+    script: |
+      echo${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      whoami
+      ls -al
