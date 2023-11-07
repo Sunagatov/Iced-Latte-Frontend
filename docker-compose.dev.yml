@@ -1,0 +1,19 @@
+version: "3.5"
+
+networks:
+  online-store-network:
+    name: online-store-network
+    external: true
+
+services:
+  dev-frontend:
+    container_name: dev-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: registry/dev/frontend
+    restart: 'always'
+    env_file:
+      - .env.local
+    networks:
+      - online-store-network
