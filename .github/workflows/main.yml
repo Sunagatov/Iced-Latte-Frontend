@@ -41,6 +41,6 @@ jobs:
         username: ${{ secrets.DEV_SSH_USER }}
         key: ${{ secrets.DEV_SSH_PRIV_KEY }}
         script: |
-          echo$ {{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           whoami
           ls -al
