@@ -42,6 +42,7 @@ jobs:
         key: ${{ secrets.DEV_SSH_PRIV_KEY }}
         script: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          export TAG=${{ env.branch }}-${{ env.sha_short }}
           docker pull s083r/latte-frontend:${{ env.branch }}-${{ env.sha_short }}
           cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
 
