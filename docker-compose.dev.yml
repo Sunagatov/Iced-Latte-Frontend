@@ -11,7 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    image: s083r/latte/frontend:dev-latest
+    image: s083r/latte-frontend:dev-latest
     restart: 'always'
     env_file:
       - .env
