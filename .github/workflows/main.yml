@@ -31,4 +31,4 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push image
-      run: docker push s083r/latte/frontend:dev-latest
+      run: docker push s083r/latte-frontend:dev-latest
