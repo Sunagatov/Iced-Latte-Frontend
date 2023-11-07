@@ -7,7 +7,7 @@ on:
     types: [closed]
 
 env:
-  IMAGE_NAME: s083r/latte-frontend
+  IMAGE_NAME: zufarexplainedit/online-store-frontend
   DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
 
 jobs:
