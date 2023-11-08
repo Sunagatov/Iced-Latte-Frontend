@@ -15,11 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: List files in the repository
+        run: ls -la
       - name: Generate .env file from secrets
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Set branch and commit SHA as environment variables
-        shell: bash
         run: |
           echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
           echo "COMMIT_SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
@@ -31,7 +32,7 @@ jobs:
       - name: Build Docker image with Compose
         run: |
           export IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
-          docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
+          docker-compose -f ${{ github.workspace }}/${{ env.DEV_DOCKER_COMPOSE_FILE }} build
 
   push-to-docker-hub:
     runs-on: ubuntu-latest
@@ -59,5 +60,5 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin <<< "${{ secrets.DOCKERHUB_TOKEN }}"
             export IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
-            docker pull $IMAGE_NAME:$IMAGE_TAG
-            cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f $DEV_DOCKER_COMPOSE_FILE up -d
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:$IMAGE_TAG
+            cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f ${{ github.workspace }}/${{ env.DEV_DOCKER_COMPOSE_FILE }} up -d
