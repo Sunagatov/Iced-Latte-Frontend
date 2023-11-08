@@ -47,7 +47,7 @@ jobs:
 
   deploy-to-server:
     runs-on: self-hosted
-    needs: docker-push
+    needs: push-to-docker-hub
     steps:
       - name: Deploy image via SSH
         uses: appleboy/ssh-action@v1.0.0
