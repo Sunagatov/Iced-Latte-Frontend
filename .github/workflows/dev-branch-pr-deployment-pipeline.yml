@@ -7,7 +7,7 @@ on:
     types: [closed]
 
 env:
-  IMAGE_NAME: ${DOCKERHUB_USERNAME}/${IMAGE_NAME}
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
   DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push Docker image to registry
-        run: docker push $IMAGE_NAME:${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
 
   deploy-to-server:
     runs-on: ubuntu-latest
