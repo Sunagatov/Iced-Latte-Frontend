@@ -4,7 +4,7 @@ import star from '../../../public/star.png'
 import cardLogo from '../../../public/card_logo.png'
 import CircleAddBtn from './CircleAddBtn'
 import { IProduct } from '@/models/Products'
-import { productRating } from '@/constants/product'
+import { productRating, productSize } from '@/constants/product'
 
 type CardProps = Pick<IProduct, 'id' | 'name' | 'price'>
 
@@ -20,7 +20,9 @@ export default function ProductCard({ id, name, price }: CardProps) {
           <div className={'flex items-center gap-2 text-L md:text-2XL'}>
             <Image src={star} alt="star" className={'inline-block'} />
             <span>{productRating}</span>
-            <span className={'text-placeholder'}>&#x2022; 500 g.</span>
+            <span className={'text-placeholder'}>
+              &#x2022; {productSize} g.
+            </span>
           </div>
         </div>
       </Link>
