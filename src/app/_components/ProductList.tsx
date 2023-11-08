@@ -8,12 +8,16 @@ export default function ProductList() {
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts()
 
-  if (error)
+  if (error) {
+    console.log(error)
+
     return (
-      <h1 className={'grid h-screen  place-items-center text-4xl text-red-500'}>
-        Error occured: {error.message}
+      <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
+        Something went wrong!
       </h1>
     )
+  }
+
   if (isLoading) {
     return (
       <div className={'mt-14 flex h-[54px] items-center justify-center'}>
