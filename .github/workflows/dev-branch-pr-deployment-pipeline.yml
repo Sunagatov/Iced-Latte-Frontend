@@ -7,7 +7,7 @@ on:
     types: [closed]
 
 env:
-  IMAGE_NAME: zufarexplainedit/online-store-frontend
+  IMAGE_NAME: ${DOCKERHUB_USERNAME}/${IMAGE_NAME}
   DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
 
 jobs:
