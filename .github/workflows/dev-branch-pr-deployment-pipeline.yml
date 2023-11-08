@@ -33,6 +33,11 @@ jobs:
     needs: setup-environment
     steps:
       - uses: actions/checkout@v3
+      - name: Copy .env file to working directory if not present
+        run: |
+          if [ ! -f .env ]; then
+            cp ${GITHUB_WORKSPACE}/.env .
+          fi
       - name: Build Docker image with Compose
         run: |
           IMAGE_TAG=${BRANCH_NAME}-${COMMIT_SHA_SHORT}
