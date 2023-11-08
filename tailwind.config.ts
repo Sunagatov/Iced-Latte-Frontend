@@ -28,6 +28,7 @@ module.exports = {
         'inverted': '#000000',
         'brand-solid': '#682EFF',
         'brand-second': '#F0EAFF',
+        'brand-solid-hover': '#5425CC',
       },
       borderColor: {
         primary: '#242D3429',
