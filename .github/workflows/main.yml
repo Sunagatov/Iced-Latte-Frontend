@@ -60,7 +60,10 @@ jobs:
           script: |
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
+            export ENV_BRANCH=$ENV_BRANCH
             export IMAGE_TAG=$ENV_BRANCH-$ENV_SHA
+            export
+            export ENV_BRANCH=${{ env.branch }}
             export
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
