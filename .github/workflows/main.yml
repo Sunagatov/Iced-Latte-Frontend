@@ -19,33 +19,20 @@ jobs:
         run: ls -la
       - name: Generate .env file from secrets
         run: |
-          echo "$ENV_FILE_CONTENT" > .env
-        env:
-          ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
-
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Set branch and commit SHA as environment variables
         run: |
           echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           echo "COMMIT_SHA_SHORT=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-
   build-docker-image:
     runs-on: ubuntu-latest
     needs: setup-environment
     steps:
       - uses: actions/checkout@v3
-      - name: Copy .env file to working directory if not present
-        run: |
-          if [ ! -f .env ]; then
-            cp ${GITHUB_WORKSPACE}/.env .
-          fi
       - name: Build Docker image with Compose
         run: |
-          IMAGE_TAG=${BRANCH_NAME}-${COMMIT_SHA_SHORT}
+          IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
           docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
-        env:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMMIT_SHA_SHORT: ${{ env.COMMIT_SHA_SHORT }}
-
   push-to-docker-hub:
     runs-on: ubuntu-latest
     needs: build-docker-image
@@ -57,7 +44,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push Docker image to registry
         run: |
-          IMAGE_TAG=${BRANCH_NAME}-${COMMIT_SHA_SHORT}
+          IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
           docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
         env:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
