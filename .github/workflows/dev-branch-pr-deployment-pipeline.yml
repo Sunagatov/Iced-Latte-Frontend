@@ -4,12 +4,12 @@ on:
   push:
     branches: [ development ]
   pull_request:
-    types: [closed]
+    types: [ closed ]
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
-  DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
+  DEV_DOCKER_COMPOSE_FILE: /../../docker-compose.dev.yml
 
 jobs:
   setup-environment:
