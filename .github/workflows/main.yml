@@ -48,11 +48,10 @@ jobs:
     needs: push-to-docker-hub
     steps:
       - name: Deploy image via SSH
+        uses: appleboy/ssh-action@v1.0.0
         env: 
           ENV_BRANCH: ${{ env.branch }}
           ENV_SHA: ${{ env.sha_short }}
-          IMAGE_TAG: $GITHUB_REF_NAME-${GITHUB_SHA:0:7}
-        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           port: ${{ secrets.DEV_SSH_PORT }}
