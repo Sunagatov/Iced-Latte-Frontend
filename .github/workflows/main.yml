@@ -60,7 +60,7 @@ jobs:
           script: |
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
-            export ENV_BRANCH=$ENV_BRANCH
+            export ENV_BRANCH=$GITHUB_REF_NAME
             export IMAGE_TAG=$E_BRANCH-$E_SHA
             export
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
