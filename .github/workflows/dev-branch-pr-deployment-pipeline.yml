@@ -16,12 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Debug working directory and list files
-        run: |
-            echo "Current working directory:"
-            pwd
-            echo "List of files in the current directory:"
-            ls -la
+      - name: Echo the DEV_DOCKER_COMPOSE_FILE variable
+        run: echo $DEV_DOCKER_COMPOSE_FILE
       - name: Generate .env file from secrets
         run: |
           export
@@ -41,7 +37,7 @@ jobs:
           export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
           export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
           export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
-          docker-compose -f ${DEV_DOCKER_COMPOSE_FILE} build
+          docker-compose -f ${{ env.DEV_DOCKER_COMPOSE_FILE }} build
 
   push-to-docker-hub:
     runs-on: ubuntu-latest
