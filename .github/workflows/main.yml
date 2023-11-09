@@ -7,8 +7,10 @@ on:
     types: [closed]
 
 env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
   DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
+  TAG_test: $GITHUB_REF_NAME-${GITHUB_SHA:0:7}
 
 jobs:
   setup-environment:
@@ -37,7 +39,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push image
-      run: docker push $IMAGE_NAME:$GITHUB_REF_NAME-${GITHUB_SHA:0:8}
+      run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
   deploy-to-server:
     runs-on: self-hosted
     needs: push-to-docker-hub
@@ -52,5 +54,5 @@ jobs:
           script: |
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
-            docker pull $IMAGE_NAME:$IMAGE_TAG
+            docker pull  $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
             cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
