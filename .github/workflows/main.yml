@@ -48,9 +48,9 @@ jobs:
     needs: push-to-docker-hub
     steps:
       - name: Deploy image via SSH
-        uses: appleboy/ssh-action@v1.0.0
         env: 
           IMAGE_TAG: $GITHUB_REF_NAME-${GITHUB_SHA:0:7}
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           port: ${{ secrets.DEV_SSH_PORT }}
@@ -59,7 +59,6 @@ jobs:
           script: |
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
-            export IMAGE_TAG=${{ env.branch }}-${{ env.sha_short }}
             export
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
