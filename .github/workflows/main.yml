@@ -47,11 +47,13 @@ jobs:
     runs-on: self-hosted
     needs: push-to-docker-hub
     steps:
+      - name: Set env
+        run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
       - name: Deploy image via SSH
         uses: appleboy/ssh-action@v1.0.0
         env: 
-          ENV_BRANCH: ${{ env.GITHUB_REF_NAME }}
-          ENV_SHA: $(echo $GITHUB_REF_NAME)
+          ENV_BRANCH: $GITHUB_SHA_SHORT
+          ENV_SHA: $(echo GITHUB_SHA_SHORT)
           ENV_TEST: test
         with:
           envs:
