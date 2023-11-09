@@ -12,49 +12,36 @@ env:
 
 jobs:
   setup-environment:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v3
-      - name: List files in the repository
-        run: ls -la
-      - name: Generate .env file from secrets
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-      - name: Set branch and commit SHA as environment variables
-        run: |
-          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "COMMIT_SHA_SHORT=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+    - name: Generate .env file from secrets
+      run: |
+        echo "${{ secrets.ENV_FILE }}" > .env
+    - name: Create envs for image tag
+      shell: bash
+      run: |
+        echo "BRANCH=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
+        echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
   build-docker-image:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup-environment
     steps:
-      - uses: actions/checkout@v3
-      - name: Generate .env file from secrets
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-      - name: Build Docker image with Compose
-        run: |
-          IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
-          docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
+    - name: Build the docker image
+      run: |
+        export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+        docker-compose -f $DEV_DOCKER_COMPOSE_FILE  build
   push-to-docker-hub:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-docker-image
     steps:
-      - name: Authenticate to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Push Docker image to registry
-        run: |
-          IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
-          docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-        env:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMMIT_SHA_SHORT: ${{ env.COMMIT_SHA_SHORT }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-
+    - name: Log in to docker hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push image
+      run: docker push $IMAGE_NAME:${{ env.BRANCH }}-${{ env.SHA_SHORT }}
   deploy-to-server:
     runs-on: ubuntu-latest
     needs: push-to-docker-hub
@@ -67,15 +54,7 @@ jobs:
           username: ${{ secrets.DEV_SSH_USER }}
           key: ${{ secrets.DEV_SSH_PRIV_KEY }}
           script: |
-            docker login -u $DOCKERHUB_USERNAME --password-stdin <<< $DOCKERHUB_TOKEN
-            IMAGE_TAG=${BRANCH_NAME}-${COMMIT_SHA_SHORT}
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-            docker-compose -f $DEV_DOCKER_COMPOSE_FILE down
-            docker-compose -f $DEV_DOCKER_COMPOSE_FILE up -d
-        env:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMMIT_SHA_SHORT: ${{ env.COMMIT_SHA_SHORT }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          DEV_DOCKER_COMPOSE_FILE: ${{ env.DEV_DOCKER_COMPOSE_FILE }}
+            cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
