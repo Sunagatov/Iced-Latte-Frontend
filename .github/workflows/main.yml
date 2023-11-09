@@ -30,8 +30,10 @@ jobs:
     steps:
     - name: Build the docker image
       run: |
-        export GITHUB_SHA_SHORT=$({GITHUB_SHA:0:5})
+        export GITHUB_SHA_SHORT=${GITHUB_SHA:0:8}
+        export IMAGE_TAG_test=$GITHUB_REF_NAME-${GITHUB_SHA:0:8}
         export IMAGE_TAG=$GITHUB_REF_NAME-$GITHUB_SHA_SHORT
+        export
         docker-compose -f $DEV_DOCKER_COMPOSE_FILE  build
   push-to-docker-hub:
     runs-on: self-hosted
