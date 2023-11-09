@@ -30,10 +30,7 @@ jobs:
     steps:
     - name: Build the docker image
       run: |
-        export GITHUB_SHA_SHORT=${GITHUB_SHA:0:8}
-        export IMAGE_TAG_test=$GITHUB_REF_NAME-${GITHUB_SHA:0:8}
-        export IMAGE_TAG=$GITHUB_REF_NAME-$GITHUB_SHA_SHORT
-        export
+        export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:8}
         docker-compose -f $DEV_DOCKER_COMPOSE_FILE  build
   push-to-docker-hub:
     runs-on: self-hosted
@@ -45,7 +42,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push image
-      run: docker push $IMAGE_NAME:${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+      run: docker push $IMAGE_NAME:$GITHUB_REF_NAME-${GITHUB_SHA:0:8}
   deploy-to-server:
     runs-on: ubuntu-latest
     needs: push-to-docker-hub
