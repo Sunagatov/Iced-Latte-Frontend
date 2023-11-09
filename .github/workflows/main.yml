@@ -1,66 +1,47 @@
-name: CI/CD Pipeline for DEV environment
-
+name: Build & deploy image
 on:
   push:
     branches: [ development ]
   pull_request:
-    types: [closed]
-
-env:
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
-  DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
-
+    branches: [ development ]
 jobs:
-  setup-environment:
+  build:
     runs-on: self-hosted
+#    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Generate .env file from secrets
+    - name: 'Create env file'
       run: |
-        export
         echo "${{ secrets.ENV_FILE }}" > .env
     - name: Create envs
       shell: bash
       run: |
         echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
         echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
-  build-docker-image:
-    runs-on: self-hosted
-    needs: setup-environment
-    steps:
+    - name: Check envs
+      run: |
+        echo "Branch: ${{ env.branch }}"
+        echo "Sha: ${{ env.sha_short }}"
     - name: Build the docker image
       run: |
-        export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
-        export
-        docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
-  push-to-docker-hub:
-    runs-on: self-hosted
-    needs: build-docker-image
-    steps:
+        export TAG=${{ env.branch }}-${{ env.sha_short }}
+        docker-compose -f docker-compose.dev.yml  build
     - name: Log in to docker hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push image
-      run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
-  deploy-to-server:
-    runs-on: self-hosted
-    needs: push-to-docker-hub
-    steps:
-      - name: Deploy image via SSH
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.DEV_SSH_HOST }}
-          port: ${{ secrets.DEV_SSH_PORT }}
-          username: ${{ secrets.DEV_SSH_USER }}
-          key: ${{ secrets.DEV_SSH_PRIV_KEY }}
-          script: |
-            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
-            export IMAGE_TAG=${{ env.branch }}-${{ env.sha_short }}
-            export
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ env.branch }}-${{ env.sha_short }}
-            cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
+      run: docker push s083r/latte-frontend:${{ env.branch }}-${{ env.sha_short }}
+    - name: Pull and deploy
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.DEV_SSH_HOST }}
+        port: ${{ secrets.DEV_SSH_PORT }}
+        username: ${{ secrets.DEV_SSH_USER }}
+        key: ${{ secrets.DEV_SSH_PRIV_KEY }}
+        script: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          export TAG=${{ env.branch }}-${{ env.sha_short }}
+          docker pull s083r/latte-frontend:${{ env.branch }}-${{ env.sha_short }}
+          cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
