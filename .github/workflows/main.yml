@@ -32,6 +32,7 @@ jobs:
     - name: Build the docker image
       run: |
         export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+        export
         docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
   push-to-docker-hub:
     runs-on: self-hosted
