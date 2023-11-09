@@ -16,15 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Echo the DEV_DOCKER_COMPOSE_FILE variable
-        run: echo $DEV_DOCKER_COMPOSE_FILE
-
-      - name: Debug working directory and list files
-        run: |
-            echo "Current working directory:"
-            pwd
-            echo "List of files in the current directory:"
-            ls -lah
       - name: Generate .env file from secrets
         run: |
           export
