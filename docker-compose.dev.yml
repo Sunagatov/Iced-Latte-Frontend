@@ -11,7 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    image: s083r/latte-frontend:${TAG}
+    image: s083r/latte-frontend:${IMAGE_TAG}
     restart: 'always'
     env_file:
       - .env
