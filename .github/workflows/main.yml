@@ -50,8 +50,8 @@ jobs:
       - name: Deploy image via SSH
         uses: appleboy/ssh-action@v1.0.0
         env: 
-          ENV_BRANCH: $GITHUB_REF_NAME
-          ENV_SHA: ${{ env.sha_short }}
+          ENV_BRANCH: ${{ GITHUB_REF_NAME }}
+          ENV_SHA: ${ GITHUB_REF_NAME }
           ENV_TEST: test
         with:
           envs:
