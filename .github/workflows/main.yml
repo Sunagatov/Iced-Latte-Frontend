@@ -47,15 +47,10 @@ jobs:
     runs-on: self-hosted
     needs: push-to-docker-hub
     steps:
-      - name: envs test
-        shell: bash
-        run: |
-          export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-          export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
-          export IMAGE_TAG=${{ env.branch }}-${{ env.sha_short }}
-          export
       - name: Deploy image via SSH
         uses: appleboy/ssh-action@v1.0.0
+        env: 
+          IMAGE_TAG: $GITHUB_REF_NAME-${GITHUB_SHA:0:7}
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           port: ${{ secrets.DEV_SSH_PORT }}
@@ -67,5 +62,5 @@ jobs:
             export IMAGE_TAG=${{ env.branch }}-${{ env.sha_short }}
             export
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ env.branch }}-${{ env.sha_short }}
+            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
             cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
