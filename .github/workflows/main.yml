@@ -31,7 +31,7 @@ jobs:
     - name: Build the docker image
       run: |
         export
-        export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
+        export IMAGE_TAG=$GITHUB_REF_NAME-${{ env.SHA_SHORT }}
         docker-compose -f $DEV_DOCKER_COMPOSE_FILE  build
   push-to-docker-hub:
     runs-on: self-hosted
