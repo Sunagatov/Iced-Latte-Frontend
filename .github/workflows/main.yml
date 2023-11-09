@@ -20,13 +20,18 @@ jobs:
       run: |
         export
         echo "${{ secrets.ENV_FILE }}" > .env
+    - name: Create envs
+      shell: bash
+      run: |
+        echo "BRANCH=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
+        echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
   build-docker-image:
     runs-on: self-hosted
     needs: setup-environment
     steps:
     - name: Build the docker image
       run: |
-        export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
+        export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
         docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
   push-to-docker-hub:
     runs-on: self-hosted
@@ -38,7 +43,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push image
-      run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
+      run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ env.BRANCH }}-${{ env.SHA_SHORT }}
   deploy-to-server:
     runs-on: self-hosted
     needs: push-to-docker-hub
@@ -51,9 +56,9 @@ jobs:
           username: ${{ secrets.DEV_SSH_USER }}
           key: ${{ secrets.DEV_SSH_PRIV_KEY }}
           script: |
-            export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
+            export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
             export
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
