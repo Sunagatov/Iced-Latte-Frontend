@@ -68,6 +68,7 @@ jobs:
           script: |
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
+            export IMAGE_TAG=$ENV_BRANCH-$ENV_SHA
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$ENV_BRANCH-$ENV_SHA
+            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
             cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
