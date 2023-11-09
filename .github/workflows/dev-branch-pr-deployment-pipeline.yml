@@ -16,6 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Debug working directory and list files
+        run: |
+            echo "Current working directory:"
+            pwd
+            echo "List of files in the current directory:"
+            ls -la
       - name: Generate .env file from secrets
         run: |
           export
