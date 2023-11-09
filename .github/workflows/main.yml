@@ -53,6 +53,9 @@ jobs:
           E_BRANCH: $GITHUB_REF_NAME
           E_SHA: ${{ env.sha_short }}
         with:
+          envs:
+            E_BRANCH
+            E_SHA
           host: ${{ secrets.DEV_SSH_HOST }}
           port: ${{ secrets.DEV_SSH_PORT }}
           username: ${{ secrets.DEV_SSH_USER }}
