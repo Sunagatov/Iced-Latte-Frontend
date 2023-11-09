@@ -29,6 +29,9 @@ jobs:
     needs: setup-environment
     steps:
       - uses: actions/checkout@v3
+      - name: Generate .env file from secrets
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build Docker image with Compose
         run: |
           IMAGE_TAG=${{ env.BRANCH_NAME }}-${{ env.COMMIT_SHA_SHORT }}
