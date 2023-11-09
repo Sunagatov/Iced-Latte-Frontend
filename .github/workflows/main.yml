@@ -9,8 +9,6 @@ on:
 env:
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
   DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
-  COMMIT_BRANCH: ${GITHUB_REF#refs/heads/}
-  COMMIT_SHA: $(git rev-parse --short "$GITHUB_SHA")
 
 jobs:
   setup-environment:
@@ -32,6 +30,7 @@ jobs:
     steps:
     - name: Build the docker image
       run: |
+        export
         export IMAGE_TAG=${{ env.BRANCH }}-${{ env.SHA_SHORT }}
         docker-compose -f $DEV_DOCKER_COMPOSE_FILE  build
   push-to-docker-hub:
