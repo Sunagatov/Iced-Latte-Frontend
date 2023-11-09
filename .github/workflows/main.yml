@@ -49,6 +49,8 @@ jobs:
     steps:
       - name: Deploy image via SSH
         env: 
+          ENV_BRANCH: ${{ env.branch }}
+          ENV_SHA: ${{ env.sha_short }}
           IMAGE_TAG: $GITHUB_REF_NAME-${GITHUB_SHA:0:7}
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -59,7 +61,9 @@ jobs:
           script: |
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
-            export IMAGE_TAG=$IMAGE_TAG
+            export ENV_BRANCH=$ENV_BRANCH
+            export ENV_SHA=$ENV_SHA
+            export IMAGE_TAG=$ENV_BRANCH-$ENV_SHA
             export
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
