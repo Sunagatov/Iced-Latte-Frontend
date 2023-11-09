@@ -13,7 +13,7 @@ env:
 
 jobs:
   setup-environment:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Generate .env file from secrets
@@ -27,7 +27,7 @@ jobs:
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
 
   build-docker-image:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: setup-environment
     steps:
       - name: Build the docker image
@@ -38,7 +38,7 @@ jobs:
           docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
 
   push-to-docker-hub:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build-docker-image
     steps:
       - name: Log in to docker hub
@@ -50,7 +50,7 @@ jobs:
         run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
 
   deploy-to-server:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: push-to-docker-hub
     steps:
       - name: Create envs
