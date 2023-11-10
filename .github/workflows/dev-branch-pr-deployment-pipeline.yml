@@ -19,8 +19,17 @@ jobs:
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: custom/path/to/folder/with/env
+          mode: development
+          load-mode: strict
+      - name: Read envs
+        run: |
+          export
   build-and-push-docker-image:
-    runs-on: [ self-hosted, dev ]
+    runs-on: ubuntu-latest
     needs: setup-environment
     steps:
       - name: Build the docker image
@@ -29,6 +38,7 @@ jobs:
           export IMAGE_NAME=${{ secrets.IMAGE_NAME }}
           export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
           docker-compose -f $DEV_DOCKER_COMPOSE_FILE build
+          export
       - name: Log in to docker hub
         uses: docker/login-action@v3
         with:
@@ -63,4 +73,5 @@ jobs:
             export IMAGE_TAG=$ENV_BRANCH-$ENV_SHA
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+            export
             cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
