@@ -23,7 +23,7 @@ jobs:
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
         with:
-          path: custom/path/to/folder/with/env
+          path: .env
           mode: development
           load-mode: strict
       - name: Read envs
