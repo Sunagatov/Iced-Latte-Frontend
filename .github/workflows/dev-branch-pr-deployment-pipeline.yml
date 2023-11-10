@@ -24,7 +24,7 @@ jobs:
         uses: xom9ikk/dotenv@v2
         with:
           path: 
-          mode: development
+          mode:
           load-mode: strict
       - name: Read envs
         run: |
