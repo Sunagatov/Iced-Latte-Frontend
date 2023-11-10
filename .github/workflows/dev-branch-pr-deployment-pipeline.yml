@@ -12,14 +12,6 @@ env:
   DEV_DOCKER_COMPOSE_FILE: docker-compose.dev.yml
 
 jobs:
-  get-runner:
-    name get a runner to use for this workflow
-    if: ${{ always() }}
-    runs-on: custom-runner
-    outputs:
-     RUNNER: ${{ runner.name }}
-    steps:
-      - run: echo "selected runner = ${{ runner.name }}"
   setup-environment:
     runs-on: ubuntu-latest
     steps:
