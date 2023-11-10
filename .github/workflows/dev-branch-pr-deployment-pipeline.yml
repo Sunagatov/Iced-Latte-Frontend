@@ -57,7 +57,7 @@ jobs:
           echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
       - name: Deploy image via SSH
         uses: appleboy/ssh-action@v1.0.0
-        env: 
+        env:
           ENV_BRANCH: ${{ env.branch }}
           ENV_SHA: ${{ env.sha_short }}
         with:
