@@ -1,3 +1,5 @@
+name: CI/CD Pipeline for DEV environment
+
 on:
   push:
     branches: [ development ]
