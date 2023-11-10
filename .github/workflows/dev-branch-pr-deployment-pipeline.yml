@@ -19,6 +19,7 @@ jobs:
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
+          echo $PWD
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
         with:
