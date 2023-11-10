@@ -16,15 +16,9 @@ jobs:
     runs-on: [ self-hosted, dev ]
     steps:
       - uses: actions/checkout@v2
-      - name: Generate .env file from secrets
+      - name: Create .env file
         run: |
-          export
           echo "${{ secrets.ENV_FILE }}" > .env
-      - name: Create variables for image tag
-        shell: bash
-        run: |
-          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
   build-docker-image:
     runs-on: [ self-hosted, dev ]
     needs: setup-environment
