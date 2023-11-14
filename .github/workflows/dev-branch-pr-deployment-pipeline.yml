@@ -22,21 +22,22 @@ jobs:
         with:
           repository: Sunagatov/Vault
           token: ${{ secrets.PRIVATE_REPO_ACCESS_TOKEN }}
-          path: IcedLatte/Frontend/
-      # Debug: Print working directory
+          path: Vault
+
       - name: Print working directory
         run: pwd
 
-      # Debug: List files in the directory
       - name: List files in directory
         run: ls -lah
 
-      # Debug: List files in the IcedLatte/Frontend directory
+      - name: List files in Vault
+        run: ls -lah Vault
+
       - name: List files in IcedLatte/Frontend
-        run: ls -lah IcedLatte/Frontend
+        run: ls -lah Vault/IcedLatte/Frontend
 
       - name: Copy .env file
-        run: cp ./IcedLatte/Frontend/.env ./
+        run: cp ./Vault/IcedLatte/Frontend/.env ./
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
