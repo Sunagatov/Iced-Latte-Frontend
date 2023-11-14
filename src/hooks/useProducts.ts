@@ -7,7 +7,7 @@ export function useProducts() {
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
 
-    return `products?page=${pageIndex}&size=3`
+    return `products?page=${pageIndex}&size=6`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<
