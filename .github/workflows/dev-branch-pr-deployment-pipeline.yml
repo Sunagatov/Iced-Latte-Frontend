@@ -20,9 +20,9 @@ jobs:
       - name: Checkout private env repository
         uses: actions/checkout@v2
         with:
-          repository: username/env-repo
+          repository: Sunagatov/Vault
           token: ${{ secrets.PRIVATE_REPO_ACCESS_TOKEN }}
-          path: env-repo
+          path: IcedLatte/Frontend/
 
       - name: Copy .env file
         run: cp env-repo/.env ./
@@ -57,4 +57,4 @@ jobs:
           script: |
             export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-            cd /opt/project/path/to/docker-compose && docker-compose -f $DEV_DOCKER_COMPOSE_FILE up -d
+            cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
