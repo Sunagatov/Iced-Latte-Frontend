@@ -25,7 +25,7 @@ jobs:
           path: IcedLatte/Frontend/
 
       - name: Copy .env file
-        run: cp env-repo/.env ./
+        run: cp IcedLatte/Frontend/.env ./
 
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
