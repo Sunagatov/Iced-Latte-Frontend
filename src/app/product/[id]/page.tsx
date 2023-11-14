@@ -2,7 +2,7 @@ import Image from 'next/image'
 import productImage from '../../../../public/card_logo.png'
 import star from '../../../../public/star.png'
 import { IProduct } from '@/models/Products'
-import { getProduct } from '@/services/apiService'
+import { getAllProducts } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
 import AddToCartButton from '../_components/AddToCart'
 
@@ -13,7 +13,9 @@ type ProductProps = {
 }
 
 async function getProductById(id: string): Promise<IProduct> {
-  return await getProduct(id)
+  const result = await getAllProducts(id)
+
+  return result as IProduct
 }
 
 export default async function Page({ params }: ProductProps) {
