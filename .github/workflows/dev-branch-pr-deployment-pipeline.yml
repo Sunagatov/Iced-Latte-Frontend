@@ -24,15 +24,6 @@ jobs:
           token: ${{ secrets.PRIVATE_REPO_ACCESS_TOKEN }}
           path: Vault
 
-      - name: Print working directory
-        run: pwd
-
-      - name: List files in directory
-        run: ls -lah
-
-      - name: List files in Vault
-        run: ls -lah Vault
-
       - name: List files in IcedLatte/Frontend
         run: ls -lah Vault/IcedLatte/Frontend
 
@@ -43,6 +34,9 @@ jobs:
         uses: xom9ikk/dotenv@v2
         with:
           load-mode: strict
+
+      - name: Set IMAGE_TAG
+        run: echo "IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Build the docker image
         run: |
@@ -56,7 +50,6 @@ jobs:
 
       - name: Push image
         run: |
-          export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
           docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
 
       - name: Deploy image via SSH
@@ -67,6 +60,5 @@ jobs:
           username: ${{ secrets.DEV_SSH_USER }}
           key: ${{ secrets.DEV_SSH_PRIV_KEY }}
           script: |
-            export IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}
             docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
             cd /opt/project/actions-runner/_work/Online-Store-Frontend/Online-Store-Frontend && docker-compose -f docker-compose.dev.yml up -d
