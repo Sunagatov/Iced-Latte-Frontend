@@ -6,14 +6,14 @@ networks:
     external: true
 
 services:
-  dev-frontend:
-    container_name: dev-frontend
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    image: ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}
-    restart: 'always'
+  iced-latte-frontend:
+    image: 'zufarexplainedit/iced-latte-frontend:${DOCKER_IMAGE_TAG}'
+    container_name: iced-latte-frontend
     env_file:
       - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: 'always'
     networks:
       - online-store-network
