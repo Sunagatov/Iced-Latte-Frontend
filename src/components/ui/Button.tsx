@@ -11,7 +11,7 @@ type Props = {
 const defaultStyles =
   'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted hover:bg-brand-solid-hover '
 
-export default function AddToCartButton({
+export default function Button({
   onClick,
   className,
   children,
