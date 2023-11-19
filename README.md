@@ -13,7 +13,7 @@
   <b>- public/</b> `` <i>(static files)</i>
   <b>- src/</b>  <i>(sources directory)</i>
     <b>- app/</b>
-      <b>- _components/</b>  (components used by specific page (related to src/app/page.tsx page))
+      <b>- _components/</b>  (components used by current page)
       <b>- someRouteFolder/</b>  <i>(some rote page)</i>
         <b>- _components/</b>  <i>(someRoute page components)</i>
         <i>page.tsx</i>  <i>(someRoute page)</i>
