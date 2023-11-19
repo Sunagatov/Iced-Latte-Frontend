@@ -1,10 +1,15 @@
-import Hero from './_components/Hero'
+// import CartEmpty from './_components/Cart.tsx/CartEmpty'
+import CartFull from './_components/Cart/CartFull'
+// import Hero from './_components/Hero'
 import ProductList from './_components/ProductList'
 
 export default function Home() {
   return (
     <>
-      <Hero />
+      {/* <CartEmpty /> */}
+      <CartFull />
+      {/* <Hero /> */}
+
       <ProductList />
     </>
   )
