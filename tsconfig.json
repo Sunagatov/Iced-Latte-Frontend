@@ -34,7 +34,7 @@
     "./jest.config.js",
     "./jest.setup.js",
     ".lint-staged.config.js",
-    "src/app/_components/Cart"
+    "src/app/cart"
   ],
   "exclude": ["node_modules"]
 }

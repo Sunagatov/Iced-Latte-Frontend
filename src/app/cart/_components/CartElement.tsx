@@ -1,12 +1,23 @@
 /* useClient */
 
+import React from 'react'
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
 import search from '../../../../public/search_cart.png'
 import trash from '../../../../public/trash.svg'
 import Counter from '@/app/product/_components/Counter'
 
-export default function CartElement({ itemName, weight, price }) {
+interface CartElementProps {
+  itemName: string
+  weight: string
+  price: number
+}
+
+export default function CartElement({
+  itemName,
+  weight,
+  price,
+}: CartElementProps) {
   return (
     <div className="flex items-center justify-between border-b p-4">
       {/* Left side: Picture */}
