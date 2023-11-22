@@ -12,27 +12,33 @@ Built using Next.js, it's crafted for educational purposes, offering insights in
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
-- [Tech Stack](#tech-stack)
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [Code of Conduct](#code-of-conduct)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
-- [Contact](#contact)
+- [Iced-Latte (Frontend)](#iced-latte-frontend)
+  - [Table of Contents](#table-of-contents)
+  - [Tech Stack](#tech-stack)
+  - [Quick Start](#quick-start)
+  - [Features](#features)
+  - [API Documentation](#api-documentation)
+  - [Project structure](#project-structure)
+  - [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+  - [License](#license)
+  - [Contact](#contact)
+  - [FAQ](#faq)
+  - [Community and Support](#community-and-support)
 
 ## Tech Stack
 
-- **Frameworks** Next.js.
-- **Computer Language:** Typescript, Javascript.
+- **Core:** Next.js + Typescript.
+- **State manager:** Zustand.
+- **Css framework:** TailwindCSS.
+- **Testing:** Jest, React-Testing-Library.
 
 ## Quick Start
 
 Follow the setup instructions in [START.MD](START.MD) to get the project up and running.
 
 ## Features
+
 - User Authentication and Authorization
 - Product Catalog Management
 - Order Processing and Tracking
@@ -42,6 +48,30 @@ Follow the setup instructions in [START.MD](START.MD) to get the project up and 
 ## API Documentation
 
 The API is fully documented with Swagger. Access the documentation at `http://localhost:8083/swagger-ui.html` once the server is running.
+
+## Project structure
+
+<pre>
+  <b>- public/</b>  <i>(static files)</i>
+  <b>- src/</b>  <i>(sources directory)</i>
+    <b>- app/</b>
+      <b>- _components/</b>  (components used by current page)
+      <b>- someRouteFolder/</b>  <i>(some rote page)</i>
+        <b>- _components/</b>  <i>(someRoute page components)</i>
+        <i>page.tsx</i>  <i>(someRoute page)</i>
+      <i>globals.css</i>  <i>(global styles)</i>
+      <i>layout.tsx</i>  <i>(root layout)</i>
+      <i>page.tsx</i>  <i>(main page)</i>
+    <b>- components</b>  <i>(shared components across application)</i>
+      <b>- ui</b>  <i>(shared ui components (buttons, etc.))</i>
+    <b>- constants</b>  <i>(temporary hardcoded values)</i>
+    <b>- data</b>  <i>(temporary mocked data)</i>
+    <b>- hooks</b>  <i>(custom hooks)</i>
+    <b>- models</b>  <i>(typescript types)</i>
+    <b>- services</b>
+    <b>- utils</b>  <i>(utility functions)</i>
+    <i>tailwind.config.ts</i>  <i>(tailwind custom classes)</i>
+</pre>
 
 ## Contributing
 
