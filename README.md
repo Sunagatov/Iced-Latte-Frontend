@@ -5,12 +5,12 @@
 - navigate to the root of the project
 - `yarn install`
 - `yarn husky install` - setup precommit eslint typescript checks
-- `yarn dev` - runs project on `localhost:3000` (check nextjs docs to run project with different hostname or port)
+- `yarn dev` - runs project on `localhost:3000` (if on the main page u do not see list of products due to CORS error, run dev server with `yarn next dev --hostname 127.0.0.1`)
 
 ## Project structure
 
 <pre>
-  <b>- public/</b> `` <i>(static files)</i>
+  <b>- public/</b>  <i>(static files)</i>
   <b>- src/</b>  <i>(sources directory)</i>
     <b>- app/</b>
       <b>- _components/</b>  (components used by current page)
