@@ -1,6 +1,7 @@
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
 import search from '../../../../public/search_cart.png'
+import { useCombinedStore } from './store/useCombinedStore'
 
 // interface CartEmptyProps {
 //   onClose: () => void
@@ -8,6 +9,10 @@ import search from '../../../../public/search_cart.png'
 // }
 
 export default function CartEmpty() {
+  const { count } = useCombinedStore()
+
+  if (count > 0) return null
+
   return (
     <div className="w-{800px} 1px h-{513px} mx-auto outline sm:w-[500px]">
       <h2 className="mx-4 my-6 text-4xl">Shopping cart</h2>

@@ -11,12 +11,14 @@ interface CartElementProps {
   itemName: string
   weight: string
   price: number
+  remove: () => void
 }
 
 export default function CartElement({
   itemName,
   weight,
   price,
+  remove,
 }: CartElementProps) {
   return (
     <div className="flex items-center justify-between border-b p-4">
@@ -38,7 +40,7 @@ export default function CartElement({
         <p className="text-lg font-semibold">{`$${price.toFixed(2)}`}</p>
         <div className="flex justify-start">
           <Counter />
-          <Button className=" bg-white">
+          <Button className=" bg-white" onClick={remove}>
             <Image src={trash} width={24} height={24} alt="Logo" priority />
           </Button>
         </div>
