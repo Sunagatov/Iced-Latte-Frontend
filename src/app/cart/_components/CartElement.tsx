@@ -9,6 +9,7 @@ interface CartElementProps {
   itemName: string
   weight: string
   price: number
+  id: string
   remove: () => void
 }
 
@@ -17,6 +18,7 @@ export default function CartElement({
   weight,
   price,
   remove,
+  id,
 }: CartElementProps) {
   return (
     <div className="flex items-center justify-between border-b p-4">

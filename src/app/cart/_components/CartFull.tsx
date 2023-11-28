@@ -3,7 +3,7 @@ import CartElement from './CartElement'
 import { useCombinedStore } from './store/useCombinedStore'
 
 export default function CartFull() {
-  const { items, count, totalPrice, removeFullProduct } = useCombinedStore()
+  const { items, totalPrice, removeFullProduct } = useCombinedStore()
 
   // const items = [
   //   { id: 1, name: 'Coffee A', weight: '250g', price: 12.99 },
