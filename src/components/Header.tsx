@@ -3,6 +3,7 @@ import logo from '../../public/logo.svg'
 import Image from 'next/image'
 import Link from 'next/link'
 import CartButton from './CartButton'
+import LoginButton from './LoginButton'
 
 export default function Header() {
   return (
@@ -29,6 +30,7 @@ export default function Header() {
           </span>
         </div>
       </Link>
+      <LoginButton/>
       <CartButton />
     </header>
   )

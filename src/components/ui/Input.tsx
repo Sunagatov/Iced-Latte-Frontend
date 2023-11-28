@@ -1,39 +1,57 @@
-import { HTMLAttributes, useId } from 'react'
+import classNames from 'classnames';
+import { FieldValues, UseFormRegister } from 'react-hook-form'
 
-type InputProps = HTMLAttributes<HTMLInputElement> & {
+type InputProps = {
   label?: string,
+  placeholder?: string;
+  name: string,
   classNameInput?: string,
-  classNameLabel?: string
+  classNameLabel?: string,
+  register?: UseFormRegister<FieldValues>,
+  error?: string
 }
 
 export default function Input({
   label,
   classNameInput,
+  name,
   classNameLabel,
+  error,
+  register,
   ...rest }: InputProps) {
-  const id = useId()
 
-  const classNameInputMerge = "h-[54px] bg-secondary border border-gray-300 text-gray-900 text-L rounded-lg focus:ring-brand-solid-hover block w-full p-2.5 "
-    + (classNameInput ?? '')
+  const classNameInputMerge = classNames(
+    "h-[54px] bg-secondary border border-gray-300 text-gray-900 text-L rounded-lg focus:ring-brand-solid-hover block w-full p-2.5 ",
+    classNameInput,
+    {
+      "border-error" : !!error
+    })
 
-  const classNameLabelMerge = "block mb-2 text-sm font-XS text-gray-900 "
-    + (classNameLabel ?? '')
+  const classNameLabelMerge = classNames(
+    "block mb-2 text-sm font-XS text-gray-900 ",
+    classNameLabel,
+    {
+      "text-negative": !!error
+    })
   return (
-    <div className='mt-[24px]'>
+    <div className='mt-6'>
       {label &&
         <label
-          htmlFor={id}
+          htmlFor={name}
           className={classNameLabelMerge}
         >
           {label}
         </label>
       }
       <input
+        name={name}
         type="text"
-        id={id}
+        id={name}
         className={classNameInputMerge}
         {...rest}
+        {...register}
       />
+      {!!error && <div className='text-negative'>{error}</div>}
     </div>
   )
 }
