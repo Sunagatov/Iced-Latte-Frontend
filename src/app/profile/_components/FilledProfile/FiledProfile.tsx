@@ -8,6 +8,14 @@ import {
 import Image from 'next/image'
 import Container from '@/components/Container/Container'
 
+const showError = (error: unknown) => {
+  if (error instanceof Error) {
+    alert(`An error occurred: ${error.message}`)
+  } else {
+    alert(`An unknown error occurred`)
+  }
+}
+
 const FiledProfile = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
   const userId = '11111111-1111-1111-1111-111111111111'
@@ -25,20 +33,12 @@ const FiledProfile = () => {
           setUserData(userData)
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error('Profile page error:', error.message)
-        } else {
-          console.error('Profile page error:', 'An unknown error occurred')
-        }
+        showError(error)
       }
     }
 
     fetchData().catch((error) => {
-      if (error instanceof Error) {
-        console.error('Profile page error:', error.message)
-      } else {
-        console.error('Profile page error:', 'An unknown error occurred')
-      }
+      showError(error)
     })
   }, [userId])
 
