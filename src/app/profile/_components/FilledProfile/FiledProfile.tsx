@@ -18,9 +18,22 @@ const showError = (error: unknown) => {
 
 const FiledProfile = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
-  const userId = '11111111-1111-1111-1111-111111111111'
 
-  console.log(userData)
+  // Function for formatting the date into the desired format
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) {
+      return 'N/A'
+    }
+
+    const date = new Date(dateString)
+    const day = date.getDate()
+    const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
+      date,
+    )
+    const year = date.getFullYear()
+
+    return `${day} ${month} ${year}`
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +41,7 @@ const FiledProfile = () => {
         const authToken = await authenticateUser()
 
         if (authToken) {
-          const userData = await getUserData(authToken, userId)
+          const userData = await getUserData(authToken)
 
           setUserData(userData)
         }
@@ -40,13 +53,13 @@ const FiledProfile = () => {
     fetchData().catch((error) => {
       showError(error)
     })
-  }, [userId])
+  }, [])
 
   return (
     <div className="pb-[414px] pt-10">
       <Container>
         <div className="mb-10 flex items-center justify-between ">
-          <h1 className="text-decoration-color: #04121B text-4xl font-medium">
+          <h1 className="text-decoration-color: #04121B w-[200px] text-4xl font-medium md:w-[350px]">
             Your Account
           </h1>
           <div>
@@ -58,7 +71,6 @@ const FiledProfile = () => {
             </button>
           </div>
         </div>
-        {/* <div> */}
         <div className="text-decoration-color: #04121B mb-4 text-sm font-medium">
           Profile image
         </div>
@@ -78,104 +90,95 @@ const FiledProfile = () => {
             />
           </div>
         </div>
-        {/* </div> */}
-        {/* {userData && ( */}
-        <div>
-          <h2 className="text-decoration-color: #04121B mb-8 text-2xl font-medium">
-            Personal details
-          </h2>
-          <ul className="mb-10 flex flex-col gap-y-6">
-            <li className="flex">
-              <span className="w-[152px] decoration-[#04121B] opacity-60">
-                First name:
-              </span>
-              John
-              {/*userData.firstName*/}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] decoration-[#04121B] opacity-60">
-                Last name:
-              </span>
-              Smith
-              {/*userData.lastName*/}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] decoration-[#04121B] opacity-60">
-                Date of birth:
-              </span>
-              10 January 1999
-              {/*userData.birthDate || 'N/A'*/}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] decoration-[#04121B] opacity-60">
-                Email:
-              </span>
-              email@gmail.com {/*userData.email*/}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] decoration-[#04121B] opacity-60">
-                Phone number:
-              </span>
-              (628) 267-9041
-              {/*userData.phoneNumber || 'N/A'*/}
-            </li>
-          </ul>
-
+        {userData && (
           <div>
-            <h3 className="text-decoration-color: #04121B mb-8 text-2xl font-medium">
-              Delivery address
-            </h3>
+            <h2 className="text-decoration-color: #04121B mb-8 text-2xl font-medium">
+              Personal details
+            </h2>
             <ul className="mb-10 flex flex-col gap-y-6">
               <li className="flex">
                 <span className="w-[152px] decoration-[#04121B] opacity-60">
-                  Country:
+                  First name:
                 </span>
-                US
-                {/*userData.address?.country || 'N/A'*/}
+                {userData.firstName}
               </li>
               <li className="flex">
                 <span className="w-[152px] decoration-[#04121B] opacity-60">
-                  City:
+                  Last name:
                 </span>
-                Menlo Park
-                {/*userData.address?.city || 'N/A'*/}
+                {userData.lastName}
               </li>
               <li className="flex">
                 <span className="w-[152px] decoration-[#04121B] opacity-60">
-                  Address:
+                  Date of birth:
                 </span>
-                1226 University Dr
-                {/*userData.address?.address || 'N/A'*/}
+                {userData.birthDate ? formatDate(userData.birthDate) : 'N/A'}
               </li>
               <li className="flex">
                 <span className="w-[152px] decoration-[#04121B] opacity-60">
-                  Postcode:
+                  Email:
                 </span>
-                94025-4221
-                {/*userData.address?.postcode || 'N/A'*/}
+                {userData.email}
+              </li>
+              <li className="flex">
+                <span className="w-[152px] decoration-[#04121B] opacity-60">
+                  Phone number:
+                </span>
+                {userData.phoneNumber || 'N/A'}
               </li>
             </ul>
-            <button
-              className="mb-[32px] flex w-[130px] cursor-pointer items-center justify-center rounded-[47px] bg-[#682EFF] px-6 py-4 text-lg font-medium text-white transition-opacity  hover:opacity-60"
-              type="button"
-            >
-              Edit
-            </button>
-          </div>
 
-          <div>
-            <h3 className="mb-[16px] text-2xl font-medium text-[#04121B]">
-              Password
-            </h3>
-            <button
-              className="flex items-center justify-center rounded-[47px] bg-[#F4F5F6] px-6 py-4 text-lg font-medium text-[#04121B] transition-opacity  hover:opacity-60"
-              type="button"
-            >
-              Change password
-            </button>
+            <div>
+              <h3 className="text-decoration-color: #04121B mb-8 text-2xl font-medium">
+                Delivery address
+              </h3>
+              <ul className="mb-10 flex flex-col gap-y-6">
+                <li className="flex">
+                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                    Country:
+                  </span>
+                  {userData.address?.country || 'N/A'}
+                </li>
+                <li className="flex">
+                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                    City:
+                  </span>
+                  {userData.address?.city || 'N/A'}
+                </li>
+                <li className="flex">
+                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                    Address:
+                  </span>
+                  {userData.address?.line || 'N/A'}
+                </li>
+                <li className="flex">
+                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                    Postcode:
+                  </span>
+                  {userData.address?.postcode || 'N/A'}
+                </li>
+              </ul>
+              <button
+                className="mb-[32px] flex w-[130px] cursor-pointer items-center justify-center rounded-[47px] bg-[#682EFF] px-6 py-4 text-lg font-medium text-white transition-opacity  hover:opacity-60"
+                type="button"
+              >
+                Edit
+              </button>
+            </div>
+
+            <div>
+              <h3 className="mb-[16px] text-2xl font-medium text-[#04121B]">
+                Password
+              </h3>
+              <button
+                className="flex items-center justify-center rounded-[47px] bg-[#F4F5F6] px-6 py-4 text-lg font-medium text-[#04121B] transition-opacity  hover:opacity-60"
+                type="button"
+              >
+                Change password
+              </button>
+            </div>
           </div>
-        </div>
-        {/* )} */}
+        )}
       </Container>
     </div>
   )
