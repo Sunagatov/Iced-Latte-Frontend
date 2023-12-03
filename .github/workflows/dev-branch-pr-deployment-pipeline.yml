@@ -1,8 +1,6 @@
-name: CI/CD Pipeline for DEV environment (Iced Latte Frontend)
+name: Build and Deploy
 
 on:
-  push:
-    branches: [ development ]
   pull_request:
     types: [ closed ]
 
