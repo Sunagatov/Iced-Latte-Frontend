@@ -5,7 +5,8 @@ import { ReactNode } from 'react'
 type Props = {
   onClick?: () => void
   className?: string
-  children: ReactNode
+  children: ReactNode,
+  type?: "submit" | "reset" | "button"
 }
 
 const defaultStyles =
@@ -15,11 +16,12 @@ export default function Button({
   onClick,
   className,
   children,
+  type = "button"
 }: Props) {
   const styles = defaultStyles + (className ?? '')
 
   return (
-    <button className={styles} onClick={onClick}>
+    <button type={type} className={styles} onClick={onClick}>
       {children}
     </button>
   )

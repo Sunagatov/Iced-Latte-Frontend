@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { HTMLAttributes, HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
 import { FieldValues, UseFormRegister } from 'react-hook-form'
 
 type InputProps = {
@@ -8,7 +9,8 @@ type InputProps = {
   classNameInput?: string,
   classNameLabel?: string,
   register?: UseFormRegister<FieldValues>,
-  error?: string
+  error?: string,
+  type?: "password" | "text"
 }
 
 export default function Input({
@@ -17,6 +19,7 @@ export default function Input({
   name,
   classNameLabel,
   error,
+  type = "text",
   register,
   ...rest }: InputProps) {
 
@@ -45,7 +48,7 @@ export default function Input({
       }
       <input
         name={name}
-        type="text"
+        type={type}
         id={name}
         className={classNameInputMerge}
         {...rest}

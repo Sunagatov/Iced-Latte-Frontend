@@ -1,11 +1,25 @@
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { useState } from 'react';
+import LoginForm from './forms/LoginForm';
+import RegistrationForm from './forms/RegistrationForm';
 
 type LoginModalProps = {
   onCloseModal?: () => void
 }
+enum SwitchType {
+  Login = 'LOGIN',
+  Registration = 'REGISTRATION'
+}
 
-export default function LoginModal({onCloseModal}:LoginModalProps) {
+export function LoginModal({ onCloseModal }: LoginModalProps) {
+  const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
+
+  const handleClickSwitchFrom = () => {
+    setSwitchForm(
+      switchForm === SwitchType.Login ?
+        SwitchType.Registration : SwitchType.Login)
+  }
   return (
     <div className="relative z-10" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
@@ -22,36 +36,35 @@ export default function LoginModal({onCloseModal}:LoginModalProps) {
                   </svg>
                 </button>
               </div>
-              <form className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+              <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                 <div className="px-4 sm:px-6">
                   <h2 className="text-4XL">Welcome back</h2>
                 </div>
-                <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                  <Input
-                    name="email"
-                    label='Enter your email address'
-                    placeholder='Enter your email address'
-                  />
-                  <Input
-                    name='password'
-                    label='Password'
-                    placeholder='Password'
-                  />
-                  <Button className='w-full mt-6'>
-                    Login
-                  </Button>
-                  <Button className='w-full mt-6'>
-                    Forgotten your password?
-                  </Button>
-                  <div className='h-[1px] w-full mb-8 bg-brand-second' />
+                <div className="relative flex-1 px-4 sm:px-6">
+                  {switchForm === SwitchType.Login ?
+                    <LoginForm /> :
+                    <Button onClick={handleClickSwitchFrom} className='w-full mt-6'>
+                      Login
+                    </Button>
+                  }
+                  {
+                    switchForm === SwitchType.Login &&
+                    <Button className='w-full mt-6'>
+                      Forgotten your password?
+                    </Button>
+                  }
+                  <div className='h-[1px] mt-6 w-full mb-8 bg-brand-second' />
                   <h2 className='text-4XL'>
                     I’m new here
                   </h2>
-                  <Button className='w-full mt-6'>
-                    Register
-                  </Button>
+                  {switchForm === SwitchType.Registration ?
+                    <RegistrationForm /> :
+                    <Button onClick={handleClickSwitchFrom} className='w-full mt-6'>
+                      Register
+                    </Button>
+                  }
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
