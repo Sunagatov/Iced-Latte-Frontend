@@ -1,16 +1,9 @@
 import Button from '@/components/ui/Button'
 import CartElement from './CartElement'
-import { useCombinedStore } from './store/useCombinedStore'
+import { useCombinedStore } from '@/store/store'
 
 export default function CartFull() {
   const { items, totalPrice, removeFullProduct } = useCombinedStore()
-
-  // const items = [
-  //   { id: 1, name: 'Coffee A', weight: '250g', price: 12.99 },
-  //   { id: 2, name: 'Coffee B', weight: '500g', price: 19.99 },
-  //   { id: 3, name: 'Coffee C', weight: '1kg', price: 29.99 },
-  // ]
-  // const subtotal = items.reduce((acc, item) => acc + item.price, 0)
 
   return (
     <div className="w-{800px} 1px h-{513px} mx-auto px-4 sm:w-[500px]">
