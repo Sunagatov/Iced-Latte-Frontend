@@ -1,7 +1,7 @@
 import { IProduct } from '@/models/Products'
 import { StateCreator } from 'zustand'
 
-interface CartItem {
+export interface CartItem {
   id: string
   info: Omit<IProduct, 'id'>
   quantity: number
