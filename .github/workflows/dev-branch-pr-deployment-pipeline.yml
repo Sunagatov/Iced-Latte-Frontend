@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Sunagatov/Vault
-          token: ${{ secrets.PRIVATE_REPO_ACCESS_TOKEN }}
+          token: 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
           path: Vault
 
       - name: Copy the .env file to the workspace
