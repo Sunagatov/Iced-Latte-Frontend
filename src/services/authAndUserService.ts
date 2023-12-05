@@ -1,4 +1,4 @@
-interface AuthData {
+export interface AuthData {
   token: string
 }
 
@@ -39,7 +39,11 @@ export async function authenticateUser() {
 
     const authData: AuthData = await authResponse.json()
 
-    const authToken = authData.token
+    const authToken = authData?.token
+
+    if (!authToken) {
+      throw new Error('Authentication failed. Token is null or undefined.')
+    }
 
     return authToken
   } catch (error) {
@@ -64,6 +68,33 @@ export const getUserData = async (token: string) => {
     return userData
   } catch (error) {
     console.error('User data fetch error:', error)
+    throw error
+  }
+}
+
+export const editUserProfile = async (
+  token: string,
+  updatedUserData: Partial<UserData>,
+) => {
+  try {
+    const editResponse = await fetch(`${BASE_URL}/users`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedUserData),
+    })
+
+    if (!editResponse.ok) {
+      throw new Error(`Profile edit request failed: ${editResponse.statusText}`)
+    }
+
+    const editedUserData: UserData = await editResponse.json()
+
+    return editedUserData
+  } catch (error) {
+    console.error('Profile edit error:', error)
     throw error
   }
 }

@@ -34,6 +34,6 @@
     "./jest.config.js",
     "./jest.setup.js",
     ".lint-staged.config.js"
-  ],
+, "src/store/authTokenStore.ts"  ],
   "exclude": ["node_modules"]
 }
