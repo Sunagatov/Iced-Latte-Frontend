@@ -1,12 +1,18 @@
 'use client'
 
 import Image from 'next/image'
-import circle_btn from '../../../public/circle_btn.png'
+import circle_btn from '../../../public/plus.svg'
 
-export default function CircleAddBtn() {
+export default function CircleAddBtn({ onClick }: { onClick: () => void }) {
   return (
-    <div>
-      <Image src={circle_btn} alt="add to cart" className={'cursor-pointer'} />
+    <div onClick={onClick}>
+      <button
+        className={
+          'flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-inverted hover:bg-fullpage-tint'
+        }
+      >
+        <Image src={circle_btn} alt="add to cart" />
+      </button>
     </div>
   )
 }

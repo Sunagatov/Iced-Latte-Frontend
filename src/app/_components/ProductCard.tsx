@@ -5,10 +5,18 @@ import cardLogo from '../../../public/card_logo.png'
 import CircleAddBtn from './CircleAddBtn'
 import { IProduct } from '@/models/Products'
 import { productRating, productSize } from '@/constants/product'
+import { useCombinedStore } from '@/store/store'
 
-type CardProps = Pick<IProduct, 'id' | 'name' | 'price'>
+type CardProps = Pick<IProduct, 'id' | 'name' | 'price' | 'description'>
 
-export default function ProductCard({ id, name, price }: CardProps) {
+export default function ProductCard({
+  id,
+  name,
+  price,
+  description,
+}: CardProps) {
+  const addToCart = useCombinedStore((state) => state.add)
+
   return (
     <div className={'flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
@@ -29,7 +37,21 @@ export default function ProductCard({ id, name, price }: CardProps) {
 
       <div className={'flex items-end justify-between'}>
         <p className={'text-XL font-medium md:text-2XL'}>${price}</p>
-        <CircleAddBtn />
+        <CircleAddBtn
+          onClick={() => {
+            addToCart({
+              id,
+              info: {
+                name,
+                price,
+                description,
+                active: true,
+                quantity: 40,
+              },
+              quantity: 1,
+            })
+          }}
+        />
       </div>
     </div>
   )
