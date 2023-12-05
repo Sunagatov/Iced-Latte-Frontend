@@ -47,6 +47,7 @@ export default function ProductList() {
                 id={product.id}
                 name={product.name}
                 price={product.price}
+                description={product.description}
               />
             </li>
           ))}
