@@ -1,24 +1,64 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
+import 'react-calendar/dist/Calendar.css'
+import Calendar from 'react-calendar'
 import Container from '@/components/Container/Container'
 import { editUserProfile } from '@/services/authAndUserService'
 import Image from 'next/image'
+import { useState } from 'react'
 import { useAuthStore } from '@/store/authTokenStore'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserData } from '@/services/authAndUserService'
 import { FormProfileProps } from './index'
+import { parse, isValid as isValidDate, format } from 'date-fns'
+
+type ValuePiece = Date | null
+
+type Value = ValuePiece | [ValuePiece, ValuePiece]
 
 const FormProfile: React.FC<FormProfileProps> = ({
   onSuccessEdit,
   updateUserData,
 }) => {
+  const [isCalendarOpen, setCalendarOpen] = useState(false)
+  const [date, setDate] = useState<Date | null>(new Date())
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isValid },
   } = useForm<UserData>()
 
   const { authToken } = useAuthStore()
+
+  const handleCalendarChange = (newDate: Value) => {
+    if (newDate === null) {
+      return
+    }
+
+    const selectedDate = Array.isArray(newDate)
+      ? newDate[0]
+      : (newDate as ValuePiece)
+
+    if (isValidDate(selectedDate)) {
+      const formattedDate =
+        selectedDate instanceof Date ? format(selectedDate, 'yyyy-MM-dd') : '' // Handle the case when selectedDate is null
+
+      setDate(selectedDate)
+      setValue('birthDate', formattedDate)
+    }
+  }
+
+  const handleCalendarToggle = () => {
+    setCalendarOpen(!isCalendarOpen)
+  }
+
+  const clickBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.currentTarget === e.target) {
+      setCalendarOpen(false)
+    }
+  }
 
   const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
@@ -78,12 +118,45 @@ const FormProfile: React.FC<FormProfileProps> = ({
           <div>
             <label htmlFor="birthDate">Date of birth</label>
             <input
+              className="relative"
               type="text"
               id="birthDate"
               placeholder="Select date of birth"
-              {...register('birthDate', { required: 'This field is required' })}
+              {...register('birthDate', {
+                required: 'This field is required',
+                validate: (value) => {
+                  const parsedDate =
+                    value !== null
+                      ? parse(value, 'yyyy-MM-dd', new Date())
+                      : null
+
+                  return (
+                    isValidDate(parsedDate) ||
+                    'Incorrect date format. Use YYYY-MM-DD'
+                  )
+                },
+              })}
+            />
+            <Image
+              src="/calendar.svg"
+              alt="calendar icon"
+              width={18}
+              height={18}
+              className="absolute right-10 top-1/2"
+              onClick={handleCalendarToggle}
             />
             {errors.birthDate && <span>{errors.birthDate.message}</span>}
+            {isCalendarOpen && (
+              <div className={'calendar_backdrop'} onClick={clickBackdrop}>
+                <div className={'calendarContainer'}>
+                  <Calendar
+                    className={'customCalendar'}
+                    onChange={handleCalendarChange}
+                    value={date}
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <label htmlFor="phoneNumber">Phone number</label>
