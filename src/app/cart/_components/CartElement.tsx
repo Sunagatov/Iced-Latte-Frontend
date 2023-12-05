@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
-import search from '../../../../public/search_cart.png'
+import productImg from '../../../../public/coffee.png'
 import trash from '../../../../public/trash.svg'
 import Counter from '@/components/ui/Counter'
 import { CartItem } from '@/store/cartSlice'
@@ -41,7 +41,7 @@ export default function CartElement({
       {/* Left side: Picture */}
       <div className="flex justify-center">
         <Image
-          src={search}
+          src={productImg}
           alt={product.info.name}
           width={100}
           height={100}
