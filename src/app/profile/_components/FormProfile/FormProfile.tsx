@@ -27,7 +27,7 @@ const FormProfile: React.FC<FormProfileProps> = ({
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<UserData>()
 
   const { authToken } = useAuthStore()
@@ -43,7 +43,7 @@ const FormProfile: React.FC<FormProfileProps> = ({
 
     if (isValidDate(selectedDate)) {
       const formattedDate =
-        selectedDate instanceof Date ? format(selectedDate, 'yyyy-MM-dd') : '' // Handle the case when selectedDate is null
+        selectedDate instanceof Date ? format(selectedDate, 'yyyy-MM-dd') : ''
 
       setDate(selectedDate)
       setValue('birthDate', formattedDate)
@@ -147,10 +147,13 @@ const FormProfile: React.FC<FormProfileProps> = ({
             />
             {errors.birthDate && <span>{errors.birthDate.message}</span>}
             {isCalendarOpen && (
-              <div className={'calendar_backdrop'} onClick={clickBackdrop}>
+              <div
+                className="fixed bottom-0 left-0 right-0 top-0"
+                onClick={clickBackdrop}
+              >
                 <div className={'calendarContainer'}>
                   <Calendar
-                    className={'customCalendar'}
+                    className="absolute right-[20%] top-[45%]"
                     onChange={handleCalendarChange}
                     value={date}
                   />
@@ -240,7 +243,6 @@ const FormProfile: React.FC<FormProfileProps> = ({
           </div>
           <div className="mt-4">
             <button
-              disabled={!isValid}
               type="submit"
               className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
