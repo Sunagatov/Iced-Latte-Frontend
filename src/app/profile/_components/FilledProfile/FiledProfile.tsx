@@ -6,7 +6,7 @@ import {
   UserData,
 } from '@/services/authAndUserService'
 import Image from 'next/image'
-import Container from '@/components/Container/Container'
+import ButtonSubmit from '@/components/ui/DinamycButton'
 
 const showError = (error: unknown) => {
   if (error instanceof Error) {
@@ -55,26 +55,33 @@ const FiledProfile = () => {
     })
   }, [])
 
+  const handleLogout = /*async*/ () => {
+    try {
+      //await logout
+    } catch (error) {
+      showError(error)
+    }
+  }
+
   return (
     <div className="pb-[414px] pt-10">
-      <Container>
+      <div className="ml-auto mr-auto max-w-[1440px] pl-[10px] pr-[10px]">
         <div className="mb-10 flex items-center justify-between ">
-          <h1 className="text-decoration-color: #04121B w-[200px] text-4xl font-medium md:w-[350px]">
+          <h1 className=" w-[200px] text-lg font-medium text-primary md:w-[350px]">
             Your Account
           </h1>
           <div>
-            <button
-              className="text-decoration-color: #04121B rounded-full bg-[#F4F5F6] px-6 py-4 text-lg font-medium transition-opacity hover:opacity-60"
-              type="button"
-            >
-              Log out
-            </button>
+            <ButtonSubmit
+              className="rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
+              value="Log out"
+              onClick={handleLogout}
+            />
           </div>
         </div>
-        <div className="text-decoration-color: #04121B mb-4 text-sm font-medium">
+        <div className="mb-4 text-sm font-medium text-primary">
           Profile image
         </div>
-        <div className="relative mb-12 box-border flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-full  bg-[#F4F5F6]">
+        <div className="relative mb-12 box-border flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-full  bg-secondary">
           <Image
             src="/upload_photo.svg"
             alt="user photo"
@@ -92,36 +99,36 @@ const FiledProfile = () => {
         </div>
         {userData && (
           <div>
-            <h2 className="text-decoration-color: #04121B mb-8 text-2xl font-medium">
+            <h2 className="mb-8 text-2xl font-medium text-primary">
               Personal details
             </h2>
             <ul className="mb-10 flex flex-col gap-y-6">
               <li className="flex">
-                <span className="w-[152px] decoration-[#04121B] opacity-60">
+                <span className="w-[152px] text-primary opacity-60">
                   First name:
                 </span>
                 {userData.firstName}
               </li>
               <li className="flex">
-                <span className="w-[152px] decoration-[#04121B] opacity-60">
+                <span className="w-[152px] text-primary opacity-60">
                   Last name:
                 </span>
                 {userData.lastName}
               </li>
               <li className="flex">
-                <span className="w-[152px] decoration-[#04121B] opacity-60">
+                <span className="w-[152px] text-primary opacity-60">
                   Date of birth:
                 </span>
                 {userData.birthDate ? formatDate(userData.birthDate) : 'N/A'}
               </li>
               <li className="flex">
-                <span className="w-[152px] decoration-[#04121B] opacity-60">
+                <span className="w-[152px] text-primary opacity-60">
                   Email:
                 </span>
                 {userData.email}
               </li>
               <li className="flex">
-                <span className="w-[152px] decoration-[#04121B] opacity-60">
+                <span className="w-[152px] text-primary opacity-60">
                   Phone number:
                 </span>
                 {userData.phoneNumber || 'N/A'}
@@ -129,57 +136,53 @@ const FiledProfile = () => {
             </ul>
 
             <div>
-              <h3 className="text-decoration-color: #04121B mb-8 text-2xl font-medium">
+              <h3 className="mb-8 text-2xl font-medium text-primary">
                 Delivery address
               </h3>
               <ul className="mb-10 flex flex-col gap-y-6">
                 <li className="flex">
-                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                  <span className="w-[152px] text-primary opacity-60">
                     Country:
                   </span>
                   {userData.address?.country || 'N/A'}
                 </li>
                 <li className="flex">
-                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                  <span className="w-[152px] text-primary opacity-60">
                     City:
                   </span>
                   {userData.address?.city || 'N/A'}
                 </li>
                 <li className="flex">
-                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                  <span className="w-[152px] text-primary opacity-60">
                     Address:
                   </span>
                   {userData.address?.line || 'N/A'}
                 </li>
                 <li className="flex">
-                  <span className="w-[152px] decoration-[#04121B] opacity-60">
+                  <span className="w-[152px] text-primary opacity-60">
                     Postcode:
                   </span>
                   {userData.address?.postcode || 'N/A'}
                 </li>
               </ul>
-              <button
-                className="mb-[32px] flex w-[130px] cursor-pointer items-center justify-center rounded-[47px] bg-[#682EFF] px-6 py-4 text-lg font-medium text-white transition-opacity  hover:opacity-60"
-                type="button"
-              >
-                Edit
-              </button>
+              <ButtonSubmit
+                className="mb-[32px] flex w-[130px] cursor-pointer items-center justify-center rounded-[47px] bg-brand-solid px-6 py-4 text-lg font-medium text-white transition-opacity  hover:opacity-60"
+                value="Edit"
+              />
             </div>
 
             <div>
-              <h3 className="mb-[16px] text-2xl font-medium text-[#04121B]">
+              <h3 className="mb-[16px] text-2xl font-medium text-primary">
                 Password
               </h3>
-              <button
-                className="flex items-center justify-center rounded-[47px] bg-[#F4F5F6] px-6 py-4 text-lg font-medium text-[#04121B] transition-opacity  hover:opacity-60"
-                type="button"
-              >
-                Change password
-              </button>
+              <ButtonSubmit
+                className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity  hover:opacity-60"
+                value="Change password"
+              />
             </div>
           </div>
         )}
-      </Container>
+      </div>
     </div>
   )
 }
