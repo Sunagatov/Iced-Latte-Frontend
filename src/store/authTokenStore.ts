@@ -5,6 +5,7 @@ import { AuthData } from '@/services/authAndUserService'
 interface AuthStore {
   authToken: string | null
   setAuthToken: () => Promise<void>
+  loading: boolean
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_HOST_DOCKER
@@ -13,8 +14,11 @@ const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       authToken: null,
+      loading: false,
+
       setAuthToken: async () => {
         try {
+          set({ loading: true })
           const authResponse = await fetch(`${BASE_URL}/auth/authenticate`, {
             method: 'POST',
             headers: {
@@ -43,6 +47,8 @@ const useAuthStore = create<AuthStore>()(
           set({ authToken })
         } catch (error) {
           console.error('Authentication error:', error)
+        } finally {
+          set({ loading: false })
         }
       },
     }),
