@@ -1,5 +1,6 @@
 import { UserData } from '@/services/authAndUserService'
 import DynamicButton from '@/components/ui/DynamicButton'
+import HeartContainer from '@/components/Heart/HeartContainer'
 
 type UserProfileInfoProps = {
   userData: UserData | null
@@ -17,6 +18,7 @@ const ProfileInfo: React.FC<UserProfileInfoProps> = ({
   return (
     <>
       {isLoading && <div className="text-center">Loading...</div>}
+      <HeartContainer />
       {userData && (
         <div>
           <h2 className="mb-8 text-2xl font-medium text-primary">
