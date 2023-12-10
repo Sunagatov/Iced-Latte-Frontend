@@ -3,6 +3,8 @@ name: Build and Deploy
 on:
   pull_request:
     types: [ closed ]
+    branches:
+      - master
 
 env:
   ENV_FILE_PATH_IN_PRIVATE_REPOSITORY: ./Vault/IcedLatte/Frontend/.env
