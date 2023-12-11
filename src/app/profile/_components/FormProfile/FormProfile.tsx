@@ -16,10 +16,16 @@ type ValuePiece = Date | null
 
 type Value = ValuePiece | [ValuePiece, ValuePiece]
 
-const FormProfile: React.FC<FormProfileProps> = ({
+type FormatShortWeekdayFunction = (
+  locale: string | undefined,
+  date: Date,
+) => string
+
+const FormProfile = ({
   onSuccessEdit,
   updateUserData,
-}) => {
+  initialUserData,
+}: FormProfileProps) => {
   const [isCalendarOpen, setCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
   const [file, setFile] = useState<File | null>(null)
@@ -31,9 +37,18 @@ const FormProfile: React.FC<FormProfileProps> = ({
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<UserData>()
+  } = useForm<UserData>({
+    defaultValues: initialUserData,
+  })
 
   const { authToken } = useAuthStore()
+
+  // converting the days of the week in the calendar
+  const formatShortWeekday: FormatShortWeekdayFunction = (_, date) => {
+    const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+
+    return daysOfWeek[date.getDay()]
+  }
 
   // Handler for changing the input element (input) to select an image.
   const handleInputChange = (
@@ -230,6 +245,9 @@ const FormProfile: React.FC<FormProfileProps> = ({
                   className="absolute right-[20%] top-[45%]"
                   onChange={handleCalendarChange}
                   value={date}
+                  formatShortWeekday={formatShortWeekday}
+                  minDate={new Date(1940, 0, 1)}
+                  maxDate={new Date()}
                 />
               </div>
             </div>

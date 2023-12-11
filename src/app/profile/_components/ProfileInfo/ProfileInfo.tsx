@@ -8,12 +8,12 @@ type UserProfileInfoProps = {
   isLoading: boolean
 }
 
-const ProfileInfo: React.FC<UserProfileInfoProps> = ({
+const ProfileInfo = ({
   userData,
   formatDate,
   onEditClick,
   isLoading,
-}) => {
+}: UserProfileInfoProps) => {
   return (
     <>
       {isLoading && <div className="text-center">Loading...</div>}
