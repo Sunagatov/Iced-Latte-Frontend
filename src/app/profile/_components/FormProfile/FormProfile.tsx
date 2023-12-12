@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 import 'react-calendar/dist/Calendar.css'
-import Calendar from 'react-calendar'
 import { editUserProfile } from '@/services/authAndUserService'
 import Image from 'next/image'
 import { useState, FormEvent } from 'react'
@@ -11,15 +10,11 @@ import { UserData } from '@/services/authAndUserService'
 import { FormProfileProps } from './index'
 import { parse, isValid as isValidDate, format } from 'date-fns'
 import DynamicButton from '@/components/ui/DynamicButton'
+import CalendarComponent from '@/components/ui/Calendar'
 
 type ValuePiece = Date | null
 
 type Value = ValuePiece | [ValuePiece, ValuePiece]
-
-type FormatShortWeekdayFunction = (
-  locale: string | undefined,
-  date: Date,
-) => string
 
 const FormProfile = ({
   onSuccessEdit,
@@ -42,13 +37,6 @@ const FormProfile = ({
   })
 
   const { authToken } = useAuthStore()
-
-  // converting the days of the week in the calendar
-  const formatShortWeekday: FormatShortWeekdayFunction = (_, date) => {
-    const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-
-    return daysOfWeek[date.getDay()]
-  }
 
   // Handler for changing the input element (input) to select an image.
   const handleInputChange = (
@@ -241,14 +229,14 @@ const FormProfile = ({
               onClick={clickBackdrop}
             >
               <div className={'calendarContainer'}>
-                <Calendar
-                  className="absolute right-[20%] top-[45%]"
-                  onChange={handleCalendarChange}
-                  value={date}
-                  formatShortWeekday={formatShortWeekday}
-                  minDate={new Date(1940, 0, 1)}
-                  maxDate={new Date()}
-                />
+                {isCalendarOpen && (
+                  <CalendarComponent
+                    onChange={handleCalendarChange}
+                    isOpen={isCalendarOpen}
+                    onClickBackdrop={clickBackdrop}
+                    selectedDate={date}
+                  />
+                )}
               </div>
             </div>
           )}
