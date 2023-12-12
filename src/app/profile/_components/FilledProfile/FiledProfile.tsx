@@ -81,7 +81,7 @@ const FiledProfile = () => {
 
   return (
     <div className="pb-[414px] pt-10">
-      <div className="ml-auto mr-auto max-w-[1220px] pl-[10px] pr-[10px]">
+      <div className="ml-auto mr-auto max-w-[800px] pl-[10px] pr-[10px] md:pl-[10px] md:pr-[10px]">
         <div className="mb-10 flex items-center justify-between ">
           <h1 className=" w-[200px] text-lg font-medium text-primary md:w-[350px]">
             Your Account

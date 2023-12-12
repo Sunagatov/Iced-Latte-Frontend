@@ -8,12 +8,12 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserData } from '@/services/authAndUserService'
 import { FormProfileProps } from './index'
 import { isValid as isValidDate, format } from 'date-fns'
+import { validationSchema } from '@/validation/userFormSchema'
+import { yupResolver } from '@hookform/resolvers/yup'
 import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import CalendarComponent from '@/components/ui/Calendar'
 import FormInput from '@/components/ui/FormInput'
-// import { validationSchema } from '@/validation/userFormSchema'
-// import { yupResolver } from '@hookform/resolvers/yup'
 
 type ValuePiece = Date | null
 
@@ -36,7 +36,7 @@ const FormProfile = ({
     setValue,
     formState: { errors },
   } = useForm<UserData>({
-    // resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
     defaultValues: initialUserData,
   })
 
@@ -177,65 +177,34 @@ const FormProfile = ({
         </div>
       </label>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <h2>Personal details</h2>
-        <FormInput
-          id="firstName"
-          register={register}
-          label="First name"
-          name="firstName"
-          type="text"
-          placeholder="Enter first name"
-          error={errors.firstName}
-        />
-        {/* <div>
-          <label htmlFor="firstName">First name</label>
-          <input
-            type="text"
-            id="firstName"
-            placeholder="Enter first name"
-            {...register('firstName', { required: 'This field is required' })}
-          />
-          {errors.firstName && <span>{errors.firstName.message}</span>}
-        </div> */}
-        <div>
-          <FormInput
-            id="lastName"
-            register={register}
-            label="Last name"
-            name="lastName"
-            type="text"
-            placeholder="Enter last name"
-            error={errors.lastName}
-          />
-          {/* <label htmlFor="lastName">Last name</label>
-          <input
-            type="text"
-            id="lastName"
-            placeholder="Enter last name"
-            {...register('lastName', { required: 'This field is required' })}
-          />
-          {errors.lastName && <span>{errors.lastName.message}</span>} */}
+        <h2 className="text-2xl font-medium text-primary">Personal details</h2>
+        <div className="flex flex-col md:flex-row md:gap-[16px]">
+          <div className="flex-grow md:w-[392px]">
+            <FormInput
+              id="firstName"
+              register={register}
+              label="First name"
+              name="firstName"
+              type="text"
+              placeholder="Enter first name"
+              error={errors.firstName}
+              className="w-full"
+            />
+          </div>
+          <div className="flex-grow md:w-[392px]">
+            <FormInput
+              id="lastName"
+              register={register}
+              label="Last name"
+              name="lastName"
+              type="text"
+              placeholder="Enter last name"
+              error={errors.lastName}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          {/* <label htmlFor="birthDate">Date of birth</label>
-          <input
-            className="relative"
-            type="text"
-            id="birthDate"
-            placeholder="Select date of birth"
-            {...register('birthDate', {
-              required: 'This field is required',
-              validate: (value) => {
-                const parsedDate =
-                  value !== null ? parse(value, 'yyyy-MM-dd', new Date()) : null
-
-                return (
-                  isValidDate(parsedDate) ||
-                  'Incorrect date format. Use YYYY-MM-DD'
-                )
-              },
-            })}
-          /> */}
+        <div className="relative">
           <FormInput
             id="birthDate"
             register={register}
@@ -246,20 +215,21 @@ const FormProfile = ({
             error={errors.birthDate}
           />
           <Image
-            src="/calendar.svg"
-            alt="calendar icon"
+            src="/open_select.svg"
+            alt="calendar open icon"
             width={18}
             height={18}
-            className="absolute right-10 top-1/2"
+            className={`absolute right-10 top-[60%] cursor-pointer transition-transform ${
+              isCalendarOpen ? 'rotate-180' : ''
+            }`}
             onClick={handleCalendarToggle}
           />
-          {/* {errors.birthDate && <span>{errors.birthDate.message}</span>} */}
           {isCalendarOpen && (
             <div
-              className="fixed bottom-0 left-0 right-0 top-0"
+              className="fixed bottom-0 left-0 right-0 top-0 z-10"
               onClick={clickBackdrop}
             >
-              <div className={'calendarContainer'}>
+              <div className="z-20">
                 {isCalendarOpen && (
                   <CalendarComponent
                     onChange={handleCalendarChange}
@@ -282,16 +252,6 @@ const FormProfile = ({
             placeholder="Enter phone number"
             error={errors.phoneNumber}
           />
-          {/* <label htmlFor="phoneNumber">Phone number</label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            placeholder="Enter phone number"
-            {...register('phoneNumber', {
-              required: 'This field is required',
-            })}
-          />
-          {errors.phoneNumber && <span>{errors.phoneNumber.message}</span>} */}
         </div>
         <div>
           <FormInput
@@ -303,17 +263,11 @@ const FormProfile = ({
             placeholder="Enter email"
             error={errors.email}
           />
-          {/* <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter email"
-            {...register('email', { required: 'This field is required' })}
-          />
-          {errors.email && <span>{errors.email.message}</span>} */}
         </div>
-        <h2>Delivery address</h2>
-        <div>
+        <h2 className="mb-[19px] mt-[32px] text-2xl font-medium text-primary">
+          Delivery address
+        </h2>
+        <div className="relative">
           <label
             className="font-XS mb-3 block text-sm font-medium text-primary"
             htmlFor="country"
@@ -325,7 +279,7 @@ const FormProfile = ({
             {...register('address.country', {
               required: 'This field is required',
             })}
-            className="placeholder:text-placeholder' block h-[54px] w-full rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus"
+            className="placeholder:text-placeholder' block h-[54px] w-full cursor-pointer appearance-none rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus"
           >
             <option value="" disabled>
               Select country
@@ -333,6 +287,13 @@ const FormProfile = ({
             <option value="USA">United States</option>
             <option value="Canada">Canada</option>
           </select>
+          <Image
+            src="/open_select.svg"
+            alt="open select icon"
+            className="pointer-events-none absolute right-2 top-[60%] -translate-y-[-60%] transform"
+            width={14}
+            height={14}
+          />
           {errors.address?.country && (
             <span>{errors.address.country.message}</span>
           )}
@@ -347,16 +308,6 @@ const FormProfile = ({
             placeholder="City"
             error={errors.address?.city}
           />
-          {/* <label htmlFor="city">City</label>
-          <input
-            type="text"
-            id="city"
-            placeholder="City"
-            {...register('address.city', {
-              required: 'This field is required',
-            })}
-          />
-          {errors.address?.city && <span>{errors.address.city.message}</span>} */}
         </div>
         <div>
           <FormInput
@@ -368,16 +319,6 @@ const FormProfile = ({
             placeholder="Address"
             error={errors.address?.line}
           />
-          {/* <label htmlFor="address">Address</label>
-          <input
-            type="text"
-            id="address"
-            placeholder="Address"
-            {...register('address.line', {
-              required: 'This field is required',
-            })}
-          />
-          {errors.address?.line && <span>{errors.address.line.message}</span>} */}
         </div>
         <div>
           <FormInput
@@ -389,23 +330,15 @@ const FormProfile = ({
             placeholder="Zip code"
             error={errors.address?.postcode}
           />
-          {/* <label htmlFor="postcode">Postcode</label>
-          <input
-            type="text"
-            id="postcode"
-            placeholder="Zip code"
-            {...register('address.postcode', {
-              required: 'This field is required',
-            })}
-          />
-          {errors.address?.postcode && (
-            <span>{errors.address.postcode.message}</span>
-          )} */}
         </div>
         <div className="mt-4">
           <Button
             type="submit"
-            className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className={`${
+              Object.keys(errors).length > 0
+                ? 'cursor-not-allowed bg-brand-solid opacity-20'
+                : 'bg-brand-solid hover:bg-indigo-700'
+            } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
           >
             <span>Save Changes</span>
           </Button>
