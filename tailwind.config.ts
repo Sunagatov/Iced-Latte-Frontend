@@ -9,6 +9,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        focus: '#682EFF',
+        error: '#EB5757',
+      },
       textColor: {
         primary: '#04121B',
         secondary: '#04121BA3',
