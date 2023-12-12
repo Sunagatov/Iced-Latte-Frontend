@@ -2,15 +2,18 @@
 'use client'
 import 'react-calendar/dist/Calendar.css'
 import { editUserProfile } from '@/services/authAndUserService'
-import Image from 'next/image'
 import { useState, FormEvent } from 'react'
 import { useAuthStore } from '@/store/authTokenStore'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserData } from '@/services/authAndUserService'
 import { FormProfileProps } from './index'
-import { parse, isValid as isValidDate, format } from 'date-fns'
-import DynamicButton from '@/components/ui/DynamicButton'
+import { isValid as isValidDate, format } from 'date-fns'
+import Image from 'next/image'
+import Button from '@/components/ui/Button'
 import CalendarComponent from '@/components/ui/Calendar'
+import FormInput from '@/components/ui/FormInput'
+// import { validationSchema } from '@/validation/userFormSchema'
+// import { yupResolver } from '@hookform/resolvers/yup'
 
 type ValuePiece = Date | null
 
@@ -33,6 +36,7 @@ const FormProfile = ({
     setValue,
     formState: { errors },
   } = useForm<UserData>({
+    // resolver: yupResolver(validationSchema),
     defaultValues: initialUserData,
   })
 
@@ -174,7 +178,16 @@ const FormProfile = ({
       </label>
       <form onSubmit={handleSubmit(onSubmit)}>
         <h2>Personal details</h2>
-        <div>
+        <FormInput
+          id="firstName"
+          register={register}
+          label="First name"
+          name="firstName"
+          type="text"
+          placeholder="Enter first name"
+          error={errors.firstName}
+        />
+        {/* <div>
           <label htmlFor="firstName">First name</label>
           <input
             type="text"
@@ -183,19 +196,28 @@ const FormProfile = ({
             {...register('firstName', { required: 'This field is required' })}
           />
           {errors.firstName && <span>{errors.firstName.message}</span>}
-        </div>
+        </div> */}
         <div>
-          <label htmlFor="lastName">Last name</label>
+          <FormInput
+            id="lastName"
+            register={register}
+            label="Last name"
+            name="lastName"
+            type="text"
+            placeholder="Enter last name"
+            error={errors.lastName}
+          />
+          {/* <label htmlFor="lastName">Last name</label>
           <input
             type="text"
             id="lastName"
             placeholder="Enter last name"
             {...register('lastName', { required: 'This field is required' })}
           />
-          {errors.lastName && <span>{errors.lastName.message}</span>}
+          {errors.lastName && <span>{errors.lastName.message}</span>} */}
         </div>
         <div>
-          <label htmlFor="birthDate">Date of birth</label>
+          {/* <label htmlFor="birthDate">Date of birth</label>
           <input
             className="relative"
             type="text"
@@ -213,6 +235,15 @@ const FormProfile = ({
                 )
               },
             })}
+          /> */}
+          <FormInput
+            id="birthDate"
+            register={register}
+            label="Date of birth"
+            name="birthDate"
+            type="text"
+            placeholder="Select date of birth"
+            error={errors.birthDate}
           />
           <Image
             src="/calendar.svg"
@@ -222,7 +253,7 @@ const FormProfile = ({
             className="absolute right-10 top-1/2"
             onClick={handleCalendarToggle}
           />
-          {errors.birthDate && <span>{errors.birthDate.message}</span>}
+          {/* {errors.birthDate && <span>{errors.birthDate.message}</span>} */}
           {isCalendarOpen && (
             <div
               className="fixed bottom-0 left-0 right-0 top-0"
@@ -242,7 +273,16 @@ const FormProfile = ({
           )}
         </div>
         <div>
-          <label htmlFor="phoneNumber">Phone number</label>
+          <FormInput
+            id="phoneNumber"
+            register={register}
+            label="Phone number"
+            name="phoneNumber"
+            type="tel"
+            placeholder="Enter phone number"
+            error={errors.phoneNumber}
+          />
+          {/* <label htmlFor="phoneNumber">Phone number</label>
           <input
             type="tel"
             id="phoneNumber"
@@ -251,27 +291,41 @@ const FormProfile = ({
               required: 'This field is required',
             })}
           />
-          {errors.phoneNumber && <span>{errors.phoneNumber.message}</span>}
+          {errors.phoneNumber && <span>{errors.phoneNumber.message}</span>} */}
         </div>
         <div>
-          <label htmlFor="email">Email</label>
+          <FormInput
+            id="email"
+            register={register}
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            error={errors.email}
+          />
+          {/* <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
             placeholder="Enter email"
             {...register('email', { required: 'This field is required' })}
           />
-          {errors.email && <span>{errors.email.message}</span>}
+          {errors.email && <span>{errors.email.message}</span>} */}
         </div>
         <h2>Delivery address</h2>
         <div>
-          <label htmlFor="country">Country</label>
+          <label
+            className="font-XS mb-3 block text-sm font-medium text-primary"
+            htmlFor="country"
+          >
+            Country
+          </label>
           <select
             id="country"
             {...register('address.country', {
               required: 'This field is required',
             })}
-            className="mt-1 w-full rounded-md border border-gray-300 p-2"
+            className="placeholder:text-placeholder' block h-[54px] w-full rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus"
           >
             <option value="" disabled>
               Select country
@@ -284,7 +338,16 @@ const FormProfile = ({
           )}
         </div>
         <div>
-          <label htmlFor="city">City</label>
+          <FormInput
+            id="city"
+            register={register}
+            label="City"
+            name="address.city"
+            type="text"
+            placeholder="City"
+            error={errors.address?.city}
+          />
+          {/* <label htmlFor="city">City</label>
           <input
             type="text"
             id="city"
@@ -293,10 +356,19 @@ const FormProfile = ({
               required: 'This field is required',
             })}
           />
-          {errors.address?.city && <span>{errors.address.city.message}</span>}
+          {errors.address?.city && <span>{errors.address.city.message}</span>} */}
         </div>
         <div>
-          <label htmlFor="address">Address</label>
+          <FormInput
+            id="address"
+            register={register}
+            label="Address"
+            name="address.line"
+            type="text"
+            placeholder="Address"
+            error={errors.address?.line}
+          />
+          {/* <label htmlFor="address">Address</label>
           <input
             type="text"
             id="address"
@@ -305,10 +377,19 @@ const FormProfile = ({
               required: 'This field is required',
             })}
           />
-          {errors.address?.line && <span>{errors.address.line.message}</span>}
+          {errors.address?.line && <span>{errors.address.line.message}</span>} */}
         </div>
         <div>
-          <label htmlFor="postcode">Postcode</label>
+          <FormInput
+            id="postcode"
+            register={register}
+            label="Postcode"
+            name="address.postcode"
+            type="text"
+            placeholder="Zip code"
+            error={errors.address?.postcode}
+          />
+          {/* <label htmlFor="postcode">Postcode</label>
           <input
             type="text"
             id="postcode"
@@ -319,13 +400,15 @@ const FormProfile = ({
           />
           {errors.address?.postcode && (
             <span>{errors.address.postcode.message}</span>
-          )}
+          )} */}
         </div>
         <div className="mt-4">
-          <DynamicButton
-            value="Save Changes"
+          <Button
+            type="submit"
             className="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          />
+          >
+            <span>Save Changes</span>
+          </Button>
         </div>
       </form>
     </div>

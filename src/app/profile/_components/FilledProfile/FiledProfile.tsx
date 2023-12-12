@@ -5,7 +5,7 @@ import Image from 'next/image'
 import FormProfile from '../FormProfile/FormProfile'
 import { useAuthStore } from '@/store/authTokenStore'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
-import DynamicButton from '@/components/ui/DynamicButton'
+import Button from '@/components/ui/Button'
 
 const showError = (error: unknown) => {
   if (error instanceof Error) {
@@ -87,11 +87,12 @@ const FiledProfile = () => {
             Your Account
           </h1>
           <div>
-            <DynamicButton
-              className="rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
-              value="Log out"
+            <Button
+              className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
               onClick={handleLogout}
-            />
+            >
+              <span>Log out</span>
+            </Button>
           </div>
         </div>
         <div className="mb-4 text-sm font-medium text-primary">
@@ -146,10 +147,9 @@ const FiledProfile = () => {
           <h3 className="mb-[16px] text-2xl font-medium text-primary">
             Password
           </h3>
-          <DynamicButton
-            className="flex items-center justify-center rounded-[47px] bg-secondary  px-6 py-4 text-lg font-medium text-primary transition-opacity  hover:opacity-60"
-            value="Change password"
-          />
+          <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
+            <span>Change password</span>
+          </Button>
         </div>
       </div>
     </div>

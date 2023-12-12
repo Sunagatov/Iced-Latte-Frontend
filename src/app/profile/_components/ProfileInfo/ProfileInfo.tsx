@@ -1,5 +1,5 @@
 import { UserData } from '@/services/authAndUserService'
-import DynamicButton from '@/components/ui/DynamicButton'
+import Button from '@/components/ui/Button'
 
 type UserProfileInfoProps = {
   userData: UserData | null
@@ -81,11 +81,12 @@ const ProfileInfo = ({
                 {userData.address?.postcode || 'N/A'}
               </li>
             </ul>
-            <DynamicButton
+            <Button
               onClick={onEditClick}
-              value="Edit"
               className="mb-[32px] flex w-[130px] cursor-pointer items-center justify-center rounded-[47px] bg-brand-solid px-6 py-4 text-lg font-medium text-white transition-opacity  hover:opacity-60"
-            />
+            >
+              <span>Edit</span>
+            </Button>
           </div>
         </div>
       )}

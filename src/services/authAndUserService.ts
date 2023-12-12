@@ -3,19 +3,17 @@ export interface AuthData {
 }
 
 export interface UserData {
-  id: string
   firstName: string
   lastName: string
-  birthDate: string | null
-  phoneNumber: string | null
-  stripeCustomerToken: string | null
+  birthDate: string
+  phoneNumber: string
   email: string
   address: {
-    country: string | null
-    city: string | null
-    line: string | null
-    postcode: string | null
-  } | null
+    country: string
+    city: string
+    line: string
+    postcode: string
+  }
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_HOST_DOCKER
