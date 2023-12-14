@@ -2,7 +2,7 @@
 'use client'
 import 'react-calendar/dist/Calendar.css'
 import { editUserProfile } from '@/services/authAndUserService'
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
 import { useAuthStore } from '@/store/authTokenStore'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { UserData } from '@/services/authAndUserService'
@@ -14,6 +14,7 @@ import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import CalendarComponent from '@/components/ui/Calendar'
 import FormInput from '@/components/ui/FormInput'
+import ImageUpload from '@/components/ui/ImageUpload'
 
 type ValuePiece = Date | null
 
@@ -26,8 +27,6 @@ const FormProfile = ({
 }: FormProfileProps) => {
   const [isCalendarOpen, setCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
-  const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
   const [loadingImg, setLoadingImg] = useState(false)
 
   const {
@@ -42,47 +41,17 @@ const FormProfile = ({
 
   const { authToken } = useAuthStore()
 
-  // Handler for changing the input element (input) to select an image.
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
-  ) => {
-    const selectedFile = e.target.files && e.target.files[0]
-
-    if (selectedFile) {
-      setFile(selectedFile)
-      setPreview(URL.createObjectURL(selectedFile))
-    } else {
-      setFile(null)
-      setPreview(null)
-    }
-  }
-
-  // function for uploading the image to the server
-  const handleUpload = /*async*/ (e: FormEvent<HTMLDivElement>) => {
-    e.preventDefault()
-
-    if (!file) return alert('No valid image file selected.')
-
-    const formData = new FormData()
-
-    formData.append('file', file)
-
+  // function upload img
+  const handleImageUpload = () => {
     try {
       setLoadingImg(true)
-      // const res = await uploadPhoto(formData)
-
-      // if (!res) {
-      //   alert('Error uploading image')
-
-      //   return
-      // }
-      setFile(null)
-      setPreview(null)
     } catch (error) {
-      console.log('Ошибка при отправке запроса:', error)
+      console.error('Error uploading image:', error)
     } finally {
       setLoadingImg(false)
     }
+
+    return Promise.resolve()
   }
 
   // function to convert the date for the server
@@ -133,49 +102,7 @@ const FormProfile = ({
 
   return (
     <div>
-      <label className="relative mb-12 box-border flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-full  bg-[#F4F5F6]">
-        <input
-          className="updateUserInputImage whitespace-no-wrap clip-rect-0 clip-path-inset-1/2 m-neg1 absolute h-1 w-1 overflow-hidden border-0 p-0"
-          type="file"
-          accept="image/*"
-          id="image"
-          name="image"
-          onChange={handleInputChange}
-          aria-label="image"
-        />
-        {preview ? (
-          <Image
-            className=" h-full w-full rounded-full object-cover"
-            src={preview}
-            alt={`user preview`}
-            width={100}
-            height={100}
-          />
-        ) : (
-          <Image
-            src="/upload_photo.svg"
-            alt="user photo"
-            width={45}
-            height={61}
-          />
-        )}
-
-        <div
-          className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full"
-          onClick={handleUpload}
-        >
-          {loadingImg ? (
-            <p>Loading...</p>
-          ) : (
-            <Image
-              src={preview ? '/add_photo.svg' : '/edit_pen.png'}
-              alt="eit pen icon"
-              width={40}
-              height={40}
-            />
-          )}
-        </div>
-      </label>
+      <ImageUpload onUpload={handleImageUpload} loading={loadingImg} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <h2 className="text-2xl font-medium text-primary">Personal details</h2>
         <div className="flex flex-col md:flex-row md:gap-[16px]">
@@ -279,7 +206,7 @@ const FormProfile = ({
             {...register('address.country', {
               required: 'This field is required',
             })}
-            className="placeholder:text-placeholder' block h-[54px] w-full cursor-pointer appearance-none rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus"
+            className="placeholder:text-placeholder' outline-focus block h-[54px] w-full cursor-pointer appearance-none rounded-lg bg-secondary p-2.5 text-L text-primary"
           >
             <option value="" disabled>
               Select country
@@ -338,7 +265,7 @@ const FormProfile = ({
               Object.keys(errors).length > 0
                 ? 'cursor-not-allowed bg-brand-solid opacity-20'
                 : 'bg-brand-solid hover:bg-indigo-700'
-            } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
+            } focus:outline-focus mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2`}
           >
             <span>Save Changes</span>
           </Button>

@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getUserData, UserData } from '@/services/authAndUserService'
-import Image from 'next/image'
+// import Image from 'next/image'
 import FormProfile from '../FormProfile/FormProfile'
 import { useAuthStore } from '@/store/authTokenStore'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/ui/Button'
+import ImageUpload from '@/components/ui/ImageUpload'
 
 const showError = (error: unknown) => {
   if (error instanceof Error) {
@@ -21,6 +22,19 @@ const FiledProfile = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { authToken, setAuthToken, loading } = useAuthStore()
+  const [loadingImg, setLoadingImg] = useState(false)
+
+  const handleImageUpload = () => {
+    try {
+      setLoadingImg(true)
+    } catch (error) {
+      console.error('Error uploading image:', error)
+    } finally {
+      setLoadingImg(false)
+    }
+
+    return Promise.resolve()
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,7 +94,7 @@ const FiledProfile = () => {
   }
 
   return (
-    <div className="pb-[414px] pt-10">
+    <div className="pb-[40px] pt-10 md:pb-[414px]">
       <div className="ml-auto mr-auto max-w-[800px] pl-[10px] pr-[10px] md:pl-[10px] md:pr-[10px]">
         <div className="mb-10 flex items-center justify-between ">
           <h1 className=" w-[200px] text-lg font-medium text-primary md:w-[350px]">
@@ -101,34 +115,7 @@ const FiledProfile = () => {
         {loading && <p>Loading...</p>}
         {isSuccessEditUser && !isEditing ? (
           <>
-            <label
-              htmlFor="image"
-              className="relative mb-12 box-border flex h-[120px] w-[120px] cursor-pointer items-center justify-center rounded-full  bg-secondary"
-            >
-              <input
-                className="updateUserInputImage whitespace-no-wrap clip-rect-0 clip-path-inset-1/2 m-neg1 absolute h-1 w-1 overflow-hidden border-0 p-0"
-                type="file"
-                accept="image/*"
-                id="image"
-                name="image"
-                // onChange={handleInputChange}
-                aria-label="image"
-              />
-              <Image
-                src="/upload_photo.svg"
-                alt="user photo"
-                width={45}
-                height={61}
-              />
-              <div className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full">
-                <Image
-                  src="/edit_pen.png"
-                  alt="eit pen icon"
-                  width={40}
-                  height={40}
-                />
-              </div>
-            </label>
+            <ImageUpload onUpload={handleImageUpload} loading={loadingImg} />
             <ProfileInfo
               userData={userData}
               isLoading={isLoading}
