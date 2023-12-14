@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getUserData, UserData } from '@/services/authAndUserService'
-// import Image from 'next/image'
 import FormProfile from '../FormProfile/FormProfile'
 import { useAuthStore } from '@/store/authTokenStore'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
@@ -96,8 +95,8 @@ const FiledProfile = () => {
   return (
     <div className="pb-[40px] pt-10 md:pb-[414px]">
       <div className="ml-auto mr-auto max-w-[800px] pl-[10px] pr-[10px] md:pl-[10px] md:pr-[10px]">
-        <div className="mb-10 flex items-center justify-between ">
-          <h1 className=" w-[200px] text-lg font-medium text-primary md:w-[350px]">
+        <div className="mb-10 flex w-full items-center justify-between">
+          <h1 className="w-[100px] text-lg font-medium text-primary md:w-[350px]">
             Your Account
           </h1>
           <div>
