@@ -38,7 +38,6 @@ export async function apiRegisterUser(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/register`,
       {
         method: 'POST',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -61,7 +60,6 @@ export async function apiLoginUser(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/authenticate`,
       {
         method: 'POST',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
