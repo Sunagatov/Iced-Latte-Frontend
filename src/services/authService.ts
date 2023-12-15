@@ -15,7 +15,7 @@ type LoginCredentials = {
 
 type RegisterCredentials = {
   firstName: string
-  lasName: string
+  lastName: string
   email: string
   password: string
 }
@@ -47,17 +47,15 @@ export async function apiRegisterUser(
 
     return handleResponse<SuccessResponse, ErrorResponse>(response)
   } catch (error) {
-    if (error instanceof Error) throw new Error(error.message)
-    else throw new Error('Something went wrong')
+    throw new ServerError('Something went wrong')
   }
 }
-
 export async function apiLoginUser(
   credentials: LoginCredentials,
 ): Promise<SuccessResponse> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/authenticate`,
+      `${process.env.NEXT_PUBLIC_API_HOST_DOCKER}/auth/authenticate`,
       {
         method: 'POST',
         headers: {
@@ -69,7 +67,13 @@ export async function apiLoginUser(
 
     return handleResponse<SuccessResponse, ErrorResponse>(response)
   } catch (error) {
-    if (error instanceof Error) throw new Error(error.message)
-    else throw new Error('Something went wrong')
+    throw new ServerError('Something went wrong')
+  }
+}
+
+export class ServerError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ValidationError'
   }
 }
