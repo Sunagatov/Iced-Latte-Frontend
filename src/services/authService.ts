@@ -1,38 +1,38 @@
-interface ISuccessResponse {
+type SuccessResponse = {
   token: string
 }
 
-interface IErrorResponse {
+type ErrorResponse = {
   message: string
   httpStatusCode: number
   timestamp: string
 }
 
-interface ILoginCredentials {
+type LoginCredentials = {
   email: string
   password: string
 }
 
-interface IRegisterCredentials {
+type RegisterCredentials = {
   firstName: string
   lasName: string
   email: string
   password: string
 }
 
-async function handleResponse<T>(response: Response): Promise<T> {
-  const data = await response.json()
+async function handleResponse<T, E>(response: Response): Promise<T> {
+  const data: T | E = await response.json()
 
   if (!response.ok) {
-    throw new Error((data as IErrorResponse).message)
+    throw new Error((data as ErrorResponse).message)
   }
 
   return data as T
 }
 
 export async function apiRegisterUser(
-  credentials: IRegisterCredentials,
-): Promise<ISuccessResponse> {
+  credentials: RegisterCredentials,
+): Promise<SuccessResponse> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/register`,
@@ -46,7 +46,7 @@ export async function apiRegisterUser(
       },
     )
 
-    return handleResponse<ISuccessResponse>(response)
+    return handleResponse<SuccessResponse, ErrorResponse>(response)
   } catch (error) {
     if (error instanceof Error) throw new Error(error.message)
     else throw new Error('Something went wrong')
@@ -54,8 +54,8 @@ export async function apiRegisterUser(
 }
 
 export async function apiLoginUser(
-  credentials: ILoginCredentials,
-): Promise<ISuccessResponse> {
+  credentials: LoginCredentials,
+): Promise<SuccessResponse> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/authenticate`,
@@ -69,7 +69,7 @@ export async function apiLoginUser(
       },
     )
 
-    return handleResponse<ISuccessResponse>(response)
+    return handleResponse<SuccessResponse, ErrorResponse>(response)
   } catch (error) {
     if (error instanceof Error) throw new Error(error.message)
     else throw new Error('Something went wrong')
