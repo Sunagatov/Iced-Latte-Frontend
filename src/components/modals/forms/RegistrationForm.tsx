@@ -3,6 +3,8 @@ import FormInput from '@/components/ui/FormInput'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { ServerError, apiRegisterUser } from '@/services/authService'
+import { useAuthStore } from '@/store/authStore'
 
 interface IFormValues {
   firstName: string
@@ -51,8 +53,12 @@ const schema = yup.object().shape({
 })
 
 export default function RegistrationForm() {
+  const { authenticate } = useAuthStore()
+
   const {
     register,
+    reset,
+    setError,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
@@ -65,13 +71,34 @@ export default function RegistrationForm() {
     },
   })
 
-  const onSubmit: SubmitHandler<IFormValues> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+    try {
+      const data = await apiRegisterUser(formData)
+
+      authenticate(data.token)
+      reset()
+    } catch (e) {
+      if (e instanceof ServerError) {
+        setError('root.serverError', {
+          type: '500',
+          message: e.message,
+        })
+      } else {
+        setError('email', {
+          type: 'manual',
+          message: 'This email is already exist',
+        })
+      }
+    }
+  }
 
   return (
-    <form
-      onSubmit={() => void handleSubmit(onSubmit)}
-      className="flex flex-col"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+      {errors?.root?.serverError.type === '500' && (
+        <div className="mt-4 text-negative">
+          {errors?.root?.serverError.message}
+        </div>
+      )}
       <FormInput
         id="firstName"
         register={register}
