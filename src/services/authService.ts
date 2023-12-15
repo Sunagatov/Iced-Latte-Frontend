@@ -55,7 +55,7 @@ export async function apiLoginUser(
 ): Promise<SuccessResponse> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_DOCKER}/auth/authenticate`,
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/authenticate`,
       {
         method: 'POST',
         headers: {
