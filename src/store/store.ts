@@ -24,24 +24,33 @@ export interface FavSliceState {
   favourites: IProduct[]
 }
 
-const initialState: FavSliceState = { favourites: productsList.products! }
+const initialFavState: FavSliceState = { favourites: productsList.products! }
 
 interface FavSliceActions {
-  addFavourite: (id: IProduct) => void
+  addFavourite: (product: IProduct) => void
   removeFavourite: (id: string) => void
 }
 
 export type FavSliceStore = FavSliceState & FavSliceActions
 
-export const useFavouritesStore = create<FavSliceStore>((set) => ({
-  ...initialState,
-  addFavourite: (product) =>
-    set((state) => ({
-      favourites: [...state.favourites, product],
-    })),
-
-  removeFavourite: (id) =>
-    set((state) => ({
-      favourites: state.favourites.filter((fav) => fav.id !== id),
-    })),
-}))
+export const useFavouritesStore = create<FavSliceStore>()(
+  persist(
+    (set) => ({
+      ...initialFavState,
+      addFavourite: (product) =>
+        set((state) => ({
+          favourites: [...state.favourites, product],
+        })),
+      removeFavourite: (id) =>
+        set((state) => ({
+          favourites: state.favourites.filter((fav) => fav.id !== id),
+        })),
+    }),
+    {
+      name: 'favourites-storage',
+      partialize: (state) => ({
+        favourites: state.favourites,
+      }),
+    },
+  ),
+)
