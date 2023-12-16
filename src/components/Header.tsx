@@ -3,6 +3,7 @@ import logo from '../../public/logo.svg'
 import Image from 'next/image'
 import Link from 'next/link'
 import CartButton from './CartButton'
+import LoginIcon from './LogicIcon'
 
 export default function Header() {
   return (
@@ -17,7 +18,7 @@ export default function Header() {
             <Image src={logo} width={28} height={31} alt="Logo" priority />
           </div>
           <span className={'hidden items-center text-L sm:flex'}>
-            Good Folks Roasters
+            Iced Latte
           </span>
 
           <span
@@ -25,11 +26,14 @@ export default function Header() {
               'flex items-center text-L font-medium text-primary sm:hidden'
             }
           >
-            GFR
+            IL
           </span>
         </div>
       </Link>
-      <CartButton />
+      <div className={'flex justify-between gap-6'}>
+        <LoginIcon />
+        <CartButton />
+      </div>
     </header>
   )
 }

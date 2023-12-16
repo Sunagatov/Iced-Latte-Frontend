@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 import 'react-calendar/dist/Calendar.css'
-import { editUserProfile } from '@/services/authAndUserService'
+import { editUserProfile } from '@/services/userService'
 import { useState } from 'react'
-import { useAuthStore } from '@/store/authTokenStore'
+import { useAuthStore } from '@/store/authStore'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { UserData } from '@/services/authAndUserService'
+import { UserData } from '@/services/userService'
 import { FormProfileProps } from './index'
 import { isValid as isValidDate, format } from 'date-fns'
 import { validationSchema } from '@/validation/userFormSchema'
@@ -39,7 +39,7 @@ const FormProfile = ({
     defaultValues: initialUserData,
   })
 
-  const { authToken } = useAuthStore()
+  const { token } = useAuthStore()
 
   // function upload img
   const handleImageUpload = () => {
@@ -87,8 +87,8 @@ const FormProfile = ({
 
   const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
-      if (authToken) {
-        await editUserProfile(authToken, data)
+      if (token) {
+        await editUserProfile(token, data)
         // await handleUpload()
         onSuccessEdit()
         updateUserData(data)
@@ -206,7 +206,7 @@ const FormProfile = ({
             {...register('address.country', {
               required: 'This field is required',
             })}
-            className="placeholder:text-placeholder' outline-focus block h-[54px] w-full cursor-pointer appearance-none rounded-lg bg-secondary p-2.5 text-L text-primary"
+            className="placeholder:text-placeholder' block h-[54px] w-full cursor-pointer appearance-none rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus"
           >
             <option value="" disabled>
               Select country
@@ -265,7 +265,7 @@ const FormProfile = ({
               Object.keys(errors).length > 0
                 ? 'cursor-not-allowed bg-brand-solid opacity-20'
                 : 'bg-brand-solid hover:bg-indigo-700'
-            } focus:outline-focus mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2`}
+            } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
           >
             <span>Save Changes</span>
           </Button>

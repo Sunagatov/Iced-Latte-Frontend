@@ -1,4 +1,4 @@
-import { UserData } from '@/services/authAndUserService'
+import { UserData } from '@/services/userService'
 
 export interface FormProfileProps {
   onSuccessEdit: () => void

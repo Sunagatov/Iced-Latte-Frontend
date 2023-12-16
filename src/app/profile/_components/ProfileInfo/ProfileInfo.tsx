@@ -1,4 +1,4 @@
-import { UserData } from '@/services/authAndUserService'
+import { UserData } from '@/services/userService'
 import Button from '@/components/ui/Button'
 
 type UserProfileInfoProps = {

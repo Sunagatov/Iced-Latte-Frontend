@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { getUserData, UserData } from '@/services/authAndUserService'
+import { getUserData, UserData } from '@/services/userService'
 import FormProfile from '../FormProfile/FormProfile'
-import { useAuthStore } from '@/store/authTokenStore'
+import { useAuthStore } from '@/store/authStore'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/ui/Button'
 import ImageUpload from '@/components/ui/ImageUpload'
@@ -20,7 +20,7 @@ const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { authToken, setAuthToken, loading } = useAuthStore()
+  const { token } = useAuthStore()
   const [loadingImg, setLoadingImg] = useState(false)
 
   const handleImageUpload = () => {
@@ -39,10 +39,9 @@ const FiledProfile = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-        await setAuthToken()
 
-        if (authToken) {
-          const userData = await getUserData(authToken)
+        if (token) {
+          const userData = await getUserData(token)
 
           setUserData(userData)
         }
@@ -56,7 +55,7 @@ const FiledProfile = () => {
     fetchData().catch((error) => {
       showError(error)
     })
-  }, [authToken, setAuthToken])
+  }, [token])
 
   const handleSuccessEdit = () => {
     setIsSuccessEditUser(true)
@@ -111,7 +110,6 @@ const FiledProfile = () => {
         <div className="mb-4 text-sm font-medium text-primary">
           Profile image
         </div>
-        {loading && <p>Loading...</p>}
         {isSuccessEditUser && !isEditing ? (
           <>
             <ImageUpload onUpload={handleImageUpload} loading={loadingImg} />
