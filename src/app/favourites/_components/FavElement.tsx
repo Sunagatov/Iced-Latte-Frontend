@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-
+import Image from 'next/image'
+import productImg from '../../../../public/coffee.png'
 import { IProduct } from '@/models/Products'
 
 import { useCombinedStore, useFavouritesStore } from '@/store/store'
@@ -33,19 +34,25 @@ export default function FavElement({ product }: FavElementProps) {
   return (
     <>
       <div className="flex items-center justify-between border-b p-4 pr-0">
+        <div className="w-27 flex justify-center">
+          <Image
+            src={productImg}
+            alt={product.name}
+            width={120}
+            height={120}
+            className=" object-cover"
+          />
+        </div>
         <div className="relative ml-4 grow">
-          <p className="text-lg font-semibold">{product.name}</p>
+          <p className="mb-2 text-lg font-semibold">{product.name}</p>
           <p
-            className={'font-medium text-placeholder'}
+            className={'mb-5 font-medium text-placeholder'}
           >{` ${product.quantity} g.`}</p>
           <p className="right-0 top-0 text-lg font-semibold sm:absolute">{`$${product?.price?.toFixed(
             2,
           )}`}</p>
 
-          <AddToCartButton
-            onClick={handleAddToCart}
-            className="your-custom-styles"
-          >
+          <AddToCartButton onClick={handleAddToCart} className="px-6">
             Add to Cart
           </AddToCartButton>
         </div>
