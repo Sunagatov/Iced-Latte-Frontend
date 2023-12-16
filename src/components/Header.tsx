@@ -26,7 +26,7 @@ export default function Header() {
               'flex items-center text-L font-medium text-primary sm:hidden'
             }
           >
-            GFR
+            IL
           </span>
         </div>
       </Link>
