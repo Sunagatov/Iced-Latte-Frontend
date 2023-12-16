@@ -12,13 +12,12 @@ const ButtonHeart = ({ active, onClick, className }: ButtonHeartProps) => {
   const imageUrl = active ? heartFull : heartEmpty
 
   return (
-    <div
+    <button
+      onClick={onClick}
       className={`duration-400 hover:bg-hover-heart flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full bg-secondary transition ease-in-out ${className}`}
     >
-      <button onClick={onClick}>
-        <Image src={imageUrl} alt={`heart ${active ? 'liked' : 'unliked'}`} />
-      </button>
-    </div>
+      <Image src={imageUrl} alt={`heart ${active ? 'liked' : 'unliked'}`} />
+    </button>
   )
 }
 
