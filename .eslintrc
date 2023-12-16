@@ -71,6 +71,14 @@
     "object-curly-spacing": ["error", "always"],
     "one-var": ["error", "never"],
     "quote-props": 0,
-    "@typescript-eslint/no-unsafe-assignment": "off"
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-misused-promises": [
+      2,
+      {
+        "checksVoidReturn": {
+          "attributes": false
+        }
+      }
+    ]
   }
 }
