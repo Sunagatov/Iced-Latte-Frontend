@@ -18,7 +18,7 @@ export default function Header() {
             <Image src={logo} width={28} height={31} alt="Logo" priority />
           </div>
           <span className={'hidden items-center text-L sm:flex'}>
-            Good Folks Roasters
+            Iced Latte
           </span>
 
           <span
