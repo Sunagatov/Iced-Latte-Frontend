@@ -1,12 +1,12 @@
 'use client'
 import Button from '@/components/ui/Button'
 import { useState } from 'react'
-import LoginForm from './forms/LoginForm'
-import RegistrationForm from './forms/RegistrationForm'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import LoginForm from '@/components/modals/forms/LoginForm'
+import RegistrationForm from '@/components/modals/forms/RegistrationForm'
+import Link from 'next/link'
 
-type LoginModalProps = {
+type AuthModalProps = {
   onCloseModal?: () => void
 }
 
@@ -15,13 +15,15 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-export function AuthModal({ onCloseModal }: LoginModalProps) {
-  const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
+function AuthModalRegistr({ onCloseModal }: AuthModalProps) {
+  const [switchForm, setSwitchForm] = useState<SwitchType>(
+    SwitchType.Registration,
+  )
   const pathname = usePathname()
 
   if (pathname === '/') return null
 
-  const handleClickSwitchFrom = () => {
+  const handleClickSwitchForm = () => {
     setSwitchForm(
       switchForm === SwitchType.Login
         ? SwitchType.Registration
@@ -41,36 +43,27 @@ export function AuthModal({ onCloseModal }: LoginModalProps) {
           <h2 className="text-4XL">Welcome back</h2>
         </div>
         <div className="relative flex-1 px-4 sm:px-6">
-          {switchForm === SwitchType.Login ? (
-            <LoginForm />
+          {switchForm === SwitchType.Registration ? (
+            <RegistrationForm />
           ) : (
             <Button
-              onClick={handleClickSwitchFrom}
+              onClick={handleClickSwitchForm}
               className="mt-6 w-full hover:bg-brand-solid-hover"
             >
               Login
             </Button>
           )}
-          {switchForm === SwitchType.Login && (
-            <Link href="/">
-              <Button className="mt-6 w-full hover:bg-brand-solid-hover">
-                Forgotten your password?
-              </Button>
-            </Link>
-          )}
           <div className="mb-8 mt-6 h-[1px] w-full bg-brand-second" />
-          <h2 className="text-4XL">I’m new here</h2>
-          {switchForm === SwitchType.Registration ? (
-            <RegistrationForm />
+          <h2 className="text-4XL">Already have an account?</h2>
+          {switchForm === SwitchType.Login ? (
+            <LoginForm />
           ) : (
-            <Link href="/auth/registration" scroll={false}>
-              <Button
-                onClick={handleClickSwitchFrom}
-                className="mt-6 w-full hover:bg-brand-solid-hover"
-              >
-                Register
-              </Button>
-            </Link>
+            <Button
+              onClick={handleClickSwitchForm}
+              className="mt-6 w-full hover:bg-brand-solid-hover"
+            >
+              Login
+            </Button>
           )}
           <p className="text-text-tertiary mt-4 text-xs font-medium">
             By registering for an account, you agree to our{' '}
@@ -86,3 +79,4 @@ export function AuthModal({ onCloseModal }: LoginModalProps) {
     </div>
   )
 }
+export default AuthModalRegistr
