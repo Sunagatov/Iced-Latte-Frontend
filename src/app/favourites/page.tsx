@@ -1,9 +1,12 @@
-import Favourites from './_components/Favourites'
+'use client'
+
+import FavouritesEmpty from './_components/FavouritesEmpty'
+import FavouritesFull from './_components/FavouritesFull'
+import { useStoreData } from '@/hooks/useStoreData'
+import { useFavouritesStore } from '@/store/favStore'
 
 export default function Fav() {
-  return (
-    <>
-      <Favourites />
-    </>
-  )
+  const count = useStoreData(useFavouritesStore, (state) => state.count)
+
+  return <>{count ? <FavouritesFull /> : <FavouritesEmpty />}</>
 }

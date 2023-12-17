@@ -5,9 +5,9 @@ import FavElement from './FavElement'
 
 import { IProduct } from '@/models/Products'
 import Link from 'next/link'
-import { useFavouritesStore } from '@/store/store'
+import { useFavouritesStore } from '@/store/favStore'
 
-export default function Favourites() {
+export default function FavouritesFull() {
   const { favourites } = useFavouritesStore()
 
   return (

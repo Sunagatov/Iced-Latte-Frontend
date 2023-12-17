@@ -1,12 +1,13 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
 import productImg from '../../../../public/coffee.png'
 import { IProduct } from '@/models/Products'
 
-import { useCombinedStore, useFavouritesStore } from '@/store/store'
+import { useCombinedStore } from '@/store/store'
+import { useFavouritesStore } from '@/store/favStore'
 import AddToCartButton from '@/components/ui/Button'
+import ButtonHeart from '@/components/Heart/ButtonHeart'
 
 interface FavElementProps {
   product: IProduct
@@ -14,7 +15,10 @@ interface FavElementProps {
 
 export default function FavElement({ product }: FavElementProps) {
   const addToCart = useCombinedStore((state) => state.add)
-  const removeFavourite = useFavouritesStore((state) => state.removeFavourite)
+  const { favouriteIds, addFavourite, removeFavourite } = useFavouritesStore()
+
+  const isFavourite =
+    favouriteIds && favouriteIds.some((favId) => favId === product.id)
 
   const handleAddToCart = () => {
     addToCart({
@@ -28,7 +32,24 @@ export default function FavElement({ product }: FavElementProps) {
       },
       quantity: 1,
     })
+  }
+
+  if (!isFavourite) {
+    addFavourite(product.id)
+  } else {
     removeFavourite(product.id)
+  }
+
+  const handleToggleFavourite = () => {
+    try {
+      if (!isFavourite) {
+        addFavourite(product.id)
+      } else {
+        removeFavourite(product.id)
+      }
+    } catch (error) {
+      console.error('Error toggling favourite:', error)
+    }
   }
 
   return (
@@ -52,9 +73,12 @@ export default function FavElement({ product }: FavElementProps) {
             2,
           )}`}</p>
 
-          <AddToCartButton onClick={handleAddToCart} className="px-6">
-            Add to Cart
-          </AddToCartButton>
+          <div className="flex">
+            <AddToCartButton onClick={handleAddToCart} className="px-6">
+              Add to Cart
+            </AddToCartButton>
+            <ButtonHeart active={isFavourite} onClick={handleToggleFavourite} />
+          </div>
         </div>
       </div>
     </>
