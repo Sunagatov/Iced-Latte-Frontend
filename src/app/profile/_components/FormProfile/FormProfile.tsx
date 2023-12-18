@@ -15,6 +15,7 @@ import Button from '@/components/ui/Button'
 import CalendarComponent from '@/components/ui/Calendar'
 import FormInput from '@/components/ui/FormInput'
 import ImageUpload from '@/components/ui/ImageUpload'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 
 type ValuePiece = Date | null
 
@@ -37,6 +38,10 @@ const FormProfile = ({
   } = useForm<UserData>({
     resolver: yupResolver(validationSchema),
     defaultValues: initialUserData,
+  })
+
+  useEscapeKey(() => {
+    setCalendarOpen(false)
   })
 
   const { token } = useAuthStore()
