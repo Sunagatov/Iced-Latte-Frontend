@@ -1,7 +1,7 @@
-import AuthModalRegistr from '@/app/auth/registration/page'
+import RegisterParallelRoute from '@/app/auth/registration/page'
 
 const RegistrationPageParallel = () => {
-  return <AuthModalRegistr />
+  return <RegisterParallelRoute />
 }
 
 export default RegistrationPageParallel
