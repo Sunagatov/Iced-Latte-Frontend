@@ -66,35 +66,39 @@ export function AuthModal({ onCloseModal }: LoginModalProps) {
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link href="/">
-              <Button className="mt-6 w-full hover:bg-brand-solid-hover">
-                Forgotten your password?
+            <Link href="/" className="flex items-center justify-center">
+              <Button className="mt-6 bg-transparent text-focus">
+                Forgot password
               </Button>
             </Link>
           )}
           <div className="mb-8 mt-6 h-[1px] w-full bg-brand-second" />
-          <h2 className="text-4XL">I’m new here</h2>
           {switchForm === SwitchType.Registration ? (
             <RegistrationForm />
           ) : (
-            <Link href="/auth/registration" scroll={false}>
-              <Button
-                onClick={handleClickSwitchFrom}
-                className="mt-6 w-full hover:bg-brand-solid-hover"
-              >
-                Register
-              </Button>
-            </Link>
+            <>
+              <h2 className="text-4XL">I’m new here</h2>
+              <Link href="/auth/registration">
+                <Button
+                  onClick={handleClickSwitchFrom}
+                  className="mt-6 w-full hover:bg-brand-solid-hover"
+                >
+                  Register
+                </Button>
+              </Link>
+            </>
           )}
-          <p className="text-text-tertiary mt-4 text-xs font-medium">
-            By registering for an account, you agree to our{' '}
-            <a
-              className="text-text-tertiary text-xs font-medium underline"
-              href="/"
-            >
-              Terms of Use.
-            </a>
-          </p>
+          {switchForm === SwitchType.Registration && (
+            <p className="text-text-tertiary mt-4 text-xs font-medium">
+              By registering for an account, you agree to our{' '}
+              <a
+                className="text-text-tertiary text-xs font-medium underline"
+                href="/"
+              >
+                Terms of Use.
+              </a>
+            </p>
+          )}
         </div>
       </div>
     </div>

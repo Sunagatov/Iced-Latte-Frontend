@@ -12,11 +12,7 @@ export default function LoginIcon() {
 
   return (
     <>
-      <Link
-        href="/auth/login"
-        scroll={false}
-        style={{ display: 'inline-flex' }}
-      >
+      <Link href="/auth/login" style={{ display: 'inline-flex' }}>
         <Image
           src={ProfileImage}
           alt="Profile"
