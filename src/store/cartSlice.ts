@@ -81,13 +81,12 @@ function addToCart(product: CartItem, cartList: CartItem[]): CartItem[] {
 }
 
 function removeItem(id: string, cartList: CartItem[]): CartItem[] {
-  return cartList
-    .map((item) => {
-      if (item.id === id) return { ...item, quantity: item.quantity - 1 }
+  return cartList.map((item) => {
+    if (item.id === id && item.quantity > 0)
+      return { ...item, quantity: item.quantity - 1 }
 
-      return item
-    })
-    .filter((item) => item.quantity)
+    return item
+  })
 }
 
 function removeFullProduct(id: string, cartList: CartItem[]): CartItem[] {

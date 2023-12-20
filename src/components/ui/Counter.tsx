@@ -45,8 +45,9 @@ export default function Counter({
   }
 
   const onMinus = () => {
-    removeProduct()
-    if (count === 1 && cancel) {
+    if (count > 1) {
+      removeProduct()
+    } else if (count === 1 && cancel) {
       cancel()
     }
   }
