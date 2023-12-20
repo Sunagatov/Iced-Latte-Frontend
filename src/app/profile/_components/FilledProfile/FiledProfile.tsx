@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/ui/Button'
 import ImageUpload from '@/components/ui/ImageUpload'
+import Link from 'next/link'
 
 const showError = (error: unknown) => {
   if (error instanceof Error) {
@@ -47,6 +48,8 @@ const FiledProfile = () => {
         }
       } catch (error) {
         showError(error)
+
+        throw error
       } finally {
         setIsLoading(false)
       }
@@ -65,22 +68,6 @@ const FiledProfile = () => {
   const handleEditClick = () => {
     setIsEditing(true)
     setIsSuccessEditUser(false)
-  }
-
-  // Function for formatting the date into the desired format
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) {
-      return 'N/A'
-    }
-
-    const date = new Date(dateString)
-    const day = date.getDate()
-    const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
-      date,
-    )
-    const year = date.getFullYear()
-
-    return `${day} ${month} ${year}`
   }
 
   const handleLogout = /*async*/ () => {
@@ -117,7 +104,6 @@ const FiledProfile = () => {
               userData={userData}
               isLoading={isLoading}
               onEditClick={handleEditClick}
-              formatDate={formatDate}
             />
           </>
         ) : (
@@ -131,9 +117,11 @@ const FiledProfile = () => {
           <h3 className="mb-[16px] text-2xl font-medium text-primary">
             Password
           </h3>
-          <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
-            <span>Change password</span>
-          </Button>
+          <Link href="/">
+            <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
+              <span>Change password</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

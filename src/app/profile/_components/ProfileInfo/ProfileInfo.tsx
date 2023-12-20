@@ -1,16 +1,16 @@
 import { UserData } from '@/services/userService'
+import { formatDate } from '@/utils/formDate'
+import ProfileListItem from '@/components/ui/ProfileListItem'
 import Button from '@/components/ui/Button'
 
 type UserProfileInfoProps = {
   userData: UserData | null
-  formatDate: (dateString: string | null) => string
   onEditClick: () => void
   isLoading: boolean
 }
 
 const ProfileInfo = ({
   userData,
-  formatDate,
   onEditClick,
   isLoading,
 }: UserProfileInfoProps) => {
@@ -23,34 +23,14 @@ const ProfileInfo = ({
             Personal details
           </h2>
           <ul className="mb-10 flex flex-col gap-y-6">
-            <li className="flex">
-              <span className="w-[152px] text-primary opacity-60">
-                First name:
-              </span>
-              {userData.firstName}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] text-primary opacity-60">
-                Last name:
-              </span>
-              {userData.lastName}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] text-primary opacity-60">
-                Date of birth:
-              </span>
-              {userData.birthDate ? formatDate(userData.birthDate) : 'N/A'}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] text-primary opacity-60">Email:</span>
-              {userData.email}
-            </li>
-            <li className="flex">
-              <span className="w-[152px] text-primary opacity-60">
-                Phone number:
-              </span>
-              {userData.phoneNumber || 'N/A'}
-            </li>
+            <ProfileListItem label="First name" data={userData.firstName} />
+            <ProfileListItem label="Last name" data={userData.lastName} />
+            <ProfileListItem
+              label="Date of birth"
+              data={userData.birthDate ? formatDate(userData.birthDate) : null}
+            />
+            <ProfileListItem label="Email" data={userData.email} />
+            <ProfileListItem label="Phone number" data={userData.phoneNumber} />
           </ul>
 
           <div>
@@ -58,28 +38,16 @@ const ProfileInfo = ({
               Delivery address
             </h3>
             <ul className="mb-10 flex flex-col gap-y-6">
-              <li className="flex">
-                <span className="w-[152px] text-primary opacity-60">
-                  Country:
-                </span>
-                {userData.address?.country || 'N/A'}
-              </li>
-              <li className="flex">
-                <span className="w-[152px] text-primary opacity-60">City:</span>
-                {userData.address?.city || 'N/A'}
-              </li>
-              <li className="flex">
-                <span className="w-[152px] text-primary opacity-60">
-                  Address:
-                </span>
-                {userData.address?.line || 'N/A'}
-              </li>
-              <li className="flex">
-                <span className="secondary w-[152px] text-primary opacity-60">
-                  Postcode:
-                </span>
-                {userData.address?.postcode || 'N/A'}
-              </li>
+              <ProfileListItem
+                label="Country"
+                data={userData.address?.country}
+              />
+              <ProfileListItem label="City" data={userData.address?.city} />
+              <ProfileListItem label="Address" data={userData.address?.line} />
+              <ProfileListItem
+                label="Postcode"
+                data={userData.address?.postcode}
+              />
             </ul>
             <Button
               onClick={onEditClick}
