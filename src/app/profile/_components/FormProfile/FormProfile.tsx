@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 'use client'
 import 'react-calendar/dist/Calendar.css'
 import { editUserProfile } from '@/services/userService'
