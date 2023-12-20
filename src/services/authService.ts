@@ -1,11 +1,8 @@
+import { ErrorResponse } from '@/models/ErrorResponse'
+import { handleResponse } from '@/utils/handleResponse'
+
 type SuccessResponse = {
   token: string
-}
-
-type ErrorResponse = {
-  message: string
-  httpStatusCode: number
-  timestamp: string
 }
 
 type LoginCredentials = {
@@ -18,16 +15,6 @@ type RegisterCredentials = {
   lastName: string
   email: string
   password: string
-}
-
-async function handleResponse<T, E>(response: Response): Promise<T> {
-  const data: T | E = await response.json()
-
-  if (!response.ok) {
-    throw new Error((data as ErrorResponse).message)
-  }
-
-  return data as T
 }
 
 export async function apiRegisterUser(
@@ -50,6 +37,7 @@ export async function apiRegisterUser(
     throw new ServerError('Something went wrong')
   }
 }
+
 export async function apiLoginUser(
   credentials: LoginCredentials,
 ): Promise<SuccessResponse> {
@@ -74,6 +62,6 @@ export async function apiLoginUser(
 export class ServerError extends Error {
   constructor(message: string) {
     super(message)
-    this.name = 'ValidationError'
+    this.name = 'ServerError'
   }
 }
