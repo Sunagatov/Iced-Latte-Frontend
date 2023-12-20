@@ -16,3 +16,17 @@ export interface ICartItem {
   productInfo: IProduct,
   productQuantity: 1
 }
+
+export interface ICartPushItems {
+  items: ICartPushItem[]
+}
+
+export interface ICartPushItem {
+  productId: string,
+  productQuantity: number
+}
+
+export interface ICartUpdatedItem {
+  shoppingCartItemId: string,
+  productQuantityChange: number
+}
