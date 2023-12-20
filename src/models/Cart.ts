@@ -1,0 +1,18 @@
+import { IProduct } from './Products'
+
+export interface ICart {
+  id: string,
+  userId: string,
+  items: ICartItem[],
+  itemsQuantity: number,
+  itemsTotalPrice: number,
+  productsQuantity: number,
+  createdAt: string,
+  closedAt: string | null
+}
+
+export interface ICartItem {
+  id: string,
+  productInfo: IProduct,
+  productQuantity: 1
+}
