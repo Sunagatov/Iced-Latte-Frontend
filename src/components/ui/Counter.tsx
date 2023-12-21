@@ -43,9 +43,7 @@ export default function Counter({
   }
 
   const onMinus = () => {
-    {
-      removeProduct()
-    }
+    removeProduct()
   }
 
   return (
