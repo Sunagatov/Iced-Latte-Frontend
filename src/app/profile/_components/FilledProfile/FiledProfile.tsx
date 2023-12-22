@@ -1,20 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getUserData, UserData } from '@/services/userService'
-import FormProfile from '../FormProfile/FormProfile'
+import { showError } from '@/utils/showError'
 import { useAuthStore } from '@/store/authStore'
+import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/ui/Button'
 import ImageUpload from '@/components/ui/ImageUpload'
 import Link from 'next/link'
-
-const showError = (error: unknown) => {
-  if (error instanceof Error) {
-    alert(`An error occurred: ${error.message}`)
-  } else {
-    alert(`An unknown error occurred`)
-  }
-}
 
 const FiledProfile = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
@@ -38,26 +31,20 @@ const FiledProfile = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setIsLoading(true)
+      setIsLoading(true)
 
-        if (token) {
-          const userData = await getUserData(token)
+      if (token) {
+        const userData = await getUserData(token)
 
-          setUserData(userData)
-        }
-      } catch (error) {
-        showError(error)
-
-        throw error
-      } finally {
-        setIsLoading(false)
+        setUserData(userData)
       }
     }
 
-    fetchData().catch((error) => {
-      showError(error)
-    })
+    fetchData()
+      .catch((error) => {
+        showError(error)
+      })
+      .finally(() => setIsLoading(false))
   }, [token])
 
   const handleSuccessEdit = () => {
