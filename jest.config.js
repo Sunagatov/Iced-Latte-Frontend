@@ -14,8 +14,10 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
-  reporters: ['default',  ['jest-sonar',{ outputName: 'jest-sonar-coverage-report.xml'}]],
+  reporters: ['default',  ['jest-sonar', { outputName: 'jest-sonar-coverage-report.xml'}]],
   preset: 'ts-jest',
+  collectCoverage: true,
+  coverageReporters: ['lcov', 'clover'],
   clearMocks: true,
   globals: {
       fetch
