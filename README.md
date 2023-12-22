@@ -35,7 +35,7 @@ Built using Next.js, it's crafted for educational purposes, offering insights in
 
 ## Quick Start
 
-Follow the setup instructions in [START.MD](START.MD) to get the project up and running.
+Follow the setup instructions in [START.MD](START.md) to get the project up and running.
 
 ## Features
 
@@ -47,7 +47,7 @@ Follow the setup instructions in [START.MD](START.MD) to get the project up and 
 
 ## API Documentation
 
-The API is fully documented with Swagger. Access the documentation at `http://localhost:8083/swagger-ui.html` once the server is running.
+The API is fully documented with Swagger. Access the documentation at `http://localhost:8083/api/docs/swagger-ui` once the server is running.
 
 ## Project structure
 
@@ -94,10 +94,10 @@ Have any questions or suggestions? Feel free to [open an issue](https://github.c
 Address some common questions users might have about your project.
 
 1. **Question:** How do I set up the project?
-   **Answer:** Follow the instructions in [START.MD](START.MD).
+   **Answer:** Follow the instructions in [START.MD](START.md).
 
 2. **Question:** Where can I find API documentation?
-   **Answer:** The API documentation is available at `http://localhost:8083/swagger-ui.html`.
+   **Answer:** The API documentation is available at `http://localhost:8083/api/docs/swagger-ui`.
 
 <!-- Add more FAQs as needed -->
 
