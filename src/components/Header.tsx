@@ -1,5 +1,4 @@
 import logo from '../../public/logo.svg'
-
 import Image from 'next/image'
 import Link from 'next/link'
 import CartButton from './CartButton'
@@ -9,7 +8,7 @@ export default function Header() {
   return (
     <header
       className={
-        'sticky left-0 top-0 mx-auto flex h-14 w-full items-center justify-between bg-primary pl-9 pr-6 sm:h-24'
+        'sticky left-0 top-0 z-10 mx-auto flex h-14 w-full items-center justify-between bg-primary pl-9 pr-6 sm:h-24'
       }
     >
       <Link href="/">
