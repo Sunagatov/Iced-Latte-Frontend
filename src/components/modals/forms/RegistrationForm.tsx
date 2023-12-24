@@ -1,3 +1,4 @@
+'use client'
 import Button from '@/components/ui/Button'
 import FormInput from '@/components/ui/FormInput'
 import * as yup from 'yup'
@@ -5,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiRegisterUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
 
 interface IFormValues {
   firstName: string
@@ -54,6 +56,7 @@ const schema = yup.object().shape({
 
 export default function RegistrationForm() {
   const { authenticate } = useAuthStore()
+  const router = useRouter()
 
   const {
     register,
@@ -77,6 +80,7 @@ export default function RegistrationForm() {
 
       authenticate(data.token)
       reset()
+      router.push('/')
     } catch (e) {
       if (e instanceof ServerError) {
         setError('root.serverError', {

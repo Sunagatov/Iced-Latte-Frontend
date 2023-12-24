@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
 
 interface IFormValues {
   email: string
@@ -20,7 +21,7 @@ const schema = yup.object().shape({
 
 export default function LoginForm() {
   const { authenticate } = useAuthStore()
-
+  const router = useRouter()
   const {
     register,
     reset,
@@ -41,6 +42,7 @@ export default function LoginForm() {
 
       authenticate(data.token)
       reset()
+      router.push('/')
     } catch (e) {
       if (e instanceof ServerError) {
         setError('root.serverError', {
