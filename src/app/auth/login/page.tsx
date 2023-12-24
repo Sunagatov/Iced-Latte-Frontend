@@ -1,7 +1,14 @@
 import { AuthModal } from '@/components/modals/AuthModal'
+import RestrictRoute from '@/Context/RestrictRoute'
 
 function AuthModalLogin() {
-  return <AuthModal />
+  return (
+    <>
+      <RestrictRoute>
+        <AuthModal />
+      </RestrictRoute>
+    </>
+  )
 }
 
 export default AuthModalLogin

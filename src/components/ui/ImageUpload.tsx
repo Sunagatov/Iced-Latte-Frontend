@@ -1,15 +1,36 @@
 'use client'
-import { useState, FormEvent } from 'react'
 import Image from 'next/image'
+import { useState, FormEvent, useEffect } from 'react'
+import { uploadImage, getAvatar } from '@/services/userService'
+import { useAuthStore } from '@/store/authStore'
+import { AuthData } from '@/services/userService'
+import { showError } from '@/utils/showError'
+import { toast } from 'react-toastify'
 
-interface ImageUploadProps {
-  onUpload: (file: File) => Promise<void>
-  loading: boolean
-}
-
-const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
+const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
+  const { token } = useAuthStore() as AuthData
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      if (token) {
+        const url = await getAvatar(token)
+
+        if (url) {
+          setAvatarUrl(url)
+        } else {
+          toast.error('Authentication failed. Token is null or undefined.')
+        }
+      }
+    }
+
+    fetchAvatar().catch((error) => {
+      showError(error)
+    })
+  }, [token])
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
@@ -25,19 +46,22 @@ const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
     }
   }
 
-  const handleUpload = (e: FormEvent<HTMLDivElement>): void => {
+  const handleUpload = async (e: FormEvent<HTMLDivElement>) => {
     e.preventDefault()
 
-    if (!file) return alert('No valid image file selected.')
+    if (!file) return toast.warning('No valid image file selected.')
 
-    onUpload(file)
-      .then(() => {
-        setFile(null)
-        setPreview(null)
-      })
-      .catch((error) => {
-        console.log('Error uploading image:', error)
-      })
+    try {
+      setLoading(true)
+
+      await uploadImage(file, token)
+
+      setLoading(false)
+      setFile(null)
+      setPreview(null)
+    } catch (error) {
+      console.error('Error uploading image:', error)
+    }
   }
 
   return (
@@ -61,7 +85,11 @@ const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
         />
       ) : (
         <Image
-          src="/upload_photo.svg"
+          src={
+            typeof avatarUrl === 'string' && avatarUrl !== 'default file'
+              ? avatarUrl
+              : '/upload_photo.svg'
+          }
           alt="user photo"
           width={45}
           height={61}

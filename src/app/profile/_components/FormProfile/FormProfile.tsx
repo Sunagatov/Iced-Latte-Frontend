@@ -9,12 +9,12 @@ import { FormProfileProps } from './index'
 import { isValid as isValidDate, format } from 'date-fns'
 import { validationSchema } from '@/validation/userFormSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import CalendarComponent from '@/components/ui/Calendar'
 import FormInput from '@/components/ui/FormInput'
 import ImageUpload from '@/components/ui/ImageUpload'
-import { useEscapeKey } from '@/hooks/useEscapeKey'
 
 type ValuePiece = Date | null
 
@@ -27,7 +27,6 @@ const FormProfile = ({
 }: FormProfileProps) => {
   const [isCalendarOpen, setCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
-  const [loadingImg, setLoadingImg] = useState(false)
 
   const {
     register,
@@ -44,19 +43,6 @@ const FormProfile = ({
   })
 
   const { token } = useAuthStore()
-
-  // function upload img
-  const handleImageUpload = () => {
-    try {
-      setLoadingImg(true)
-    } catch (error) {
-      console.error('Error uploading image:', error)
-    } finally {
-      setLoadingImg(false)
-    }
-
-    return Promise.resolve()
-  }
 
   // function to convert the date for the server
   const handleCalendarChange = (newDate: Value) => {
@@ -106,7 +92,7 @@ const FormProfile = ({
 
   return (
     <div>
-      <ImageUpload onUpload={handleImageUpload} loading={loadingImg} />
+      <ImageUpload />
       <form onSubmit={handleSubmit(onSubmit)}>
         <h2 className="text-2xl font-medium text-primary">Personal details</h2>
         <div className="flex flex-col md:flex-row md:gap-[16px]">
