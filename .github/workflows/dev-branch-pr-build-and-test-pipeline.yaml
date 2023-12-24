@@ -23,6 +23,9 @@ jobs:
 
       - name: SonarQube Analysis
         uses: sonarsource/sonarqube-scan-action@master
+        with:
+          args: >
+            -Dsonar.projectVersion=pr-${{ github.event.pull_request.number }}
         env:
           SONAR_TOKEN: sqp_d5037397d43452eb548ffb026abd6ecccbfce756
           SONAR_HOST_URL: http://31.132.209.218:63535
