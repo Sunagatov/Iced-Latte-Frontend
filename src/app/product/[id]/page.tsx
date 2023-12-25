@@ -5,6 +5,7 @@ import { IProduct } from '@/models/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
 import AddToCartButton from '../_components/AddToCart'
+import HeartWrapper from '@/app/_components/HeartWrapper'
 
 type ProductProps = {
   params: {
@@ -47,7 +48,11 @@ export default async function Page({ params }: ProductProps) {
             </span>
           </div>
         </div>
-        <AddToCartButton product={product} />
+        <div className="flex gap-2">
+          <AddToCartButton product={product} />
+          <HeartWrapper id={product.id} />
+        </div>
+
         <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
       </div>
     </section>
