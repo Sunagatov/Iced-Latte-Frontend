@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import CartButton from './CartButton'
 import LoginIcon from './LogicIcon'
+import BlackHeartButton from './BlackHeart'
 
 export default function Header() {
   return (
@@ -30,6 +31,7 @@ export default function Header() {
         </div>
       </Link>
       <div className={'flex justify-between gap-6'}>
+        <BlackHeartButton />
         <LoginIcon />
         <CartButton />
       </div>

@@ -7,6 +7,7 @@ export interface FavSliceState {
   favourites: IProduct[]
   loading: boolean
   count: number
+  isClicked: boolean
 }
 
 interface FavSliceActions {
@@ -14,19 +15,21 @@ interface FavSliceActions {
   removeFavourite: (id: string) => void
   getFavouriteProducts: () => Promise<IProduct[]>
   setLoading: (loading: boolean) => void
+  setClicked: (clicked: boolean) => void
 }
 
 export type FavStoreState = FavSliceState & FavSliceActions
 
 const initialState: FavSliceState = {
   favouriteIds: [
-    // '123f7a2d-cb34-4e5f-9a1d-4e4b456a03a7',
-    // '1e5b295f-8f50-4425-90e9-8b590a27b3a9',
-    // 'eedc6cde-1e80-4ebf-a9d1-8e5e4eb2cacf',
+    '123f7a2d-cb34-4e5f-9a1d-4e4b456a03a7',
+    '1e5b295f-8f50-4425-90e9-8b590a27b3a9',
+    'eedc6cde-1e80-4ebf-a9d1-8e5e4eb2cacf',
   ],
   favourites: [],
   count: 0,
   loading: false,
+  isClicked: false,
 }
 
 const fetchProductsByIds = async (ids: string[]): Promise<IProduct[]> => {
@@ -78,7 +81,7 @@ export const useFavouritesStore = create<FavStoreState>()(
       getFavouriteProducts: async (): Promise<IProduct[]> => {
         const productIds = get().favouriteIds
 
-        // console.log('Initial State:', get())
+        console.log('Initial State:', get())
 
         try {
           const products = await fetchProductsByIds(productIds)
@@ -103,6 +106,7 @@ export const useFavouritesStore = create<FavStoreState>()(
           return []
         }
       },
+      setClicked: (clicked) => set({ isClicked: clicked }),
     }),
     {
       name: 'fav-storage',
