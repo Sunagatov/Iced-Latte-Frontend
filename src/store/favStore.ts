@@ -2,75 +2,112 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { IProduct } from '@/models/Products'
 
-export interface FavStoreState {
+export interface FavSliceState {
   favouriteIds: string[]
-  addFavourite: (id: string) => void
-  removeFavourite: (id: string) => void
-  getFavouriteProducts: () => Promise<IProduct[]>
   favourites: IProduct[]
+  loading: boolean
   count: number
 }
 
-const fetchProductsByIds = async (
-  ids: string[],
-): Promise<IProduct[] | null> => {
+interface FavSliceActions {
+  addFavourite: (id: string) => void
+  removeFavourite: (id: string) => void
+  getFavouriteProducts: () => Promise<IProduct[]>
+  setLoading: (loading: boolean) => void
+}
+
+export type FavStoreState = FavSliceState & FavSliceActions
+
+const initialState: FavSliceState = {
+  favouriteIds: [
+    // '123f7a2d-cb34-4e5f-9a1d-4e4b456a03a7',
+    // '1e5b295f-8f50-4425-90e9-8b590a27b3a9',
+    // 'eedc6cde-1e80-4ebf-a9d1-8e5e4eb2cacf',
+  ],
+  favourites: [],
+  count: 0,
+  loading: false,
+}
+
+const fetchProductsByIds = async (ids: string[]): Promise<IProduct[]> => {
+  if (ids.length === 0) return []
+
   try {
-    const responses = await Promise.all(
-      ids.map((id) =>
-        fetch(`${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/products/${id}`),
-      ),
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/products/ids`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productIds: ids }),
+      },
     )
 
-    if (!responses.every((response) => response.ok)) {
+    if (!response.ok) {
       throw new Error('One or more products not found')
     }
 
-    const favProducts: IProduct[] = await Promise.all(
-      responses.map((response) => response.json()),
-    )
+    const favourites: IProduct[] = await response.json()
 
-    return favProducts
+    return favourites || []
   } catch (error) {
-    console.error('Fetching products failed:', error)
+    console.error('Error fetching products:', error)
 
-    return null
+    return []
   }
 }
 
 export const useFavouritesStore = create<FavStoreState>()(
   persist(
     (set, get) => ({
-      favouriteIds: [],
+      ...initialState,
+      setLoading: (loading) => set({ loading }),
+
       addFavourite: (id) =>
         set((state) => ({
           favouriteIds: [...state.favouriteIds, id],
         })),
+
       removeFavourite: (id) =>
         set((state) => ({
           favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
+          favourites: state.favourites.filter((fav) => fav.id !== id),
         })),
+
       getFavouriteProducts: async (): Promise<IProduct[]> => {
-        const favouriteProductsPromises = get().favouriteIds.map((id) =>
-          fetchProductsByIds([id]),
-        )
+        const productIds = get().favouriteIds
 
-        const favouriteProductsResults = await Promise.all(
-          favouriteProductsPromises,
-        )
+        // console.log('Initial State:', get())
 
-        const flattenedResults = favouriteProductsResults.flat()
+        try {
+          const products = await fetchProductsByIds(productIds)
 
-        return flattenedResults.filter(
-          (product): product is IProduct => product !== null,
-        )
+          // Checking the state
+          set((state) => ({
+            ...state,
+            favourites: products,
+            count: productIds.length,
+          }))
+
+          console.log('state', {
+            ...get(),
+            favourites: products,
+            count: productIds.length,
+          })
+
+          return products
+        } catch (error) {
+          console.error('Error fetching favorite products:', error)
+
+          return []
+        }
       },
-      favourites: [],
     }),
     {
-      name: 'favourites-storage',
+      name: 'fav-storage',
       partialize: (state) => ({
         favouriteIds: state.favouriteIds,
-        count: state.count,
       }),
     },
   ),

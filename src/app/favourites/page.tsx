@@ -2,11 +2,10 @@
 
 import FavouritesEmpty from './_components/FavouritesEmpty'
 import FavouritesFull from './_components/FavouritesFull'
-import { useStoreData } from '@/hooks/useStoreData'
 import { useFavouritesStore } from '@/store/favStore'
 
 export default function Fav() {
-  const count = useStoreData(useFavouritesStore, (state) => state.count)
+  const { count } = useFavouritesStore()
 
-  return <>{count ? <FavouritesFull /> : <FavouritesEmpty />}</>
+  return <>{count > 0 ? <FavouritesFull /> : <FavouritesEmpty />}</>
 }

@@ -6,19 +6,26 @@ import FavElement from './FavElement'
 import { IProduct } from '@/models/Products'
 import Link from 'next/link'
 import { useFavouritesStore } from '@/store/favStore'
+import Loader from '@/components/ui/Loader'
 
 export default function FavouritesFull() {
-  const { favourites } = useFavouritesStore()
+  const { favourites, loading, count } = useFavouritesStore()
 
   return (
     <div className="mx-auto flex h-[513px] min-w-[328px] flex-col px-4 md:max-w-[800px]">
       <h2 className="mx-4 my-6 text-left text-4xl">Favourites</h2>
-      <div>
-        {favourites.map((item: IProduct) => (
-          <FavElement key={item.id} product={item} />
-        ))}
-      </div>
 
+      <div>
+        {loading ? (
+          <Loader />
+        ) : count === 0 ? (
+          <p>You have no favourites yet.</p>
+        ) : (
+          favourites.map((item: IProduct) => (
+            <FavElement key={item.id} product={item} />
+          ))
+        )}
+      </div>
       <div className="flex w-full justify-center">
         <Link href={'/'}>
           <Button className="my-6 h-14  text-lg font-medium sm:w-[211px]">

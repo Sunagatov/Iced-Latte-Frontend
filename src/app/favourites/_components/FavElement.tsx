@@ -1,13 +1,9 @@
 'use client'
 
-import Image from 'next/image'
-import productImg from '../../../../public/coffee.png'
+// import Image from 'next/image'
 import { IProduct } from '@/models/Products'
-
 import { useCombinedStore } from '@/store/store'
-import { useFavouritesStore } from '@/store/favStore'
 import AddToCartButton from '@/components/ui/Button'
-import ButtonHeart from '@/components/Heart/ButtonHeart'
 
 interface FavElementProps {
   product: IProduct
@@ -15,10 +11,6 @@ interface FavElementProps {
 
 export default function FavElement({ product }: FavElementProps) {
   const addToCart = useCombinedStore((state) => state.add)
-  const { favouriteIds, addFavourite, removeFavourite } = useFavouritesStore()
-
-  const isFavourite =
-    favouriteIds && favouriteIds.some((favId) => favId === product.id)
 
   const handleAddToCart = () => {
     addToCart({
@@ -29,40 +21,26 @@ export default function FavElement({ product }: FavElementProps) {
         description: product.description,
         active: product.active,
         quantity: product.quantity,
+        productFileUrl: product.productFileUrl,
       },
       quantity: 1,
     })
-  }
-
-  if (!isFavourite) {
-    addFavourite(product.id)
-  } else {
-    removeFavourite(product.id)
-  }
-
-  const handleToggleFavourite = () => {
-    try {
-      if (!isFavourite) {
-        addFavourite(product.id)
-      } else {
-        removeFavourite(product.id)
-      }
-    } catch (error) {
-      console.error('Error toggling favourite:', error)
-    }
   }
 
   return (
     <>
       <div className="flex items-center justify-between border-b p-4 pr-0">
         <div className="w-27 flex justify-center">
-          <Image
-            src={productImg}
+          {
+            //UNCOMMENT THIS WHEN THE URL IS READY!!!!
+            /* <Image
+            src={}
             alt={product.name}
             width={120}
             height={120}
             className=" object-cover"
-          />
+          /> */
+          }
         </div>
         <div className="relative ml-4 grow">
           <p className="mb-2 text-lg font-semibold">{product.name}</p>
@@ -77,7 +55,6 @@ export default function FavElement({ product }: FavElementProps) {
             <AddToCartButton onClick={handleAddToCart} className="px-6">
               Add to Cart
             </AddToCartButton>
-            <ButtonHeart active={isFavourite} onClick={handleToggleFavourite} />
           </div>
         </div>
       </div>
