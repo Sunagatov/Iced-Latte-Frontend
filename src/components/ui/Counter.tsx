@@ -15,7 +15,6 @@ type Props = {
   count: number
   removeProduct: () => void
   addProduct: () => void
-  cancel?: () => void
 }
 
 export default function Counter({
@@ -24,7 +23,6 @@ export default function Counter({
   count,
   addProduct,
   removeProduct,
-  cancel,
 }: Props) {
   const computedStyles =
     defaultStyles +
@@ -46,9 +44,6 @@ export default function Counter({
 
   const onMinus = () => {
     removeProduct()
-    if (count === 1 && cancel) {
-      cancel()
-    }
   }
 
   return (
