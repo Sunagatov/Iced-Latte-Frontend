@@ -15,7 +15,7 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-export function AuthModal({ onCloseModal }: LoginModalProps) {
+export function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
 

@@ -10,9 +10,11 @@ export const useCombinedStore = create<CartSliceStore>()(
     {
       name: 'cart-storage',
       partialize: (state) => ({
-        items: state.items,
+        itemsIds: state.itemsIds,
+        tempItems: state.tempItems,
         count: state.count,
         totalPrice: state.totalPrice,
+        isSync: state.isSync
       }),
     },
   ),

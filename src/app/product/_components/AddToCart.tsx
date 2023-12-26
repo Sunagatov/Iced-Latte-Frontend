@@ -5,35 +5,35 @@ import { IProduct } from '@/models/Products'
 import Counter from '../../../components/ui/Counter'
 import { useCombinedStore } from '@/store/store'
 import { useStoreData } from '@/hooks/useStoreData'
+import { useAuthStore } from '@/store/authStore'
 
 type Props = {
   product: IProduct
 }
 
-export default function AddToCartButton({ product }: Props) {
-  const [add, remove] = useCombinedStore((state) => [state.add, state.remove])
-  const items = useStoreData(useCombinedStore, (state) => state.items)
-  const { name, price, description, active, quantity } = product
 
-  const productQuantity = items?.find((item) => item.id === product.id)
-    ?.quantity
+export default function AddToCartButton({ product }: Props) {
+  const [add, remove, removeFullProduct] = useCombinedStore((state) => [
+    state.add,
+    state.remove,
+    state.removeFullProduct,
+  ])
+  const token = useAuthStore((state) => state.token)
+  const items = useStoreData(useCombinedStore, (state) => state.itemsIds)
+
+  const productQuantity = items?.find((item) => item.productId === product.id)
+    ?.productQuantity
 
   const addProduct = () => {
-    add({
-      id: product.id,
-      info: {
-        name,
-        price,
-        description,
-        active,
-        quantity,
-      },
-      quantity: 1,
-    })
+    add(product.id, token)
   }
 
   const removeProduct = () => {
-    remove(product.id)
+    if (productQuantity === 1) {
+      removeFullProduct(product.id, token)
+    } else {
+      remove(product.id, token)
+    }
   }
 
   return (
@@ -51,7 +51,7 @@ export default function AddToCartButton({ product }: Props) {
             theme="dark"
             count={productQuantity}
             addProduct={addProduct}
-            removeProduct={() => removeProduct()}
+            removeProduct={removeProduct}
           />
           <Button className={'w-[123px] cursor-default hover:bg-brand-solid'}>
             ${product.price}

@@ -6,16 +6,15 @@ import CircleAddBtn from './CircleAddBtn'
 import { IProduct } from '@/models/Products'
 import { productRating, productSize } from '@/constants/product'
 import { useCombinedStore } from '@/store/store'
+import { useAuthStore } from '@/store/authStore'
 
 type CardProps = Pick<IProduct, 'id' | 'name' | 'price' | 'description'>
 
-export default function ProductCard({
-  id,
-  name,
-  price,
-  description,
-}: CardProps) {
+
+export default function ProductCard({ id, name, price }: CardProps) {
+
   const addToCart = useCombinedStore((state) => state.add)
+  const token = useAuthStore((state) => state.token)
 
   return (
     <div className={'flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
@@ -39,17 +38,7 @@ export default function ProductCard({
         <p className={'text-XL font-medium md:text-2XL'}>${price}</p>
         <CircleAddBtn
           onClick={() => {
-            addToCart({
-              id,
-              info: {
-                name,
-                price,
-                description,
-                active: true,
-                quantity: 40,
-              },
-              quantity: 1,
-            })
+            addToCart(id, token)
           }}
         />
       </div>

@@ -15,9 +15,11 @@ interface IFormValues {
   password: string
 }
 
-const emailRegex = new RegExp(
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g,
-)
+const emailRegex =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
+
+const nameRegex = /^(?!\\s)(?!.*\\s$)(?!.*?--)[A-Za-z\\s-]*$/
+
 
 const schema = yup.object().shape({
   firstName: yup
@@ -26,7 +28,7 @@ const schema = yup.object().shape({
     .min(2, 'First name should have a length between 2 and 128 characters')
     .max(128, 'First name should have a length between 2 and 128 characters')
     .matches(
-      /^(?!\\s)(?!.*\\s$)(?!.*?--)[A-Za-z\\s-]*$/,
+      nameRegex,
       'First name can contain Latin letters, spaces, and hyphens',
     ),
   lastName: yup
@@ -35,7 +37,7 @@ const schema = yup.object().shape({
     .min(2, 'Last name should have a length between 2 and 128 characters')
     .max(128, 'Last name should have a length between 2 and 128 characters')
     .matches(
-      /^(?!\\s)(?!.*\\s$)(?!.*?--)[A-Za-z\\s-]*$/,
+      nameRegex,
       'Last name can contain Latin letters, spaces, and hyphens',
     ),
   email: yup
@@ -49,7 +51,7 @@ const schema = yup.object().shape({
     .min(8, 'Password should have a length between 8 and 128 characters')
     .max(128, 'Password should have a length between 8 and 128 characters')
     .matches(
-      /(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}/g,
+      /(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}/g,
       'Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
     ),
 })
@@ -90,7 +92,7 @@ export default function RegistrationForm() {
       } else {
         setError('email', {
           type: 'manual',
-          message: 'This email is already exist',
+          message: 'This email already exists',
         })
       }
     }

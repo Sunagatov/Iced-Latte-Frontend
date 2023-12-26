@@ -9,7 +9,9 @@ import Link from 'next/link'
 export default function CartButton() {
   const count = useStoreData(useCombinedStore, (state) => state.count)
 
-  const handleClick = () => {}
+  const handleClick = () => {
+    // not implemented yet
+  }
 
   return (
     <Link href={'/cart'}>

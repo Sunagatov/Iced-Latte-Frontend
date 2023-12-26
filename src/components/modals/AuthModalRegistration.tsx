@@ -15,7 +15,7 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-function AuthModalRegistr({ onCloseModal }: AuthModalProps) {
+function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(
     SwitchType.Registration,
   )

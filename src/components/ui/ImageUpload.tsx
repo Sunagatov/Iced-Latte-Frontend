@@ -14,7 +14,7 @@ const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
   ) => {
-    const selectedFile = e.target.files && e.target.files[0]
+    const selectedFile = e.target.files?.[0]
 
     if (selectedFile) {
       setFile(selectedFile)
@@ -71,6 +71,7 @@ const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
       <div
         className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full"
         onClick={handleUpload}
+        onKeyDown={handleUpload}
       >
         {loading ? (
           <p>Loading...</p>
