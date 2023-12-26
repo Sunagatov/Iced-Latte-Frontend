@@ -14,7 +14,7 @@ export default function ProductCard({
   name,
   price,
   description,
-}: CardProps) {
+}: Readonly<CardProps>) {
   const addToCart = useCombinedStore((state) => state.add)
 
   return (

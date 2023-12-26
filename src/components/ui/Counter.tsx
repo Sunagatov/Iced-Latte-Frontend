@@ -23,7 +23,7 @@ export default function Counter({
   count,
   addProduct,
   removeProduct,
-}: Props) {
+}: Readonly<Props>) {
   const computedStyles =
     defaultStyles +
     ' ' +

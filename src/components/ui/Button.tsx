@@ -17,7 +17,7 @@ export default function Button({
   className,
   type = 'button',
   children,
-}: Props) {
+}: Readonly<Props>) {
   const styles = defaultStyles + ' ' + (className ?? '')
 
   return (
