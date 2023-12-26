@@ -3,13 +3,13 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-export default function Error({
+export default function RenderError({
   error,
   reset,
-}: {
+}: Readonly<{
   error: Error
   reset: () => void
-}) {
+}>) {
   const router = useRouter()
 
   useEffect(() => {

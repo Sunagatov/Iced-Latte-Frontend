@@ -97,7 +97,7 @@ const FiledProfile = () => {
           <FormProfile
             onSuccessEdit={handleSuccessEdit}
             updateUserData={setUserData}
-            initialUserData={userData || {}}
+            initialUserData={userData ?? {}}
           />
         )}
         <div className="mt-[51px]">

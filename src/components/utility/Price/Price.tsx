@@ -2,7 +2,7 @@ interface PriceProps {
   amount: number
 }
 
-export default function Price({ amount }: PriceProps) {
+export default function Price({ amount }: Readonly<PriceProps>) {
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

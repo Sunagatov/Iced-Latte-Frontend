@@ -1,10 +1,9 @@
 'use client'
 import 'react-calendar/dist/Calendar.css'
-import { editUserProfile } from '@/services/userService'
+import { editUserProfile, UserData } from '@/services/userService'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { UserData } from '@/services/userService'
 import { FormProfileProps } from './index'
 import { isValid as isValidDate, format } from 'date-fns'
 import { validationSchema } from '@/validation/userFormSchema'
@@ -24,8 +23,8 @@ const FormProfile = ({
   onSuccessEdit,
   updateUserData,
   initialUserData,
-}: FormProfileProps) => {
-  const [isCalendarOpen, setCalendarOpen] = useState(false)
+}: Readonly<FormProfileProps>) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
   const [loadingImg, setLoadingImg] = useState(false)
 
@@ -40,7 +39,7 @@ const FormProfile = ({
   })
 
   useEscapeKey(() => {
-    setCalendarOpen(false)
+    setIsCalendarOpen(false)
   })
 
   const { token } = useAuthStore()
@@ -79,13 +78,13 @@ const FormProfile = ({
 
   // function for opening and closing the calendar
   const handleCalendarToggle = () => {
-    setCalendarOpen(!isCalendarOpen)
+    setIsCalendarOpen(!isCalendarOpen)
   }
 
   // function for closing the calendar by clicking anywhere in the viewport
-  const clickBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+  const clickBackdrop = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent) => {
     if (e.currentTarget === e.target) {
-      setCalendarOpen(false)
+      setIsCalendarOpen(false)
     }
   }
 
@@ -150,15 +149,15 @@ const FormProfile = ({
             alt="calendar open icon"
             width={18}
             height={18}
-            className={`absolute right-10 top-[60%] cursor-pointer transition-transform ${
-              isCalendarOpen ? 'rotate-180' : ''
-            }`}
+            className={`absolute right-10 top-[60%] cursor-pointer transition-transform ${isCalendarOpen ? 'rotate-180' : ''
+              }`}
             onClick={handleCalendarToggle}
           />
           {isCalendarOpen && (
             <div
               className="fixed bottom-0 left-0 right-0 top-0 z-10"
               onClick={clickBackdrop}
+              onKeyDown={clickBackdrop}
             >
               <div className="z-20">
                 {isCalendarOpen && (
@@ -265,11 +264,10 @@ const FormProfile = ({
         <div className="mt-4">
           <Button
             type="submit"
-            className={`${
-              Object.keys(errors).length > 0
-                ? 'cursor-not-allowed bg-brand-solid opacity-20'
-                : 'bg-brand-solid hover:bg-indigo-700'
-            } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
+            className={`${Object.keys(errors).length > 0
+              ? 'cursor-not-allowed bg-brand-solid opacity-20'
+              : 'bg-brand-solid hover:bg-indigo-700'
+              } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
           >
             <span>Save Changes</span>
           </Button>

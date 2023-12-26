@@ -19,7 +19,7 @@ export default function CartElement({
   add,
   remove,
   removeAll,
-}: CartElementProps) {
+}: Readonly<CartElementProps>) {
   const { name, price, description } = product.info
 
   const addProduct = () => {

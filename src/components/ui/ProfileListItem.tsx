@@ -7,7 +7,7 @@ const ProfileListItem = ({ label, data }: ProfileListProps) => {
   return (
     <li className="flex">
       <span className="w-[152px] text-primary opacity-60">{label}:</span>
-      {data || 'N/A'}
+      {data ?? 'N/A'}
     </li>
   )
 }
