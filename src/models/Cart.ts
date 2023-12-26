@@ -14,7 +14,7 @@ export interface ICart {
 export interface ICartItem {
   id: string,
   productInfo: IProduct,
-  productQuantity: 1
+  productQuantity: number
 }
 
 export interface ICartPushItems {
