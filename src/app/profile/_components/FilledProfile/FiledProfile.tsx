@@ -48,9 +48,9 @@ const FiledProfile = () => {
     setIsSuccessEditUser(false)
   }
 
-  const handleLogout = /*async*/ () => {
+  const handleLogout = () => {
     try {
-      //await logout
+      // logic logout
     } catch (error) {
       showError(error)
     }
