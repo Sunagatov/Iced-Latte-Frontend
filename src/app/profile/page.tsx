@@ -3,11 +3,9 @@ import PrivatRoute from '@/Context/PrivateRoute'
 
 const ProfilePage = () => {
   return (
-    <>
-      <PrivatRoute>
-        <FiledProfile />
-      </PrivatRoute>
-    </>
+    <PrivatRoute>
+      <FiledProfile />
+    </PrivatRoute>
   )
 }
 
