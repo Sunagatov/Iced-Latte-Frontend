@@ -7,6 +7,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiRegisterUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import Loader from '@/components/ui/Loader'
 
 interface IFormValues {
   firstName: string
@@ -55,6 +57,7 @@ const schema = yup.object().shape({
 })
 
 export default function RegistrationForm() {
+  const [loading, setLoading] = useState(false)
   const { authenticate } = useAuthStore()
   const router = useRouter()
 
@@ -76,6 +79,7 @@ export default function RegistrationForm() {
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
+      setLoading(true)
       const data = await apiRegisterUser(formData)
 
       authenticate(data.token)
@@ -93,6 +97,8 @@ export default function RegistrationForm() {
           message: 'This email is already exist',
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -139,8 +145,11 @@ export default function RegistrationForm() {
         placeholder="Password"
         error={errors.password}
       />
-      <Button type="submit" className="mt-6 w-full hover:bg-brand-solid-hover">
-        Register
+      <Button
+        type="submit"
+        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
+      >
+        {loading ? <Loader /> : 'Register'}
       </Button>
     </form>
   )

@@ -79,7 +79,6 @@ const FormProfile = ({
     try {
       if (token) {
         await editUserProfile(token, data)
-        // await handleUpload()
         onSuccessEdit()
         updateUserData(data)
       } else {

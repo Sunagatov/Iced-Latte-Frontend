@@ -8,6 +8,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import Loader from '@/components/ui/Loader'
 
 interface IFormValues {
   email: string
@@ -20,6 +22,7 @@ const schema = yup.object().shape({
 })
 
 export default function LoginForm() {
+  const [loading, setLoading] = useState(false)
   const { authenticate } = useAuthStore()
   const router = useRouter()
   const {
@@ -38,6 +41,7 @@ export default function LoginForm() {
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
+      setLoading(true)
       const data = await apiLoginUser(formData)
 
       authenticate(data.token)
@@ -55,6 +59,8 @@ export default function LoginForm() {
           message: 'Wrong email or password',
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -91,9 +97,9 @@ export default function LoginForm() {
         />
         <Button
           type="submit"
-          className="mt-6 w-full hover:bg-brand-solid-hover"
+          className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover"
         >
-          Login
+          {loading ? <Loader /> : 'Login'}
         </Button>
       </form>
     </>

@@ -31,7 +31,7 @@ const FiledProfile = () => {
 
     fetchData()
       .catch((error) => {
-        showError(error)
+        console.error(error)
         reset()
         router.push('/')
       })

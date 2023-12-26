@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { RootLayoutProps } from '@/app/layout'
 import { redirect } from 'next/navigation'
+import Loader from '@/components/ui/Loader'
 
 const PrivatRoute = ({ children }: RootLayoutProps) => {
   const [loading, setLoading] = useState(true)
@@ -17,7 +18,11 @@ const PrivatRoute = ({ children }: RootLayoutProps) => {
   }, [isLoggedIn])
 
   if (loading) {
-    return <p>Loading...</p>
+    return (
+      <div className="flex min-h-[100vh] w-full items-center justify-center">
+        <Loader />
+      </div>
+    )
   }
 
   return <>{children}</>

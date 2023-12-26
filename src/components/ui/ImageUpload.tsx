@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import Loader from './Loader'
 import { useState, FormEvent, useEffect } from 'react'
 import { uploadImage, getAvatar } from '@/services/userService'
 import { useAuthStore } from '@/store/authStore'
@@ -56,6 +57,12 @@ const ImageUpload = () => {
 
       await uploadImage(file, token)
 
+      const newAvatarUrl = await getAvatar(token)
+
+      if (newAvatarUrl) {
+        setAvatarUrl(newAvatarUrl)
+      }
+
       setLoading(false)
       setFile(null)
       setPreview(null)
@@ -80,28 +87,31 @@ const ImageUpload = () => {
           className="h-full w-full rounded-full object-cover"
           src={preview}
           alt={`user preview`}
-          width={100}
-          height={100}
+          width={45}
+          height={61}
         />
-      ) : (
+      ) : typeof avatarUrl === 'string' && avatarUrl !== 'default file' ? (
         <Image
-          src={
-            typeof avatarUrl === 'string' && avatarUrl !== 'default file'
-              ? avatarUrl
-              : '/upload_photo.svg'
-          }
+          className="h-full w-full rounded-full object-cover"
+          src={avatarUrl}
           alt="user photo"
           width={45}
           height={61}
         />
+      ) : (
+        <Image
+          src="/upload_photo.svg"
+          alt="default user photo"
+          width={45}
+          height={61}
+        />
       )}
-
       <div
         className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full"
         onClick={handleUpload}
       >
         {loading ? (
-          <p>Loading...</p>
+          <Loader />
         ) : (
           <Image
             src={preview ? '/add_photo.svg' : '/edit_pen.png'}
