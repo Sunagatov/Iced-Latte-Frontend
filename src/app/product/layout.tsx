@@ -8,6 +8,6 @@ interface ProductLayoutProps {
   children: React.ReactNode
 }
 
-export default function ProductLayout({ children }: ProductLayoutProps) {
+export default function ProductLayout({ children }: Readonly<ProductLayoutProps>) {
   return <div>{children}</div>
 }

@@ -9,6 +9,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        focus: '#682EFF',
+        error: '#EB5757',
+      },
       textColor: {
         primary: '#04121B',
         secondary: '#04121BA3',
@@ -29,6 +33,7 @@ module.exports = {
         'brand-solid': '#682EFF',
         'brand-second': '#F0EAFF',
         'brand-solid-hover': '#5425CC',
+        'hover-heart': '#D9D9D9',
       },
       borderColor: {
         primary: '#242D3429',
