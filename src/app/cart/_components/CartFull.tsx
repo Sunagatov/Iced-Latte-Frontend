@@ -1,24 +1,26 @@
 import Button from '@/components/ui/Button'
 import CartElement from './CartElement'
 import { useCombinedStore } from '@/store/store'
-import { CartItem } from '@/store/cartSlice'
 import Link from 'next/link'
+import { ICartItem } from '@/models/Cart'
+import { useAuthStore } from '@/store/authStore'
 
 export default function CartFull() {
-  const { items, totalPrice, removeFullProduct, remove, add } =
+  const { tempItems, totalPrice, removeFullProduct, remove, add } =
     useCombinedStore()
+  const { token } = useAuthStore()
 
   return (
     <div className="h-{513px} mx-auto flex min-w-[328px] flex-col px-4 md:max-w-[800px]">
       <h2 className="mx-4 my-6 text-left text-4xl">Shopping cart</h2>
       <div>
-        {items.map((item: CartItem) => (
+        {tempItems.map((item: ICartItem) => (
           <CartElement
             key={item.id}
             product={item}
-            remove={remove}
-            removeAll={removeFullProduct}
-            add={add}
+            remove={() => remove(item.productInfo.id, token)}
+            removeAll={() => removeFullProduct(item.productInfo.id, token)}
+            add={() => add(item.productInfo.id, token)}
           />
         ))}
       </div>
