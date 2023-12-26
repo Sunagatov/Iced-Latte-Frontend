@@ -19,7 +19,7 @@ export default function Footer() {
             </a>
           </li>
           <li>
-            Email:
+            Email: 
             <span className={'ml-1 underline  sm:no-underline'}>
               <a
                 href="mailto:info@coffeetimecafe.com"
