@@ -11,6 +11,7 @@ type Props = {
   product: IProduct
 }
 
+
 export default function AddToCartButton({ product }: Props) {
   const [add, remove, removeFullProduct] = useCombinedStore((state) => [
     state.add,

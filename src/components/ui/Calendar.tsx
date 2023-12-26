@@ -6,7 +6,7 @@ type Value = ValuePiece | [ValuePiece, ValuePiece]
 interface CalendarComponentProps {
   onChange: (newDate: Value) => void
   isOpen: boolean
-  onClickBackdrop: (e: React.MouseEvent<HTMLDivElement>) => void
+  onClickBackdrop: (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent) => void
   selectedDate: Date | null
 }
 
@@ -33,6 +33,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
         <div
           className="fixed bottom-0 left-0 right-0 top-0"
           onClick={onClickBackdrop}
+          onKeyDown={onClickBackdrop}
         >
           <div className={'calendarContainer'}>
             <Calendar

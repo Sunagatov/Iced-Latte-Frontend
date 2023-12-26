@@ -8,7 +8,7 @@
   "typescript.preferences.quoteStyle": "single",
   "javascript.preferences.quoteStyle": "single",
   "editor.tabSize": 2,
-  "[typescript]": {
+  "[typescriptreact]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   }
 }

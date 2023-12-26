@@ -23,7 +23,7 @@ export const validationSchema = yup.object().shape({
     .string()
     .required('Date of birth is required')
     .matches(
-      /^(19|20)\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/,
+      /^(19|20)\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
       'Incorrect date format. Use YYYY-MM-DD',
     ),
   phoneNumber: yup.string().required('Phone number is required'),
@@ -36,7 +36,7 @@ export const validationSchema = yup.object().shape({
       (value: string | undefined) => {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-        return emailRegex.test(value || '')
+        return emailRegex.test(value ?? '')
       },
     )
     .required(),

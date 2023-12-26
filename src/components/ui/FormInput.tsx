@@ -22,7 +22,7 @@ export default function FormInput<T extends FieldValues>({
   type = 'text',
   error,
   className,
-}: InputProps<T>) {
+}: Readonly<InputProps<T>>) {
   return (
     <div className={twMerge('mt-6', className)}>
       <label
