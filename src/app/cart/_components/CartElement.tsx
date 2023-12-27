@@ -20,7 +20,7 @@ export default function CartElement({
   add,
   remove,
   removeAll,
-}: CartElementProps) {
+}: Readonly<CartElementProps>) {
   const { productInfo, productQuantity } = product
 
   const addProduct = () => {
