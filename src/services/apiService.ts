@@ -1,4 +1,7 @@
+import { ErrorResponse } from '@/models/ErrorResponse'
 import { IProduct } from '@/models/Products'
+import { handleResponse } from '@/utils/handleResponse'
+import { ServerError } from './authService'
 
 export async function getAllProducts(url: string) {
   try {
@@ -31,3 +34,25 @@ export async function getProduct(id: string): Promise<IProduct> {
     else throw new Error('Something went wrong')
   }
 }
+
+export async function getProductByIds(ids: string[]): Promise<IProduct[]> {
+  try {
+    const body = { productIds: ids }
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/products/ids`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      }
+    )
+
+    return handleResponse<IProduct[], ErrorResponse>(response)
+
+  } catch (error) {
+    throw new ServerError('Something went wrong')
+  }
+}
+
