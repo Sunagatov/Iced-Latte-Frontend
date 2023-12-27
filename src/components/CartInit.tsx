@@ -21,10 +21,8 @@ export default function CartInit() {
       if (itemsIds.length) {
         getCartItems().catch((e) => console.log(e))
       }
-    } else {
-      if (!isSync) {
-        syncBackendCart(token).catch((e) => console.log(e))
-      }
+    } else if (!isSync) {
+      syncBackendCart(token).catch((e) => console.log(e))
     }
   }, [itemsIds, token, isSync])
 
