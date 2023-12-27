@@ -1,27 +1,32 @@
 import Button from '@/components/ui/Button'
-import FavElement from './FavElement'
-
-import { IProduct } from '@/models/Products'
 import Link from 'next/link'
-import { useFavouritesStore } from '@/store/favStore'
+import FavElement from './FavElement'
 import Loader from '@/components/ui/Loader'
-import { useEffect } from 'react'
+import { IProduct } from '@/models/Products'
+import { useFavouritesStore } from '@/store/favStore'
+
+// import { useEffect } from 'react'
 
 export default function FavouritesFull() {
-  const { favourites, loading, count, getFavouriteProducts } =
+  const { favourites, loading, count, } =
     useFavouritesStore()
 
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      try {
-        await getFavouriteProducts()
-      } catch (error) {
-        console.error('Error fetching favourite products:', error)
-      }
-    }
+  // useEffect(() => {
+  //   getFavouriteProducts().catch((e) => console.log(e))
+  // }, [])
 
-    void fetchData()
-  }, [getFavouriteProducts])
+  // useEffect(() => {
+  //   const fetchData = async (): Promise<void> => {
+  //     try {
+  //       await getFavouriteProducts()
+  //     } catch (error) {
+  //       console.error('Error fetching favourite products:', error)
+  //     }
+  //   }
+
+  //   void fetchData()
+  // }, [getFavouriteProducts])
+
 
   return (
     <div className="mx-auto flex h-[513px] min-w-[328px] flex-col px-4 md:max-w-[800px]">
