@@ -1,11 +1,14 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   // Add those two lines:
   "editor.formatOnSave": true, // Tell VSCode to format files on save
   "editor.defaultFormatter": "esbenp.prettier-vscode", // Tell VSCode to use Prettier as default file formatter
   "typescript.preferences.quoteStyle": "single",
   "javascript.preferences.quoteStyle": "single",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

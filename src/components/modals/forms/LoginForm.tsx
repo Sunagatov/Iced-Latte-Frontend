@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
 
 interface IFormValues {
   email: string
@@ -20,7 +21,7 @@ const schema = yup.object().shape({
 
 export default function LoginForm() {
   const { authenticate } = useAuthStore()
-
+  const router = useRouter()
   const {
     register,
     reset,
@@ -41,6 +42,7 @@ export default function LoginForm() {
 
       authenticate(data.token)
       reset()
+      router.push('/')
     } catch (e) {
       if (e instanceof ServerError) {
         setError('root.serverError', {
@@ -57,43 +59,41 @@ export default function LoginForm() {
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-        {errors?.root?.serverError.type === '500' && (
-          <div className="mt-4 text-negative">
-            {errors?.root?.serverError.message}
-          </div>
-        )}
-        {errors?.root?.serverError.type === '400' && (
-          <div className="mt-4 text-negative">
-            {errors?.root?.serverError.message}
-          </div>
-        )}
-        <FormInput
-          id="email"
-          register={register}
-          name="email"
-          type="text"
-          label="Enter your email address"
-          placeholder="Enter your email address"
-          error={errors.email}
-        />
-        <FormInput
-          id="password"
-          register={register}
-          type="password"
-          name="password"
-          label="Password"
-          placeholder="Password"
-          error={errors.password}
-        />
-        <Button
-          type="submit"
-          className="mt-6 w-full hover:bg-brand-solid-hover"
-        >
-          Login
-        </Button>
-      </form>
-    </>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+      {errors?.root?.serverError.type === '500' && (
+        <div className="mt-4 text-negative">
+          {errors?.root?.serverError.message}
+        </div>
+      )}
+      {errors?.root?.serverError.type === '400' && (
+        <div className="mt-4 text-negative">
+          {errors?.root?.serverError.message}
+        </div>
+      )}
+      <FormInput
+        id="email"
+        register={register}
+        name="email"
+        type="text"
+        label="Enter your email address"
+        placeholder="Enter your email address"
+        error={errors.email}
+      />
+      <FormInput
+        id="password"
+        register={register}
+        type="password"
+        name="password"
+        label="Password"
+        placeholder="Password"
+        error={errors.password}
+      />
+      <Button
+        type="submit"
+        className="mt-6 w-full hover:bg-brand-solid-hover"
+      >
+        Login
+      </Button>
+    </form>
   )
 }

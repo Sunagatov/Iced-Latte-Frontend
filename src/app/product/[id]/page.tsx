@@ -19,7 +19,7 @@ async function getProductById(id: string): Promise<IProduct> {
   return result
 }
 
-export default async function Page({ params }: ProductProps) {
+export default async function Page({ params }: Readonly<ProductProps>) {
   const product = await getProductById(params.id)
 
   return (

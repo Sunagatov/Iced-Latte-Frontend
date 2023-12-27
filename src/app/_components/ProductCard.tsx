@@ -6,17 +6,16 @@ import CircleAddBtn from './CircleAddBtn'
 import { IProduct } from '@/models/Products'
 import { productRating, productSize } from '@/constants/product'
 import { useCombinedStore } from '@/store/store'
+import { useAuthStore } from '@/store/authStore'
 import HeartWrapper from './HeartWrapper'
 
 type CardProps = Pick<IProduct, 'id' | 'name' | 'price' | 'description'>
 
-export default function ProductCard({
-  id,
-  name,
-  price,
-  description,
-}: CardProps) {
+
+export default function ProductCard({ id, name, price }: Readonly<CardProps>) {
+
   const addToCart = useCombinedStore((state) => state.add)
+  const token = useAuthStore((state) => state.token)
 
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
@@ -45,17 +44,7 @@ export default function ProductCard({
 
         <CircleAddBtn
           onClick={() => {
-            addToCart({
-              id,
-              info: {
-                name,
-                price,
-                description,
-                active: true,
-                quantity: 40,
-              },
-              quantity: 1,
-            })
+            addToCart(id, token)
           }}
         />
       </div>
