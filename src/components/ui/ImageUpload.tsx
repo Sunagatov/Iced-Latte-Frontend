@@ -12,7 +12,7 @@ const ImageUpload = () => {
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const { token } = useAuthStore() as AuthData
-  // const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -20,7 +20,7 @@ const ImageUpload = () => {
         const url = await getAvatar(token)
 
         if (url) {
-          // setAvatarUrl(url)
+          setAvatarUrl(url)
         } else {
           toast.error('Authentication failed. Token is null or undefined.')
         }
@@ -59,7 +59,7 @@ const ImageUpload = () => {
       const newAvatarUrl = await getAvatar(token)
 
       if (newAvatarUrl) {
-        // setAvatarUrl(newAvatarUrl)
+        setAvatarUrl(newAvatarUrl)
       }
 
       setLoading(false)
@@ -81,7 +81,7 @@ const ImageUpload = () => {
         onChange={handleInputChange}
         aria-label="image"
       />
-      {/* {preview ? (
+      {preview ? (
         <Image
           className="h-full w-full rounded-full object-cover"
           src={preview}
@@ -104,7 +104,7 @@ const ImageUpload = () => {
           width={45}
           height={61}
         />
-      )} */}
+      )}
       <div
         className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full"
         onClick={handleUpload}
