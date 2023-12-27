@@ -1,31 +1,20 @@
+'use client'
+
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import FavElement from './FavElement'
 import Loader from '@/components/ui/Loader'
 import { IProduct } from '@/models/Products'
 import { useFavouritesStore } from '@/store/favStore'
+import { useStoreData } from '@/hooks/useStoreData'
 
-// import { useEffect } from 'react'
 
 export default function FavouritesFull() {
-  const { favourites, loading, count, } =
+  const { favourites, loading } =
     useFavouritesStore()
 
-  // useEffect(() => {
-  //   getFavouriteProducts().catch((e) => console.log(e))
-  // }, [])
+  const count = useStoreData(useFavouritesStore, (state) => state.count)
 
-  // useEffect(() => {
-  //   const fetchData = async (): Promise<void> => {
-  //     try {
-  //       await getFavouriteProducts()
-  //     } catch (error) {
-  //       console.error('Error fetching favourite products:', error)
-  //     }
-  //   }
-
-  //   void fetchData()
-  // }, [getFavouriteProducts])
 
 
   return (
@@ -42,6 +31,9 @@ export default function FavouritesFull() {
             <FavElement key={item.id} product={item} />
           ))
         )}
+
+
+
       </div>
       <div className="flex w-full justify-center">
         <Link href={'/'}>

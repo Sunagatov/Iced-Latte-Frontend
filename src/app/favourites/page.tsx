@@ -6,11 +6,11 @@ import FavouritesFull from './_components/FavouritesFull'
 import { useFavouritesStore } from '@/store/favStore'
 
 export default function Fav() {
-  const { count, getFavouriteProducts } = useFavouritesStore()
+  const { getFavouriteProducts, favouriteIds } = useFavouritesStore()
 
   useEffect(() => {
     getFavouriteProducts().catch((e) => console.log(e))
-  }, [])
+  }, [favouriteIds])
 
-  return <>{count > 0 ? <FavouritesFull /> : <FavouritesEmpty />}</>
+  return <>{favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}</>
 }

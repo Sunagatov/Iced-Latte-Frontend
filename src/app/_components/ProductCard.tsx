@@ -7,7 +7,8 @@ import { IProduct } from '@/models/Products'
 import { productRating, productSize } from '@/constants/product'
 import { useCombinedStore } from '@/store/store'
 import { useAuthStore } from '@/store/authStore'
-import HeartWrapper from './HeartWrapper'
+import ButtonHeart from '@/components/Heart/ButtonHeart'
+import { useFavouritesStore } from '@/store/favStore'
 
 type CardProps = Pick<IProduct, 'id' | 'name' | 'price' | 'description'>
 
@@ -16,6 +17,20 @@ export default function ProductCard({ id, name, price }: Readonly<CardProps>) {
 
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)
+
+
+  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+
+  const isActive = favouriteIds.includes(id)
+
+  const handleButtonClick = () => {
+    if (isActive) {
+      removeFavourite(id)
+    } else {
+      addFavourite(id)
+    }
+  }
+
 
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
@@ -37,7 +52,7 @@ export default function ProductCard({ id, name, price }: Readonly<CardProps>) {
       </Link>
 
       <div className={' absolute right-0 top-0'}>
-        <HeartWrapper id={id} />
+        <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
       </div>
       <div className={'flex items-end justify-between'}>
         <p className={'text-XL font-medium md:text-2XL'}>${price}</p>

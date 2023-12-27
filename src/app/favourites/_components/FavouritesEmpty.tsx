@@ -19,11 +19,13 @@ export default function FavouritesEmpty() {
         />
         <div className=" mt-12  flex flex-col items-center gap-6 py-4">
           <p>Your favourites is empty</p>
-          <Button className="h-14 w-[211px] text-lg font-medium">
-            <Link href={'/'}>Continue Shopping</Link>
-          </Button>
+          <Link href={'/'}>
+            <Button className="h-14 w-[211px] text-lg font-medium">
+              Continue Shopping
+            </Button>
+          </Link>
           <Button
-            onClick={() => {}}
+            onClick={() => { }}
             className="h-14 w-[211px] text-lg font-medium"
           >
             Log in

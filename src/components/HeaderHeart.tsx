@@ -1,24 +1,26 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import black_heart from '../../public/black_heart.svg'
 import active_heart from '../../public/active_heart.svg'
 import { useFavouritesStore } from '@/store/favStore'
+import { useStoreData } from '@/hooks/useStoreData'
 
 export default function HeaderHeart() {
-  const { getFavouriteProducts, favouriteIds } = useFavouritesStore()
 
-  const isEmpty = favouriteIds.length === 0
+  const favouriteIds = useStoreData(useFavouritesStore, (state) => state.favouriteIds)
+  let isEmpty = true
 
-  const handleClick = async () => {
-    await getFavouriteProducts()
-
-    isEmpty
+  if (favouriteIds) {
+    isEmpty = favouriteIds.length === 0
   }
+
 
   return (
     <Link href={'/favourites'}>
       <button
-        onClick={handleClick}
+
         className={
           'relative flex items-center gap-2 rounded-full px-4 py-2 font-medium text-primary'
         }

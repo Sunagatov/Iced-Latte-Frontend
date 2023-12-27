@@ -13,18 +13,14 @@ export interface FavSliceState {
 interface FavSliceActions {
   addFavourite: (id: string) => void
   removeFavourite: (id: string) => void
-  getFavouriteProducts: () => Promise<IProduct[]>
+  getFavouriteProducts: () => Promise<void>
   setLoading: (loading: boolean) => void
 }
 
 export type FavStoreState = FavSliceState & FavSliceActions
 
 const initialState: FavSliceState = {
-  favouriteIds: [
-    '123f7a2d-cb34-4e5f-9a1d-4e4b456a03a7',
-    '1e5b295f-8f50-4425-90e9-8b590a27b3a9',
-    'eedc6cde-1e80-4ebf-a9d1-8e5e4eb2cacf',
-  ],
+  favouriteIds: [],
   favourites: [],
   count: 0,
   loading: false,
@@ -78,32 +74,19 @@ export const useFavouritesStore = create<FavStoreState>()(
         }))
       },
 
-      getFavouriteProducts: async (): Promise<IProduct[]> => {
+      getFavouriteProducts: async (): Promise<void> => {
         const productIds = get().favouriteIds
-
-        console.log('Initial State:', get())
 
         try {
           const products = await fetchProductsByIds(productIds)
 
-          // Checking the state can delete when everything is working
           set((state) => ({
             ...state,
             favourites: products,
             count: productIds.length,
           }))
-
-          console.log('state', {
-            ...get(),
-            favourites: products,
-            count: productIds.length,
-          })
-
-          return products
         } catch (error) {
-          console.error('Error fetching favorite products:', error)
-
-          return []
+          throw new Error((error as Error).message)
         }
       },
     }),

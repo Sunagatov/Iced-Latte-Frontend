@@ -11,12 +11,26 @@ import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
 import { useCombinedStore } from '@/store/store'
+import { useFavouritesStore } from '@/store/favStore'
 
 interface FavElementProps {
   product: IProduct
 }
 
 export default function FavElement({ product }: FavElementProps) {
+
+
+  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+
+  const isActive = favouriteIds.includes(product.id)
+
+  const handleButtonClick = () => {
+    if (isActive) {
+      removeFavourite(product.id)
+    } else {
+      addFavourite(product.id)
+    }
+  }
 
   const { add } =
     useCombinedStore()
@@ -55,7 +69,7 @@ export default function FavElement({ product }: FavElementProps) {
         </div>
         <div className="flex">
           <Button onClick={addToCart} className={'mr-2'}>Add to cart</Button>
-          <ButtonHeart id={product.id} className="ml-2" />
+          <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
         </div>
       </div>
     </div>
