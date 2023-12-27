@@ -11,7 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 type CardProps = Pick<IProduct, 'id' | 'name' | 'price' | 'description'>
 
 
-export default function ProductCard({ id, name, price }: CardProps) {
+export default function ProductCard({ id, name, price }: Readonly<CardProps>) {
 
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)

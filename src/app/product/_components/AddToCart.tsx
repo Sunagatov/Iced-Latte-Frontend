@@ -12,7 +12,7 @@ type Props = {
 }
 
 
-export default function AddToCartButton({ product }: Props) {
+export default function AddToCartButton({ product }: Readonly<Props>) {
   const [add, remove, removeFullProduct] = useCombinedStore((state) => [
     state.add,
     state.remove,
