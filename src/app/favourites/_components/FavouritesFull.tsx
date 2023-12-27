@@ -1,5 +1,3 @@
-'use client'
-
 import Button from '@/components/ui/Button'
 import FavElement from './FavElement'
 
@@ -7,13 +5,27 @@ import { IProduct } from '@/models/Products'
 import Link from 'next/link'
 import { useFavouritesStore } from '@/store/favStore'
 import Loader from '@/components/ui/Loader'
+import { useEffect } from 'react'
 
 export default function FavouritesFull() {
-  const { favourites, loading, count } = useFavouritesStore()
+  const { favourites, loading, count, getFavouriteProducts } =
+    useFavouritesStore()
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      try {
+        await getFavouriteProducts()
+      } catch (error) {
+        console.error('Error fetching favourite products:', error)
+      }
+    }
+
+    void fetchData()
+  }, [getFavouriteProducts])
 
   return (
     <div className="mx-auto flex h-[513px] min-w-[328px] flex-col px-4 md:max-w-[800px]">
-      <h2 className="mx-4 my-6 text-left text-4xl">Favourites</h2>
+      <h2 className="mx-4 my-6 text-left text-4xl">Favourite Products</h2>
 
       <div>
         {loading ? (

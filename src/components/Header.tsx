@@ -1,9 +1,11 @@
+'use client'
+
 import logo from '../../public/logo.svg'
 import Image from 'next/image'
 import Link from 'next/link'
 import CartButton from './CartButton'
 import LoginIcon from './LogicIcon'
-import BlackHeartButton from './BlackHeart'
+import HeaderHeart from './HeaderHeart'
 
 export default function Header() {
   return (
@@ -30,8 +32,9 @@ export default function Header() {
           </span>
         </div>
       </Link>
+
       <div className={'flex justify-between gap-6'}>
-        <BlackHeartButton />
+        <HeaderHeart />
         <LoginIcon />
         <CartButton />
       </div>

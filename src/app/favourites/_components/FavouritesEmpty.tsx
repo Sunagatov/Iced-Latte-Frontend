@@ -8,7 +8,7 @@ import Link from 'next/link'
 export default function FavouritesEmpty() {
   return (
     <div className="w-{800px} 1px h-{513px} mx-auto sm:w-[500px]">
-      <h2 className="mx-4 my-6 text-4xl">Favourites</h2>
+      <h2 className="mx-4 my-6 text-4xl">Favourite Products</h2>
       <div className="mt-12 flex flex-col items-center ">
         <Image
           src={search}

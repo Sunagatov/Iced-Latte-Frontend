@@ -28,9 +28,6 @@ export default function ProductCard({
           </h2>
           <div className={' flex items-center gap-2 text-L md:text-2XL'}>
             <Image src={star} alt="star" className={'inline-block'} />
-            <div className={' absolute right-0 top-0'}>
-              <HeartWrapper id={id} />
-            </div>
 
             <span>{productRating}</span>
             <span className={'text-placeholder'}>
@@ -40,6 +37,9 @@ export default function ProductCard({
         </div>
       </Link>
 
+      <div className={' absolute right-0 top-0'}>
+        <HeartWrapper id={id} />
+      </div>
       <div className={'flex items-end justify-between'}>
         <p className={'text-XL font-medium md:text-2XL'}>${price}</p>
 

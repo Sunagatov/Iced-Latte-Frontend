@@ -15,7 +15,6 @@ interface FavSliceActions {
   removeFavourite: (id: string) => void
   getFavouriteProducts: () => Promise<IProduct[]>
   setLoading: (loading: boolean) => void
-  setClicked: (clicked: boolean) => void
 }
 
 export type FavStoreState = FavSliceState & FavSliceActions
@@ -72,11 +71,12 @@ export const useFavouritesStore = create<FavStoreState>()(
           favouriteIds: [...state.favouriteIds, id],
         })),
 
-      removeFavourite: (id) =>
+      removeFavourite: (id) => {
         set((state) => ({
           favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
           favourites: state.favourites.filter((fav) => fav.id !== id),
-        })),
+        }))
+      },
 
       getFavouriteProducts: async (): Promise<IProduct[]> => {
         const productIds = get().favouriteIds
@@ -86,7 +86,7 @@ export const useFavouritesStore = create<FavStoreState>()(
         try {
           const products = await fetchProductsByIds(productIds)
 
-          // Checking the state
+          // Checking the state can delete when everything is working
           set((state) => ({
             ...state,
             favourites: products,
@@ -106,7 +106,6 @@ export const useFavouritesStore = create<FavStoreState>()(
           return []
         }
       },
-      setClicked: (clicked) => set({ isClicked: clicked }),
     }),
     {
       name: 'fav-storage',
