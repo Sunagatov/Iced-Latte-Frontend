@@ -42,5 +42,6 @@ export default function Header() {
           <CartButton />
         </div>
       </header>
-      )
+    </>
+  )
 }
