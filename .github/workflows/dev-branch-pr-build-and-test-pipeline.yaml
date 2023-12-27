@@ -16,10 +16,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        run: yarn
+        run: npm install --development
 
-      - name: Test and coverage
-        run: yarn jest --coverage
+      - name: Linter
+        run: npm run lint
+
+      - name: Test and Coverage
+        run: npm run test --coverage
 
       - name: SonarQube Analysis
         uses: sonarsource/sonarqube-scan-action@master

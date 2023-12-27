@@ -150,7 +150,7 @@ const FormProfile = ({
             width={18}
             height={18}
             className={`absolute right-10 top-[60%] cursor-pointer transition-transform ${isCalendarOpen ? 'rotate-180' : ''
-              }`}
+            }`}
             onClick={handleCalendarToggle}
           />
           {isCalendarOpen && (
@@ -267,7 +267,7 @@ const FormProfile = ({
             className={`${Object.keys(errors).length > 0
               ? 'cursor-not-allowed bg-brand-solid opacity-20'
               : 'bg-brand-solid hover:bg-indigo-700'
-              } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
+            } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
           >
             <span>Save Changes</span>
           </Button>
