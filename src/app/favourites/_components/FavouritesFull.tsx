@@ -15,25 +15,24 @@ export default function FavouritesFull() {
 
   const count = useStoreData(useFavouritesStore, (state) => state.count)
 
-
+  const renderContent = () => {
+    if (loading) {
+      return <Loader />
+    } else if (count === 0) {
+      return <p>You have no favourites yet.</p>
+    } else {
+      return favourites.map((item: IProduct) => (
+        <FavElement key={item.id} product={item} />
+      ))
+    }
+  }
 
   return (
     <div className="mx-auto flex h-[513px] min-w-[328px] flex-col px-4 md:max-w-[800px]">
       <h2 className="mx-4 my-6 text-left text-4xl">Favourite Products</h2>
 
       <div>
-        {loading ? (
-          <Loader />
-        ) : count === 0 ? (
-          <p>You have no favourites yet.</p>
-        ) : (
-          favourites.map((item: IProduct) => (
-            <FavElement key={item.id} product={item} />
-          ))
-        )}
-
-
-
+        {renderContent()}
       </div>
       <div className="flex w-full justify-center">
         <Link href={'/'}>

@@ -10,7 +10,7 @@ type ButtonHeartProps = {
   active: boolean
 }
 
-export default function ButtonHeart({ active, onClick, className }: ButtonHeartProps) {
+export default function ButtonHeart({ active, onClick, className }: Readonly<ButtonHeartProps>) {
 
 
   const imageUrl = active ? active_heart : not_active_heart

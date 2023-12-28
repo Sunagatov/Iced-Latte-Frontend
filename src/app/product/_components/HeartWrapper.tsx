@@ -8,7 +8,7 @@ type ButtonHeartProps = {
   id: string
 }
 
-export default function HeartWrapper({ id, className }: ButtonHeartProps) {
+export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProps>) {
 
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
 

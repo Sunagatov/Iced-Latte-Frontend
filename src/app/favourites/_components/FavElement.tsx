@@ -17,7 +17,7 @@ interface FavElementProps {
   product: IProduct
 }
 
-export default function FavElement({ product }: FavElementProps) {
+export default function FavElement({ product }: Readonly<FavElementProps>) {
 
 
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
