@@ -1,22 +1,25 @@
 import Image from 'next/image'
-import heartFull from '../../../public/heart_full.svg'
-import heartEmpty from '../../../public/heart_empty.svg'
+import active_heart from '../../../public/active_heart.svg'
+import not_active_heart from '../../../public/not_active_heart.svg'
 import { twMerge } from 'tailwind-merge'
 
+
 type ButtonHeartProps = {
-  active: boolean
-  onClick: () => void
   className?: string
+  onClick?: () => void
+  active: boolean
 }
 
-const ButtonHeart = ({ active, onClick, className }: ButtonHeartProps) => {
-  const imageUrl = active ? heartFull : heartEmpty
+export default function ButtonHeart({ active, onClick, className }: Readonly<ButtonHeartProps>) {
+
+
+  const imageUrl = active ? active_heart : not_active_heart
 
   return (
     <button
       onClick={onClick}
       className={twMerge(
-        'duration-400 hover:bg-hover-heart flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full bg-secondary transition ease-in-out',
+        'duration-400 flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full bg-secondary transition ease-in-out hover:bg-hover-heart',
         className,
       )}
     >
@@ -25,4 +28,4 @@ const ButtonHeart = ({ active, onClick, className }: ButtonHeartProps) => {
   )
 }
 
-export default ButtonHeart
+

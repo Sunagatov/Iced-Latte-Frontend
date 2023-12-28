@@ -1,3 +1,4 @@
+
 import Image from 'next/image'
 import productImage from '../../../../public/card_logo.png'
 import star from '../../../../public/star.png'
@@ -5,6 +6,8 @@ import { IProduct } from '@/models/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
 import AddToCartButton from '../_components/AddToCart'
+import HeartWrapper from '../_components/HeartWrapper'
+
 
 type ProductProps = {
   params: {
@@ -20,6 +23,7 @@ async function getProductById(id: string): Promise<IProduct> {
 
 export default async function Page({ params }: Readonly<ProductProps>) {
   const product = await getProductById(params.id)
+
 
   return (
     <section
@@ -47,7 +51,11 @@ export default async function Page({ params }: Readonly<ProductProps>) {
             </span>
           </div>
         </div>
-        <AddToCartButton product={product} />
+        <div className="flex gap-2">
+          <AddToCartButton product={product} />
+          <HeartWrapper id={product.id} className="ml-2" />
+        </div>
+
         <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
       </div>
     </section>
