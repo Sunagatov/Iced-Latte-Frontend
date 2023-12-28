@@ -10,3 +10,9 @@
 ```bash
 yarn test
 ```
+
+## Fix Linter Issues
+
+```bash
+npm run lint -- --fix
+```
