@@ -25,7 +25,7 @@ export default function CartButton() {
           <Image src={cart_icon} width={20} height={20} alt="Cart" priority />
         </div>
         {!!count && (
-          <div className="absolute left-[-16px] top-0 h-7 w-7 rounded-full bg-fullpage-tint p-1 text-XS leading-5 text-white sm:top-[-12px]">
+          <div className="absolute left-[-16px] top-0 h-7 w-7 rounded-full bg-fullpage-tint p-1 text-XS leading-5 text-black sm:top-[-12px]">
             <span>{count}</span>
           </div>
         )}

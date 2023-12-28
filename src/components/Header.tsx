@@ -1,8 +1,10 @@
+
 import logo from '../../public/logo.svg'
 import Image from 'next/image'
 import Link from 'next/link'
 import CartButton from './CartButton'
 import LoginIcon from './LogicIcon'
+import HeaderHeart from './HeaderHeart'
 import CartInit from './CartInit'
 
 export default function Header() {
@@ -32,7 +34,9 @@ export default function Header() {
             </span>
           </div>
         </Link>
+
         <div className={'flex justify-between gap-6'}>
+          <HeaderHeart />
           <LoginIcon />
           <CartButton />
         </div>
