@@ -2,20 +2,20 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { RootLayoutProps } from '@/app/layout'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Loader from '@/components/ui/Loader'
 
 const RestrictRoute = ({ children }: RootLayoutProps) => {
   const [loading, setLoading] = useState(true)
-
+  const router = useRouter()
   const { isLoggedIn } = useAuthStore()
 
   useEffect(() => {
     if (isLoggedIn) {
-      redirect('/')
+      router.push('/')
     }
     setLoading(false)
-  }, [isLoggedIn])
+  }, [isLoggedIn, router])
 
   if (loading) {
     return (
