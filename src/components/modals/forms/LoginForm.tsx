@@ -2,24 +2,19 @@
 
 import Button from '@/components/ui/Button'
 import FormInput from '@/components/ui/FormInput'
-import * as yup from 'yup'
+import Loader from '@/components/ui/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import Loader from '@/components/ui/Loader'
+import { loginSchema } from '@/validation/loginSchema'
 
 interface IFormValues {
   email: string
   password: string
 }
-
-const schema = yup.object().shape({
-  email: yup.string().required('Email is a required field'),
-  password: yup.string().required('Password is a required field'),
-})
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
@@ -32,7 +27,7 @@ export default function LoginForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -46,7 +41,7 @@ export default function LoginForm() {
 
       authenticate(data.token)
       reset()
-      router.push('/')
+      router.push('/profile')
     } catch (e) {
       if (e instanceof ServerError) {
         setError('root.serverError', {

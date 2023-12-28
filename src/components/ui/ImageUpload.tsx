@@ -4,8 +4,8 @@ import Loader from './Loader'
 import { useState, FormEvent, useEffect } from 'react'
 import { uploadImage, getAvatar, AuthData } from '@/services/userService'
 import { useAuthStore } from '@/store/authStore'
-import { showError } from '@/utils/showError'
 import { toast } from 'react-toastify'
+import { showError } from '@/utils/showError'
 
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
@@ -16,6 +16,7 @@ const ImageUpload = () => {
 
   useEffect(() => {
     const fetchAvatar = async () => {
+      setLoading(true)
       if (token) {
         const url = await getAvatar(token)
 
@@ -29,7 +30,7 @@ const ImageUpload = () => {
 
     fetchAvatar().catch((error) => {
       showError(error)
-    })
+    }).finally(() => setLoading(false))
   }, [token])
 
   const handleInputChange = (
@@ -62,12 +63,13 @@ const ImageUpload = () => {
         setAvatarUrl(newAvatarUrl)
       }
 
-      setLoading(false)
       setFile(null)
       setPreview(null)
     } catch (error) {
-      console.error('Error uploading image:', error)
-    }
+      showError(error)
+      setFile(null)
+      setPreview(null)
+    } finally { setLoading(false) }
   }
 
   return (

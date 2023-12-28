@@ -15,7 +15,7 @@ const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { token, reset } = useAuthStore()
+  const { token, reset, setModalState } = useAuthStore()
   const router = useRouter()
 
   useEffect(() => {
@@ -31,12 +31,13 @@ const FiledProfile = () => {
 
     fetchData()
       .catch((error) => {
+        setIsLoading(true)
         console.error(error)
         reset()
-        router.push('/')
+        router.push('/auth/login')
       })
       .finally(() => setIsLoading(false))
-  }, [reset, router, token])
+  }, [reset, router, setModalState, token])
 
   const handleSuccessEdit = () => {
     setIsSuccessEditUser(true)

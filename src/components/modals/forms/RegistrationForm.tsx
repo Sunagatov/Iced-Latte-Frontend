@@ -1,13 +1,13 @@
 'use client'
 import Button from '@/components/ui/Button'
 import FormInput from '@/components/ui/FormInput'
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiRegisterUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { registrationSchema } from '@/validation/registrationSchema'
 import Loader from '@/components/ui/Loader'
 
 interface IFormValues {
@@ -16,47 +16,6 @@ interface IFormValues {
   email: string
   password: string
 }
-
-const emailRegex =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
-
-const nameRegex = /^(?!\\s)(?!.*\\s$)(?!.*?--)[A-Za-z\\s-]*$/
-
-
-const schema = yup.object().shape({
-  firstName: yup
-    .string()
-    .required('First name is a required field')
-    .min(2, 'First name should have a length between 2 and 128 characters')
-    .max(128, 'First name should have a length between 2 and 128 characters')
-    .matches(
-      nameRegex,
-      'First name can contain Latin letters, spaces, and hyphens',
-    ),
-  lastName: yup
-    .string()
-    .required('Last name is a required field')
-    .min(2, 'Last name should have a length between 2 and 128 characters')
-    .max(128, 'Last name should have a length between 2 and 128 characters')
-    .matches(
-      nameRegex,
-      'Last name can contain Latin letters, spaces, and hyphens',
-    ),
-  email: yup
-    .string()
-    .required('Email is a required field')
-    .email('Invalid email')
-    .matches(emailRegex, 'Invalid email'),
-  password: yup
-    .string()
-    .required('Password is a required field')
-    .min(8, 'Password should have a length between 8 and 128 characters')
-    .max(128, 'Password should have a length between 8 and 128 characters')
-    .matches(
-      /(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}/g,
-      'Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
-    ),
-})
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
@@ -70,7 +29,7 @@ export default function RegistrationForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(registrationSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
