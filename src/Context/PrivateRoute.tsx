@@ -13,7 +13,7 @@ const PrivatRoute = ({ children }: RootLayoutProps) => {
   useEffect(() => {
     if (!isLoggedIn) {
       setModalState(true)
-      router.push('/auth/login')
+      router.replace('/auth/login')
 
     }
     setLoading(false)
