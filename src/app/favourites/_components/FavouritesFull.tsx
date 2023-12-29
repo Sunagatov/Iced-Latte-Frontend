@@ -19,7 +19,7 @@ export default function FavouritesFull() {
     if (loading) {
       return <Loader />
     } else if (count === 0) {
-      return <p>You have no favourites yet.</p>
+      return <p>You have no favourite products yet.</p>
     } else {
       return favourites.map((item: IProduct) => (
         <FavElement key={item.id} product={item} />

@@ -1,23 +1,16 @@
 import { ErrorResponse } from '@/models/ErrorResponse'
 import { handleResponse } from '@/utils/handleResponse'
 import { ServerError } from './authService'
+import { FavResponse } from '@/models/FAv'
 import { IProduct } from '@/models/Products'
-
-interface FavResponse {
-  products: IProduct[]
-}
-
-interface IFavPushItems {
-  favouriteIds: string[]
-}
 
 export async function mergeFavs(
   token: string,
-  favouriteIds: IFavPushItems,
+  favouriteIds: string[],
 ): Promise<FavResponse> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/favourites`,
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/favorites`,
       {
         method: 'POST',
         headers: {
@@ -29,6 +22,47 @@ export async function mergeFavs(
     )
 
     return handleResponse<FavResponse, ErrorResponse>(response)
+  } catch (error) {
+    throw new ServerError('Something went wrong')
+  }
+}
+
+export async function removeFavItem(
+  token: string,
+  id: string,
+): Promise<FavResponse> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/favorites/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+
+    return handleResponse<FavResponse, ErrorResponse>(response)
+  } catch (error) {
+    throw new ServerError('Something went wrong')
+  }
+}
+
+export async function getFavByIds(token: string): Promise<IProduct[]> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/favorites`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+
+    return handleResponse<IProduct[], ErrorResponse>(response)
   } catch (error) {
     throw new ServerError('Something went wrong')
   }
