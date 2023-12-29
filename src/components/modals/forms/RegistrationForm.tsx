@@ -1,11 +1,11 @@
 'use client'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/ui/Button'
 import FormInput from '@/components/ui/FormInput'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiRegisterUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { registrationSchema } from '@/validation/registrationSchema'
 import Loader from '@/components/ui/Loader'
@@ -20,7 +20,7 @@ interface IFormValues {
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const { authenticate } = useAuthStore()
-  const router = useRouter()
+  const { redirectToPreviousRoute } = useAuthRedirect()
 
   const {
     register,
@@ -45,7 +45,7 @@ export default function RegistrationForm() {
 
       authenticate(data.token)
       reset()
-      router.push('/')
+      redirectToPreviousRoute()
     } catch (e) {
       if (e instanceof ServerError) {
         setError('root.serverError', {
