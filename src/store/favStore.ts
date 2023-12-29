@@ -1,22 +1,26 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { IProduct } from '@/models/Products'
+import { mergeFavs } from '@/services/apiFavService'
+import { getProductByIds } from '@/services/apiService'
 
 export interface FavSliceState {
   favouriteIds: string[]
   favourites: IProduct[]
   loading: boolean
   count: number
-  isClicked: boolean
+  isSync: false
 }
-
+interface IFavPushItems {
+  favouriteIds: string[]
+}
 interface FavSliceActions {
   addFavourite: (id: string) => void
   removeFavourite: (id: string) => void
   getFavouriteProducts: () => Promise<void>
   setLoading: (loading: boolean) => void
+  syncBackendFav: (token: string) => Promise<void>
 }
-
 export type FavStoreState = FavSliceState & FavSliceActions
 
 const initialState: FavSliceState = {
@@ -24,36 +28,7 @@ const initialState: FavSliceState = {
   favourites: [],
   count: 0,
   loading: false,
-  isClicked: false,
-}
-
-const fetchProductsByIds = async (ids: string[]): Promise<IProduct[]> => {
-  if (ids.length === 0) return []
-
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/products/ids`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productIds: ids }),
-      },
-    )
-
-    if (!response.ok) {
-      throw new Error('One or more products not found')
-    }
-
-    const favourites: IProduct[] = await response.json()
-
-    return favourites || []
-  } catch (error) {
-    console.error('Error fetching products:', error)
-
-    return []
-  }
+  isSync: false,
 }
 
 export const useFavouritesStore = create<FavStoreState>()(
@@ -62,10 +37,15 @@ export const useFavouritesStore = create<FavStoreState>()(
       ...initialState,
       setLoading: (loading) => set({ loading }),
 
-      addFavourite: (id) =>
-        set((state) => ({
-          favouriteIds: [...state.favouriteIds, id],
-        })),
+      addFavourite: async (id: string, token: string | null) => {
+        const { favouriteIds } = get()
+
+        if (token) {
+          await get().syncBackendFav(token)
+        } else {
+          set({ favouriteIds: [...favouriteIds, id] })
+        }
+      },
 
       removeFavourite: (id) => {
         set((state) => ({
@@ -73,12 +53,11 @@ export const useFavouritesStore = create<FavStoreState>()(
           favourites: state.favourites.filter((fav) => fav.id !== id),
         }))
       },
-
       getFavouriteProducts: async (): Promise<void> => {
         const productIds = get().favouriteIds
 
         try {
-          const products = await fetchProductsByIds(productIds)
+          const products = await getProductByIds(productIds)
 
           set((state) => ({
             ...state,
@@ -87,6 +66,22 @@ export const useFavouritesStore = create<FavStoreState>()(
           }))
         } catch (error) {
           throw new Error((error as Error).message)
+        }
+      },
+      syncBackendFav: async (token: string) => {
+        try {
+          const { favouriteIds } = get()
+          const reqItems: IFavPushItems = { favouriteIds }
+
+          const response = await mergeFavs(token, reqItems)
+          const { products } = response
+
+          set((state) => ({
+            ...state,
+            favourites: products,
+          }))
+        } catch (e) {
+          throw new Error((e as Error).message)
         }
       },
     }),

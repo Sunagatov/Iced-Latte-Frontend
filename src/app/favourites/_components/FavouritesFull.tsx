@@ -28,7 +28,7 @@ export default function FavouritesFull() {
   }
 
   return (
-    <div className="mx-auto flex h-[513px] min-w-[328px] flex-col px-4 md:max-w-[800px]">
+    <div className="mx-auto flex min-w-[328px] flex-col px-4 md:max-w-[800px]">
       <h2 className="mx-4 my-6 text-left text-4xl">Favourite Products</h2>
 
       <div>
