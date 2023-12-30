@@ -49,7 +49,6 @@ export default function CartElement({
 
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
-      {/* Left side: Picture */}
       <div className="flex justify-center">
         <Link href={`/product/${product.productInfo.id}`}>
           <Image
@@ -60,8 +59,6 @@ export default function CartElement({
           />
         </Link>
       </div>
-
-      {/* Right side: Data */}
       <div className="relative ml-4 grow">
         <p className="text-lg font-semibold">{productInfo.name}</p>
         <p className={'font-medium text-placeholder'}>{` ${productSize} g.`}</p>

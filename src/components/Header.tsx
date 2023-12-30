@@ -22,8 +22,8 @@ export default function Header() {
             <span className={'hidden items-center text-L sm:flex'}>
               Iced Latte
             </span>
-            <span className={'flex items-center text-L font-medium text-primary sm:hidden'}>
-              IL
+            <span
+              className={'flex items-center text-L font-medium text-primary sm:hidden'}>IL
             </span>
           </div>
         </Link>

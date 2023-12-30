@@ -8,12 +8,9 @@ import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 
 export default function Fav() {
-  const { getFavouriteProducts, favouriteIds } = useFavouritesStore()
+  const { getFavouriteProducts, favouriteIds, syncBackendFav } = useFavouritesStore()
 
   const { token } = useAuthStore()
-
-
-
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
@@ -27,6 +24,7 @@ export default function Fav() {
 
     void fetchData()
   }, [getFavouriteProducts, token])
+
 
   return <>
     {favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
