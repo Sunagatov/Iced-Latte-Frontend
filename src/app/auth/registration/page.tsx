@@ -1,8 +1,11 @@
 import AuthModalRegistr from '@/components/modals/AuthModalRegistration'
+import RestrictRoute from '@/Context/RestrictRoute'
 
 const RegisterParallelRoute = () => {
   return (
-    <AuthModalRegistr />
+    <RestrictRoute>
+      <AuthModalRegistr />
+    </RestrictRoute>
   )
 }
 

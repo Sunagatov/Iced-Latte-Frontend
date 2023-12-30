@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { getUserData, UserData } from '@/services/userService'
 import { showError } from '@/utils/showError'
 import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
 import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/ui/Button'
@@ -14,20 +15,8 @@ const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { token } = useAuthStore()
-  const [loadingImg, setLoadingImg] = useState(false)
-
-  const handleImageUpload = () => {
-    try {
-      setLoadingImg(true)
-    } catch (error) {
-      console.error('Error uploading image:', error)
-    } finally {
-      setLoadingImg(false)
-    }
-
-    return Promise.resolve()
-  }
+  const { token, reset, setModalState } = useAuthStore()
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,10 +31,13 @@ const FiledProfile = () => {
 
     fetchData()
       .catch((error) => {
-        showError(error)
+        setIsLoading(true)
+        console.error(error)
+        reset()
+        router.push('/auth/login')
       })
       .finally(() => setIsLoading(false))
-  }, [token])
+  }, [reset, router, setModalState, token])
 
   const handleSuccessEdit = () => {
     setIsSuccessEditUser(true)
@@ -57,9 +49,9 @@ const FiledProfile = () => {
     setIsSuccessEditUser(false)
   }
 
-  const handleLogout = /*async*/ () => {
+  const handleLogout = () => {
     try {
-      //await logout
+      // logic logout
     } catch (error) {
       showError(error)
     }
@@ -86,7 +78,7 @@ const FiledProfile = () => {
         </div>
         {isSuccessEditUser && !isEditing ? (
           <>
-            <ImageUpload onUpload={handleImageUpload} loading={loadingImg} />
+            <ImageUpload />
             <ProfileInfo
               userData={userData}
               isLoading={isLoading}
