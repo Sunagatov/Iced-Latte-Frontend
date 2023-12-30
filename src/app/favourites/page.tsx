@@ -13,10 +13,11 @@ export default function Fav() {
   const { token } = useAuthStore()
 
 
+
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        if (token) { } else {
+        if (!token) {
           await getFavouriteProducts()
         }
       } catch (error) {
@@ -26,7 +27,6 @@ export default function Fav() {
 
     void fetchData()
   }, [getFavouriteProducts, token])
-
 
   return <>
     {favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
