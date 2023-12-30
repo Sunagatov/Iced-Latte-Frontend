@@ -55,7 +55,6 @@ export default async function Page({ params }: Readonly<ProductProps>) {
           <AddToCartButton product={product} />
           <HeartWrapper id={product.id} className="ml-2" />
         </div>
-
         <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
       </div>
     </section>
