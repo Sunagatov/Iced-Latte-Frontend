@@ -1,3 +1,5 @@
+
+
 import React from 'react'
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
@@ -9,6 +11,7 @@ import { ICartItem } from '@/models/Cart'
 import Link from 'next/link'
 import ButtonHeart from '@/components/Heart/ButtonHeart'
 import { useFavouritesStore } from '@/store/favStore'
+
 
 interface CartElementProps {
   product: ICartItem
@@ -30,14 +33,17 @@ export default function CartElement({
   }
 
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
-
   const isActive = favouriteIds.includes(product.id)
 
-  const handleButtonClick = () => {
-    if (isActive) {
-      removeFavourite(product.id)
-    } else {
-      addFavourite(product.id)
+  const handleButtonClick = async () => {
+    try {
+      if (isActive) {
+        await removeFavourite(product.id)
+      } else {
+        await addFavourite(product.id,)
+      }
+    } catch (error) {
+      console.error('Error in handleButtonClick:', error)
     }
   }
 

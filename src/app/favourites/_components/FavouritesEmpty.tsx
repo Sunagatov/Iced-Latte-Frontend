@@ -18,7 +18,7 @@ export default function FavouritesEmpty() {
           priority
         />
         <div className=" mt-12  flex flex-col items-center gap-6 py-4">
-          <p>Your favourites is empty</p>
+          <p>Your favourite products folder is empty</p>
           <Link href={'/'}>
             <Button className="h-14 w-[211px] text-lg font-medium">
               Continue Shopping
