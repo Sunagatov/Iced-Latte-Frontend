@@ -13,9 +13,7 @@ export default function Header() {
       <CartInit />
       <header
         className={
-          'sticky left-0 top-0 z-10 mx-auto flex h-14 w-full items-center justify-between bg-primary pl-9 pr-6 sm:h-24'
-        }
-      >
+          'sticky left-0 top-0 z-10 mx-auto flex h-14 w-full items-center justify-between bg-primary pl-9 pr-6 '}>
         <Link href="/">
           <div className={' flex items-center gap-4'}>
             <div className={'h-[21px] w-[19px] sm:h-[31px] sm:w-[28px]'}>
@@ -24,17 +22,11 @@ export default function Header() {
             <span className={'hidden items-center text-L sm:flex'}>
               Iced Latte
             </span>
-
-            <span
-              className={
-                'flex items-center text-L font-medium text-primary sm:hidden'
-              }
-            >
+            <span className={'flex items-center text-L font-medium text-primary sm:hidden'}>
               IL
             </span>
           </div>
         </Link>
-
         <div className={'flex justify-between gap-6'}>
           <HeaderHeart />
           <LoginIcon />

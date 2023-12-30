@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer
       className={
-        'flex h-48 w-full items-center justify-start bg-black text-inverted sm:h-36 sm:flex-row'
+        'flex h-28 w-full items-center justify-start bg-black text-inverted sm:flex-row'
       }
     >
       <div
@@ -19,7 +19,7 @@ export default function Footer() {
             </a>
           </li>
           <li>
-            Email: 
+            Email:
             <span className={'ml-1 underline  sm:no-underline'}>
               <a
                 href="mailto:info@coffeetimecafe.com"
