@@ -1,27 +1,24 @@
 'use client'
-
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/ui/Button'
 import FormInput from '@/components/ui/FormInput'
-import * as yup from 'yup'
+import Loader from '@/components/ui/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ServerError, apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { loginSchema } from '@/validation/loginSchema'
 
 interface IFormValues {
   email: string
   password: string
 }
 
-const schema = yup.object().shape({
-  email: yup.string().required('Email is a required field'),
-  password: yup.string().required('Password is a required field'),
-})
-
 export default function LoginForm() {
+  const [loading, setLoading] = useState(false)
   const { authenticate } = useAuthStore()
-  const router = useRouter()
+  const { redirectToPreviousRoute } = useAuthRedirect()
   const {
     register,
     reset,
@@ -29,7 +26,7 @@ export default function LoginForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -38,11 +35,12 @@ export default function LoginForm() {
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
+      setLoading(true)
       const data = await apiLoginUser(formData)
 
       authenticate(data.token)
       reset()
-      router.push('/')
+      redirectToPreviousRoute()
     } catch (e) {
       if (e instanceof ServerError) {
         setError('root.serverError', {
@@ -55,6 +53,8 @@ export default function LoginForm() {
           message: 'Wrong email or password',
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -90,9 +90,9 @@ export default function LoginForm() {
       />
       <Button
         type="submit"
-        className="mt-6 w-full hover:bg-brand-solid-hover"
+        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover"
       >
-        Login
+        {loading ? <Loader /> : 'Login'}
       </Button>
     </form>
   )

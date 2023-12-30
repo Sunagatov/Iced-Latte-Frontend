@@ -7,6 +7,8 @@ import Counter from '@/components/ui/Counter'
 import { productSize } from '@/constants/product'
 import { ICartItem } from '@/models/Cart'
 import Link from 'next/link'
+import ButtonHeart from '@/components/Heart/ButtonHeart'
+import { useFavouritesStore } from '@/store/favStore'
 
 interface CartElementProps {
   product: ICartItem
@@ -14,6 +16,11 @@ interface CartElementProps {
   remove: () => void
   removeAll: () => void
 }
+
+
+
+
+
 
 export default function CartElement({
   product,
@@ -26,6 +33,21 @@ export default function CartElement({
   const addProduct = () => {
     add()
   }
+
+
+
+  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+
+  const isActive = favouriteIds.includes(product.id)
+
+  const handleButtonClick = () => {
+    if (isActive) {
+      removeFavourite(product.id)
+    } else {
+      addFavourite(product.id)
+    }
+  }
+
 
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
@@ -46,6 +68,7 @@ export default function CartElement({
           2,
         )}`}</p>
         <div className="mt-[22px] flex justify-start">
+
           <Counter
             theme="light"
             className={'h-[42px]'}
@@ -65,6 +88,9 @@ export default function CartElement({
           >
             <Image src={trash} width={24} height={24} alt="Logo" priority />
           </Button>
+          <div>
+            <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
+          </div>
         </div>
       </div>
     </div>

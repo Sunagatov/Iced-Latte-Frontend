@@ -1,15 +1,37 @@
 'use client'
-import { useState, FormEvent } from 'react'
 import Image from 'next/image'
+import Loader from './Loader'
+import { useState, FormEvent, useEffect } from 'react'
+import { uploadImage, getAvatar, AuthData } from '@/services/userService'
+import { useAuthStore } from '@/store/authStore'
+import { toast } from 'react-toastify'
+import { showError } from '@/utils/showError'
 
-interface ImageUploadProps {
-  onUpload: (file: File) => Promise<void>
-  loading: boolean
-}
-
-const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
+const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
+  const { token } = useAuthStore() as AuthData
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      setLoading(true)
+      if (token) {
+        const url = await getAvatar(token)
+
+        if (url) {
+          setAvatarUrl(url)
+        } else {
+          toast.error('Authentication failed. Token is null or undefined.')
+        }
+      }
+    }
+
+    fetchAvatar().catch((error) => {
+      showError(error)
+    }).finally(() => setLoading(false))
+  }, [token])
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
@@ -25,19 +47,29 @@ const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
     }
   }
 
-  const handleUpload = (e: FormEvent<HTMLDivElement>): void => {
+  const handleUpload = async (e: FormEvent<HTMLDivElement>) => {
     e.preventDefault()
 
-    if (!file) return alert('No valid image file selected.')
+    if (!file) return toast.warning('No valid image file selected.')
 
-    onUpload(file)
-      .then(() => {
-        setFile(null)
-        setPreview(null)
-      })
-      .catch((error) => {
-        console.log('Error uploading image:', error)
-      })
+    try {
+      setLoading(true)
+
+      await uploadImage(file, token)
+
+      const newAvatarUrl = await getAvatar(token)
+
+      if (newAvatarUrl) {
+        setAvatarUrl(newAvatarUrl)
+      }
+
+      setFile(null)
+      setPreview(null)
+    } catch (error) {
+      showError(error)
+      setFile(null)
+      setPreview(null)
+    } finally { setLoading(false) }
   }
 
   return (
@@ -56,25 +88,32 @@ const ImageUpload = ({ onUpload, loading }: ImageUploadProps) => {
           className="h-full w-full rounded-full object-cover"
           src={preview}
           alt={`user preview`}
-          width={100}
-          height={100}
+          width={45}
+          height={61}
         />
-      ) : (
+      ) : typeof avatarUrl === 'string' && avatarUrl !== 'default file' ? (
         <Image
-          src="/upload_photo.svg"
+          className="h-full w-full rounded-full object-cover"
+          src={avatarUrl}
           alt="user photo"
           width={45}
           height={61}
         />
+      ) : (
+        <Image
+          src="/upload_photo.svg"
+          alt="default user photo"
+          width={45}
+          height={61}
+        />
       )}
-
       <div
         className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full"
         onClick={handleUpload}
         onKeyDown={handleUpload}
       >
         {loading ? (
-          <p>Loading...</p>
+          <Loader />
         ) : (
           <Image
             src={preview ? '/add_photo.svg' : '/edit_pen.png'}

@@ -1,10 +1,7 @@
 export default function Footer() {
   return (
     <footer
-      className={
-        'flex h-24 w-full items-center justify-start bg-black text-inverted sm:flex-row'
-      }
-    >
+      className={'flex h-24 w-full items-center justify-start bg-black text-inverted sm:flex-row'}>
       <div
         className={' ml-6 text-lg sm:mx-36 sm:flex sm:items-center sm:gap-36'}
       >

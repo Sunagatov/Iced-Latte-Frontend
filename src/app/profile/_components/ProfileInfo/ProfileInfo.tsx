@@ -2,6 +2,7 @@ import { UserData } from '@/services/userService'
 import { formatDate } from '@/utils/formDate'
 import ProfileListItem from '@/components/ui/ProfileListItem'
 import Button from '@/components/ui/Button'
+import Loader from '@/components/ui/Loader'
 
 type UserProfileInfoProps = {
   userData: UserData | null
@@ -16,7 +17,7 @@ const ProfileInfo = ({
 }: UserProfileInfoProps) => {
   return (
     <>
-      {isLoading && <div className="text-center">Loading...</div>}
+      {isLoading && <Loader />}
       {userData && (
         <div>
           <h2 className="mb-8 text-2xl font-medium text-primary">
