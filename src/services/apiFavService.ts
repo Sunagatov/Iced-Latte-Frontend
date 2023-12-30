@@ -1,12 +1,12 @@
 import { ErrorResponse } from '@/models/ErrorResponse'
 import { handleResponse } from '@/utils/handleResponse'
 import { ServerError } from './authService'
-import { FavResponse } from '@/models/FAv'
+import { FavResponse, IFavPushItems } from '@/models/Fav'
 import { IProduct } from '@/models/Products'
 
 export async function mergeFavs(
   token: string,
-  favouriteIds: string[],
+  requestItems: IFavPushItems,
 ): Promise<FavResponse> {
   try {
     const response = await fetch(
@@ -17,7 +17,7 @@ export async function mergeFavs(
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(favouriteIds),
+        body: JSON.stringify(requestItems),
       },
     )
 

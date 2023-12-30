@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import { IProduct } from '@/models/Products'
 import { getFavByIds, mergeFavs, removeFavItem } from '@/services/apiFavService'
 import { getProductByIds } from '@/services/apiService'
-import { IFavPushItems } from '@/models/FAv'
+import { IFavPushItems } from '@/models/Fav'
 
 export interface FavSliceState {
   favouriteIds: string[]
@@ -16,7 +16,7 @@ export interface FavSliceState {
 interface FavSliceActions {
   addFavourite: (id: string, token: string | null) => Promise<void>
   removeFavourite: (id: string, token: string | null) => Promise<void>
-  getFavouriteProducts: (token: string | null) => Promise<void>
+  getFavouriteProducts: () => Promise<void>
   setLoading: (loading: boolean) => void
   syncBackendFav: (token: string) => Promise<void>
 }
@@ -40,6 +40,7 @@ export const useFavouritesStore = create<FavStoreState>()(
         const { favouriteIds } = get()
 
         if (token) {
+          set({ favouriteIds: [...favouriteIds, id] })
           await get().syncBackendFav(token)
         } else {
           set({ favouriteIds: [...favouriteIds, id] })
@@ -52,10 +53,14 @@ export const useFavouritesStore = create<FavStoreState>()(
       ): Promise<void> => {
         try {
           if (token) {
+            set((state) => ({
+              ...state,
+              favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
+            }))
             await removeFavItem(token, id)
-            await get().syncBackendFav(token)
           } else {
             set((state) => ({
+              ...state,
               favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
               favourites: state.favourites.filter((fav) => fav.id !== id),
             }))
@@ -64,26 +69,16 @@ export const useFavouritesStore = create<FavStoreState>()(
           throw new Error((error as Error).message)
         }
       },
-      getFavouriteProducts: async (token: string | null): Promise<void> => {
+      getFavouriteProducts: async (): Promise<void> => {
         try {
-          if (token) {
-            const products = await getFavByIds(token)
+          const productIds = get().favouriteIds
+          const products = await getProductByIds(productIds)
 
-            set((state) => ({
-              ...state,
-              favourites: products,
-              count: products.length,
-            }))
-          } else {
-            const productIds = get().favouriteIds
-            const products = await getProductByIds(productIds)
-
-            set((state) => ({
-              ...state,
-              favourites: products,
-              count: productIds.length,
-            }))
-          }
+          set((state) => ({
+            ...state,
+            favourites: products,
+            count: productIds.length,
+          }))
         } catch (error) {
           throw new Error((error as Error).message)
         }
@@ -92,13 +87,14 @@ export const useFavouritesStore = create<FavStoreState>()(
       syncBackendFav: async (token: string) => {
         try {
           const { favouriteIds } = get()
-          const reqItems: IFavPushItems = { favouriteIds }
+          const reqItems: IFavPushItems = { productIds: favouriteIds }
 
           const response = await mergeFavs(token, reqItems)
           const { products } = response
 
           set((state) => ({
             ...state,
+            // favouriteIds: [],
             favourites: products,
           }))
         } catch (e) {
@@ -110,6 +106,7 @@ export const useFavouritesStore = create<FavStoreState>()(
       name: 'fav-storage',
       partialize: (state) => ({
         favouriteIds: state.favouriteIds,
+        favourites: state.favourites,
       }),
     },
   ),

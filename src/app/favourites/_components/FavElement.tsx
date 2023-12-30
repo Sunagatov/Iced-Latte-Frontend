@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useCombinedStore } from '@/store/store'
 import { useFavouritesStore } from '@/store/favStore'
 
+
 interface FavElementProps {
   product: IProduct
 }
@@ -21,17 +22,7 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
 
 
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
-
   const isActive = favouriteIds.includes(product.id)
-
-  const handleButtonClick = () => {
-    if (isActive) {
-      removeFavourite(product.id)
-    } else {
-      addFavourite(product.id)
-    }
-  }
-
   const { add } =
     useCombinedStore()
   const { token } = useAuthStore()
@@ -39,9 +30,35 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
     add(product.id, token)
   }
 
+
+
+  const handleButtonClick = async () => {
+    try {
+      if (isActive) {
+        await removeFavourite(product.id, token)
+      } else {
+        await addFavourite(product.id, token)
+      }
+    } catch (error) {
+      console.error('Error in handleButtonClick:', error)
+    }
+  }
+
+
+
+
+  // const handleButtonClick = () => {
+  //   if (isActive) {
+  //     removeFavourite(product.id, token)
+  //   } else {
+  //     addFavourite(product.id, token)
+  //   }
+  // }
+
+
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
-      {/* Left side: Picture */}
+
       <Link href={`/product/${product.id}`} className="flex justify-center">
         <Image
           src={productImg}
@@ -52,7 +69,7 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
         />
       </Link>
 
-      {/* Right side: Data */}
+
       <div className="relative ml-4 grow">
         <p className="text-lg font-semibold">{product.name}</p>
         <p

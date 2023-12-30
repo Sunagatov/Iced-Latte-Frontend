@@ -10,16 +10,15 @@ import { useStoreData } from '@/hooks/useStoreData'
 
 
 export default function FavouritesFull() {
-  const { favourites, loading } =
-    useFavouritesStore()
+  const { favourites, loading } = useFavouritesStore()
 
   const count = useStoreData(useFavouritesStore, (state) => state.count)
+
+  console.log(favourites)
 
   const renderContent = () => {
     if (loading) {
       return <Loader />
-    } else if (count === 0) {
-      return <p>You have no favourite products yet.</p>
     } else {
       return favourites.map((item: IProduct) => (
         <FavElement key={item.id} product={item} />

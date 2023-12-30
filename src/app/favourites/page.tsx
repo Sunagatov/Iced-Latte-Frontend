@@ -15,12 +15,18 @@ export default function Fav() {
   useEffect(() => {
     if (token) {
       syncBackendFav(token).catch((e) => console.log(e))
+
+    } else {
+      getFavouriteProducts()
     }
 
-    getFavouriteProducts().catch((e) => console.log(e))
-  }, [favouriteIds, token])
+  }, [])
 
 
 
-  return <>{favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}</>
+  return <>
+    {favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
+  </>
+
+
 }

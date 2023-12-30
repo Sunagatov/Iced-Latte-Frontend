@@ -4,5 +4,5 @@ export interface FavResponse {
 }
 
 export interface IFavPushItems {
-  favouriteIds: string[]
+  productIds: string[]
 }
