@@ -17,10 +17,7 @@ export default function ProductCard({ id, name, price }: Readonly<CardProps>) {
 
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)
-
-
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
-
   const isActive = favouriteIds.includes(id)
 
   const handleButtonClick = async () => {

@@ -6,15 +6,9 @@ import FavElement from './FavElement'
 import Loader from '@/components/ui/Loader'
 import { IProduct } from '@/models/Products'
 import { useFavouritesStore } from '@/store/favStore'
-import { useStoreData } from '@/hooks/useStoreData'
-
 
 export default function FavouritesFull() {
   const { favourites, loading } = useFavouritesStore()
-
-  const count = useStoreData(useFavouritesStore, (state) => state.count)
-
-  console.log(favourites)
 
   const renderContent = () => {
     if (loading) {
@@ -29,7 +23,6 @@ export default function FavouritesFull() {
   return (
     <div className="mx-auto flex min-w-[328px] flex-col px-4 md:max-w-[800px]">
       <h2 className="mx-4 my-6 text-left text-4xl">Favourite Products</h2>
-
       <div>
         {renderContent()}
       </div>
