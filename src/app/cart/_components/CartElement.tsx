@@ -17,11 +17,6 @@ interface CartElementProps {
   removeAll: () => void
 }
 
-
-
-
-
-
 export default function CartElement({
   product,
   add,
@@ -34,8 +29,6 @@ export default function CartElement({
     add()
   }
 
-
-
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
 
   const isActive = favouriteIds.includes(product.id)
@@ -47,7 +40,6 @@ export default function CartElement({
       addFavourite(product.id)
     }
   }
-
 
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
