@@ -9,7 +9,7 @@ import { useFavouritesStore } from '@/store/favStore'
 
 export default function FavouritesFull() {
   const { favourites, loading } = useFavouritesStore()
-
+  
   const renderContent = () => {
     if (loading) {
       return <Loader />

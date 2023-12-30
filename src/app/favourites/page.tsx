@@ -11,6 +11,7 @@ export default function Fav() {
   const { getFavouriteProducts, favouriteIds, syncBackendFav } = useFavouritesStore()
   const { token } = useAuthStore()
 
+
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
@@ -34,8 +35,4 @@ export default function Fav() {
 
 
 }
-
-
-
-
 
