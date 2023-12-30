@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { IProduct } from '@/models/Products'
-import { getFavByIds, mergeFavs, removeFavItem } from '@/services/apiFavService'
+import { mergeFavs, removeFavItem } from '@/services/apiFavService'
 import { getProductByIds } from '@/services/apiService'
 import { IFavPushItems } from '@/models/Fav'
 

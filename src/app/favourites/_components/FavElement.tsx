@@ -5,7 +5,6 @@ import productImg from '../../../../public/coffee.png'
 import star from '../../../../public/star.png'
 import { IProduct } from '@/models/Products'
 import ButtonHeart from '@/components/Heart/ButtonHeart'
-
 import { productRating } from '@/constants/product'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
@@ -13,14 +12,11 @@ import { useAuthStore } from '@/store/authStore'
 import { useCombinedStore } from '@/store/store'
 import { useFavouritesStore } from '@/store/favStore'
 
-
 interface FavElementProps {
   product: IProduct
 }
 
 export default function FavElement({ product }: Readonly<FavElementProps>) {
-
-
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
   const isActive = favouriteIds.includes(product.id)
   const { add } =
@@ -29,8 +25,6 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
   const addToCart = () => {
     add(product.id, token)
   }
-
-
 
   const handleButtonClick = async () => {
     try {
@@ -44,18 +38,6 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
     }
   }
 
-
-
-
-  // const handleButtonClick = () => {
-  //   if (isActive) {
-  //     removeFavourite(product.id, token)
-  //   } else {
-  //     addFavourite(product.id, token)
-  //   }
-  // }
-
-
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
 
@@ -68,7 +50,6 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
           className=" object-cover"
         />
       </Link>
-
 
       <div className="relative ml-4 grow">
         <p className="text-lg font-semibold">{product.name}</p>

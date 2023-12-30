@@ -3,7 +3,6 @@ import active_heart from '../../../public/active_heart.svg'
 import not_active_heart from '../../../public/not_active_heart.svg'
 import { twMerge } from 'tailwind-merge'
 
-
 type ButtonHeartProps = {
   className?: string
   onClick?: () => void
@@ -11,8 +10,6 @@ type ButtonHeartProps = {
 }
 
 export default function ButtonHeart({ active, onClick, className }: Readonly<ButtonHeartProps>) {
-
-
   const imageUrl = active ? active_heart : not_active_heart
 
   return (

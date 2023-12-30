@@ -8,11 +8,8 @@ type ButtonHeartProps = {
   className?: string
   id: string
 }
-
 export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProps>) {
-
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
-
   const isActive = favouriteIds.includes(id)
   const { token } = useAuthStore()
 
@@ -27,7 +24,6 @@ export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProp
       console.error('Error in handleButtonClick:', error)
     }
   }
-
 
   return <ButtonHeart onClick={handleButtonClick} active={isActive} className={className} />
 
