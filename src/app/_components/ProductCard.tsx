@@ -23,14 +23,17 @@ export default function ProductCard({ id, name, price }: Readonly<CardProps>) {
 
   const isActive = favouriteIds.includes(id)
 
-  const handleButtonClick = () => {
-    if (isActive) {
-      removeFavourite(id)
-    } else {
-      addFavourite(id)
+  const handleButtonClick = async () => {
+    try {
+      if (isActive) {
+        await removeFavourite(id, token)
+      } else {
+        await addFavourite(id, token)
+      }
+    } catch (error) {
+      console.error('Error in handleButtonClick:', error)
     }
   }
-
 
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
