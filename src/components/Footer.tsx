@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer
       className={
-        'flex h-28 w-full items-center justify-start bg-black text-inverted sm:flex-row'
+        'flex h-24 w-full items-center justify-start bg-black text-inverted sm:flex-row'
       }
     >
       <div
