@@ -1,5 +1,4 @@
 
-
 import React from 'react'
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
@@ -11,6 +10,7 @@ import { ICartItem } from '@/models/Cart'
 import Link from 'next/link'
 import ButtonHeart from '@/components/Heart/ButtonHeart'
 import { useFavouritesStore } from '@/store/favStore'
+import { useAuthStore } from '@/store/authStore'
 
 
 interface CartElementProps {
@@ -32,15 +32,17 @@ export default function CartElement({
     add()
   }
 
+  const token = useAuthStore((state) => state.token)
+
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
   const isActive = favouriteIds.includes(product.id)
 
   const handleButtonClick = async () => {
     try {
       if (isActive) {
-        await removeFavourite(product.id)
+        await removeFavourite(product.id, token)
       } else {
-        await addFavourite(product.id,)
+        await addFavourite(product.id, token)
       }
     } catch (error) {
       console.error('Error in handleButtonClick:', error)
@@ -49,6 +51,7 @@ export default function CartElement({
 
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
+      {/* Left side: Picture */}
       <div className="flex justify-center">
         <Link href={`/product/${product.productInfo.id}`}>
           <Image
@@ -59,6 +62,8 @@ export default function CartElement({
           />
         </Link>
       </div>
+
+      {/* Right side: Data */}
       <div className="relative ml-4 grow">
         <p className="text-lg font-semibold">{productInfo.name}</p>
         <p className={'font-medium text-placeholder'}>{` ${productSize} g.`}</p>
@@ -94,3 +99,4 @@ export default function CartElement({
     </div>
   )
 }
+
