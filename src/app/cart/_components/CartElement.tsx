@@ -71,9 +71,7 @@ export default function CartElement({
           2,
         )}`}</p>
         <div className="mt-[22px] flex justify-start">
-          <div className={' absolute right-0 top-0'}>
-            <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
-          </div>
+
           <Counter
             theme="light"
             className={'h-[42px]'}
@@ -93,7 +91,9 @@ export default function CartElement({
           >
             <Image src={trash} width={24} height={24} alt="Logo" priority />
           </Button>
-
+          <div>
+            <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
+          </div>
         </div>
       </div>
     </div>
