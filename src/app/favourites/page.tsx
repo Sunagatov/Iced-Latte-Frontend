@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useEffect } from 'react'
@@ -10,18 +11,19 @@ export default function Fav() {
   const { getFavouriteProducts, favouriteIds, syncBackendFav } = useFavouritesStore()
 
   const { token } = useAuthStore()
-
-
   useEffect(() => {
-    if (token) {
-      syncBackendFav(token).catch((e) => console.log(e))
-
-    } else {
-      getFavouriteProducts()
+    const fetchData = async (): Promise<void> => {
+      try {
+        if (!token) {
+          await getFavouriteProducts()
+        }
+      } catch (error) {
+        console.error('Error in Fav useEffect:', error)
+      }
     }
 
-  }, [])
-
+    void fetchData()
+  }, [getFavouriteProducts, token])
 
 
   return <>
@@ -30,3 +32,4 @@ export default function Fav() {
 
 
 }
+

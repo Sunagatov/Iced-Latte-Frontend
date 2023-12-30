@@ -6,16 +6,9 @@ import FavElement from './FavElement'
 import Loader from '@/components/ui/Loader'
 import { IProduct } from '@/models/Products'
 import { useFavouritesStore } from '@/store/favStore'
-import { useStoreData } from '@/hooks/useStoreData'
-
 
 export default function FavouritesFull() {
   const { favourites, loading } = useFavouritesStore()
-
-  const count = useStoreData(useFavouritesStore, (state) => state.count)
-
-  console.log(favourites)
-
   const renderContent = () => {
     if (loading) {
       return <Loader />
