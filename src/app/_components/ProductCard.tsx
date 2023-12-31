@@ -33,11 +33,6 @@ export default function ProductCard({ id, name, price, productFileUrl }: Readonl
     }
   }
 
-  if (!productFileUrl) {
-    console.log('image', productFileUrl)
-  }
-  console.log(productFileUrl)
-
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
