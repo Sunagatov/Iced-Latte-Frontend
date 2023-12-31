@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
 import { useCombinedStore } from '@/store/store'
 import { useFavouritesStore } from '@/store/favStore'
+import createImgUrl from '@/utils/createImgUrl'
 
 interface FavElementProps {
   product: IProduct
@@ -43,7 +44,7 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
 
       <Link href={`/product/${product.id}`} className="flex justify-center">
         <Image
-          src={productImg}
+          src={createImgUrl(product.productFileUrl) ? product.productFileUrl! : productImg}
           alt={product.name}
           width={200}
           height={200}
