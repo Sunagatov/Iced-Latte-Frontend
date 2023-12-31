@@ -13,6 +13,7 @@ import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 import createImgUrl from '@/utils/createImgUrl'
 
+
 interface CartElementProps {
   product: ICartItem
   add: () => void
@@ -31,7 +32,9 @@ export default function CartElement({
   const addProduct = () => {
     add()
   }
+
   const token = useAuthStore((state) => state.token)
+
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
   const isActive = favouriteIds.includes(product.id)
 
