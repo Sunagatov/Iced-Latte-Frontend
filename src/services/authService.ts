@@ -17,9 +17,44 @@ type RegisterCredentials = {
   password: string
 }
 
-export async function apiRegisterUser(
-  credentials: RegisterCredentials,
-): Promise<SuccessResponse> {
+interface ConfirmEmailResponse {
+  token: {
+    token: string
+  }
+  httpStatusCode: number
+}
+
+export async function apiConfirmEmail(
+  token: string | null,
+): Promise<ConfirmEmailResponse> {
+  try {
+    if (!token) {
+      throw new Error('Token is null or undefined')
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/confirm`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token }),
+      },
+    )
+
+    const responseData: ConfirmEmailResponse = {
+      token: await response.json(),
+      httpStatusCode: response.status,
+    }
+
+    return responseData
+  } catch (error) {
+    throw new ServerError('Something went wrong')
+  }
+}
+
+export async function apiRegisterUser(credentials: RegisterCredentials) {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/register`,
@@ -31,10 +66,12 @@ export async function apiRegisterUser(
         body: JSON.stringify(credentials),
       },
     )
+    const registerData = await response.text()
 
-    return handleResponse<SuccessResponse, ErrorResponse>(response)
+    return registerData
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    console.error('Profile edit error:', error)
+    throw error
   }
 }
 
