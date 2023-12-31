@@ -11,6 +11,7 @@ import Link from 'next/link'
 import ButtonHeart from '@/components/Heart/ButtonHeart'
 import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
+import createImgUrl from '@/utils/createImgUrl'
 
 
 interface CartElementProps {
@@ -55,7 +56,7 @@ export default function CartElement({
       <div className="flex justify-center">
         <Link href={`/product/${product.productInfo.id}`}>
           <Image
-            src={productImg}
+            src={createImgUrl(productInfo.productFileUrl) ? productInfo.productFileUrl : productImg}
             alt={productInfo.name}
             width={150}
             height={150}
