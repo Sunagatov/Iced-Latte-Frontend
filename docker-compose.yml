@@ -2,7 +2,7 @@ version: "3.5"
 
 networks:
   online-store-network:
-    name: iced-latte-network
+    name: online-store-network
     external: true
 
 services:
@@ -16,6 +16,4 @@ services:
       dockerfile: Dockerfile
     restart: 'always'
     networks:
-      - iced-latte-network
-
-
+      - online-store-network
