@@ -17,9 +17,7 @@ type ProductProps = {
 }
 
 async function getProductById(id: string): Promise<IProduct> {
-
   const result = await getProduct(id)
-
 
   return result
 }
