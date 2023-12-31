@@ -17,4 +17,3 @@ services:
     restart: 'always'
     networks:
       - iced-latte-network
-
