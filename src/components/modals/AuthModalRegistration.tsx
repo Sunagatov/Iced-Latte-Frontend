@@ -32,7 +32,7 @@ function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
   }
 
   return (
-    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-24'}>
+    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
       <Link
         href="/"
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}

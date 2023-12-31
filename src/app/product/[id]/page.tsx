@@ -33,7 +33,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
       }
     >
       <Image
-        src={createImgUrl(product.productFileUrl) ? product.productFileUrl : productImg}
+        src={createImgUrl(product.productFileUrl) ? product.productFileUrl! : productImg}
         width={500}
         height={500}
         alt="product_image"
