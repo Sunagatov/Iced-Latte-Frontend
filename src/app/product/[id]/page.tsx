@@ -1,12 +1,13 @@
 
 import Image from 'next/image'
-import productImage from '../../../../public/card_logo.png'
 import star from '../../../../public/star.png'
 import { IProduct } from '@/models/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
 import AddToCartButton from '../_components/AddToCart'
 import HeartWrapper from '../_components/HeartWrapper'
+import productImg from '../../../../public/coffee.png'
+import createImgUrl from '@/utils/createImgUrl'
 
 
 type ProductProps = {
@@ -32,7 +33,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
       }
     >
       <Image
-        src={productImage}
+        src={createImgUrl(product.productFileUrl) ? product.productFileUrl : productImg}
         width={500}
         height={500}
         alt="product_image"
