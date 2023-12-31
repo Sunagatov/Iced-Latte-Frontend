@@ -56,7 +56,7 @@ export default function CartElement({
       <div className="flex justify-center">
         <Link href={`/product/${product.productInfo.id}`}>
           <Image
-            src={createImgUrl(productInfo.productFileUrl) ? productInfo.productFileUrl : productImg}
+            src={createImgUrl(productInfo.productFileUrl) ? productInfo.productFileUrl! : productImg}
             alt={productInfo.name}
             width={150}
             height={150}

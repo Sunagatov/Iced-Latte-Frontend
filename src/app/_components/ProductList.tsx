@@ -49,7 +49,6 @@ export default function ProductList() {
                 price={product.price}
                 description={product.description}
                 productFileUrl={product.productFileUrl}
-
               />
             </li>
           ))}
