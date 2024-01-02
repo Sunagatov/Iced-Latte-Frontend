@@ -7,6 +7,7 @@ type Props = {
   type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
   className?: string
   children: ReactNode
+  disabled?: boolean
 }
 
 const defaultStyles =
@@ -16,12 +17,13 @@ export default function Button({
   onClick,
   className,
   type = 'button',
+  disabled,
   children,
 }: Readonly<Props>) {
   const styles = defaultStyles + ' ' + (className ?? '')
 
   return (
-    <button className={styles} type={type} onClick={onClick}>
+    <button className={styles} type={type} onClick={onClick} disabled={disabled} >
       {children}
     </button>
   )

@@ -5,17 +5,19 @@ import { usePathname } from 'next/navigation'
 import LoginForm from '@/components/modals/forms/LoginForm'
 import RegistrationForm from '@/components/modals/forms/RegistrationForm'
 import Link from 'next/link'
+import { RootLayoutProps } from '@/app/layout'
 
 type AuthModalProps = {
   onCloseModal?: () => void
 }
+type CombinedProps = AuthModalProps & RootLayoutProps;
 
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',
 }
 
-function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
+function AuthModalRegistr({ children, onCloseModal }: CombinedProps) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(
     SwitchType.Registration,
   )
@@ -89,6 +91,7 @@ function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
               </a>
             </p>
           )}
+          {children}
         </div>
       </div>
     </div>

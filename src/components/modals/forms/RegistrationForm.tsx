@@ -1,14 +1,15 @@
 'use client'
-import useAuthRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/ui/Button'
 import FormInput from '@/components/ui/FormInput'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { ServerError, apiRegisterUser } from '@/services/authService'
-import { useAuthStore } from '@/store/authStore'
+import { apiRegisterUser } from '@/services/authService'
 import { useState } from 'react'
 import { registrationSchema } from '@/validation/registrationSchema'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
 import Loader from '@/components/ui/Loader'
+import { showError } from '@/utils/showError'
 
 interface IFormValues {
   firstName: string
@@ -19,13 +20,11 @@ interface IFormValues {
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
-  const { authenticate } = useAuthStore()
-  const { redirectToPreviousRoute } = useAuthRedirect()
+  const router = useRouter()
+  const { setRegistrationButtonDisabled, isRegistrationButtonDisabled } = useAuthStore()
 
   const {
     register,
-    reset,
-    setError,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
@@ -43,21 +42,19 @@ export default function RegistrationForm() {
       setLoading(true)
       const data = await apiRegisterUser(formData)
 
-      authenticate(data.token)
-      reset()
-      redirectToPreviousRoute()
-    } catch (e) {
-      if (e instanceof ServerError) {
-        setError('root.serverError', {
-          type: '500',
-          message: e.message,
-        })
-      } else {
-        setError('email', {
-          type: 'manual',
-          message: 'This email already exists',
-        })
+      if (data) {
+        setRegistrationButtonDisabled(true)
+        router.push('/auth/registration/confirm_password')
       }
+
+      const scrollContainer = document.getElementById('scroll-container')
+
+      if (scrollContainer) {
+        scrollContainer.scrollIntoView({ behavior: 'smooth' })
+      }
+    } catch (error) {
+      showError(error)
+      setRegistrationButtonDisabled(false)
     } finally {
       setLoading(false)
     }
@@ -107,6 +104,7 @@ export default function RegistrationForm() {
         error={errors.password}
       />
       <Button
+        disabled={isRegistrationButtonDisabled}
         type="submit"
         className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
       >
