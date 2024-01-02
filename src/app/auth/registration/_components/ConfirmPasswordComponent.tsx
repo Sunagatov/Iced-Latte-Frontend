@@ -39,8 +39,9 @@ const ConfirmPasswordComponent = () => {
   useEffect(() => {
     if (formattedTime === '00:00') {
       setIsTimeExpired(true)
+      setRegistrationButtonDisabled(false)
     }
-  }, [formattedTime])
+  }, [formattedTime, setRegistrationButtonDisabled])
 
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
