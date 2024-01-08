@@ -1,6 +1,6 @@
 const nextConfig = {
   images: {
-    domains: ['134.209.25.111'],
+    domains: ['134.209.25.111', '172.19.0.7'],
   },
 }
 
