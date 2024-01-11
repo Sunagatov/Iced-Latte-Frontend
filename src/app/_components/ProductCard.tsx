@@ -40,8 +40,7 @@ export default function ProductCard({ id, name, price, productFileUrl }: Readonl
         <div
           className=' w-full h-[177px] md:h-[360px]  relative'>
           <Image
-            src={productImg}
-            // src={createImgUrl(productFileUrl) ? productFileUrl : productImg}
+            src={createImgUrl() ? productFileUrl : productImg}
             alt="card picture"
             style={{ objectFit: 'cover' }}
             fill={true}
