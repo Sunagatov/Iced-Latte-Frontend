@@ -13,5 +13,5 @@ export interface IProduct {
   price: number
   quantity: number
   active: boolean
-  productFileUrl: string
+  productFileUrl: string | null
 }
