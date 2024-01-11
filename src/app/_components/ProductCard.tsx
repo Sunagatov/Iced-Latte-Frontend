@@ -33,14 +33,13 @@ export default function ProductCard({ id, name, price, productFileUrl }: Readonl
     }
   }
 
-
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
         <div
           className=' w-full h-[177px] md:h-[360px]  relative'>
           <Image
-            src={createImgUrl(productFileUrl) ? productFileUrl : productImg}
+            src={createImgUrl() ? productFileUrl! : productImg}
             alt="card picture"
             style={{ objectFit: 'cover' }}
             fill={true}
