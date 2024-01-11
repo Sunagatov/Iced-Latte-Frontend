@@ -1,4 +1,4 @@
-export default function createImgUrl(): string | null {
+export default function createImgUrl(url: string | null): string | null {
   return null
 }
 
