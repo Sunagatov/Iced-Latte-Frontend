@@ -1,4 +1,3 @@
-'use client'
 import { RootLayoutProps } from '../layout'
 import AuthModalRegistr from '@/components/modals/AuthModalRegistration'
 
