@@ -9,7 +9,7 @@ export default function ProductList() {
     useProducts()
 
   if (error) {
-    console.log(error)
+
 
     return (
       <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
@@ -48,6 +48,7 @@ export default function ProductList() {
                 name={product.name}
                 price={product.price}
                 description={product.description}
+                productFileUrl={product.productFileUrl}
               />
             </li>
           ))}
