@@ -5,7 +5,7 @@ import FormInput from '@/components/ui/FormInput'
 import Loader from '@/components/ui/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { ServerError, apiLoginUser } from '@/services/authService'
+import { apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
 import { loginSchema } from '@/validation/loginSchema'
@@ -17,12 +17,12 @@ interface IFormValues {
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { authenticate } = useAuthStore()
   const { redirectToPreviousRoute } = useAuthRedirect()
   const {
     register,
     reset,
-    setError,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
@@ -41,17 +41,11 @@ export default function LoginForm() {
       authenticate(data.token)
       reset()
       redirectToPreviousRoute()
-    } catch (e) {
-      if (e instanceof ServerError) {
-        setError('root.serverError', {
-          type: '500',
-          message: e.message,
-        })
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(`An error occurred: ${error.message}`)
       } else {
-        setError('root.serverError', {
-          type: '400',
-          message: 'Wrong email or password',
-        })
+        setErrorMessage(`An unknown error occurred`)
       }
     } finally {
       setLoading(false)
@@ -60,14 +54,9 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errors?.root?.serverError.type === '500' && (
+      {errorMessage && (
         <div className="mt-4 text-negative">
-          {errors?.root?.serverError.message}
-        </div>
-      )}
-      {errors?.root?.serverError.type === '400' && (
-        <div className="mt-4 text-negative">
-          {errors?.root?.serverError.message}
+          {errorMessage}
         </div>
       )}
       <FormInput

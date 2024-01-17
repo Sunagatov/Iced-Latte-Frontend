@@ -99,7 +99,8 @@ export async function apiLoginUser(
 
     return handleResponse<SuccessResponse, ErrorResponse>(response)
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    console.error('Login failed:', error)
+    throw error
   }
 }
 

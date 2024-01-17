@@ -9,7 +9,6 @@ import { registrationSchema } from '@/validation/registrationSchema'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import Loader from '@/components/ui/Loader'
-import { showError } from '@/utils/showError'
 
 interface IFormValues {
   firstName: string
@@ -20,6 +19,7 @@ interface IFormValues {
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
   const { setRegistrationButtonDisabled, isRegistrationButtonDisabled } = useAuthStore()
 
@@ -53,7 +53,11 @@ export default function RegistrationForm() {
         scrollContainer.scrollIntoView({ behavior: 'smooth' })
       }
     } catch (error) {
-      showError(error)
+      if (error instanceof Error) {
+        setErrorMessage(`An error occurred: ${error.message}`)
+      } else {
+        setErrorMessage(`An unknown error occurred`)
+      }
       setRegistrationButtonDisabled(false)
     } finally {
       setLoading(false)
@@ -62,9 +66,9 @@ export default function RegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errors?.root?.serverError.type === '500' && (
+      {errorMessage && (
         <div className="mt-4 text-negative">
-          {errors?.root?.serverError.message}
+          {errorMessage}
         </div>
       )}
       <FormInput
