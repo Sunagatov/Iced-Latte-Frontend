@@ -24,7 +24,11 @@ export default function CartInit() {
     } else if (!isSync) {
       syncBackendCart(token).catch((e) => console.log(e))
     }
-  }, [itemsIds, token, isSync])
+  })
+
+  // [itemsIds, token, isSync]) - eSlint was complaying about this line. 
+  // 27:6  Warning: React Hook useEffect has missing dependencies: 'getCartItems', 'reset', and 'syncBackendCart'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
 
   return <></>
 }
