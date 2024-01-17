@@ -10,7 +10,7 @@ services:
     image: 'zufarexplainedit/iced-latte-frontend:${DOCKER_IMAGE_TAG}'
     container_name: iced-latte-frontend
     env_file:
-      - .env
+      - .frontend_env
     build:
       context: .
       dockerfile: Dockerfile
