@@ -15,7 +15,7 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-export function AuthModal({ onCloseModal }: LoginModalProps) {
+export function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
 
@@ -42,7 +42,7 @@ export function AuthModal({ onCloseModal }: LoginModalProps) {
   }
 
   return (
-    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-24'}>
+    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
       <Link
         href="/"
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}

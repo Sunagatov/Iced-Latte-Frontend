@@ -16,7 +16,7 @@ export default function CartEmpty() {
           priority
         />
         <div className=" mt-12  flex flex-col items-center gap-6 py-4">
-          <p>Your card is empty</p>
+          <p>Your cart is empty</p>
           <Button className="h-14 w-[211px] text-lg font-medium">
             <Link href={'/'}>Continue Shopping</Link>
           </Button>

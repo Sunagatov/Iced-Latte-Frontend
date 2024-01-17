@@ -1,7 +1,8 @@
-import React from 'react'
+import './globals.css'
+import 'react-toastify/dist/ReactToastify.css'
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
+import { ToastContainer } from 'react-toastify'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -12,14 +13,15 @@ export const metadata: Metadata = {
   description: 'Iced Latte',
 }
 
-interface RootLayoutProps {
+export interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html lang="en">
       <body className={inter.className + ' flex min-h-screen flex-col'}>
+        <ToastContainer />
         <Header />
         <main className={'min-w-[360px] grow'}>{children}</main>
         <Footer />

@@ -23,7 +23,7 @@ export default function Counter({
   count,
   addProduct,
   removeProduct,
-}: Props) {
+}: Readonly<Props>) {
   const computedStyles =
     defaultStyles +
     ' ' +
@@ -51,7 +51,7 @@ export default function Counter({
       <Image
         src={theme === 'dark' ? minus : minusDark}
         alt="minus"
-        className={'cursor-pointer'}
+        className={'cursor-pointer' + (count === 1 ? ' opacity-10 pointer-events-none' : '')}
         onClick={onMinus}
       />
       <span className={'block w-[31px] text-center'}>{count}</span>
