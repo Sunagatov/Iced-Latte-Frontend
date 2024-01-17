@@ -8,7 +8,7 @@ on:
 
 env:
   ENV_FILE_NAME: .frontend_env
-  ENV_FILE_PATH_IN_PRIVATE_REPOSITORY: ./Vault/IcedLatte/Backend/.frontend_env
+  ENV_FILE_PATH_IN_PRIVATE_REPOSITORY: ./Vault/IcedLatte/Frontend/.frontend_env
   DOCKER_COMPOSE_FILE: docker-compose.yml
   DOCKER_CONTAINER_NAME: latte-frontend
   DOCKER_IMAGE_NAME: iced-latte-frontend
