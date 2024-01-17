@@ -50,7 +50,8 @@ export async function apiConfirmEmail(
 
     return responseData
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    console.error('confirm email:', error)
+    throw error
   }
 }
 
@@ -66,11 +67,17 @@ export async function apiRegisterUser(credentials: RegisterCredentials) {
         body: JSON.stringify(credentials),
       },
     )
+
+    if (!response.ok) {
+      const errorMessage = await response.text()
+
+      throw new Error(`Registration failed: ${errorMessage}`)
+    }
     const registerData = await response.text()
 
     return registerData
   } catch (error) {
-    console.error('Profile edit error:', error)
+    console.error('Registration failed:', error)
     throw error
   }
 }

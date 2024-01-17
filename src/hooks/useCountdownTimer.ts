@@ -51,7 +51,7 @@ export const useFormattedTime = (durationInMinutes: number) => {
       setFormattedTime(formatted)
     },
     onFinish: () => {
-      // Дополнительные действия по завершению таймера, если необходимо
+      // Additional actions to end the timer, if necessary
     },
   })
 
