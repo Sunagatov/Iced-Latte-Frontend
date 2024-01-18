@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { getUserData, UserData } from '@/services/userService'
+import { getUserData } from '@/services/userService'
+import { UserData } from '@/types/services/UserServices'
 import { showError } from '@/utils/showError'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
