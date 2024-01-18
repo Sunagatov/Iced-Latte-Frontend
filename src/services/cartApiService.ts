@@ -1,5 +1,5 @@
-import { ICart, ICartPushItems, ICartUpdatedItem } from '@/models/Cart'
-import { ErrorResponse } from '@/models/ErrorResponse'
+import { ICart, ICartPushItems, ICartUpdatedItem } from '@/types/Cart'
+import { ErrorResponse } from '@/types/ErrorResponse'
 import { handleResponse } from '@/utils/handleResponse'
 import { ServerError } from './authService'
 
@@ -9,7 +9,7 @@ interface IDeleteItems {
 
 export async function mergeCarts(
   token: string,
-  cartItemIds: ICartPushItems
+  cartItemIds: ICartPushItems,
 ): Promise<ICart> {
   try {
     const response = await fetch(
@@ -30,9 +30,7 @@ export async function mergeCarts(
   }
 }
 
-export async function fetchCart(
-  token: string,
-): Promise<ICart> {
+export async function fetchCart(token: string): Promise<ICart> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/cart`,
@@ -53,7 +51,7 @@ export async function fetchCart(
 
 export async function removeCartItem(
   token: string,
-  ids: string[]
+  ids: string[],
 ): Promise<ICart> {
   try {
     const deleteItems: IDeleteItems = { shoppingCartItemIds: ids }
@@ -77,7 +75,7 @@ export async function removeCartItem(
 
 export async function changeCartItemQuantity(
   token: string,
-  item: ICartUpdatedItem
+  item: ICartUpdatedItem,
 ): Promise<ICart> {
   try {
     const response = await fetch(

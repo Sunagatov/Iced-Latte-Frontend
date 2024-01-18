@@ -1,32 +1,11 @@
 import { handleResponse } from '@/utils/handleResponse'
-
-type SuccessResponse = {
-  token: string
-}
-
-type LoginCredentials = {
-  email: string
-  password: string
-}
-
-type RegisterCredentials = {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-}
-
-interface ConfirmEmailResponse {
-  token: {
-    token: string
-  }
-  httpStatusCode: number
-}
-
-interface ErrorResponse {
-  message: string
-  httpStatusCode: number
-}
+import {
+  SuccessResponse,
+  LoginCredentials,
+  RegisterCredentials,
+  ConfirmEmailResponse,
+  ErrorResponse,
+} from '@/types/services/AuthServices'
 
 export async function apiConfirmEmail(
   token: string | null,

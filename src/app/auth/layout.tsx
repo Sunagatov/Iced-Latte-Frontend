@@ -1,5 +1,5 @@
 import { RootLayoutProps } from '../layout'
-import AuthModalRegistr from '@/components/modals/AuthModalRegistration'
+import AuthModalRegistr from '@/components/Auth/Modal/AuthModalRegister/AuthModalRegistration'
 
 const RegistrationLayout = ({ children }: RootLayoutProps) => {
 

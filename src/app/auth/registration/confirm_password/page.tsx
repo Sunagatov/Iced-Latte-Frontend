@@ -1,4 +1,4 @@
-import ConfirmPasswordComponent from '../_components/ConfirmPasswordComponent'
+import ConfirmPasswordComponent from '../../../../components/Auth/ConfirmPassword/ConfirmPasswordComponent'
 
 const ConfirmPasswordPage = () => {
 

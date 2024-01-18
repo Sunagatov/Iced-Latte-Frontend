@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { RootLayoutProps } from '@/app/layout'
 import { useRouter } from 'next/navigation'
-import Loader from '@/components/ui/Loader'
+import Loader from '@/components/UI/Loader/Loader'
 
 const PrivatRoute = ({ children }: RootLayoutProps) => {
   const [loading, setLoading] = useState(true)

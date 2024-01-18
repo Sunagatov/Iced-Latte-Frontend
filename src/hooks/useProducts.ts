@@ -1,4 +1,4 @@
-import { IProductsList } from '@/models/Products'
+import { IProductsList } from '@/types/Products'
 import { getAllProducts } from '@/services/apiService'
 import useSWRInfinite from 'swr/infinite'
 

@@ -1,13 +1,12 @@
-
 import Image from 'next/image'
 import star from '../../../../public/star.png'
-import { IProduct } from '@/models/Products'
-import { getProduct } from '@/services/apiService'
-import { productRating, productSize } from '@/constants/product'
-import AddToCartButton from '../_components/AddToCart'
-import HeartWrapper from '../_components/HeartWrapper'
+import AddToCartButton from '../../../components/Product/AddToCard/AddToCart'
+import HeartWrapper from '../../../components/Product/HeartWrapper/HeartWrapper'
 import productImg from '../../../../public/coffee.png'
 import createImgUrl from '@/utils/createImgUrl'
+import { IProduct } from '@/types/Products'
+import { getProduct } from '@/services/apiService'
+import { productRating, productSize } from '@/constants/product'
 
 
 type ProductProps = {
