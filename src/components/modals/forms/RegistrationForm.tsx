@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { registrationSchema } from '@/validation/registrationSchema'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
+import { useStoreData } from '@/hooks/useStoreData'
 import Loader from '@/components/ui/Loader'
 
 interface IFormValues {
@@ -21,7 +22,12 @@ export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
-  const { setRegistrationButtonDisabled, isRegistrationButtonDisabled } = useAuthStore()
+  const { setRegistrationButtonDisabled } = useAuthStore()
+
+  const isRegistrationButtonDisabled = useStoreData(
+    useAuthStore,
+    (state) => state.isRegistrationButtonDisabled,
+  )
 
   const {
     register,

@@ -1,4 +1,3 @@
-import { ErrorResponse } from '@/models/ErrorResponse'
 import { handleResponse } from '@/utils/handleResponse'
 
 type SuccessResponse = {
@@ -24,6 +23,11 @@ interface ConfirmEmailResponse {
   httpStatusCode: number
 }
 
+interface ErrorResponse {
+  message: string
+  httpStatusCode: number
+}
+
 export async function apiConfirmEmail(
   token: string | null,
 ): Promise<ConfirmEmailResponse> {
@@ -42,6 +46,18 @@ export async function apiConfirmEmail(
         body: JSON.stringify({ token: token }),
       },
     )
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+
+      if (errorResponse.message) {
+        throw new Error(`Confirm registration failed: ${errorResponse.message}`)
+      }
+
+      throw new Error(
+        `Confirm registration failed: ${JSON.stringify(errorResponse)}`,
+      )
+    }
 
     const responseData: ConfirmEmailResponse = {
       token: await response.json(),
@@ -69,10 +85,15 @@ export async function apiRegisterUser(credentials: RegisterCredentials) {
     )
 
     if (!response.ok) {
-      const errorMessage = await response.text()
+      const errorResponse: ErrorResponse = await response.json()
 
-      throw new Error(`Registration failed: ${errorMessage}`)
+      if (errorResponse.message) {
+        throw new Error(`Registration failed: ${errorResponse.message}`)
+      }
+
+      throw new Error(`Registration failed: ${JSON.stringify(errorResponse)}`)
     }
+
     const registerData = await response.text()
 
     return registerData
