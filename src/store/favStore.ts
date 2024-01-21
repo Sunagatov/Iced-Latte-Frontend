@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { IProduct } from '@/models/Products'
+import { IProduct } from '@/types/Products'
 import { mergeFavs, removeFavItem } from '@/services/apiFavService'
 import { getProductByIds } from '@/services/apiService'
-import { IFavPushItems } from '@/models/Fav'
+import { IFavPushItems } from '@/types/Fav'
 
 export interface FavSliceState {
   favouriteIds: string[]

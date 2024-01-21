@@ -1,5 +1,5 @@
-import Hero from './_components/Hero'
-import ProductList from './_components/ProductList'
+import Hero from '../components/Hero/Hero'
+import ProductList from '../components/Product/ProductList/ProductList'
 
 export default function Home() {
   return (
