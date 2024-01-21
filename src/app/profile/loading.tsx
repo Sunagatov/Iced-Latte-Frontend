@@ -1,4 +1,4 @@
-import Loader from '@/components/ui/Loader'
+import Loader from '@/components/UI/Loader/Loader'
 
 const ProfileLoading = () => {
   return (

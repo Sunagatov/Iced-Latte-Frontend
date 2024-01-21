@@ -1,5 +1,5 @@
-import { ErrorResponse } from '@/models/ErrorResponse'
-import { IProduct } from '@/models/Products'
+import { ErrorResponse } from '@/types/ErrorResponse'
+import { IProduct } from '@/types/Products'
 import { handleResponse } from '@/utils/handleResponse'
 import { ServerError } from './authService'
 
@@ -43,16 +43,14 @@ export async function getProductByIds(ids: string[]): Promise<IProduct[]> {
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body)
-      }
+        body: JSON.stringify(body),
+      },
     )
 
     return handleResponse<IProduct[], ErrorResponse>(response)
-
   } catch (error) {
     throw new ServerError('Something went wrong')
   }
 }
-

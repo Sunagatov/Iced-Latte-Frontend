@@ -1,7 +1,6 @@
 'use client'
-
-import CartFull from './_components/CartFull'
-import CartEmpty from './_components/CartEmpty'
+import CartFull from '../../components/Cart/CartFull/CartFull'
+import CartEmpty from '../../components/Cart/CartEmpty/CartEmpty'
 import { useCombinedStore } from '@/store/store'
 import { useStoreData } from '@/hooks/useStoreData'
 

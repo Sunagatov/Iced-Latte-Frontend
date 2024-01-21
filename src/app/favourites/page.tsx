@@ -1,9 +1,7 @@
-
 'use client'
-
+import FavouritesEmpty from '../../components/Favourites/FavouritesEmpty/FavouritesEmpty'
+import FavouritesFull from '../../components/Favourites/FavouritesFull/FavouritesFull'
 import { useEffect } from 'react'
-import FavouritesEmpty from './_components/FavouritesEmpty'
-import FavouritesFull from './_components/FavouritesFull'
 import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 
