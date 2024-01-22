@@ -14,7 +14,7 @@ import { IFormValues } from '@/types/ConfirmPassword'
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const { authenticate, setRegistrationButtonDisabled } = useAuthStore()
+  const { authenticate } = useAuthStore()
   const { redirectToPreviousRoute } = useAuthRedirect()
   const {
     register,
@@ -38,8 +38,6 @@ const ConfirmPasswordComponent = () => {
 
       reset()
 
-      setRegistrationButtonDisabled(false)
-
       redirectToPreviousRoute()
     } catch (error) {
       if (error instanceof Error) {
@@ -47,7 +45,6 @@ const ConfirmPasswordComponent = () => {
       } else {
         setErrorMessage(`An unknown error occurred`)
       }
-      setRegistrationButtonDisabled(false)
     } finally {
       setLoading(false)
     }

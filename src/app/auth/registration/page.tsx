@@ -1,11 +1,11 @@
 import RestrictRoute from '@/Context/RestrictRoute'
-import RegistrationLayout from '../layout'
-import { RootLayoutProps } from '@/app/layout'
+import AuthModalRegistr from '@/components/Auth/Modal/AuthModalRegister/AuthModalRegistration'
+import ConfirmPasswordPage from './confirm_password/page'
 
-const RegisterParallelRoute = ({ children }: RootLayoutProps) => {
+const RegisterParallelRoute = () => {
   return (
     <RestrictRoute>
-      <RegistrationLayout >{children}</RegistrationLayout>
+      < AuthModalRegistr><ConfirmPasswordPage /></AuthModalRegistr>
     </RestrictRoute>
   )
 }
