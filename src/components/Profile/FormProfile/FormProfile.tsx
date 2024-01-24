@@ -15,6 +15,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import CalendarComponent from '@/components/UI/Calendar/Calendar'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
+import countries from '@/constants/countryData'
 
 const FormProfile = ({
   onSuccessEdit,
@@ -23,6 +24,7 @@ const FormProfile = ({
 }: Readonly<FormProfileProps>) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const {
     register,
@@ -77,11 +79,14 @@ const FormProfile = ({
         await editUserProfile(token, data)
         onSuccessEdit()
         updateUserData(data)
-      } else {
-        console.error('Authentication failed. Token is null or undefined.')
       }
+
     } catch (error) {
-      console.error('Error updating profile:', error)
+      if (error instanceof Error) {
+        setErrorMessage(`An error occurred: ${error.message}`)
+      } else {
+        setErrorMessage(`An unknown error occurred`)
+      }
     }
   }
 
@@ -195,8 +200,11 @@ const FormProfile = ({
             <option value="" disabled>
               Select country
             </option>
-            <option value="USA">United States</option>
-            <option value="Canada">Canada</option>
+            {countries.map((country) => (
+              <option key={country.value} value={country.value}>
+                {country.label}
+              </option>
+            ))}
           </select>
           <Image
             src="/open_select.svg"
@@ -243,6 +251,11 @@ const FormProfile = ({
           />
         </div>
         <div className="mt-4">
+          {errorMessage && (
+            <div className="mt-4 text-negative">
+              {errorMessage}
+            </div>
+          )}
           <Button
             type="submit"
             className={`${Object.keys(errors).length > 0

@@ -16,7 +16,7 @@ export default function FormInput<T extends FieldValues>({
     <div className={twMerge('mt-6', className)}>
       <label
         htmlFor={id}
-        className={'font-XS mb-3 block text-sm font-medium text-primary'}
+        className={'font-XS mb-3 block text-sm font-medium text-primary cursor-pointer'}
       >
         {label}
       </label>
