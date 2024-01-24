@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/authStore'
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [inputKey, setInputKey] = useState(Date.now())
   const { errorMessage, handleError } = useErrorHandler()
