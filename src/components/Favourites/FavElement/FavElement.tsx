@@ -5,7 +5,7 @@ import star from '../../../../public/star.png'
 import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
-import createImgUrl from '@/utils/createImgUrl'
+import getImgUrl from '@/utils/getImgUrl'
 import { productRating } from '@/constants/product'
 import { useAuthStore } from '@/store/authStore'
 import { useCombinedStore } from '@/store/store'
@@ -15,8 +15,7 @@ import { FavElementProps } from '@/types/FavElement'
 export default function FavElement({ product }: Readonly<FavElementProps>) {
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
   const isActive = favouriteIds.includes(product.id)
-  const { add } =
-    useCombinedStore()
+  const { add } = useCombinedStore()
   const { token } = useAuthStore()
   const addToCart = () => {
     add(product.id, token)
@@ -36,10 +35,9 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
 
   return (
     <div className="flex items-center justify-between border-b p-4 pr-0">
-
       <Link href={`/product/${product.id}`} className="flex justify-center">
         <Image
-          src={createImgUrl(product.productFileUrl) ? product.productFileUrl! : productImg}
+          src={getImgUrl(product.productFileUrl, productImg)}
           alt={product.name}
           width={200}
           height={200}
@@ -62,8 +60,14 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
           <span>{productRating}</span>
         </div>
         <div className="flex">
-          <Button onClick={addToCart} className={'mr-2'}>Add to cart</Button>
-          <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
+          <Button onClick={addToCart} className={'mr-2'}>
+            Add to cart
+          </Button>
+          <ButtonHeart
+            active={isActive}
+            onClick={handleButtonClick}
+            className="ml-2"
+          />
         </div>
       </div>
     </div>
