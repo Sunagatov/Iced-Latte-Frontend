@@ -1,18 +1,19 @@
 'use client'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { AuthModalProps } from '@/types/AuthModalRegistrationType'
 import LoginForm from '@/components/Auth/Forms/LoginForm/LoginForm'
 import RegistrationForm from '@/components/Auth/Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
-import { CombinedProps } from '@/types/AuthModalRegistration'
+
 
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',
 }
 
-function AuthModalRegistr({ children, onCloseModal }: CombinedProps) {
+function AuthModalRegistr({ children, onCloseModal }: Readonly<AuthModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(
     SwitchType.Registration,
   )
