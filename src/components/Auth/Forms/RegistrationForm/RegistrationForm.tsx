@@ -8,20 +8,12 @@ import { apiRegisterUser } from '@/services/authService'
 import { useState } from 'react'
 import { registrationSchema } from '@/validation/registrationSchema'
 import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/authStore'
-import { useStoreData } from '@/hooks/useStoreData'
 import { IFormValues } from '@/types/RegistrationForm'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
-  const { setRegistrationButtonDisabled } = useAuthStore()
-
-  const isRegistrationButtonDisabled = useStoreData(
-    useAuthStore,
-    (state) => state.isRegistrationButtonDisabled,
-  )
 
   const {
     register,
@@ -43,7 +35,6 @@ export default function RegistrationForm() {
       const data = await apiRegisterUser(formData)
 
       if (data) {
-        setRegistrationButtonDisabled(true)
         router.push('/auth/registration/confirm_password')
       }
 
@@ -58,7 +49,6 @@ export default function RegistrationForm() {
       } else {
         setErrorMessage(`An unknown error occurred`)
       }
-      setRegistrationButtonDisabled(false)
     } finally {
       setLoading(false)
     }
@@ -108,7 +98,7 @@ export default function RegistrationForm() {
         error={errors.password}
       />
       <Button
-        disabled={isRegistrationButtonDisabled}
+        disabled={false}
         type="submit"
         className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
       >
