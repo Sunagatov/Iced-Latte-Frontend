@@ -1,7 +1,7 @@
 export default function createImgUrl(url: string | null): string | null {
-  if (url === 'default file' || !url) {
+  if (typeof url === 'string' || url === null) {
     return null
   }
 
-  return url
+  return null
 }

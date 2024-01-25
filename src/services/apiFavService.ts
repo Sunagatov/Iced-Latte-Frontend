@@ -1,8 +1,8 @@
-import { ErrorResponse } from '@/models/ErrorResponse'
+import { ErrorResponse } from '@/types/ErrorResponse'
 import { handleResponse } from '@/utils/handleResponse'
 import { ServerError } from './authService'
-import { FavResponse, IFavPushItems } from '@/models/Fav'
-import { IProduct } from '@/models/Products'
+import { FavResponse, IFavPushItems } from '@/types/Fav'
+import { IProduct } from '@/types/Products'
 
 export async function mergeFavs(
   token: string,

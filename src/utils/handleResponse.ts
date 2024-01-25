@@ -1,4 +1,4 @@
-import { ErrorResponse } from '@/models/ErrorResponse'
+import { ErrorResponse } from '@/types/ErrorResponse'
 
 export async function handleResponse<T, E>(response: Response): Promise<T> {
   const data: T | E = await response.json()

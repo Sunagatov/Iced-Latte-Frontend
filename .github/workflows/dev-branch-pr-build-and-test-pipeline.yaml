@@ -16,6 +16,10 @@ jobs:
         run: npm install --development
       - name: Linter
         run: npm run lint
+
+      - name: Build (checks validity of types etc.)
+        run: npm run build
+
       - name: Test and Coverage
         run: npm run test --coverage
 

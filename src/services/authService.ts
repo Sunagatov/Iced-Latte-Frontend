@@ -1,25 +1,56 @@
-import { ErrorResponse } from '@/models/ErrorResponse'
 import { handleResponse } from '@/utils/handleResponse'
+import {
+  SuccessResponse,
+  LoginCredentials,
+  RegisterCredentials,
+  ConfirmEmailResponse,
+  ErrorResponse,
+} from '@/types/services/AuthServices'
 
-type SuccessResponse = {
-  token: string
+export async function apiConfirmEmail(
+  token: string | null,
+): Promise<ConfirmEmailResponse> {
+  try {
+    if (!token) {
+      throw new Error('Token is null or undefined')
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/confirm`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token }),
+      },
+    )
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+
+      if (errorResponse.message) {
+        throw new Error(`Confirm registration failed: ${errorResponse.message}`)
+      }
+
+      throw new Error(
+        `Confirm registration failed: ${JSON.stringify(errorResponse)}`,
+      )
+    }
+
+    const responseData: ConfirmEmailResponse = {
+      token: await response.json(),
+      httpStatusCode: response.status,
+    }
+
+    return responseData
+  } catch (error) {
+    console.error('confirm email:', error)
+    throw error
+  }
 }
 
-type LoginCredentials = {
-  email: string
-  password: string
-}
-
-type RegisterCredentials = {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-}
-
-export async function apiRegisterUser(
-  credentials: RegisterCredentials,
-): Promise<SuccessResponse> {
+export async function apiRegisterUser(credentials: RegisterCredentials) {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/auth/register`,
@@ -32,9 +63,22 @@ export async function apiRegisterUser(
       },
     )
 
-    return handleResponse<SuccessResponse, ErrorResponse>(response)
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+
+      if (errorResponse.message) {
+        throw new Error(`Registration failed: ${errorResponse.message}`)
+      }
+
+      throw new Error(`Registration failed: ${JSON.stringify(errorResponse)}`)
+    }
+
+    const registerData = await response.text()
+
+    return registerData
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    console.error('Registration failed:', error)
+    throw error
   }
 }
 
@@ -55,7 +99,8 @@ export async function apiLoginUser(
 
     return handleResponse<SuccessResponse, ErrorResponse>(response)
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    console.error('Login failed:', error)
+    throw error
   }
 }
 

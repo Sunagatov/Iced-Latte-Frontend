@@ -3,8 +3,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import Header from '@/components/Header/Header'
+import Footer from '@/components/Footer/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 

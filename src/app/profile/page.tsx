@@ -1,4 +1,4 @@
-import FiledProfile from './_components/FilledProfile/FiledProfile'
+import FiledProfile from '../../components/Profile/FilledProfile/FiledProfile'
 import PrivatRoute from '@/Context/PrivateRoute'
 
 const ProfilePage = () => {

@@ -1,4 +1,4 @@
-import { AuthModal } from '@/components/modals/AuthModal'
+import { AuthModal } from '@/components/Auth/Modal/AuthModalLogin/AuthModal'
 import RestrictRoute from '@/Context/RestrictRoute'
 
 function AuthModalLogin() {
