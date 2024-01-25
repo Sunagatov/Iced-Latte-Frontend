@@ -7,7 +7,8 @@ export default function getImgUrl(
   localImage: StaticImageData,
 ): string | StaticImageData {
   if (typeof minioUrl === 'string' && minioUrl != MINIO_URL_STUB) {
-    return minioUrl
+    // Uncomment when img loading optimization is ready
+    // return minioUrl
   }
 
   return localImage
