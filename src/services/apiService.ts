@@ -1,56 +1,43 @@
-import { ErrorResponse } from '@/types/ErrorResponse'
-import { IProduct } from '@/types/Products'
-import { handleResponse } from '@/utils/handleResponse'
-import { ServerError } from './authService'
+import { AxiosResponse } from 'axios'
+import { IProduct, IProductsList } from '@/types/Products'
+import { api } from './apiConfig/apiConfig'
 
 export async function getAllProducts(url: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/${url}`)
+    const response: AxiosResponse<IProductsList> = await api.get(url)
 
-    if (res.status !== 200) {
-      throw new Error(res.statusText)
-    }
-
-    return res.json()
+    return response.data
   } catch (error) {
-    if (error instanceof Error) throw new Error(error.message)
-    else throw new Error('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
-export async function getProduct(id: string): Promise<IProduct> {
+export async function getProduct(id: string) {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/products/${id}`,
-    )
+    const response: AxiosResponse<IProduct> = await api.get(`/products/${id}`)
 
-    if (res.status !== 200) {
-      throw new Error(res.statusText)
-    }
-
-    return res.json() as Promise<IProduct>
+    return response.data
   } catch (error) {
-    if (error instanceof Error) throw new Error(error.message)
-    else throw new Error('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
-export async function getProductByIds(ids: string[]): Promise<IProduct[]> {
+export async function getProductByIds(ids: string[]) {
   try {
     const body = { productIds: ids }
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/products/ids`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      },
+    const response: AxiosResponse<IProduct[]> = await api.post(
+      '/products/ids',
+      body,
     )
 
-    return handleResponse<IProduct[], ErrorResponse>(response)
+    return response.data
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }

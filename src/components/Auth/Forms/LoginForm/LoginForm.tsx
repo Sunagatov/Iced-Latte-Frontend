@@ -10,11 +10,11 @@ import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
 import { loginSchema } from '@/validation/loginSchema'
 import { IFormValues } from '@/types/LoginForm'
+import { useErrorHandler } from '@/services/apiError/apiError'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const { authenticate } = useAuthStore()
+  const { authenticate, setRefreshToken } = useAuthStore()
   const { redirectToPreviousRoute } = useAuthRedirect()
   const {
     register,
@@ -29,20 +29,21 @@ export default function LoginForm() {
     },
   })
 
+  const { errorMessage, handleError } = useErrorHandler()
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
       const data = await apiLoginUser(formData)
 
       authenticate(data.token)
+      setRefreshToken(data.refreshToken)
       reset()
       redirectToPreviousRoute()
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(`An error occurred: ${error.message}`)
-      } else {
-        setErrorMessage(`An unknown error occurred`)
-      }
+
+      handleError(error)
+
     } finally {
       setLoading(false)
     }

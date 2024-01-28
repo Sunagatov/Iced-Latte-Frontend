@@ -1,7 +1,6 @@
+import { AxiosResponse } from 'axios'
 import { ICart, ICartPushItems, ICartUpdatedItem } from '@/types/Cart'
-import { ErrorResponse } from '@/types/ErrorResponse'
-import { handleResponse } from '@/utils/handleResponse'
-import { ServerError } from './authService'
+import { api, setAuth } from './apiConfig/apiConfig'
 
 interface IDeleteItems {
   shoppingCartItemIds: string[]
@@ -12,40 +11,32 @@ export async function mergeCarts(
   cartItemIds: ICartPushItems,
 ): Promise<ICart> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/cart/items`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cartItemIds),
-      },
+    setAuth(token)
+
+    const response: AxiosResponse<ICart> = await api.post(
+      '/cart/items',
+      cartItemIds,
     )
 
-    return handleResponse<ICart, ErrorResponse>(response)
+    return response.data
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
 export async function fetchCart(token: string): Promise<ICart> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/cart`,
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    )
+    setAuth(token)
 
-    return handleResponse<ICart, ErrorResponse>(response)
+    const response: AxiosResponse<ICart> = await api.get('/cart')
+
+    return response.data
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
@@ -55,21 +46,18 @@ export async function removeCartItem(
 ): Promise<ICart> {
   try {
     const deleteItems: IDeleteItems = { shoppingCartItemIds: ids }
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/cart/items`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(deleteItems),
-      },
-    )
 
-    return handleResponse<ICart, ErrorResponse>(response)
+    setAuth(token)
+
+    const response: AxiosResponse<ICart> = await api.delete('/cart/items', {
+      data: deleteItems,
+    })
+
+    return response.data
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
@@ -78,20 +66,14 @@ export async function changeCartItemQuantity(
   item: ICartUpdatedItem,
 ): Promise<ICart> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_REMOTE}/cart/items`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(item),
-      },
-    )
+    setAuth(token)
 
-    return handleResponse<ICart, ErrorResponse>(response)
+    const response: AxiosResponse<ICart> = await api.patch('/cart/items', item)
+
+    return response.data
   } catch (error) {
-    throw new ServerError('Something went wrong')
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
