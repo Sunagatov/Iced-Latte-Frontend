@@ -1,6 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Loader from '../Loader/Loader'
+import getImgUrl from '@/utils/getImgUrl'
 import { useState, FormEvent, useEffect } from 'react'
 import { uploadImage, getAvatar } from '@/services/userService'
 import { AuthData } from '@/types/services/UserServices'
@@ -14,6 +15,8 @@ const ImageUpload = () => {
   const [preview, setPreview] = useState<string | null>(null)
   const { token } = useAuthStore() as AuthData
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+
+  const uploadImg = '/upload_photo.svg'
 
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -105,18 +108,11 @@ const ImageUpload = () => {
             width={45}
             height={61}
           />
-        ) : typeof avatarUrl === 'string' && avatarUrl !== 'default file' ? (
-          <Image
-            className="h-full w-full rounded-full object-cover"
-            src={avatarUrl}
-            alt="user photo"
-            width={45}
-            height={61}
-          />
         ) : (
           <Image
-            src="/upload_photo.svg"
-            alt="default user photo"
+            className="h-full w-full rounded-full object-cover"
+            src={getImgUrl(avatarUrl, uploadImg)}
+            alt="user photo"
             width={45}
             height={61}
           />

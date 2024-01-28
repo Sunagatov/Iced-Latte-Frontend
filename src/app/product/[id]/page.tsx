@@ -3,11 +3,10 @@ import star from '../../../../public/star.png'
 import AddToCartButton from '../../../components/Product/AddToCard/AddToCart'
 import HeartWrapper from '../../../components/Product/HeartWrapper/HeartWrapper'
 import productImg from '../../../../public/coffee.png'
-import createImgUrl from '@/utils/createImgUrl'
+import getImgUrl from '@/utils/getImgUrl'
 import { IProduct } from '@/types/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
-
 
 type ProductProps = {
   params: {
@@ -24,7 +23,6 @@ async function getProductById(id: string): Promise<IProduct> {
 export default async function Page({ params }: Readonly<ProductProps>) {
   const product = await getProductById(params.id)
 
-
   return (
     <section
       className={
@@ -32,7 +30,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
       }
     >
       <Image
-        src={createImgUrl(product.productFileUrl) ? product.productFileUrl! : productImg}
+        src={getImgUrl(product.productFileUrl, productImg)}
         width={500}
         height={500}
         alt="product_image"
