@@ -4,20 +4,16 @@ on:
   pull_request:
     branches:
       - development
-
 jobs:
-  sonarqube:
-    name: Tests and SonarQube
+  build-test:
+    name: Build and Test
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       - name: Install dependencies
         run: npm install --development
-
       - name: Linter
         run: npm run lint
 
@@ -27,18 +23,26 @@ jobs:
       - name: Test and Coverage
         run: npm run test --coverage
 
+  sonarqube:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: SonarQube Analysis
         uses: sonarsource/sonarqube-scan-action@master
         with:
           args: >
             -Dsonar.projectVersion=pr-${{ github.event.pull_request.number }}
         env:
-          SONAR_TOKEN: sqp_d5037397d43452eb548ffb026abd6ecccbfce756
-          SONAR_HOST_URL: http://31.132.209.218:63535
-
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       - name: SonarQube Quality Gate check
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         env:
-           SONAR_TOKEN: sqp_d5037397d43452eb548ffb026abd6ecccbfce756
-           SONAR_HOST_URL: http://31.132.209.218:63535
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
