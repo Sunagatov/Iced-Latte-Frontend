@@ -32,10 +32,7 @@ const FiledProfile = () => {
 
     fetchData()
       .catch((error) => {
-        setIsLoading(true)
         console.error(error)
-        reset()
-        router.push('/auth/login')
       })
       .finally(() => setIsLoading(false))
   }, [reset, router, setModalState, token])

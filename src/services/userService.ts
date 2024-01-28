@@ -1,99 +1,72 @@
+import { AxiosResponse } from 'axios'
+import { api, setAuth } from './apiConfig/apiConfig'
 import { UserData } from '@/types/services/UserServices'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_HOST_REMOTE
-
-// get user profile data
-export const getUserData = async (token: string) => {
+export const getUserData = async (token: string): Promise<UserData> => {
   try {
-    const userResponse = await fetch(`${BASE_URL}/users`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    setAuth(token)
 
-    if (!userResponse.ok) {
-      throw new Error(`User data request failed: ${userResponse.statusText}`)
-    }
+    const response: AxiosResponse<UserData> = await api.get('/users')
 
-    const userData: UserData = await userResponse.json()
-
-    return userData
+    return response.data
   } catch (error) {
-    console.error('User data fetch error:', error)
-    throw error
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
-// edit user profile
 export const editUserProfile = async (
   token: string,
   updatedUserData: Partial<UserData>,
-) => {
+): Promise<UserData> => {
   try {
-    const editResponse = await fetch(`${BASE_URL}/users`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedUserData),
-    })
+    setAuth(token)
 
-    if (!editResponse.ok) {
-      throw new Error(`Profile edit request failed: ${editResponse.statusText}`)
-    }
+    const response: AxiosResponse<UserData> = await api.put(
+      '/users',
+      updatedUserData,
+    )
 
-    const editedUserData: UserData = await editResponse.json()
-
-    return editedUserData
+    return response.data
   } catch (error) {
-    console.error('Profile edit error:', error)
-    throw error
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
 
-// user avatar upload
 export async function uploadImage(file: File, token: string): Promise<string> {
-  const formData = new FormData()
+  try {
+    const formData = new FormData()
 
-  formData.append('file', file)
+    formData.append('file', file)
 
-  const response = await fetch(`${BASE_URL}/users/avatar`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  })
+    setAuth(token)
 
-  if (!response.ok) {
-    throw new Error(`Failed to upload image: ${response.statusText}`)
+    const response: AxiosResponse<string> = await api.post(
+      '/users/avatar',
+      formData,
+    )
+
+    return response.data
+  } catch (error) {
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
-
-  const result: string = await response.text()
-
-  return result
 }
 
-// get a user image
-export async function getAvatar(token: string): Promise<string> {
+export async function getAvatar(token: string) {
   try {
-    const response = await fetch(`${BASE_URL}/users/avatar`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    setAuth(token)
 
-    if (!response.ok) {
-      throw new Error(`Avatar request failed: ${response.statusText}`)
-    }
+    const response: AxiosResponse<string> = await api.get('/users/avatar')
 
-    const avatarUrl: string = await response.text()
-
-    return avatarUrl
+    return response.data
   } catch (error) {
-    console.error('Avatar fetch error:', error)
-    throw error
+    throw error instanceof Error
+      ? error
+      : new Error('An unknown error occurred')
   }
 }
