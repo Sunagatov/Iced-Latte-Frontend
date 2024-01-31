@@ -37,11 +37,8 @@ interface CartSliceActions {
   resetCart: () => void
 
   // helper functions to update state
-  createCart: (token: string, reqItems: ICartPushItems) => Promise<void>
-  updateCartItem: (
-    token: string,
-    updatedItem: ICartUpdatedItem,
-  ) => Promise<void>
+  createCart: (reqItems: ICartPushItems) => Promise<void>
+  updateCartItem: (updatedItem: ICartUpdatedItem) => Promise<void>
 }
 
 export type CartSliceStore = CartSliceState & CartSliceActions
@@ -74,7 +71,7 @@ export const createCartSlice: StateCreator<
           productQuantityChange: 1,
         }
 
-        updateCartItem(token, itemChanges).catch((e) => {
+        updateCartItem(itemChanges).catch((e) => {
           throw new Error((e as Error).message)
         })
       } else {
@@ -82,7 +79,7 @@ export const createCartSlice: StateCreator<
           items: [{ productId: id, productQuantity: 1 }],
         }
 
-        createCart(token, reqItems).catch((e) => {
+        createCart(reqItems).catch((e) => {
           throw new Error((e as Error).message)
         })
       }
@@ -126,13 +123,13 @@ export const createCartSlice: StateCreator<
       throw new Error((e as Error).message)
     }
   },
-  syncBackendCart: async (token: string) => {
+  syncBackendCart: async () => {
     try {
       const { createCart } = get()
       const { itemsIds } = get()
       const reqItems: ICartPushItems = { items: itemsIds }
 
-      await createCart(token, reqItems)
+      await createCart(reqItems)
     } catch (e) {
       throw new Error((e as Error).message)
     }
@@ -146,7 +143,7 @@ export const createCartSlice: StateCreator<
         productQuantityChange: -1,
       }
 
-      updateCartItem(token, itemChanges).catch((e) => {
+      updateCartItem(itemChanges).catch((e) => {
         throw new Error((e as Error).message)
       })
     } else {
@@ -172,7 +169,7 @@ export const createCartSlice: StateCreator<
       const { tempItems } = get()
       const productCartSlotId = getProductCartSlotId(id, tempItems)
 
-      removeCartItem(token, [productCartSlotId!])
+      removeCartItem([productCartSlotId!])
         .then((data) => {
           const { itemsTotalPrice, productsQuantity, items } = data
           const newItemsIds = createItemsIdsFromCart(items)
@@ -218,12 +215,9 @@ export const createCartSlice: StateCreator<
     } as CartSliceState)
   },
 
-  createCart: async (
-    token: string,
-    reqItems: ICartPushItems,
-  ): Promise<void> => {
+  createCart: async (reqItems: ICartPushItems): Promise<void> => {
     try {
-      const mergedCart = await mergeCarts(token, reqItems)
+      const mergedCart = await mergeCarts(reqItems)
       const { itemsTotalPrice, productsQuantity, items } = mergedCart
       const newItemsIds = createItemsIdsFromCart(items)
 
@@ -239,12 +233,9 @@ export const createCartSlice: StateCreator<
       throw new Error((e as Error).message)
     }
   },
-  updateCartItem: async (
-    token: string,
-    updatedItem: ICartUpdatedItem,
-  ): Promise<void> => {
+  updateCartItem: async (updatedItem: ICartUpdatedItem): Promise<void> => {
     try {
-      const data = await changeCartItemQuantity(token, updatedItem)
+      const data = await changeCartItemQuantity(updatedItem)
 
       const { itemsTotalPrice, productsQuantity, items } = data
 

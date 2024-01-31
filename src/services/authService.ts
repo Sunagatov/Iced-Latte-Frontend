@@ -1,11 +1,10 @@
 import {
   SuccessResponse,
-  SuccessRefreshToken,
   LoginCredentials,
   RegisterCredentials,
   ConfirmEmailResponse,
 } from '@/types/services/AuthServices'
-import { api, setAuth } from './apiConfig/apiConfig'
+import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
 
 // Function for user registration
@@ -59,24 +58,6 @@ export async function apiLoginUser(
       '/auth/authenticate',
       credentials,
     )
-
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
-}
-
-// Function for refresh token
-export async function apiRefreshToken(
-  refreshToken: string | null,
-): Promise<SuccessRefreshToken> {
-  try {
-    setAuth(refreshToken)
-
-    const response: AxiosResponse<SuccessRefreshToken> =
-      await api.post('/auth/refresh')
 
     return response.data
   } catch (error) {
