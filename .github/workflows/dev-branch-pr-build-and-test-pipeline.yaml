@@ -13,7 +13,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install dependencies
-        run: npm install --development
+        run: npm ci --only=production
+
       - name: Linter
         run: npm run lint
 
