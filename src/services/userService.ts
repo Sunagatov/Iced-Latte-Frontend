@@ -1,11 +1,9 @@
 import { AxiosResponse } from 'axios'
-import { api, setAuth } from './apiConfig/apiConfig'
+import { api } from './apiConfig/apiConfig'
 import { UserData } from '@/types/services/UserServices'
 
-export const getUserData = async (token: string): Promise<UserData> => {
+export const getUserData = async (): Promise<UserData> => {
   try {
-    setAuth(token)
-
     const response: AxiosResponse<UserData> = await api.get('/users')
 
     return response.data
@@ -17,12 +15,9 @@ export const getUserData = async (token: string): Promise<UserData> => {
 }
 
 export const editUserProfile = async (
-  token: string,
   updatedUserData: Partial<UserData>,
 ): Promise<UserData> => {
   try {
-    setAuth(token)
-
     const response: AxiosResponse<UserData> = await api.put(
       '/users',
       updatedUserData,
@@ -36,13 +31,11 @@ export const editUserProfile = async (
   }
 }
 
-export async function uploadImage(file: File, token: string): Promise<string> {
+export async function uploadImage(file: File): Promise<string> {
   try {
     const formData = new FormData()
 
     formData.append('file', file)
-
-    setAuth(token)
 
     const response: AxiosResponse<string> = await api.post(
       '/users/avatar',
@@ -57,10 +50,8 @@ export async function uploadImage(file: File, token: string): Promise<string> {
   }
 }
 
-export async function getAvatar(token: string) {
+export async function getAvatar() {
   try {
-    setAuth(token)
-
     const response: AxiosResponse<string> = await api.get('/users/avatar')
 
     return response.data

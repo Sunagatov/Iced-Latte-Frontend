@@ -1,14 +1,14 @@
 import { AxiosResponse } from 'axios'
 import { FavResponse, IFavPushItems } from '@/types/Fav'
 import { IProduct } from '@/types/Products'
-import { api, setAuth } from './apiConfig/apiConfig'
+import { api /*, setAuth */ } from './apiConfig/apiConfig'
 
 export async function mergeFavs(
   token: string,
   requestItems: IFavPushItems,
 ): Promise<FavResponse> {
   try {
-    setAuth(token)
+    // setAuth(token)
 
     const response: AxiosResponse<FavResponse> = await api.post(
       '/favorites',
@@ -24,11 +24,11 @@ export async function mergeFavs(
 }
 
 export async function removeFavItem(
-  token: string,
+  // token: string,
   id: string,
 ): Promise<FavResponse> {
   try {
-    setAuth(token)
+    // setAuth(token)
 
     const response: AxiosResponse<FavResponse> = await api.delete(
       `/favorites/${id}`,
@@ -42,9 +42,9 @@ export async function removeFavItem(
   }
 }
 
-export async function getFavByIds(token: string): Promise<IProduct[]> {
+export async function getFavByIds(/*token: string*/): Promise<IProduct[]> {
   try {
-    setAuth(token)
+    // setAuth(token)
 
     const response: AxiosResponse<IProduct[]> = await api.get('/favorites')
 
