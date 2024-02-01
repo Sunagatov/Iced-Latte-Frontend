@@ -7,11 +7,11 @@
 
 ## Basic Steps
 
-- `npm install` - install dependencies into the node_modules/ directory
-- `npx husky install` - setup precommit eslint typescript checks
-- `echo 'NEXT_PUBLIC_API_HOST_REMOTE=https://iced-latte.uk/backend/api/v1' > .env` - create `.env`
-- `npm run build`
-- `npm run dev` - runs project on `localhost:3000` (if on the main page u do not see list of products due to CORS error, run dev server with `yarn next dev --hostname 127.0.0.1`)
+1. `npm ci` - install dependencies into the `node_modules/` directory using `package-lock.json`
+2. `npx husky install` - setup precommit eslint typescript checks
+3. `echo 'NEXT_PUBLIC_API_HOST_REMOTE=https://iced-latte.uk/backend/api/v1' > .env` - create `.env`
+4. `npm run build` - build artifacts
+5. `npm run dev` - run project on `localhost:3000` (if on the main page u do not see list of products due to CORS error, run dev server with `yarn next dev --hostname 127.0.0.1`)
 
 ## Run Tests
 
