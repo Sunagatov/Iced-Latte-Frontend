@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # yarn tsc --noEmit && yarn eslint . && yarn prettier --write .
-yarn lint-staged
+npx lint-staged
