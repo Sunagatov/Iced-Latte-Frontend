@@ -11,6 +11,8 @@ export default function CartInit() {
   const reset = useCombinedStore((state) => state.resetCart)
   const { token } = useAuthStore()
 
+  // delete useEffect
+
   if (!token) {
     if (isSync) {
       reset()
