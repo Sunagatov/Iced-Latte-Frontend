@@ -17,12 +17,12 @@
     "types": ["react", "jest", "node"],
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+    },
   },
   "include": [
     "next-env.d.ts",
@@ -33,7 +33,7 @@
     "postcss.config.js",
     "./jest.config.js",
     "./jest.setup.js",
-    ".lint-staged.config.js"
+    ".lint-staged.config.js",
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
