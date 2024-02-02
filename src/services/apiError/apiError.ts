@@ -10,8 +10,6 @@ export const handleAxiosError = (error: unknown): string => {
     if (axiosError.response) {
       return `Server Error: ${axiosError.response.data.message}`
     }
-
-    return 'An unknown error occurred'
   }
 
   return 'An unknown error occurred'
