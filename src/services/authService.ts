@@ -11,60 +11,42 @@ import { AxiosResponse } from 'axios'
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
 ): Promise<string> {
-  try {
-    const response: AxiosResponse<string> = await api.post(
-      '/auth/register',
-      credentials,
-    )
+  const response: AxiosResponse<string> = await api.post(
+    '/auth/register',
+    credentials,
+  )
 
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
+  return response.data
 }
 
 // Function for confirm email
 export async function apiConfirmEmail(
   token: string | null,
 ): Promise<ConfirmEmailResponse> {
-  try {
-    if (!token) {
-      throw new Error('Token is null or undefined')
-    }
-
-    const response = await api.post('/auth/confirm', { token })
-
-    const responseData: ConfirmEmailResponse = {
-      token: response.data,
-      httpStatusCode: response.status,
-    }
-
-    return responseData
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
+  if (!token) {
+    throw new Error('Token is null or undefined')
   }
+
+  const response = await api.post('/auth/confirm', { token })
+
+  const responseData: ConfirmEmailResponse = {
+    token: response.data,
+    httpStatusCode: response.status,
+  }
+
+  return responseData
 }
 
 // Function for login user
 export async function apiLoginUser(
   credentials: LoginCredentials,
 ): Promise<SuccessResponse> {
-  try {
-    const response: AxiosResponse<SuccessResponse> = await api.post(
-      '/auth/authenticate',
-      credentials,
-    )
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/auth/authenticate',
+    credentials,
+  )
 
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
+  return response.data
 }
 
 export class ServerError extends Error {

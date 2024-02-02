@@ -7,58 +7,34 @@ interface IDeleteItems {
 }
 
 export async function mergeCarts(cartItemIds: ICartPushItems): Promise<ICart> {
-  try {
-    const response: AxiosResponse<ICart> = await api.post(
-      '/cart/items',
-      cartItemIds,
-    )
+  const response: AxiosResponse<ICart> = await api.post(
+    '/cart/items',
+    cartItemIds,
+  )
 
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
+  return response.data
 }
 
 export async function fetchCart(): Promise<ICart> {
-  try {
-    const response: AxiosResponse<ICart> = await api.get('/cart')
+  const response: AxiosResponse<ICart> = await api.get('/cart')
 
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
+  return response.data
 }
 
 export async function removeCartItem(ids: string[]): Promise<ICart> {
-  try {
-    const deleteItems: IDeleteItems = { shoppingCartItemIds: ids }
+  const deleteItems: IDeleteItems = { shoppingCartItemIds: ids }
 
-    const response: AxiosResponse<ICart> = await api.delete('/cart/items', {
-      data: deleteItems,
-    })
+  const response: AxiosResponse<ICart> = await api.delete('/cart/items', {
+    data: deleteItems,
+  })
 
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
+  return response.data
 }
 
 export async function changeCartItemQuantity(
   item: ICartUpdatedItem,
 ): Promise<ICart> {
-  try {
-    const response: AxiosResponse<ICart> = await api.patch('/cart/items', item)
+  const response: AxiosResponse<ICart> = await api.patch('/cart/items', item)
 
-    return response.data
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new Error('An unknown error occurred')
-  }
+  return response.data
 }
