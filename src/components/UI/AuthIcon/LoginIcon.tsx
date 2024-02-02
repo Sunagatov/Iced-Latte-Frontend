@@ -1,9 +1,9 @@
 'use client'
 import Image from 'next/image'
 import ProfileImage from '../../../../public/person.svg'
-import SettingsImage from '../../../../public/settings-profile.svg'
 import Link from 'next/link'
 import AuthModal from '@/components/Auth/Modal/AuthModalLogin/AuthModal'
+import UserBar from '../UserBar/UserBar'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useStoreData } from '@/hooks/useStoreData'
@@ -33,7 +33,7 @@ export default function LoginIcon() {
     <>
       {isLoggedIn ? (
         <Link href="/profile" className="inline-flex">
-          <Image src={SettingsImage} alt="Profile icon" />
+          <UserBar />
         </Link>
       ) : (
         <Link href="/auth/login" className="inline-flex" onClick={toggleModal}>

@@ -8,6 +8,7 @@ export interface UserData {
   birthDate: string
   phoneNumber: string
   email: string
+  avatarLink?: string
   address: {
     country: string
     city: string
