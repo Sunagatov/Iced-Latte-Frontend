@@ -172,7 +172,7 @@ export const createCartSlice: StateCreator<
       const { tempItems } = get()
       const productCartSlotId = getProductCartSlotId(id, tempItems)
 
-      removeCartItem(token, [productCartSlotId!])
+      removeCartItem([productCartSlotId!])
         .then((data) => {
           const { itemsTotalPrice, productsQuantity, items } = data
           const newItemsIds = createItemsIdsFromCart(items)
@@ -223,7 +223,7 @@ export const createCartSlice: StateCreator<
     reqItems: ICartPushItems,
   ): Promise<void> => {
     try {
-      const mergedCart = await mergeCarts(token, reqItems)
+      const mergedCart = await mergeCarts(reqItems)
       const { itemsTotalPrice, productsQuantity, items } = mergedCart
       const newItemsIds = createItemsIdsFromCart(items)
 
@@ -244,7 +244,7 @@ export const createCartSlice: StateCreator<
     updatedItem: ICartUpdatedItem,
   ): Promise<void> => {
     try {
-      const data = await changeCartItemQuantity(token, updatedItem)
+      const data = await changeCartItemQuantity(updatedItem)
 
       const { itemsTotalPrice, productsQuantity, items } = data
 

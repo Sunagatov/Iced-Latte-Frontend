@@ -9,11 +9,11 @@ import { useState } from 'react'
 import { registrationSchema } from '@/validation/registrationSchema'
 import { useRouter } from 'next/navigation'
 import { IFormValues } from '@/types/RegistrationForm'
+import { useErrorHandler } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
   const { resetOpenModal } = useAuthStore()
 
@@ -31,6 +31,8 @@ export default function RegistrationForm() {
     },
   })
 
+  const { errorMessage, handleError } = useErrorHandler()
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
@@ -42,11 +44,7 @@ export default function RegistrationForm() {
       }
 
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(`An error occurred: ${error.message}`)
-      } else {
-        setErrorMessage(`An unknown error occurred`)
-      }
+      handleError(error)
     } finally {
       setLoading(false)
     }

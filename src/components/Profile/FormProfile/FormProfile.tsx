@@ -2,7 +2,6 @@
 import 'react-calendar/dist/Calendar.css'
 import { editUserProfile } from '@/services/userService'
 import { useState } from 'react'
-import { useAuthStore } from '@/store/authStore'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { isValid as isValidDate, format } from 'date-fns'
 import { ValuePiece, Value, FormProfileProps } from '../../../types/FormProfileTypes'
@@ -40,8 +39,6 @@ const FormProfile = ({
     setIsCalendarOpen(false)
   })
 
-  const { token } = useAuthStore()
-
   // function to convert the date for the server
   const handleCalendarChange = (newDate: Value) => {
     if (newDate === null) {
@@ -75,12 +72,9 @@ const FormProfile = ({
 
   const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
-      if (token) {
-        await editUserProfile(token, data)
-        onSuccessEdit()
-        updateUserData(data)
-      }
-
+      await editUserProfile(data)
+      onSuccessEdit()
+      updateUserData(data)
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(`An error occurred: ${error.message}`)

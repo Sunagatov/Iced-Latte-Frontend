@@ -4,8 +4,6 @@ import Loader from '../Loader/Loader'
 import getImgUrl from '@/utils/getImgUrl'
 import { useState, FormEvent, useEffect } from 'react'
 import { uploadImage, getAvatar } from '@/services/userService'
-import { AuthData } from '@/types/services/UserServices'
-import { useAuthStore } from '@/store/authStore'
 import { toast } from 'react-toastify'
 
 const ImageUpload = () => {
@@ -13,7 +11,6 @@ const ImageUpload = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
-  const { token } = useAuthStore() as AuthData
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   const uploadImg = '/upload_photo.svg'
@@ -21,12 +18,13 @@ const ImageUpload = () => {
   useEffect(() => {
     const fetchAvatar = async () => {
       setLoading(true)
-      if (token) {
-        const url = await getAvatar(token)
 
-        if (url) {
-          setAvatarUrl(url)
-        }
+      const url = await getAvatar()
+
+      if (url) {
+        setAvatarUrl(url)
+      } else {
+        toast.error('Authentication failed. Token is null or undefined.')
       }
     }
 
@@ -37,7 +35,7 @@ const ImageUpload = () => {
         setErrorMessage(`An unknown error occurred`)
       }
     }).finally(() => setLoading(false))
-  }, [token])
+  }, [])
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
@@ -61,9 +59,9 @@ const ImageUpload = () => {
     try {
       setLoading(true)
 
-      await uploadImage(file, token)
+      await uploadImage(file)
 
-      const newAvatarUrl = await getAvatar(token)
+      const newAvatarUrl = await getAvatar()
 
 
       if (newAvatarUrl) {

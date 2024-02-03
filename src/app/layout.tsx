@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
+import InterceptorsForRefreshToken from '@/Context/InterceptorsForRefreshToken'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,9 +23,11 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
     <html lang="en">
       <body className={inter.className + ' flex min-h-screen flex-col'}>
         <ToastContainer />
-        <Header />
-        <main className={'min-w-[360px] grow'}>{children}</main>
-        <Footer />
+        <InterceptorsForRefreshToken>
+          <Header />
+          <main className={'min-w-[360px] grow'}>{children}</main>
+          <Footer />
+        </InterceptorsForRefreshToken>
       </body>
     </html>
   )
