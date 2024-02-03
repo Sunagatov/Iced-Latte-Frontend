@@ -4,13 +4,14 @@ import Loader from '../Loader/Loader'
 import { useState, FormEvent, useEffect } from 'react'
 import { uploadImage, getAvatar } from '@/services/userService'
 import { toast } from 'react-toastify'
+import { useErrorHandler } from '@/services/apiError/apiError'
 
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const { errorMessage, handleError } = useErrorHandler()
 
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -26,12 +27,9 @@ const ImageUpload = () => {
     }
 
     fetchAvatar().catch((error) => {
-      if (error instanceof Error) {
-        setErrorMessage(`An error occurred: ${error.message}`)
-      } else {
-        setErrorMessage(`An unknown error occurred`)
-      }
+      handleError(error)
     }).finally(() => setLoading(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleInputChange = (
@@ -68,11 +66,7 @@ const ImageUpload = () => {
       setFile(null)
       setPreview(null)
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(`An error occurred: ${error.message}`)
-      } else {
-        setErrorMessage(`An unknown error occurred`)
-      }
+      handleError(error)
       setFile(null)
       setPreview(null)
     } finally { setLoading(false) }

@@ -9,6 +9,7 @@ import { validationSchema } from '@/validation/userFormSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { UserData } from '@/types/services/UserServices'
+import { useErrorHandler } from '@/services/apiError/apiError'
 import Image from 'next/image'
 import Button from '@/components/UI/Buttons/Button/Button'
 import CalendarComponent from '@/components/UI/Calendar/Calendar'
@@ -23,7 +24,7 @@ const FormProfile = ({
 }: Readonly<FormProfileProps>) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { errorMessage, handleError } = useErrorHandler()
 
   const {
     register,
@@ -76,11 +77,7 @@ const FormProfile = ({
       onSuccessEdit()
       updateUserData(data)
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(`An error occurred: ${error.message}`)
-      } else {
-        setErrorMessage(`An unknown error occurred`)
-      }
+      handleError(error)
     }
   }
 

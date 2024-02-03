@@ -12,6 +12,7 @@ import { usePathname } from 'next/navigation'
 export default function LoginIcon() {
   const pathname = usePathname()
   const { toggleModal, resetOpenModal } = useAuthStore()
+
   const isLoggedIn = useStoreData(
     useAuthStore,
     (state) => state.isLoggedIn,

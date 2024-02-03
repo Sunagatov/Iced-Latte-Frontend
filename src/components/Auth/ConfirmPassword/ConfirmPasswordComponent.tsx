@@ -10,13 +10,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { apiConfirmEmail } from '@/services/authService'
 import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
 import { IFormValues } from '@/types/ConfirmPassword'
-import { ErrorResponse } from '@/types/ErrorResponse'
-import axios, { AxiosError } from 'axios'
+import { setCookie } from '@/utils/cookieUtils'
+import { useErrorHandler } from '@/services/apiError/apiError'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { authenticate, setRefreshToken } = useAuthStore()
+  const { errorMessage, handleError } = useErrorHandler()
   const { redirectToPreviousRoute } = useAuthRedirect()
   const {
     register,
@@ -38,21 +38,13 @@ const ConfirmPasswordComponent = () => {
 
       authenticate(data.token?.token)
       setRefreshToken(data.token?.refreshToken)
+      await setCookie('token', data.token?.token,{ path: '/' })
 
       reset()
 
       redirectToPreviousRoute()
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-
-        const axiosError = error as AxiosError<ErrorResponse>
-
-        if (axiosError.response) {
-          setErrorMessage(`Server Error: ${axiosError.response.data.message}`)
-        }
-      } else {
-        setErrorMessage('An unknown error occurred')
-      }
+    } catch (error) {
+      handleError(error)
     } finally {
       setLoading(false)
     }

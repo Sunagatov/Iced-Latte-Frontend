@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { api } from '@/services/apiConfig/apiConfig'
 import { useEffect } from 'react'
+import { removeCookie } from '@/utils/cookieUtils'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean;
@@ -13,7 +14,6 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
   const { token, refreshToken, authenticate, reset } = useAuthStore()
-
   const router = useRouter()
 
   useEffect(() => {
@@ -54,6 +54,7 @@ const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
           } catch (refreshError) {
             if (refreshError)
               reset()
+            await removeCookie('token')
             router.push('/')
             throw refreshError
           }
