@@ -3,21 +3,18 @@ import Image from 'next/image'
 import getImgUrl from '@/utils/getImgUrl'
 import { getUserData } from '@/services/userService'
 import { useEffect, useState } from 'react'
-import { useAuthStore } from '@/store/authStore'
 import { UserData } from '@/types/services/UserServices'
 
 const UserBar = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
-  const { token } = useAuthStore()
   const uploadImg = '/profile.png'
 
   useEffect(() => {
     const fetchData = async () => {
-      if (token) {
-        const userData = await getUserData(token)
+      const userData = await getUserData()
 
-        setUserData(userData)
-      }
+      setUserData(userData)
+
     }
 
     fetchData()
@@ -25,7 +22,7 @@ const UserBar = () => {
         console.error(error)
       })
 
-  }, [token])
+  }, [])
 
   return (
     <div className='flex gap-[10px] items-center sm:bg-tertiary rounded-full px-4 py-1'>

@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { loginSchema } from '@/validation/loginSchema'
 import { IFormValues } from '@/types/LoginForm'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import { setCookie } from '@/utils/cookieUtils'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
@@ -35,6 +36,8 @@ export default function LoginForm() {
     try {
       setLoading(true)
       const data = await apiLoginUser(formData)
+
+      await setCookie('token', data.token, { path: '/' })
 
       authenticate(data.token)
       setRefreshToken(data.refreshToken)

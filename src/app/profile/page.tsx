@@ -1,11 +1,8 @@
 import FiledProfile from '../../components/Profile/FilledProfile/FiledProfile'
-import PrivatRoute from '@/Context/PrivateRoute'
 
 const ProfilePage = () => {
   return (
-    <PrivatRoute>
-      <FiledProfile />
-    </PrivatRoute>
+    <FiledProfile />
   )
 }
 
