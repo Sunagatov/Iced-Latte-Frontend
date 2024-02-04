@@ -1,10 +1,18 @@
 const nextConfig = {
+  experimental: {
+    serverActions: true,
+  },
   images: {
-    domains: ['134.209.25.111', '172.19.0.7', '172.19.0.2'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'iced-latte-bucket-for-products.s3.eu-west-2.amazonaws.com',
+      },
+    ],
   },
   eslint: {
-      // use pre-commit hooks and explicit `npm run lint`
-      ignoreDuringBuilds: true,
+    // use pre-commit hooks and explicit npm run lint
+    ignoreDuringBuilds: true,
   },
 }
 
