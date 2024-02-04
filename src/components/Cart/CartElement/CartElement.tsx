@@ -2,7 +2,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import Image from 'next/image'
 import productImg from '../../../../public/coffee.png'
 import trash from '../../../../public/trash.svg'
-import createImgUrl from '@/utils/createImgUrl'
+import getImgUrl from '@/utils/getImgUrl'
 import Counter from '@/components/UI/Counter/Counter'
 import Link from 'next/link'
 import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
@@ -46,7 +46,7 @@ export default function CartElement({
       <div className="flex justify-center">
         <Link href={`/product/${product.productInfo.id}`}>
           <Image
-            src={createImgUrl(productInfo.productFileUrl) ? productInfo.productFileUrl! : productImg}
+            src={getImgUrl(productInfo.productFileUrl, productImg)}
             alt={productInfo.name}
             width={150}
             height={150}
@@ -62,7 +62,6 @@ export default function CartElement({
           2,
         )}`}</p>
         <div className="mt-[22px] flex justify-start">
-
           <Counter
             theme="light"
             className={'h-[42px]'}
@@ -83,11 +82,14 @@ export default function CartElement({
             <Image src={trash} width={24} height={24} alt="Logo" priority />
           </Button>
           <div>
-            <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
+            <ButtonHeart
+              active={isActive}
+              onClick={handleButtonClick}
+              className="ml-2"
+            />
           </div>
         </div>
       </div>
     </div>
   )
 }
-

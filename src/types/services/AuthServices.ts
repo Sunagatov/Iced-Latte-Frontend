@@ -1,5 +1,11 @@
 export type SuccessResponse = {
   token: string
+  refreshToken: string
+}
+
+export type SuccessRefreshToken = {
+  token: string | null
+  refreshToken: string | null
 }
 
 export type LoginCredentials = {
@@ -17,11 +23,10 @@ export type RegisterCredentials = {
 export interface ConfirmEmailResponse {
   token: {
     token: string
+    refreshToken: string
   }
   httpStatusCode: number
 }
-
 export interface ErrorResponse {
   message: string
-  httpStatusCode: number
 }

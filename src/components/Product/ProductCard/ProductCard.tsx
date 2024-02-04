@@ -3,7 +3,7 @@ import Link from 'next/link'
 import star from '../../../../public/star.png'
 import productImg from '../../../../public/coffee.png'
 import CircleAddBtn from '../../UI/Buttons/CircleAddBtn/CircleAddBtn'
-import createImgUrl from '@/utils/createImgUrl'
+import getImgUrl from '@/utils/getImgUrl'
 import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
 import { productRating, productSize } from '@/constants/product'
 import { useCombinedStore } from '@/store/store'
@@ -11,8 +11,12 @@ import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
 import { CardProps } from '@/types/ProductCard'
 
-export default function ProductCard({ id, name, price, productFileUrl }: Readonly<CardProps>) {
-
+export default function ProductCard({
+  id,
+  name,
+  price,
+  productFileUrl,
+}: Readonly<CardProps>) {
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)
   const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
@@ -33,10 +37,9 @@ export default function ProductCard({ id, name, price, productFileUrl }: Readonl
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
-        <div
-          className=' w-full h-[177px] md:h-[360px]  relative'>
+        <div className=" relative h-[177px] w-full  md:h-[360px]">
           <Image
-            src={createImgUrl(productFileUrl) ? productFileUrl! : productImg}
+            src={getImgUrl(productFileUrl, productImg)}
             alt="card picture"
             style={{ objectFit: 'cover' }}
             fill={true}
@@ -57,7 +60,11 @@ export default function ProductCard({ id, name, price, productFileUrl }: Readonl
         </div>
       </Link>
       <div className={' absolute right-0 top-0'}>
-        <ButtonHeart active={isActive} onClick={handleButtonClick} className="ml-2" />
+        <ButtonHeart
+          active={isActive}
+          onClick={handleButtonClick}
+          className="ml-2"
+        />
       </div>
       <div className={'flex items-end justify-between'}>
         <p className={'text-XL font-medium md:text-2XL'}>${price}</p>

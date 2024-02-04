@@ -57,7 +57,7 @@ export const useFavouritesStore = create<FavStoreState>()(
               ...state,
               favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
             }))
-            await removeFavItem(token, id)
+            await removeFavItem(id)
           } else {
             set((state) => ({
               ...state,
@@ -84,12 +84,12 @@ export const useFavouritesStore = create<FavStoreState>()(
         }
       },
 
-      syncBackendFav: async (token: string) => {
+      syncBackendFav: async () => {
         try {
           const { favouriteIds } = get()
           const reqItems: IFavPushItems = { productIds: favouriteIds }
 
-          const response = await mergeFavs(token, reqItems)
+          const response = await mergeFavs(reqItems)
           const { products } = response
 
           set((state) => ({
