@@ -1,0 +1,21 @@
+version: "3.5"
+
+networks:
+  iced-latte-network:
+    name: iced-latte-network
+    attachable: true
+
+services:
+  iced-latte-frontend:
+    image: 'zufarexplainedit/iced-latte-frontend:latest'
+    container_name: iced-latte-frontend
+    environment:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: 'always'
+    ports:
+      - '3000:3000'
+    networks:
+      - iced-latte-network
