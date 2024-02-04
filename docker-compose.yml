@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.9"
 
 networks:
   iced-latte-network:
@@ -8,12 +8,9 @@ networks:
 services:
   iced-latte-frontend:
     image: 'zufarexplainedit/iced-latte-frontend:${DOCKER_IMAGE_TAG}'
-    container_name: iced-latte-frontend
-    env_file:
-      - .frontend_env
+    container_name: latte-frontend
     build:
       context: .
       dockerfile: Dockerfile
-    restart: 'always'
     networks:
       - iced-latte-network
