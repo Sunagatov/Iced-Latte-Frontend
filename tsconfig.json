@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["react", "jest", "node"],
+    "types": ["react", "node"],
     "plugins": [
       {
         "name": "next",
@@ -31,9 +31,6 @@
     ".next/types/**/*.ts",
     "next.config.js",
     "postcss.config.js",
-    "./jest.config.js",
-    "./jest.setup.js",
-    ".lint-staged.config.js",
   ],
   "exclude": ["node_modules"],
 }
