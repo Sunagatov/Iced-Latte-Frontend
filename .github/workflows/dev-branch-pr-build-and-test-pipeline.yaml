@@ -18,7 +18,7 @@ jobs:
       - name: Linter
         run: npm run lint
 
-      - name: Build (checks validity of types etc.)
+      - name: Build
         run: npm run build
 
       - name: Test and Coverage
