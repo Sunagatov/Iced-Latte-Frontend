@@ -13,11 +13,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
-    "@types/node": "20.11.16",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10",
-    "axios": "^1.6.6",
+    "axios": "^1.6.7",
+    "axios-cache-interceptor": "^1.5.1",
     "date-fns": "^2.30.0",
     "debug": "^4.3.4",
     "next": "13.5.6",
