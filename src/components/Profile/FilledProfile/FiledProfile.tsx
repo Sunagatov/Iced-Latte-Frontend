@@ -1,10 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { getUserData } from '@/services/userService'
+import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
-import { useErrorHandler } from '@/services/apiError/apiError'
 import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
@@ -14,27 +12,8 @@ import Link from 'next/link'
 const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const { reset, setUserData, userData } = useAuthStore()
-  const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-
-      const userData = await getUserData()
-
-      setUserData(userData)
-    }
-
-    fetchData()
-      .catch((error) => {
-        handleError(error)
-      })
-      .finally(() => setIsLoading(false))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const handleSuccessEdit = () => {
     setIsSuccessEditUser(true)
@@ -59,11 +38,6 @@ const FiledProfile = () => {
 
   return (
     <>
-      {errorMessage && (
-        <div className="mt-4 text-negative flex justify-center">
-          {errorMessage}
-        </div>
-      )}
       <div className="pb-[40px] pt-10 md:pb-[414px]">
         <div className="ml-auto mr-auto max-w-[800px] pl-[10px] pr-[10px] md:pl-[10px] md:pr-[10px]">
           <div className="mb-10 flex w-full items-center justify-between">
@@ -87,7 +61,6 @@ const FiledProfile = () => {
               <ImageUpload />
               <ProfileInfo
                 userData={userData}
-                isLoading={isLoading}
                 onEditClick={handleEditClick}
               />
             </>
