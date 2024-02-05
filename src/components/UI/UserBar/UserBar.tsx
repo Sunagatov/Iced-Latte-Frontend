@@ -8,7 +8,7 @@ import { useErrorHandler } from '@/services/apiError/apiError'
 
 const UserBar = () => {
   const { setUserData, userData } = useAuthStore()
-  const { errorMessage, handleError } = useErrorHandler()
+  const { handleError } = useErrorHandler()
   const uploadImg = '/profile.png'
 
   useEffect(() => {
@@ -29,16 +29,11 @@ const UserBar = () => {
 
   return (
     <>
-      {errorMessage && (
-        <div className="mt-4 text-negative">
-          {errorMessage}
-        </div>
-      )}
       <div className='flex gap-[10px] items-center sm:bg-tertiary rounded-full px-4 py-1'>
         <div className='w-[30px] h-[30px] rounded-full'>
           <Image src={getImgUrl(userData?.avatarLink, uploadImg)} alt="User profile" width={30} height={30} />
         </div>
-        <div className='text-primary font-medium'>{userData?.firstName}</div>
+        <div className='text-primary font-medium text-[12px] md:text-[16px]'>{userData?.firstName}</div>
       </div>
     </>
   )
