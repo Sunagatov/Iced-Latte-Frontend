@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { getUserData } from '@/services/userService'
-import { UserData } from '@/types/services/UserServices'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
@@ -13,11 +12,10 @@ import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
 import Link from 'next/link'
 
 const FiledProfile = () => {
-  const [userData, setUserData] = useState<UserData | null>(null)
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { reset } = useAuthStore()
+  const { reset, setUserData, userData } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
 
@@ -35,7 +33,7 @@ const FiledProfile = () => {
         handleError(error)
       })
       .finally(() => setIsLoading(false))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSuccessEdit = () => {

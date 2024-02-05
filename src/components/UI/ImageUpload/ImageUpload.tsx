@@ -1,36 +1,21 @@
 'use client'
 import Image from 'next/image'
 import Loader from '../Loader/Loader'
-import { useState, FormEvent, useEffect } from 'react'
-import { uploadImage, getAvatar } from '@/services/userService'
+import getImgUrl from '@/utils/getImgUrl'
+import { useState, FormEvent } from 'react'
+import { uploadImage } from '@/services/userService'
 import { toast } from 'react-toastify'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import { useAuthStore } from '@/store/authStore'
 
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const { errorMessage, handleError } = useErrorHandler()
+  const { userData } = useAuthStore()
 
-  useEffect(() => {
-    const fetchAvatar = async () => {
-      setLoading(true)
-
-      const url = await getAvatar()
-
-      if (url) {
-        setAvatarUrl(url)
-      } else {
-        toast.error('Authentication failed. Token is null or undefined.')
-      }
-    }
-
-    fetchAvatar().catch((error) => {
-      handleError(error)
-    }).finally(() => setLoading(false))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const uploadImg = '/upload_photo.svg'
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
@@ -55,13 +40,6 @@ const ImageUpload = () => {
       setLoading(true)
 
       await uploadImage(file)
-
-      const newAvatarUrl = await getAvatar()
-
-
-      if (newAvatarUrl) {
-        setAvatarUrl(newAvatarUrl)
-      }
 
       setFile(null)
       setPreview(null)
@@ -100,7 +78,7 @@ const ImageUpload = () => {
         ) : typeof avatarUrl === 'string' && avatarUrl !== 'default file' ? (
           <Image
             className="h-full w-full rounded-full object-cover"
-            src={avatarUrl}
+            src={getImgUrl(userData?.avatarLink, uploadImg)}
             alt="user photo"
             width={45}
             height={61}

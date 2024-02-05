@@ -3,30 +3,29 @@ import * as yup from 'yup'
 export const validationSchema = yup.object().shape({
   firstName: yup
     .string()
-    .min(4, 'Name should be at least 4 characters')
-    .max(64, 'Name should not exceed 64 characters')
+    .required('name is required')
+    .max(255, 'name should not exceed 255 characters')
     .matches(
-      /^[a-zA-Zа-яА-ЯёЁ][a-zA-Zа-яА-ЯёЁ0-9.%+\-_]*( [a-zA-Zа-яА-ЯёЁ0-9.%+\-_]+)?$/,
-      'Invalid name format',
-    )
-    .required('name is required'),
+      /^[a-zA-Z\u0080-\u00FF\-."':;, ]+$/,
+      'Invalid name format. Use extended Latin letters, spaces, and specified symbols',
+    ),
   lastName: yup
     .string()
-    .min(4, 'last name should be at least 4 characters')
-    .max(64, 'last name should not exceed 64 characters')
+    .required('lastName is required')
+    .max(255, 'lastName should not exceed 255 characters')
     .matches(
-      /^[a-zA-Zа-яА-ЯёЁ][a-zA-Zа-яА-ЯёЁ0-9.%+\-_]*( [a-zA-Zа-яА-ЯёЁ0-9.%+\-_]+)?$/,
-      'Invalid last name format',
-    )
-    .required('last name is required'),
-  birthDate: yup
-    .string()
-    .required('Date of birth is required')
-    .matches(
-      /^(19|20)\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
-      'Incorrect date format. Use YYYY-MM-DD',
+      /^[a-zA-Z\u0080-\u00FF]+$/,
+      'Invalid lastName format. Use extended Latin letters',
     ),
-  phoneNumber: yup.string().required('Phone number is required'),
+
+  birthDate: yup.string(),
+  phoneNumber: yup
+    .string()
+    .required('Phone number is required')
+    .matches(
+      /^[+0-9]{9,}$/,
+      'Invalid phone number format. Use only digits and + sign, with a minimum of 9 digits',
+    ),
   email: yup
     .string()
     .email('Invalid email')
@@ -44,6 +43,9 @@ export const validationSchema = yup.object().shape({
     country: yup.string().required('Country is required'),
     city: yup.string().required('City is required'),
     line: yup.string().required('Address is required'),
-    postcode: yup.string().required('Postcode is required'),
+    postcode: yup
+      .string()
+      .required('Postcode is required')
+      .matches(/^[0-9]+$/, 'Invalid postcode format. Use only digits'),
   }),
 })
