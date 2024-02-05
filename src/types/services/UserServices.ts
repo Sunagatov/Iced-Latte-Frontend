@@ -5,7 +5,7 @@ export interface AuthData {
 export interface UserData {
   firstName: string
   lastName: string
-  birthDate: string
+  birthDate?: string
   phoneNumber: string
   email: string
   avatarLink?: string

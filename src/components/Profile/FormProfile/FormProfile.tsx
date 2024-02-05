@@ -119,8 +119,7 @@ const FormProfile = ({
             label="Date of birth"
             name="birthDate"
             type="text"
-            placeholder="Select date of birth"
-            error={errors.birthDate}
+            placeholder="Select date of birth. Date format YYYY-MM-DD"
           />
           <Image
             src="/open_select.svg"
