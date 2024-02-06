@@ -1,11 +1,11 @@
 'use client'
 import Image from 'next/image'
-import Loader from '../Loader/Loader'
 import getImgUrl from '@/utils/getImgUrl'
 import { useState, FormEvent } from 'react'
 import { uploadImage } from '@/services/userService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
+import Loader from '../Loader/Loader'
 
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
