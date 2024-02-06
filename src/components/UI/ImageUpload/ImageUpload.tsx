@@ -1,45 +1,46 @@
 'use client'
 import Image from 'next/image'
-import Loader from '../Loader/Loader'
 import getImgUrl from '@/utils/getImgUrl'
 import { useState, FormEvent } from 'react'
 import { uploadImage } from '@/services/userService'
-import { toast } from 'react-toastify'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
+import Loader from '../Loader/Loader'
 
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
+  const [inputKey, setInputKey] = useState(Date.now())
   const { errorMessage, handleError } = useErrorHandler()
   const { userData } = useAuthStore()
 
   const uploadImg = '/upload_photo.svg'
 
-  const handleInputChange = (
+  const handleInputChange = async (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
   ) => {
     const selectedFile = e.target.files?.[0]
 
+    setInputKey(Date.now())
+
+    setFile(selectedFile)
+    setPreview(selectedFile ? URL.createObjectURL(selectedFile) : null)
+
     if (selectedFile) {
-      setFile(selectedFile)
-      setPreview(URL.createObjectURL(selectedFile))
-    } else {
-      setFile(null)
-      setPreview(null)
+      await handleUpload(e)
     }
   }
 
   const handleUpload = async (e: FormEvent<HTMLDivElement>) => {
     e.preventDefault()
 
-    if (!file) return toast.warning('No valid image file selected.')
-
     try {
       setLoading(true)
 
-      await uploadImage(file)
+
+      await uploadImage(file!)
+
 
       setFile(null)
       setPreview(null)
@@ -66,7 +67,13 @@ const ImageUpload = () => {
           name="image"
           onChange={handleInputChange}
           aria-label="image"
+          key={inputKey}
         />
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Loader />
+          </div>
+        )}
         {preview ? (
           <Image
             className="h-full w-full rounded-full object-cover"
@@ -93,14 +100,10 @@ const ImageUpload = () => {
         )}
         <div
           className="absolute bottom-0 right-0 flex h-[40px] w-[40px] items-center justify-center rounded-full"
-          onClick={handleUpload}
-          onKeyDown={handleUpload}
         >
-          {loading ? (
-            <Loader />
-          ) : (
+          {userData?.avatarLink !== 'default file' && (
             <Image
-              src={preview ? '/add_photo.svg' : '/edit_pen.png'}
+              src="/edit_pen.png"
               alt="edit pen icon"
               width={40}
               height={40}
