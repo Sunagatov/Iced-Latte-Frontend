@@ -1,14 +1,14 @@
 import { StaticImageData } from 'next/image'
 
-const MINIO_URL_STUB = 'default file'
+const DEFAULT_STATIC_FILE_URL_VALUE = 'default file'
 
 export default function getImgUrl(
   minioUrl: string | null | undefined,
   localImage: StaticImageData | string,
 ): string | StaticImageData {
-  if (typeof minioUrl === 'string' && minioUrl != MINIO_URL_STUB) {
-    // Uncomment out when img loading optimization is ready IL-263
-    // return minioUrl
+
+  if (typeof staticFileUrl === 'string' && staticFileUrl != DEFAULT_STATIC_FILE_URL_VALUE) {
+    return staticFileUrl
   }
 
   return localImage

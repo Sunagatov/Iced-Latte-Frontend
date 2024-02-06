@@ -14,15 +14,15 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["react", "jest", "node"],
+    "types": ["react", "node"],
     "plugins": [
       {
-        "name": "next",
-      },
+        "name": "next"
+      }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-    },
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -30,10 +30,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js",
-    "postcss.config.js",
-    "./jest.config.js",
-    "./jest.setup.js",
-    ".lint-staged.config.js", "src/utils/cookieUtils.ts",
+    "postcss.config.js" "src/utils/cookieUtils.ts",
   ],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

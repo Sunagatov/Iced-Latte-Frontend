@@ -1,0 +1,61 @@
+# Various IDEs
+.idea/
+.vscode/
+*.iml
+*.idea
+*.vs
+
+# Git and version control
+.git/
+.gitignore
+
+# Docker override files
+docker-compose.local.yml
+docker-compose.override.yaml
+
+# Environment files
+.env.local
+.env.local.dist
+.env.*
+
+# Dependency directories
+**/node_modules/
+**/bower_components/
+
+# Log files
+logs/
+*.log
+
+# Compiled output
+/dist
+/tmp
+/out
+/target
+/build
+
+# Others
+**/README.md
+**/LICENSE
+**/CODE_OF_CONDUCT.md
+**/SECURITY.md
+**/START.md
+*.md
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Test directories and libs
+__tests__/
+coverage/
+jest*
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.husky
+
+# Documentation
+docs/
+
