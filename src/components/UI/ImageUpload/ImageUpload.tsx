@@ -38,7 +38,9 @@ const ImageUpload = () => {
     try {
       setLoading(true)
 
+
       await uploadImage(file!)
+
 
       setFile(null)
       setPreview(null)
@@ -82,7 +84,7 @@ const ImageUpload = () => {
           />
         ) : (
           <Image
-            className="h-full w-full rounded-full object-cover"
+            className="object-cover"
             src={getImgUrl(userData?.avatarLink, uploadImg)}
             alt="user photo"
             width={45}

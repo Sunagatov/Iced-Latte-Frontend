@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import ProfileImage from '../../../../public/person.svg'
 import Link from 'next/link'
-import { AuthModal } from '@/components/Auth/Modal/AuthModalLogin/AuthModal'
+import AuthModal from '@/components/Auth/Modal/AuthModalLogin/AuthModal'
 import UserBar from '../UserBar/UserBar'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'

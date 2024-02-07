@@ -38,7 +38,7 @@ const ConfirmPasswordComponent = () => {
 
       authenticate(data.token?.token)
       setRefreshToken(data.token?.refreshToken)
-      await setCookie('token', data.token?.token,{ path: '/' })
+      await setCookie('token', data.token?.token, { path: '/' })
 
       reset()
 
@@ -51,29 +51,33 @@ const ConfirmPasswordComponent = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} >
-      {errorMessage && (
-        <div className="mt-4 text-negative">
-          {errorMessage}
+    <>
+      <h1 className='text-[36px] text-primary font-medium mb-[16px]'>Confirm password</h1>
+      <p className='text-[18px] text-primary font-medium mb-[40px]'>An email has been sent to your email with a code to confirm your registration. Please check your e-mail box.</p>
+      <form onSubmit={handleSubmit(onSubmit)} >
+        {errorMessage && (
+          <div className="mt-4 text-negative">
+            {errorMessage}
+          </div>
+        )}
+        <div className="flex-grow md:w-full">
+          <FormInput
+            id="confirmPassword"
+            register={register}
+            label="Enter code that was sent to your email"
+            name="confirmPassword"
+            type="text"
+            placeholder="Confirm password ###-###-###"
+            error={errors.confirmPassword}
+            className="w-full"
+          />
         </div>
-      )}
-      <div className="flex-grow md:w-[392px]">
-        <FormInput
-          id="confirmPassword"
-          register={register}
-          label="Enter code that was sent to your email"
-          name="confirmPassword"
-          type="text"
-          placeholder="Confirm password"
-          error={errors.confirmPassword}
-          className="w-full"
-        />
-      </div>
-      <Button type="submit"
-        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
-      >
-        {loading ? <Loader /> : 'Confirm Registration'}</Button>
-    </form >
+        <Button type="submit"
+          className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover w-[220px]"
+        >
+          {loading ? <Loader /> : 'Confirm Registration'}</Button>
+      </form >
+    </>
   )
 }
 
