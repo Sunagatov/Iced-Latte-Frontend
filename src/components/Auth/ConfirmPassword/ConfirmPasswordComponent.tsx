@@ -69,7 +69,7 @@ const ConfirmPasswordComponent = () => {
         <FormInput
           id="confirmPassword"
           register={register}
-          label="confirmPassword"
+          label="Enter code that was sent to your email"
           name="confirmPassword"
           type="text"
           placeholder="Confirm password"
@@ -80,7 +80,7 @@ const ConfirmPasswordComponent = () => {
       <Button type="submit"
         className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
       >
-        {loading ? <Loader /> : 'Confirm Password'}</Button>
+        {loading ? <Loader /> : 'Confirm Registration'}</Button>
     </form >
   )
 }
