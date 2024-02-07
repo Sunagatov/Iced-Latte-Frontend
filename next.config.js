@@ -11,7 +11,7 @@ const nextConfig = {
     ],
   },
   eslint: {
-    // use pre-commit hooks and explicit npm run lint
+    // use pre-commit hooks and explicit `npm run lint`
     ignoreDuringBuilds: true,
   },
 }

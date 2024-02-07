@@ -10,10 +10,12 @@ import { registrationSchema } from '@/validation/registrationSchema'
 import { useRouter } from 'next/navigation'
 import { IFormValues } from '@/types/RegistrationForm'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import { useAuthStore } from '@/store/authStore'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { resetOpenModal } = useAuthStore()
 
   const {
     register,
@@ -37,14 +39,10 @@ export default function RegistrationForm() {
       const data = await apiRegisterUser(formData)
 
       if (data) {
-        router.push('/auth/registration/confirm_password')
+        router.push('/confirm_registration')
+        resetOpenModal()
       }
 
-      const scrollContainer = document.getElementById('scroll-container')
-
-      if (scrollContainer) {
-        scrollContainer.scrollIntoView({ behavior: 'smooth' })
-      }
     } catch (error) {
       handleError(error)
     } finally {
