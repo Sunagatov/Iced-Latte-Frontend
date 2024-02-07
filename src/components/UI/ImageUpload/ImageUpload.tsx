@@ -1,21 +1,16 @@
 'use client'
 import Image from 'next/image'
+import Loader from '../Loader/Loader'
 import getImgUrl from '@/utils/getImgUrl'
 import { useState, FormEvent } from 'react'
 import { uploadImage } from '@/services/userService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
-import Loader from '../Loader/Loader'
 
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
-  const [inputKey, setInputKey] = useState(Date.now())
-  const { errorMessage, handleError } = useErrorHandler()
-  const { userData } = useAuthStore()
-
-  const uploadImg = '/upload_photo.svg'
   const [inputKey, setInputKey] = useState(Date.now())
   const { errorMessage, handleError } = useErrorHandler()
   const { userData } = useAuthStore()
@@ -43,9 +38,7 @@ const ImageUpload = () => {
     try {
       setLoading(true)
 
-
       await uploadImage(file!)
-
 
       setFile(null)
       setPreview(null)
@@ -87,18 +80,11 @@ const ImageUpload = () => {
             width={45}
             height={61}
           />
-        ) : typeof avatarUrl === 'string' && avatarUrl !== 'default file' ? (
+        ) : (
           <Image
             className="h-full w-full rounded-full object-cover"
             src={getImgUrl(userData?.avatarLink, uploadImg)}
             alt="user photo"
-            width={45}
-            height={61}
-          />
-        ) : (
-          <Image
-            src="/upload_photo.svg"
-            alt="default user photo"
             width={45}
             height={61}
           />

@@ -12,8 +12,6 @@ import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
 import { IFormValues } from '@/types/ConfirmPassword'
 import { setCookie } from '@/utils/cookieUtils'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import { setCookie } from '@/utils/cookieUtils'
-import { useErrorHandler } from '@/services/apiError/apiError'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
