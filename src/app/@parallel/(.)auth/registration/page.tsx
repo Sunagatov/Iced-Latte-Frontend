@@ -1,8 +1,8 @@
-import AuthModalRegistr from '@/components/Auth/Modal/AuthModalRegister/AuthModalRegistration'
-import ConfirmPasswordPage from '@/app/auth/registration/confirm_password/page'
+import RegisterParallelRoute from '@/app/auth/registration/page'
+
 
 export default function RegistrationPageParallel() {
-  return < AuthModalRegistr><ConfirmPasswordPage /></AuthModalRegistr>
+  return < RegisterParallelRoute />
 }
 
 

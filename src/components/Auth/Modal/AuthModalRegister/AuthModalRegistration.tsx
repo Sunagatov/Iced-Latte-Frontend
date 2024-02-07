@@ -13,7 +13,7 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-function AuthModalRegistr({ children, onCloseModal }: Readonly<AuthModalProps>) {
+function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(
     SwitchType.Registration,
   )
@@ -42,20 +42,14 @@ function AuthModalRegistr({ children, onCloseModal }: Readonly<AuthModalProps>) 
           {switchForm === SwitchType.Login ? (
             <LoginForm />
           ) : (
-            <Link href="/auth/login">
-              <Button
-                onClick={handleClickSwitchForm}
-                className="mt-6 w-full hover:bg-brand-solid-hover"
-              >
-                Login
-              </Button>
+            <Link href="/auth/login" onClick={handleClickSwitchForm}
+              className="mt-[10px] w-full hover:text-focus flex text-[gray]">
+              Already have account? <span className='text-primary ml-[5px] underline' >Sign In</span>
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link href="/" className="flex items-center justify-center">
-              <Button className="mt-6 bg-transparent text-focus">
-                Forgot password
-              </Button>
+            <Link href="/" className="flex items-center justify-center text-focus mt-[40px]">
+              Forgot password
             </Link>
           )}
           <div className="mb-8 mt-6 h-[1px] w-full bg-brand-second" />
@@ -87,7 +81,6 @@ function AuthModalRegistr({ children, onCloseModal }: Readonly<AuthModalProps>) 
               </a>
             </p>
           )}
-          {children}
         </div>
       </div>
     </div>

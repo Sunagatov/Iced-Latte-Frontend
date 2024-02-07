@@ -16,6 +16,11 @@ const ImageUpload = () => {
   const { userData } = useAuthStore()
 
   const uploadImg = '/upload_photo.svg'
+  const [inputKey, setInputKey] = useState(Date.now())
+  const { errorMessage, handleError } = useErrorHandler()
+  const { userData } = useAuthStore()
+
+  const uploadImg = '/upload_photo.svg'
 
   const handleInputChange = async (
     e: React.ChangeEvent<HTMLInputElement & { files: FileList }>,
