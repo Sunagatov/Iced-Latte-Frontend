@@ -5,6 +5,7 @@ import { UserData } from '@/types/services/UserServices'
 import { showError } from '@/utils/showError'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
+import { useFavouritesStore } from '@/store/favStore'
 import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
@@ -17,6 +18,8 @@ const FiledProfile = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { reset, setModalState } = useAuthStore()
+  const { resetFav } = useFavouritesStore()
+
   const router = useRouter()
 
   useEffect(() => {
@@ -48,6 +51,7 @@ const FiledProfile = () => {
   const handleLogout = () => {
     try {
       // logic logout
+      resetFav()
     } catch (error) {
       showError(error)
     }

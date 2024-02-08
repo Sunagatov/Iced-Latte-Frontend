@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import InterceptorsForRefreshToken from '@/Context/InterceptorsForRefreshToken'
+import GlobalFavoritesAndCartInit from '@/Context/GlobalFavoritesAndCartInit'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
       <body className={inter.className + ' flex min-h-screen flex-col'}>
         <ToastContainer />
         <InterceptorsForRefreshToken>
-          <Header />
-          <main className={'min-w-[360px] grow'}>{children}</main>
-          <Footer />
+          <GlobalFavoritesAndCartInit >
+            <Header />
+            <main className={'min-w-[360px] grow'}>{children}</main>
+            <Footer />
+          </GlobalFavoritesAndCartInit>
         </InterceptorsForRefreshToken>
       </body>
     </html>

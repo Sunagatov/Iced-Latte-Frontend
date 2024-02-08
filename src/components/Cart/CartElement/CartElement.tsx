@@ -10,6 +10,7 @@ import { productSize } from '@/constants/product'
 import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 import { CartElementProps } from '@/types/CartElement'
+import { handleFavouriteButtonClick } from '@/utils/favUtils'
 
 export default function CartElement({
   product,
@@ -25,19 +26,13 @@ export default function CartElement({
 
   const token = useAuthStore((state) => state.token)
 
-  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
-  const isActive = favouriteIds.includes(product.id)
+  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
+
+  const isInFavourites = favourites?.some((fav) => fav.id === productInfo.id)
+  const isActive = favouriteIds.includes(productInfo.id)
 
   const handleButtonClick = async () => {
-    try {
-      if (isActive) {
-        await removeFavourite(product.id, token)
-      } else {
-        await addFavourite(product.id, token)
-      }
-    } catch (error) {
-      console.error('Error in handleButtonClick:', error)
-    }
+    await handleFavouriteButtonClick(productInfo.id, token, isInFavourites, isActive, addFavourite, removeFavourite)
   }
 
   return (
@@ -83,7 +78,7 @@ export default function CartElement({
           </Button>
           <div>
             <ButtonHeart
-              active={isActive}
+              active={token ? isInFavourites : isActive}
               onClick={handleButtonClick}
               className="ml-2"
             />

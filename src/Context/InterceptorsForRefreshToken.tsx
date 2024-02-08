@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { api } from '@/services/apiConfig/apiConfig'
 import { useEffect } from 'react'
+import { useFavouritesStore } from '@/store/favStore'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean;
@@ -13,6 +14,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
   const { token, refreshToken, authenticate, reset } = useAuthStore()
+  const { resetFav } = useFavouritesStore()
 
   const router = useRouter()
 
@@ -54,6 +56,7 @@ const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
           } catch (refreshError) {
             if (refreshError)
               reset()
+            resetFav()
             router.push('/')
             throw refreshError
           }
@@ -69,7 +72,7 @@ const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
       api.interceptors.request.eject(requestInterceptor)
       api.interceptors.response.eject(responseInterceptor)
     }
-  }, [authenticate, refreshToken, reset, router, token])
+  }, [authenticate, refreshToken, reset, resetFav, router, token])
 
   return (
     <>
