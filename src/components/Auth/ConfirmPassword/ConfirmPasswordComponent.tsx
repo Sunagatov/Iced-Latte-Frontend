@@ -53,7 +53,7 @@ const ConfirmPasswordComponent = () => {
   return (
     <>
       <h1 className='text-[36px] text-primary font-medium mb-[16px]'>Confirm password</h1>
-      <p className='text-[18px] text-primary font-medium mb-[40px]'>An email has been sent to your email with a code to confirm your registration. Please check your e-mail box.</p>
+      <p className='text-[18px] text-primary font-medium mb-[40px]'>Enter code that was sent to your email to confirm registration.</p>
       <form onSubmit={handleSubmit(onSubmit)} >
         {errorMessage && (
           <div className="mt-4 text-negative">
