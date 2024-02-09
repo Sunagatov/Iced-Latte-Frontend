@@ -14,13 +14,12 @@ export const handleFavouriteButtonClick = async (
       } else {
         await addFavourite(id, token)
       }
+    } else if (isActive) {
+      // User is not logged in, but isActive
+      await removeFavourite(id, token)
     } else {
-      // User is not logged in
-      if (isActive) {
-        await removeFavourite(id, token)
-      } else {
-        await addFavourite(id, token)
-      }
+      // User is not logged in and not isActive
+      await addFavourite(id, token)
     }
   } catch (error) {
     console.error('Error in handleButtonClick:', error)
