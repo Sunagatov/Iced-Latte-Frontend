@@ -25,7 +25,7 @@ export default function Header() {
             </span>
           </div>
         </Link>
-        <div className={'flex justify-between gap-6'}>
+        <div className={'flex justify-between gap-6 items-center'}>
           <HeaderHeart />
           <LoginIcon />
           <CartButton />

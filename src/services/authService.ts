@@ -48,10 +48,3 @@ export async function apiLoginUser(
 
   return response.data
 }
-
-export class ServerError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'ServerError'
-  }
-}
