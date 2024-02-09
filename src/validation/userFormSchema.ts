@@ -46,6 +46,6 @@ export const validationSchema = yup.object().shape({
     postcode: yup
       .string()
       .required('Postcode is required')
-      .matches(/^[0-9]+$/, 'Invalid postcode format. Use only digits'),
+      .matches(/^\d+$/, 'Invalid postcode format. Use only digits'),
   }),
 })
