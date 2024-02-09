@@ -8,7 +8,7 @@ export const handleAxiosError = (error: unknown): string => {
     const axiosError = error as AxiosError<ErrorResponse>
 
     if (axiosError.response) {
-      return `Server Error: ${axiosError.response.data.message}`
+      return `Server Error: ${axiosError.response.data.message || axiosError.response.data.error}`
     }
   }
 

@@ -9,11 +9,13 @@ import { validationSchema } from '@/validation/userFormSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { UserData } from '@/types/services/UserServices'
+import { useErrorHandler } from '@/services/apiError/apiError'
 import Image from 'next/image'
 import Button from '@/components/UI/Buttons/Button/Button'
 import CalendarComponent from '@/components/UI/Calendar/Calendar'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
+import countries from '@/constants/countryData'
 
 const FormProfile = ({
   onSuccessEdit,
@@ -22,6 +24,7 @@ const FormProfile = ({
 }: Readonly<FormProfileProps>) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [date, setDate] = useState<Date | null>(new Date())
+  const { errorMessage, handleError } = useErrorHandler()
 
   const {
     register,
@@ -74,7 +77,7 @@ const FormProfile = ({
       onSuccessEdit()
       updateUserData(data)
     } catch (error) {
-      console.error('Error updating profile:', error)
+      handleError(error)
     }
   }
 
@@ -116,8 +119,7 @@ const FormProfile = ({
             label="Date of birth"
             name="birthDate"
             type="text"
-            placeholder="Select date of birth"
-            error={errors.birthDate}
+            placeholder="Select date of birth. Date format YYYY-MM-DD"
           />
           <Image
             src="/open_select.svg"
@@ -188,8 +190,11 @@ const FormProfile = ({
             <option value="" disabled>
               Select country
             </option>
-            <option value="USA">United States</option>
-            <option value="Canada">Canada</option>
+            {countries.map((country) => (
+              <option key={country.value} value={country.value}>
+                {country.label}
+              </option>
+            ))}
           </select>
           <Image
             src="/open_select.svg"
@@ -236,6 +241,11 @@ const FormProfile = ({
           />
         </div>
         <div className="mt-4">
+          {errorMessage && (
+            <div className="mt-4 text-negative">
+              {errorMessage}
+            </div>
+          )}
           <Button
             type="submit"
             className={`${Object.keys(errors).length > 0

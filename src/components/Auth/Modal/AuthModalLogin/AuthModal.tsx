@@ -12,7 +12,7 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-export function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
+function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
 
@@ -53,20 +53,14 @@ export function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
           {switchForm === SwitchType.Login ? (
             <LoginForm />
           ) : (
-            <Link href="/auth/login">
-              <Button
-                onClick={handleClickSwitchFrom}
-                className="mt-6 w-full hover:bg-brand-solid-hover"
-              >
-                Login
-              </Button>
+            <Link href="/auth/login" onClick={handleClickSwitchFrom}
+              className="mt-[10px] w-full hover:text-focus flex text-[gray]">
+              Already have account? <span className='text-primary ml-[5px] underline' >Sign In</span>
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link href="/" className="flex items-center justify-center">
-              <Button className="mt-6 bg-transparent text-focus">
-                Forgot password
-              </Button>
+            <Link href="/" className="flex items-center justify-center text-focus mt-[40px]">
+              Forgot password
             </Link>
           )}
           <div className="mb-8 mt-6 h-[1px] w-full bg-brand-second" />
@@ -101,3 +95,4 @@ export function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
     </div>
   )
 }
+export default AuthModal

@@ -10,13 +10,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { apiConfirmEmail } from '@/services/authService'
 import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
 import { IFormValues } from '@/types/ConfirmPassword'
-import { ErrorResponse } from '@/types/ErrorResponse'
-import axios, { AxiosError } from 'axios'
+import { setCookie } from '@/utils/cookieUtils'
+import { useErrorHandler } from '@/services/apiError/apiError'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { authenticate, setRefreshToken } = useAuthStore()
+  const { errorMessage, handleError } = useErrorHandler()
   const { redirectToPreviousRoute } = useAuthRedirect()
   const {
     register,
@@ -38,50 +38,46 @@ const ConfirmPasswordComponent = () => {
 
       authenticate(data.token?.token)
       setRefreshToken(data.token?.refreshToken)
+      await setCookie('token', data.token?.token, { path: '/' })
 
       reset()
 
       redirectToPreviousRoute()
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-
-        const axiosError = error as AxiosError<ErrorResponse>
-
-        if (axiosError.response) {
-          setErrorMessage(`Server Error: ${axiosError.response.data.message}`)
-        }
-      } else {
-        setErrorMessage('An unknown error occurred')
-      }
+    } catch (error) {
+      handleError(error)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} >
-      {errorMessage && (
-        <div className="mt-4 text-negative">
-          {errorMessage}
+    <>
+      <h1 className='text-[36px] text-primary font-medium mb-[16px]'>Confirm password</h1>
+      <p className='text-[18px] text-primary font-medium mb-[40px]'>Enter code that was sent to your email to confirm registration.</p>
+      <form onSubmit={handleSubmit(onSubmit)} >
+        {errorMessage && (
+          <div className="mt-4 text-negative">
+            {errorMessage}
+          </div>
+        )}
+        <div className="flex-grow md:w-full">
+          <FormInput
+            id="confirmPassword"
+            register={register}
+            label="Enter code that was sent to your email"
+            name="confirmPassword"
+            type="text"
+            placeholder="Confirm password ###-###-###"
+            error={errors.confirmPassword}
+            className="w-full"
+          />
         </div>
-      )}
-      <div className="flex-grow md:w-[392px]">
-        <FormInput
-          id="confirmPassword"
-          register={register}
-          label="confirmPassword"
-          name="confirmPassword"
-          type="text"
-          placeholder="Confirm password"
-          error={errors.confirmPassword}
-          className="w-full"
-        />
-      </div>
-      <Button type="submit"
-        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
-      >
-        {loading ? <Loader /> : 'Confirm Password'}</Button>
-    </form >
+        <Button type="submit"
+          className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover w-[220px]"
+        >
+          {loading ? <Loader /> : 'Confirm Registration'}</Button>
+      </form >
+    </>
   )
 }
 
