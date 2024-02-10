@@ -11,6 +11,7 @@ import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 import { CartElementProps } from '@/types/CartElement'
 import { useCombinedStore } from '@/store/store'
+import { debounce } from 'lodash'
 
 export default function CartElement({
   product,
@@ -19,8 +20,6 @@ export default function CartElement({
   removeAll,
 }: Readonly<CartElementProps>) {
   const { productInfo } = product
-
-  console.log(product)
 
   const { count } = useCombinedStore()
 
@@ -71,11 +70,11 @@ export default function CartElement({
             theme="light"
             className={'h-[42px]'}
             count={count}
-            removeProduct={() => {
+            removeProduct={debounce(() => {
               if (count > 1) {
                 remove()
               }
-            }}
+            }, 300)}
             addProduct={() => addProduct()}
           />
           <Button
