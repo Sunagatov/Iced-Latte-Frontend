@@ -27,7 +27,7 @@ const UserBar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const userName = userData?.firstName || ''
+  const userName = userData?.firstName ?? ''
   const displayUserName = userName.length > 9 ? userName.substring(0, 9) + '...' : userName
 
   return (
