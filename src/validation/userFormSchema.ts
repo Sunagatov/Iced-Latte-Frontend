@@ -15,7 +15,7 @@ export const validationSchema = yup.object().shape({
     .max(255, 'Last name should not exceed 255 characters')
     .matches(
       /^[a-zA-Z\u0080-\u00FF]+$/,
-      'Invalid lastName format. Use extended Latin letters',
+      'Invalid Last name format. Use extended Latin letters',
     ),
 
   birthDate: yup.string(),
