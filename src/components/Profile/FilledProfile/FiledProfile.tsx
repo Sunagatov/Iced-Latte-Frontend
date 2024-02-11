@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
+import { useFavouritesStore } from '@/store/favStore'
 import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
@@ -13,6 +14,8 @@ const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const { reset, setUserData, userData } = useAuthStore()
+  const { resetFav } = useFavouritesStore()
+
   const router = useRouter()
 
   const handleSuccessEdit = () => {
@@ -31,6 +34,7 @@ const FiledProfile = () => {
       reset()
       await removeCookie('token')
       router.push('/')
+      resetFav()
     } catch (error) {
       console.log(error)
     }
