@@ -34,8 +34,9 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
     <>
       {!productQuantity && (
         <div>
-          <Button className={'w-full md:w-[278px]'} onClick={addProduct}>
+          <Button className='w-full md:w-[278px]' onClick={addProduct}>
             Add to cart &#x2022; ${product.price}
+
           </Button>
         </div>
       )}
@@ -47,7 +48,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
             addProduct={addProduct}
             removeProduct={removeProduct}
           />
-          <Button className={'w-[123px] cursor-default hover:bg-brand-solid'}>
+          <Button className='w-[123px] pointer-events-none cursor-default '>
             ${product.price}
           </Button>
         </div>
@@ -55,3 +56,6 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
     </>
   )
 }
+
+
+

@@ -2,7 +2,7 @@
 import { PropsBtn } from '@/types/Button'
 
 const defaultStyles =
-  'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted'
+  'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted  hover:scale-105 transition ease-in-out'
 
 export default function Button({
   onClick,
@@ -19,3 +19,6 @@ export default function Button({
     </button>
   )
 }
+
+
+

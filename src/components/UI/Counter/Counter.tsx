@@ -7,7 +7,7 @@ import minusDark from '../../../../public/minus_dark.svg'
 import { PropsCounter } from '@/types/Counter'
 
 const defaultStyles =
-  'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium'
+  'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium hover:scale-105 transition ease-in-out'
 
 export default function Counter({
   theme,

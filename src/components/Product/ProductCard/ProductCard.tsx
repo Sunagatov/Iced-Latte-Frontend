@@ -31,9 +31,9 @@ export default function ProductCard({
   }
 
   return (
-    <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
+    <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px] '}>
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
-        <div className=" relative h-[177px] w-full  md:h-[360px]">
+        <div className="  relative h-[177px] w-full  md:h-[360px]">
           <Image
             src={getImgUrl(productFileUrl, productImg)}
             alt="card picture"
@@ -55,7 +55,7 @@ export default function ProductCard({
           </div>
         </div>
       </Link>
-      <div className={' absolute right-0 top-0'}>
+      <div className={' absolute right-0 top-0 m-2'}>
         <ButtonHeart
           active={token ? isInFavourites : isActive}
           onClick={handleButtonClick}
@@ -73,3 +73,6 @@ export default function ProductCard({
     </div>
   )
 }
+
+
+
