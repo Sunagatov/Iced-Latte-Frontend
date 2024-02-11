@@ -12,7 +12,7 @@ import { useAuthStore } from '@/store/authStore'
 import { CartElementProps } from '@/types/CartElement'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
 import { useCombinedStore } from '@/store/store'
-import { debounce } from 'lodash'
+import { useStoreData } from '@/hooks/useStoreData'
 
 export default function CartElement({
   product,
@@ -22,7 +22,10 @@ export default function CartElement({
 }: Readonly<CartElementProps>) {
   const { productInfo } = product
 
-  const { count } = useCombinedStore()
+  const items = useStoreData(useCombinedStore, (state) => state.itemsIds)
+
+  const productQuantity = items?.find((item) => item.productId === productInfo.id)
+    ?.productQuantity
 
   const addProduct = () => {
     add()
@@ -64,12 +67,14 @@ export default function CartElement({
           <Counter
             theme="light"
             className={'h-[42px]'}
-            count={count}
-            removeProduct={debounce(() => {
-              if (count > 1) {
-                remove()
+            count={productQuantity!}
+            removeProduct={
+              () => {
+                if (productQuantity! > 1) {
+                  remove()
+                }
               }
-            }, 300)}
+            }
             addProduct={() => addProduct()}
           />
           <Button

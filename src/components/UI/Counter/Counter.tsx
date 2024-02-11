@@ -5,6 +5,7 @@ import plusDark from '../../../../public/plus_dark.svg'
 import minus from '../../../../public/minus.svg'
 import minusDark from '../../../../public/minus_dark.svg'
 import { PropsCounter } from '@/types/Counter'
+import { debounce } from 'lodash'
 
 const defaultStyles =
   'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium'
@@ -25,18 +26,18 @@ export default function Counter({
       ? 'bg-inverted text-inverted'
       : 'bg-secondary text-primary')
 
-  const onPlus = () => {
+  const onPlus = debounce(() => {
     const nextValue = count + 1
 
     if (nextValue > 99) {
       return
     }
     addProduct()
-  }
+  }, 300)
 
-  const onMinus = () => {
+  const onMinus = debounce(() => {
     removeProduct()
-  }
+  }, 300)
 
   return (
     <div className={computedStyles}>

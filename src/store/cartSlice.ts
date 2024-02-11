@@ -8,7 +8,6 @@ import { IProduct } from '@/types/Products'
 import { getProductByIds } from '@/services/apiService'
 import {
   changeCartItemQuantity,
-  fetchCart,
   mergeCarts,
   removeCartItem,
 } from '@/services/cartApiService'
@@ -133,7 +132,6 @@ export const createCartSlice: StateCreator<
       const reqItems: ICartPushItems = { items: itemsIds }
 
       await createCart(token, reqItems)
-      await fetchCart()
     } catch (e) {
       throw new Error((e as Error).message)
     }
