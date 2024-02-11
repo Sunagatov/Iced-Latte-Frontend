@@ -57,7 +57,6 @@ export default function ProductCard({
       </Link>
       <div className={' absolute right-0 top-0'}>
         <ButtonHeart
-          // active={isActive}
           active={token ? isInFavourites : isActive}
           onClick={handleButtonClick}
           className="ml-2"
