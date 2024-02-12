@@ -13,6 +13,7 @@ export default function FavouritesFull() {
     if (loading) {
       return <Loader />
     } else {
+
       return favourites.map((item: IProduct) => (
         <FavElement key={item.id} product={item} />
       ))

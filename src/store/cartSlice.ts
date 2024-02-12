@@ -105,7 +105,6 @@ export const createCartSlice: StateCreator<
     try {
       const { itemsIds } = get()
       const ids = itemsIds.map((item) => item.productId)
-
       const productList = await getProductByIds(ids)
       const cartItems: ICartItem[] = productList.map((item) => {
         const quantity = itemsIds.find(

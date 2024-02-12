@@ -23,7 +23,8 @@ export async function removeFavItem(id: string): Promise<FavResponse> {
 }
 
 export async function getFavByIds(): Promise<IProduct[]> {
-  const response: AxiosResponse<IProduct[]> = await api.get('/favorites')
+  const response: AxiosResponse<{ products: IProduct[] }> =
+    await api.get('/favorites')
 
-  return response.data
+  return response.data?.products || []
 }

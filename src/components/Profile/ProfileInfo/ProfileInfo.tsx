@@ -2,16 +2,13 @@ import { formatDate } from '@/utils/formDate'
 import { UserProfileInfoProps } from '@/types/ProfileInfo'
 import ProfileListItem from '@/components/UI/ProfileListItem/ProfileListItem'
 import Button from '@/components/UI/Buttons/Button/Button'
-import Loader from '@/components/UI/Loader/Loader'
 
 const ProfileInfo = ({
   userData,
   onEditClick,
-  isLoading,
 }: UserProfileInfoProps) => {
   return (
     <>
-      {isLoading && <Loader />}
       {userData && (
         <div>
           <h2 className="mb-8 text-2xl font-medium text-primary">

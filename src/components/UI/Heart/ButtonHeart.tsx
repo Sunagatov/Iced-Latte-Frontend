@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge'
 import { ButtonHeartProps } from '@/types/ButtonHeart'
 
 export default function ButtonHeart({ active, onClick, className }: Readonly<ButtonHeartProps>) {
+
   const imageUrl = active ? active_heart : not_active_heart
 
   return (
