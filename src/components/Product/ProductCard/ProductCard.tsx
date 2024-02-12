@@ -32,8 +32,8 @@ export default function ProductCard({
 
   return (
     <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px] '}>
-      <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
-        <div className="  relative h-[177px] w-full  md:h-[360px]">
+      <Link href={`/product/${id}`} className={'flex flex-col gap-y-4 '}>
+        <div className="relative h-[177px] w-full  md:h-[360px]">
           <Image
             src={getImgUrl(productFileUrl, productImg)}
             alt="card picture"
@@ -43,7 +43,7 @@ export default function ProductCard({
         </div>
 
         <div className={'flex w-full flex-col gap-3'}>
-          <h2 className={'text-L font-bold text-primary md:text-3XL'}>
+          <h2 className={'text-L font-bold text-primary h-8 md:text-3XL'}>
             {name}
           </h2>
           <div className={' flex items-center gap-2 text-L md:text-2XL'}>
