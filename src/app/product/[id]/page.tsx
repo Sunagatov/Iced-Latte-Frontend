@@ -35,7 +35,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
         height={500}
         alt="product_image"
         className={'m-auto md:m-0'}
-      ></Image>
+      />
       <div className={'flex flex-col gap-6 pb-4 '}>
         <div
           className={'flex flex-col gap-[18px] '}
