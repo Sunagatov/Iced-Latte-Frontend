@@ -20,5 +20,3 @@ export default function ButtonHeart({ active, onClick, className }: Readonly<But
     </button>
   )
 }
-
-
