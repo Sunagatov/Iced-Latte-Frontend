@@ -7,6 +7,7 @@ import getImgUrl from '@/utils/getImgUrl'
 import { IProduct } from '@/types/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
+import ReviewComponent from '@/components/Product/Review/ReviewComponent'
 
 type ProductProps = {
   params: {
@@ -24,36 +25,41 @@ export default async function Page({ params }: Readonly<ProductProps>) {
   const product = await getProductById(params.id)
 
   return (
-    <section
-      className={
-        'flex flex-col gap-[21px] md:flex-row md:justify-center md:gap-12'
-      }
-    >
-      <Image
-        src={getImgUrl(product.productFileUrl, productImg)}
-        width={500}
-        height={500}
-        alt="product_image"
-        className={'m-auto md:m-0'}
-      ></Image>
-      <div className={'flex flex-col gap-6 px-4 pb-4 md:max-w-[532px]'}>
-        <div
-          className={'flex flex-col gap-[18px] sm:items-center md:items-start'}
-        >
-          <h2 className={'text-4XL'}>{product.name}</h2>
-          <div className={'flex items-center gap-2 text-L'}>
-            <Image src={star} alt="star" className={'inline-block'} />
-            <span>{productRating}</span>
-            <span className={'text-placeholder'}>
-              &#x2022; {productSize} g.
-            </span>
+    <section>
+      <div
+        className={
+          'flex flex-col gap-[21px] md:flex-row md:justify-center md:gap-12'
+        }
+      >
+        <Image
+          src={getImgUrl(product.productFileUrl, productImg)}
+          width={500}
+          height={500}
+          alt="product_image"
+          className={'m-auto md:m-0'}
+        ></Image>
+        <div className={'flex flex-col gap-6 px-4 pb-4 md:max-w-[532px]'}>
+          <div
+            className={'flex flex-col gap-[18px] sm:items-center md:items-start'}
+          >
+            <h2 className={'text-4XL'}>{product.name}</h2>
+            <div className={'flex items-center gap-2 text-L'}>
+              <Image src={star} alt="star" className={'inline-block'} />
+              <span>{productRating}</span>
+              <span className={'text-placeholder'}>
+                &#x2022; {productSize} g.
+              </span>
+            </div>
           </div>
+          <div className="flex gap-2">
+            <AddToCartButton product={product} />
+            <HeartWrapper id={product.id} className="ml-2" />
+          </div>
+          <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
         </div>
-        <div className="flex gap-2">
-          <AddToCartButton product={product} />
-          <HeartWrapper id={product.id} className="ml-2" />
-        </div>
-        <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
+      </div>
+      <div className='mt-[80px]'>
+        <ReviewComponent productId={product.id} />
       </div>
     </section>
   )
