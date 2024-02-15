@@ -7,7 +7,7 @@ import getImgUrl from '@/utils/getImgUrl'
 import { IProduct } from '@/types/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
-import ReviewComponent from '@/components/Product/Review/ReviewComponent'
+import ReviewComponent from '@/components/Product/Review/ReviewComponent/ReviewComponent'
 
 type ProductProps = {
   params: {
@@ -58,7 +58,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
           <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
         </div>
       </div>
-      <div className='mt-[80px]'>
+      <div className='mt-[80px] flex ml-auto mr-auto max-w-[1144px]'>
         <ReviewComponent productId={product.id} />
       </div>
     </section>

@@ -33,7 +33,7 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
   }
 
   return (
-    <div className='flex items-center gap-1 cursor-pointer'>
+    <div className='flex items-center gap-1 cursor-pointer mr-3'>
       {stars.map((_, index) => {
         const isActive = index < currentRating
         const isHover = index <= hoverItem
@@ -46,7 +46,7 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
             onMouseOut={handleMouseOut}
             style={{ color: isActive || isHover ? activeColor : 'rgba(4, 18, 27, 0.24)' }}
           >
-            <FaStar />
+            <FaStar className='w-10 h-10' />
           </div>)
       })}
     </div >

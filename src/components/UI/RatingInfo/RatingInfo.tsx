@@ -6,10 +6,10 @@ interface RatingInfoProps {
 
 const RatingInfo = ({ currentRating, count }: RatingInfoProps) => {
   return (
-    <div>
-      <span>{currentRating}/{count}</span>
+    <div className='flex items-center'>
+      <span className='font-medium text-[36px] text-primary mr-[24px]'>{currentRating}/{count}</span>
       {currentRating > 0 && (
-        <span>A good choice</span>
+        <span className='font-medium text-[18px] text-tertiary'>A good choice</span>
       )}
     </div>
   )
