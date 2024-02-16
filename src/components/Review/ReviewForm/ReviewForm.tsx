@@ -1,6 +1,6 @@
 'use client'
-import StarRating from '@/components/UI/StarRating/StarRating'
-import RatingInfo from '@/components/UI/RatingInfo/RatingInfo'
+import StarRating from '@/components/Review/StarRating/StarRating'
+import RatingInfo from '@/components/Review/RatingInfo/RatingInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
 import { IoIosClose } from 'react-icons/io'
 import { useState } from 'react'
@@ -51,7 +51,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 
   return (
     <>
-      <div className='mt-[40px] mb-[40px] pb-[40px] border-b border-solid border-[rgba(4, 18, 27, 0.24)]'>
+      <div className='mt-[40px] mb-[40px] pb-[40px] border-b border-solid border-primary'>
         <div className='mb-[24px] font-medium text-[24px]'>Rating</div>
         <div className='flex items-center mb-6'>
           <StarRating productId={productId} count={5} activeColor={'#00A30E'} />

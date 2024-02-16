@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import Image from 'next/image'
+import Button from '@/components/UI/Buttons/Button/Button'
 
 interface ReviewRatingFilterProps {
   onChange: (value: number | null) => void;
@@ -18,6 +19,7 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
 
   return (
     <div>
+      <Button className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus roundet-[47px] w-[268px] mb-6'>Write a review</Button>
       <div className='mb-3 font-medium text-[36px] text-primary'>4,8/5</div>
       <div className='mb-6 font-medium text-[18px] text-tertiary'>Based on 14 reviws</div>
       <div className='flex flex-col gap-3'>
@@ -31,6 +33,7 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
           ))
 
           return (
+
             <label key={value} className='flex items-center gap-2 cursor-pointer relative'>
               <input
                 className='w-6 h-6 appearance-none bg-secondary rounded-[4px] cursor-pointer checked:bg-inverted'
