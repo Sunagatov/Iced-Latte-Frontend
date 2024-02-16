@@ -58,7 +58,3 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
     </>
   )
 }
-
-
-
-s
