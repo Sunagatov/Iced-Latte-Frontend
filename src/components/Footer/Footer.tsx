@@ -10,8 +10,7 @@ export default function Footer() {
           </div>
           <div>
             Email:<span className={`ml-1 underline sm:no-underline`}>
-              <a target='_blank' href="mailto:info@coffeetimecafe.com" rel="noopener noreferrer">info@coffeetimecafe.com
-              </a>
+              <a target='_blank' href="mailto:info@coffeetimecafe.com" rel="noopener noreferrer">info@coffeetimecafe.com</a>
             </span>
           </div>
         </div>
