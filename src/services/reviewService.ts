@@ -1,5 +1,4 @@
 import { api } from './apiConfig/apiConfig'
-// import { AxiosResponse } from 'axios'
 
 export async function apiAddProductReview(
   productId: string,
