@@ -4,10 +4,10 @@ import AddToCartButton from '../../../components/Product/AddToCard/AddToCart'
 import HeartWrapper from '../../../components/Product/HeartWrapper/HeartWrapper'
 import productImg from '../../../../public/coffee.png'
 import getImgUrl from '@/utils/getImgUrl'
+import ReviewComponent from '@/components/Review/ReviewComponent/ReviewComponent'
 import { IProduct } from '@/types/Products'
 import { getProduct } from '@/services/apiService'
 import { productRating, productSize } from '@/constants/product'
-import ReviewComponent from '@/components/Review/ReviewComponent/ReviewComponent'
 
 type ProductProps = {
   params: {
@@ -55,8 +55,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
             <AddToCartButton product={product} />
             <HeartWrapper id={product.id} className="ml-2" />
           </div>
-  
-        <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
+          <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
         </div>
       </div>
       <div className='mt-[80px]'>
