@@ -20,7 +20,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   }
 
   return (
-    <div className='flex items-baseline mb-[176px] ml-auto mr-auto max-w-[1147px]'>
+    <div className='flex items-baseline mb-[176px] ml-auto mr-auto max-w-[1157px]'>
       <div className='w-[800px]'>
         <h2 className='font-medium text-[36px] text-primary'>Rating and reviews</h2>
         {token && <ReviewForm productId={productId} />}
