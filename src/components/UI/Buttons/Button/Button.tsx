@@ -1,8 +1,7 @@
 'use client'
 import { PropsBtn } from '@/types/Button'
 
-const defaultStyles =
-  'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted'
+const defaultStyles = 'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted  hover:scale-105 transition ease-in-out'
 
 export default function Button({
   onClick,
