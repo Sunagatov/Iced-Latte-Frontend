@@ -7,7 +7,7 @@ export default function CircleAddBtn({ onClick }: { onClick: () => void }) {
     <div onClick={onClick} onKeyDown={onClick}>
       <button
         className={
-          'flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-inverted hover:bg-fullpage-tint focus:bg-inverted active:bg-fullpage-tint'
+          'flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-inverted  focus:bg-inverted active:bg-fullpage-tint transition-all duration-500 ease-in-out transform hover:scale-105'
         }
       >
         <Image src={circle_btn} alt="add to cart" />
