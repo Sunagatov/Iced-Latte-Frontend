@@ -2,6 +2,7 @@
 import { useProducts } from '@/hooks/useProducts'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
+import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 
 export default function ProductList() {
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
@@ -69,6 +70,7 @@ export default function ProductList() {
             <Loader />
           </div>
         )}
+        <ScrollUpBtn />
       </div>
     </section>
   )
