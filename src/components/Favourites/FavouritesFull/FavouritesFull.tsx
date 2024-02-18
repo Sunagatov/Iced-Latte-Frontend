@@ -28,7 +28,7 @@ export default function FavouritesFull() {
       </div>
       <div className="flex w-full justify-center">
         <Link href={'/'}>
-          <Button className="my-6 h-14  text-lg font-medium sm:w-[211px]">
+          <Button className="my-6 h-14 text-lg font-medium sm:w-[211px]">
             Go to checkout
           </Button>
         </Link>

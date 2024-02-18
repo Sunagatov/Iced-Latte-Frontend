@@ -56,7 +56,7 @@ export default function ProductList() {
         {hasNextPage && !isFetchingNextPage && (
           <button
             className={
-              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
+              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary m-3'
             }
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
