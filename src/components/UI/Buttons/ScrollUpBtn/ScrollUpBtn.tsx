@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react'
 
 export default function ScrollUpBtn() {
 
-  const [showButton, setshowButton] = useState(false)
+  const [showButton, setShowButton] = useState(false)
 
   useEffect(() => {
     window.addEventListener('scroll', () => {
       if (window.scrollY > 100) {
-        setshowButton(true)
+        setShowButton(true)
       } else {
-        setshowButton(false)
+        setShowButton(false)
       }
     })
   }, [])
