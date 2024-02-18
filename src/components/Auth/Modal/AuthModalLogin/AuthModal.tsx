@@ -38,6 +38,10 @@ function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
     )
   }
 
+  const handleForgotPasswordClick = () => {
+    onCloseModal?.()
+  }
+
   return (
     <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
       <Link
@@ -59,7 +63,8 @@ function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link href="/" className="flex items-center justify-center text-focus mt-[40px]">
+            <Link onClick={handleForgotPasswordClick}
+              href="/forgotpass" className="flex items-center justify-center text-focus mt-[40px]">
               Forgot password
             </Link>
           )}

@@ -30,3 +30,7 @@ export interface ConfirmEmailResponse {
 export interface ErrorResponse {
   message: string
 }
+
+export interface ForgotPasswordCredentials {
+  email: string
+}

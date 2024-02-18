@@ -3,6 +3,7 @@ import {
   LoginCredentials,
   RegisterCredentials,
   ConfirmEmailResponse,
+  ForgotPasswordCredentials,
 } from '@/types/services/AuthServices'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
@@ -44,6 +45,18 @@ export async function apiLoginUser(
   const response: AxiosResponse<SuccessResponse> = await api.post(
     '/auth/authenticate',
     credentials,
+  )
+
+  return response.data
+}
+
+// Function for forgot password
+export async function apiForgotPassword(
+  email: ForgotPasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/auth/password/forgot',
+    email,
   )
 
   return response.data
