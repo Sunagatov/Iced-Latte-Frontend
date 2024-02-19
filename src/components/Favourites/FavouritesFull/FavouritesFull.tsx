@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/components/UI/Buttons/Button/Button'
+
 import Link from 'next/link'
 import FavElement from '../FavElement/FavElement'
 import Loader from '@/components/UI/Loader/Loader'
