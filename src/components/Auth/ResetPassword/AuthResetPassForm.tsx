@@ -5,41 +5,38 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
-import axios from 'axios'
-
-
-
+import { apiResetPassword } from '@/services/authService'
+import { ResetPasswordCredentials } from '@/types/services/AuthServices'
 
 export default function ResetPassForm() {
-  const { handleSubmit, register } = useForm()
+  const { handleSubmit, register, reset, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
 
   const router = useRouter()
+
   const handleButtonClick = () => {
     router.push('/')
   }
 
-
-
   const onSubmit = async () => {
     console.log('reset submitted')
 
-    const data = {
-      token: '<KEY>',
-      password: '<PASSWORD>',
-      confirmPassword: '<PASSWORD>',
-    }
+    const { token, password, confirmPassword } = getValues()
 
+    const data: ResetPasswordCredentials = {
+      token,
+      password,
+      confirmPassword,
+    }
 
     try {
-
-      await axios.post('YOUR_SERVER_API_ENDPOINT', data)
+      await apiResetPassword(data)
       setResetSuccessful(true)
+      console.log(data)
+      reset()
     } catch (error) {
-
       console.error('Error resetting password:', error)
     }
-
 
   }
 

@@ -8,8 +8,6 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import { apiForgotPassword } from '@/services/authService'
 
-
-
 export default function ForgotPassForm() {
   const { handleSubmit, register, getValues, reset } = useForm()
   const [emailSent, setEmailSent] = useState(false)
@@ -19,7 +17,6 @@ export default function ForgotPassForm() {
   const handleButtonClick = () => {
     router.push('/')
   }
-
 
   const onSubmit = async () => {
     const { email } = getValues()

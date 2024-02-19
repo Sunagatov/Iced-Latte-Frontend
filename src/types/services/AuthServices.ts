@@ -34,3 +34,9 @@ export interface ErrorResponse {
 export interface ForgotPasswordCredentials {
   email: string
 }
+
+export interface ResetPasswordCredentials {
+  token: string
+  password: string
+  confirmPassword: string
+}

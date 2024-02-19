@@ -4,6 +4,7 @@ import {
   RegisterCredentials,
   ConfirmEmailResponse,
   ForgotPasswordCredentials,
+  ResetPasswordCredentials,
 } from '@/types/services/AuthServices'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
@@ -57,6 +58,18 @@ export async function apiForgotPassword(
   const response: AxiosResponse<SuccessResponse> = await api.post(
     '/auth/password/forgot',
     email,
+  )
+
+  return response.data
+}
+
+// Function for reset password
+export async function apiResetPassword(
+  credentials: ResetPasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/auth/password/reset',
+    credentials,
   )
 
   return response.data
