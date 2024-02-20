@@ -36,7 +36,12 @@ export interface ForgotPasswordCredentials {
 }
 
 export interface ResetPasswordCredentials {
-  token: string
   password: string
-  confirmPassword: string
+  oldPassword: string
+}
+
+export interface GuestResetPasswordCredentials {
+  email: string
+  code: string
+  password: string
 }
