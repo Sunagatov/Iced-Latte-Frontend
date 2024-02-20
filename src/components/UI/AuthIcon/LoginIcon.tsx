@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useStoreData } from '@/hooks/useStoreData'
 import { usePathname } from 'next/navigation'
+import { pagePaths } from '@/constants/pagePaths'
 
 export default function LoginIcon() {
   const pathname = usePathname()
@@ -24,8 +25,8 @@ export default function LoginIcon() {
   )
 
   useEffect(() => {
-    // Close the modal window when navigating to the profile page because the open state remains true until the page is refreshed
-    if (pathname === '/profile' || pathname === '/') {
+    // Close the modal window when navigating to a page specified in pagePaths
+    if (pagePaths[pathname]) {
       resetOpenModal()
     }
   }, [pathname, resetOpenModal])
