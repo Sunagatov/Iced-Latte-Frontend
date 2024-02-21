@@ -1,10 +1,9 @@
 'use client'
 import { FaStar } from 'react-icons/fa'
 import { useProductRatingStore } from '@/store/ratingStore'
-import { useFilterStore } from '@/store/checkBoxFilterSessionStore'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useStoreData } from '@/hooks/useStoreData'
 import Image from 'next/image'
-import Button from '@/components/UI/Buttons/Button/Button'
 
 interface ReviewRatingFilterProps {
   onChange: (value: number | null) => void;
@@ -14,9 +13,9 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
 
   const { ratings } = useProductRatingStore()
 
-  const { setSelectedRating } = useFilterStore()
+  const { setSelectedRating } = useLocalSessionStore()
 
-  const selectedRating = useStoreData(useFilterStore, (state) => state.selectedRating)
+  const selectedRating = useStoreData(useLocalSessionStore, (state) => state.selectedRating)
 
   const iconCheck = '/Ptichka.svg'
 
@@ -27,7 +26,6 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
 
   return (
     <div>
-      <Button className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus roundet-[47px] w-[268px] mb-6'>Write a review</Button>
       <div className='mb-3 font-medium text-[36px] text-primary'>4,8/5</div>
       <div className='mb-6 font-medium text-[18px] text-tertiary'>Based on 14 reviws</div>
       <div className='flex flex-col gap-3'>

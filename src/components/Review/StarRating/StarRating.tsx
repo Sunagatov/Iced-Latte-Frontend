@@ -22,9 +22,9 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
   const stars = Array(count).fill(0)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = /* async */ () => {
       try {
-        await getProductRating(productId)
+        // await getProductRating(productId)
       } catch (error) {
         handleError(error)
       }

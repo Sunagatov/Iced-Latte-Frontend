@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { usePathname } from 'next/navigation'
-import { AuthModalProps } from '@/types/AuthModalRegistrationType'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
 import LoginForm from '@/components/Auth/Forms/LoginForm/LoginForm'
 import RegistrationForm from '@/components/Auth/Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
@@ -13,13 +13,17 @@ enum SwitchType {
   Registration = 'REGISTRATION',
 }
 
-function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
+function AuthModalRegistr() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(
     SwitchType.Registration,
   )
-  const pathname = usePathname()
+  const router = useRouter()
+  const { setModalState } = useAuthStore()
 
-  if (pathname === '/') return null
+  const handleCloseModal = () => {
+    setModalState(false)
+    router.push('/')
+  }
 
   const handleClickSwitchForm = () => {
     setSwitchForm(
@@ -31,11 +35,11 @@ function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
 
   return (
     <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
-      <Link
-        href="/"
+      <div
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
-        onClick={onCloseModal}
-      ></Link>
+        onClick={handleCloseModal}
+      >
+      </div>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
           <h2 className="text-4XL">Welcome back</h2>

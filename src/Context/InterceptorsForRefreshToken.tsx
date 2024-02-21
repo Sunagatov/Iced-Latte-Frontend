@@ -3,20 +3,17 @@ import { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import { SuccessRefreshToken } from '@/types/services/AuthServices'
 import { RootLayoutProps } from '@/app/layout'
 import { useAuthStore } from '@/store/authStore'
-import { useRouter } from 'next/navigation'
 import { api } from '@/services/apiConfig/apiConfig'
 import { useEffect } from 'react'
-import { removeCookie } from '@/utils/cookieUtils'
-import { useFavouritesStore } from '@/store/favStore'
+import useLogout from '@/hooks/useLogout'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean;
 }
 
 const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
-  const { token, refreshToken, authenticate, reset } = useAuthStore()
-  const { resetFav } = useFavouritesStore()
-  const router = useRouter()
+  const { token, refreshToken, authenticate } = useAuthStore()
+  const logout = useLogout()
 
   useEffect(() => {
     const requestInterceptor = api.interceptors.request.use((config) => {
@@ -55,10 +52,7 @@ const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
 
           } catch (refreshError) {
             if (refreshError)
-              reset()
-            await removeCookie('token')
-            resetFav()
-            router.push('/')
+              await logout()
             throw refreshError
           }
         }
@@ -73,7 +67,7 @@ const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
       api.interceptors.request.eject(requestInterceptor)
       api.interceptors.response.eject(responseInterceptor)
     }
-  }, [authenticate, refreshToken, reset, resetFav, router, token])
+  }, [authenticate, refreshToken, token, logout])
 
   return (
     <>

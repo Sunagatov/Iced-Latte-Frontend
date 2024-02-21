@@ -1,22 +1,17 @@
 'use client'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { useRouter } from 'next/navigation'
-import { removeCookie } from '@/utils/cookieUtils'
-import { useFavouritesStore } from '@/store/favStore'
 import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
 import Link from 'next/link'
+import useLogout from '@/hooks/useLogout'
 
 const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const { reset, setUserData, userData } = useAuthStore()
-  const { resetFav } = useFavouritesStore()
-
-  const router = useRouter()
+  const { setUserData, userData } = useAuthStore()
 
   const handleSuccessEdit = () => {
     setIsSuccessEditUser(true)
@@ -28,17 +23,8 @@ const FiledProfile = () => {
     setIsSuccessEditUser(false)
   }
 
-  const handleLogout = async () => {
-    try {
-      // logic logout
-      reset()
-      await removeCookie('token')
-      router.push('/')
-      resetFav()
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
+  const logout = useLogout()
 
   return (
     <div className="pb-[40px] pt-10 md:pb-[414px]">
@@ -50,7 +36,7 @@ const FiledProfile = () => {
           <div>
             <Button
               className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
-              onClick={handleLogout}
+              onClick={logout}
             >
               <span>Log out</span>
             </Button>

@@ -3,14 +3,12 @@ import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRat
 import ReviewForm from '../ReviewForm/ReviewForm'
 import CommentList from '../CommentsList/CommentsList'
 import comments from '@/constants/coments'
-import { useAuthStore } from '@/store/authStore'
-
 interface ReviewComponentProps {
   productId: string;
 }
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
-  const { token } = useAuthStore()
+
 
   const hasComments = comments.length > 0
 
@@ -23,7 +21,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     <div className='flex items-baseline mb-[176px] ml-auto mr-auto max-w-[1157px]'>
       <div className='w-[800px]'>
         <h2 className='font-medium text-[36px] text-primary'>Rating and reviews</h2>
-        {token && <ReviewForm productId={productId} />}
+        <ReviewForm productId={productId} />
         {hasComments ? < CommentList comments={comments} /> : <div className='text-end'>No customer review</div>}
 
       </div>

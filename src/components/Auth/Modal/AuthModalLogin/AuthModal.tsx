@@ -1,20 +1,24 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
 import LoginForm from '../../Forms/LoginForm/LoginForm'
 import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
-import { LoginModalProps } from '@/types/AuthLoginMoadal'
+
 
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',
 }
 
-function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
+function AuthModal() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
+  const router = useRouter()
   const pathname = usePathname()
+  const { setModalState } = useAuthStore()
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -28,8 +32,6 @@ function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
     }
   }, [pathname])
 
-  if (pathname === '/') return null
-
   const handleClickSwitchFrom = () => {
     setSwitchForm(
       switchForm === SwitchType.Login
@@ -38,13 +40,17 @@ function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
     )
   }
 
+  const handleCloseModal = () => {
+    setModalState(false)
+    router.back()
+  }
+
   return (
-    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
-      <Link
-        href="/"
+    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22 grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}>
+      <div
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
-        onClick={onCloseModal}
-      ></Link>
+        onClick={handleCloseModal}
+      ></div>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
           <h2 className="text-4XL">Welcome back</h2>
