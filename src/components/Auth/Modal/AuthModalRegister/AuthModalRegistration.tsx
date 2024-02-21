@@ -8,6 +8,7 @@ import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
 
 
+
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',

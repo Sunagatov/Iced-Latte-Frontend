@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import LoginForm from '../../Forms/LoginForm/LoginForm'
 import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
@@ -44,6 +44,10 @@ function AuthModal() {
     setModalState(false)
     router.back()
   }
+
+  useEscapeKey(() => {
+    handleCloseModal()
+  })
 
   return (
     <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22 grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}>
