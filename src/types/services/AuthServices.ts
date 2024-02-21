@@ -35,13 +35,14 @@ export interface ForgotPasswordCredentials {
   email: string
 }
 
-export interface ResetPasswordCredentials {
+export interface AuthResetPasswordCredentials {
   password: string
-  oldPassword: string
+  confirmPassword: string
 }
 
 export interface GuestResetPasswordCredentials {
   email: string
   code: string
   password: string
+  confirmPassword: string
 }

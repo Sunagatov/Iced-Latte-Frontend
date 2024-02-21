@@ -64,17 +64,17 @@ export async function apiForgotPassword(
   return response.data
 }
 
-// Function for reset password
-// export async function apiResetPassword(
-//   credentials: ResetPasswordCredentials,
-// ): Promise<SuccessResponse> {
-//   const response: AxiosResponse<SuccessResponse> = await api.post(
-//     '/auth/password/reset',
-//     credentials,
-//   )
+// Function for user reset password
+export async function apiAuthResetPassword(
+  credentials: ResetPasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.patch(
+    '/users',
+    credentials,
+  )
 
-//   return response.data
-// }
+  return response.data
+}
 
 // Function for guest reset password
 export async function apiGuestResetPassword(

@@ -5,10 +5,10 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
-import { apiResetPassword } from '@/services/authService'
-import { ResetPasswordCredentials } from '@/types/services/AuthServices'
+import { apiAuthResetPassword } from '@/services/authService'
+import { AuthResetPasswordCredentials } from '@/types/services/AuthServices'
 
-export default function ResetPassForm() {
+export default function AuthResetPassForm() {
   const { handleSubmit, register, reset, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
 
@@ -21,16 +21,15 @@ export default function ResetPassForm() {
   const onSubmit = async () => {
     console.log('reset submitted')
 
-    const { token, password, confirmPassword } = getValues()
+    const { password, confirmPassword } = getValues()
 
-    const data: ResetPasswordCredentials = {
-      token,
+    const data: AuthResetPasswordCredentials = {
       password,
       confirmPassword,
     }
 
     try {
-      await apiResetPassword(data)
+      await apiAuthResetPassword(data)
       setResetSuccessful(true)
       console.log(data)
       reset()
