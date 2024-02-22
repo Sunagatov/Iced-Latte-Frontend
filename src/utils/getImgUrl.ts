@@ -10,7 +10,7 @@ export default function getImgUrl(
     typeof staticFileUrl === 'string' &&
     staticFileUrl != DEFAULT_STATIC_FILE_URL_VALUE
   ) {
-    // return staticFileUrl
+    return staticFileUrl
   }
 
   return localImage
