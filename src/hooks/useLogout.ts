@@ -17,13 +17,13 @@ const useLogout = () => {
 
   const logout = async () => {
     try {
-      router.push('/')
       await removeCookie('token')
       reset()
       resetFav()
       setIsReviewFormVisible(false)
       setIsReviewButtonVisible(true)
       setSelectedRating(null)
+      router.push('/')
       // add other features
     } catch (error) {
       console.log(error)

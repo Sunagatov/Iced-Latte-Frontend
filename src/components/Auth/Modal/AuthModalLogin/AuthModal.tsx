@@ -8,7 +8,6 @@ import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
 
-
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',
@@ -41,8 +40,16 @@ function AuthModal() {
   }
 
   const handleCloseModal = () => {
-    setModalState(false)
-    router.back()
+    if (pathname === '/auth/login') {
+      setModalState(false)
+      router.back()
+    } else if (pathname === '/auth/registration') {
+      setModalState(false)
+      // Array.from({ length: 2 }).forEach(() => {
+      //   router.back()
+      // })
+      window.history.go(-2)
+    }
   }
 
   useEscapeKey(() => {

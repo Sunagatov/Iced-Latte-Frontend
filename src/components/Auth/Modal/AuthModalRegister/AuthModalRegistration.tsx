@@ -1,13 +1,12 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import LoginForm from '@/components/Auth/Forms/LoginForm/LoginForm'
 import RegistrationForm from '@/components/Auth/Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
-
-
 
 enum SwitchType {
   Login = 'LOGIN',
@@ -19,12 +18,20 @@ function AuthModalRegistr() {
     SwitchType.Registration,
   )
   const router = useRouter()
+  const pathname = usePathname()
   const { setModalState } = useAuthStore()
 
-  const handleCloseModal = () => {
-    setModalState(false)
-    router.push('/')
-  }
+  useEffect(() => {
+    if (pathname !== '/') {
+      document.body.style.overflowY = 'hidden'
+    } else {
+      document.body.style.overflowY = 'auto'
+    }
+
+    return () => {
+      document.body.style.overflowY = 'auto'
+    }
+  }, [pathname])
 
   const handleClickSwitchForm = () => {
     setSwitchForm(
@@ -33,6 +40,23 @@ function AuthModalRegistr() {
         : SwitchType.Login,
     )
   }
+
+  const handleCloseModal = () => {
+    if (pathname === '/auth/login') {
+      setModalState(false)
+      router.back()
+    } else if (pathname === '/auth/registration') {
+      setModalState(false)
+      // Array.from({ length: 2 }).forEach(() => {
+      //   router.back()
+      // })
+      window.history.go(-2)
+    }
+  }
+
+  useEscapeKey(() => {
+    handleCloseModal()
+  })
 
   return (
     <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>

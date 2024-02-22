@@ -1,8 +1,8 @@
 'use client'
 import FormInput from '@/components/UI/FormInput/FormInput'
-import useAuthRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Loader from '@/components/UI/Loader/Loader'
+import useRegistrationRedirect from '@/hooks/useRegistrationRedirect'
 import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -17,7 +17,7 @@ const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
-  const { redirectToPreviousRoute } = useAuthRedirect()
+
   const {
     register,
     reset,
@@ -30,19 +30,22 @@ const ConfirmPasswordComponent = () => {
     },
   })
 
+  const { handleRedirect } = useRegistrationRedirect()
+
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
       setLoading(true)
 
       const data = await apiConfirmEmail(values.confirmPassword)
 
-      authenticate(data.token?.token)
-      setRefreshToken(data.token?.refreshToken)
-      await setCookie('token', data.token?.token, { path: '/' })
+      if (data) {
+        await setCookie('token', data.token?.token, { path: '/' })
+        authenticate(data.token?.token)
+        setRefreshToken(data.token?.refreshToken)
+        reset()
 
-      reset()
-
-      redirectToPreviousRoute()
+        handleRedirect()
+      }
     } catch (error) {
       handleError(error)
     } finally {

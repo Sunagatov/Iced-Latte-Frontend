@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useStoreData } from '@/hooks/useStoreData'
 import { useCombinedStore } from '@/store/store'
 import { useShallow } from 'zustand/react/shallow'
+import GlobalRouteTracker from './GlobalRouteTracker'
 
 const GlobalFavoritesAndCartInit = ({ children }: RootLayoutProps) => {
   const { getFavouriteProducts, syncBackendFav } = useFavouritesStore()
@@ -49,9 +50,9 @@ const GlobalFavoritesAndCartInit = ({ children }: RootLayoutProps) => {
   }, [getFavouriteProducts, syncBackendFav, token])
 
   return (
-    <>
+    <GlobalRouteTracker>
       {children}
-    </>
+    </GlobalRouteTracker>
   )
 }
 
