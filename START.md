@@ -61,5 +61,3 @@ docker-compose -f docker-compose.local.yml down
 
 Backend API reference: https://iced-latte.uk/backend/api/docs/swagger-ui/index.html
 
-
-
