@@ -4,8 +4,8 @@ import {
   RegisterCredentials,
   ConfirmEmailResponse,
   ForgotPasswordCredentials,
-  ResetPasswordCredentials,
   GuestResetPasswordCredentials,
+  AuthChangePasswordCredentials,
 } from '@/types/services/AuthServices'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
@@ -64,13 +64,34 @@ export async function apiForgotPassword(
   return response.data
 }
 
-// Function for user reset password
-export async function apiAuthResetPassword(
-  credentials: ResetPasswordCredentials,
+// Function for user to chnage password
+export async function apiAuthChangePassword(
+  credentials: AuthChangePasswordCredentials,
 ): Promise<SuccessResponse> {
   const response: AxiosResponse<SuccessResponse> = await api.patch(
     '/users',
     credentials,
+  )
+
+  return response.data
+}
+
+// Function for user to intialize password change
+export async function apiAuthInitPasswordChange(): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/users/password/reset',
+  )
+
+  return response.data
+}
+
+// Function for confirming password change
+export async function apiAuthPasswordChangeConfirm(
+  token: string,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/users/password/reset/confirm',
+    { token },
   )
 
   return response.data

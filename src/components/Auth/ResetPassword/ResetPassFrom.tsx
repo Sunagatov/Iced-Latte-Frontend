@@ -3,13 +3,18 @@
 import { useAuthStore } from '@/store/authStore'
 import AuthResetPassForm from './AuthResetPassForm'
 import GuestResetPassForm from './GuestResetPassForm'
+import { useStoreData } from '@/hooks/useStoreData'
 
-export default function ResetPass() {
-  const { isLoggedIn } = useAuthStore()
+export default function ResetPassForm() {
+  const isLoggedIn = useStoreData(
+    useAuthStore,
+    (state) => state.isLoggedIn,
+  )
+
 
   return (
     <>
-      {isLoggedIn}? <AuthResetPassForm /> : <GuestResetPassForm />
+      {isLoggedIn ? <AuthResetPassForm /> : <GuestResetPassForm />}
     </>
   )
 }

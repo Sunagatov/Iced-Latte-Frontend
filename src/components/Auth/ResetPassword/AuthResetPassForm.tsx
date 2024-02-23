@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
-import { apiAuthResetPassword } from '@/services/authService'
-import { AuthResetPasswordCredentials } from '@/types/services/AuthServices'
+import { apiAuthChangePassword, apiAuthInitPasswordChange, apiAuthPasswordChangeConfirm } from '@/services/authService'
+import { AuthChangePasswordCredentials } from '@/types/services/AuthServices'
 
 export default function AuthResetPassForm() {
   const { handleSubmit, register, reset, getValues } = useForm()
@@ -19,17 +19,28 @@ export default function AuthResetPassForm() {
   }
 
   const onSubmit = async () => {
-    console.log('reset submitted')
 
-    const { password, confirmPassword } = getValues()
+    const { newPassword, oldPassword } = getValues()
 
-    const data: AuthResetPasswordCredentials = {
-      password,
-      confirmPassword,
+    const data: AuthChangePasswordCredentials = {
+      newPassword,
+      oldPassword,
     }
 
+    const token = localStorage.getItem('token')
+
     try {
-      await apiAuthResetPassword(data)
+      //  Initiate password reset
+      await apiAuthInitPasswordChange()
+
+      // Change password
+      await apiAuthChangePassword(data)
+      console.log('change password submitted')
+
+      await apiAuthPasswordChangeConfirm(token)
+
+      console.log('change password confirmed')
+
       setResetSuccessful(true)
       console.log(data)
       reset()
@@ -62,7 +73,7 @@ export default function AuthResetPassForm() {
             <FormInput
               id="password"
               register={register}
-              name="email"
+              name="newPassword"
               label="New password"
               type="password"
               placeholder="Enter your new password"
@@ -72,15 +83,15 @@ export default function AuthResetPassForm() {
             <FormInput
               id="password"
               register={register}
-              name="email"
-              label="Confirm new password"
+              name="oldPassword"
+              label="Old password"
               type="password"
-              placeholder="Enter your new password"
+              placeholder="Enter your old password"
               className="mb-5"
             />
 
             <Button type="submit" className="px-6">
-              Reset password
+              Change password
             </Button>
           </form>
         </div>

@@ -19,15 +19,14 @@ export default function GuestResetPassForm() {
   }
 
   const onSubmit = async () => {
-    console.log('reset submitted')
+    const storedEmail = localStorage.getItem('emailForReset') || ''
 
-    const { email, code, password, confirmPassword } = getValues()
+    const { code, password } = getValues()
 
     const data: GuestResetPasswordCredentials = {
-      email,
+      email: storedEmail,
       code,
       password,
-      confirmPassword,
     }
 
     try {
@@ -38,7 +37,7 @@ export default function GuestResetPassForm() {
     } catch (error) {
       console.error('Error resetting password:', error)
     }
-
+    console.log('reset submitted')
   }
 
   return (

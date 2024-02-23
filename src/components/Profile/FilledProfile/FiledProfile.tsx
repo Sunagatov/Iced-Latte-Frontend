@@ -78,7 +78,7 @@ const FiledProfile = () => {
           <h3 className="mb-[16px] text-2xl font-medium text-primary">
             Password
           </h3>
-          <Link href="/">
+          <Link href="/resetpass">
             <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
               <span>Change password</span>
             </Button>

@@ -1,11 +1,9 @@
-
+import ResetPassForm from '@/components/Auth/ResetPassword/ResetPassFrom'
 
 export default function ResetPass() {
-
-
   return (
     <>
-      <ResetPass />
+      <ResetPassForm />
     </>
   )
 }
