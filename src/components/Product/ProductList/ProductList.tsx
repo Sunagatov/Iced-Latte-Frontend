@@ -2,6 +2,7 @@
 import { useProducts } from '@/hooks/useProducts'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
+import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 
 export default function ProductList() {
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
@@ -55,7 +56,7 @@ export default function ProductList() {
         {hasNextPage && !isFetchingNextPage && (
           <button
             className={
-              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
+              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary m-3'
             }
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
@@ -69,6 +70,7 @@ export default function ProductList() {
             <Loader />
           </div>
         )}
+        <ScrollUpBtn />
       </div>
     </section>
   )
