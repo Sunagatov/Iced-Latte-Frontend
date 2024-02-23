@@ -8,9 +8,12 @@ import FormInput from '@/components/UI/FormInput/FormInput'
 import { apiAuthChangePassword, apiAuthInitPasswordChange, apiAuthPasswordChangeConfirm } from '@/services/authService'
 import { AuthChangePasswordCredentials } from '@/types/services/AuthServices'
 
+
+
 export default function AuthResetPassForm() {
   const { handleSubmit, register, reset, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
+
 
   const router = useRouter()
 
@@ -28,6 +31,8 @@ export default function AuthResetPassForm() {
     }
 
     const token = localStorage.getItem('token')
+
+    console.log('token', token)
 
     try {
       //  Initiate password reset

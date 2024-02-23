@@ -9,7 +9,7 @@ import { GuestResetPasswordCredentials } from '@/types/services/AuthServices'
 import { apiGuestResetPassword } from '@/services/authService'
 
 export default function GuestResetPassForm() {
-  const { handleSubmit, register, reset, getValues } = useForm()
+  const { handleSubmit, register, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
 
   const router = useRouter()
@@ -24,16 +24,17 @@ export default function GuestResetPassForm() {
     const { code, password } = getValues()
 
     const data: GuestResetPasswordCredentials = {
-      email: storedEmail,
       code,
+      email: storedEmail,
       password,
     }
+
+    console.log('data of the input', data)
 
     try {
       await apiGuestResetPassword(data)
       setResetSuccessful(true)
-      console.log(data)
-      reset()
+
     } catch (error) {
       console.error('Error resetting password:', error)
     }
@@ -61,19 +62,19 @@ export default function GuestResetPassForm() {
             </p>
 
             <FormInput
-              id="token"
+              id="code"
               register={register}
-              name="token"
-              label="token"
-              type="token"
-              placeholder="Enter token from email"
+              name="code"
+              label="code"
+              type="text"
+              placeholder="Enter code from email"
               className="mb-5"
             />
 
             <FormInput
               id="password"
               register={register}
-              name="email"
+              name="password"
               label="New password"
               type="password"
               placeholder="Enter your new password"

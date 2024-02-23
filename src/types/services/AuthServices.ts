@@ -41,7 +41,7 @@ export interface AuthChangePasswordCredentials {
 }
 
 export interface GuestResetPasswordCredentials {
-  email: string
   code: string
+  email: string
   password: string
 }

@@ -102,7 +102,7 @@ export async function apiGuestResetPassword(
   credentials: GuestResetPasswordCredentials,
 ): Promise<SuccessResponse> {
   const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/auth/password/reset',
+    '/auth/password/change',
     credentials,
   )
 
