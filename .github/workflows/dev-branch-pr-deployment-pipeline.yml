@@ -58,4 +58,3 @@ jobs:
             cd ${{ env.APP_PATH_ON_THE_REMOTE_SERVER }} 
             docker-compose -f ${{ env.DOCKER_COMPOSE_FILE }} down ${{ env.DOCKER_CONTAINER_NAME }}
             docker-compose -f ${{ env.DOCKER_COMPOSE_FILE }} up -d ${{ env.DOCKER_CONTAINER_NAME }}
-
