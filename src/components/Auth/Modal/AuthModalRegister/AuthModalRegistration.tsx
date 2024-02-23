@@ -47,9 +47,6 @@ function AuthModalRegistr() {
       router.back()
     } else if (pathname === '/auth/registration') {
       setModalState(false)
-      // Array.from({ length: 2 }).forEach(() => {
-      //   router.back()
-      // })
       window.history.go(-2)
     }
   }

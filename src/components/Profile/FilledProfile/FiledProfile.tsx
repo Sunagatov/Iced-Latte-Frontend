@@ -7,6 +7,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
 import Link from 'next/link'
 import useLogout from '@/hooks/useLogout'
+import Loader from '@/components/UI/Loader/Loader'
 
 const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
@@ -24,7 +25,7 @@ const FiledProfile = () => {
   }
 
 
-  const logout = useLogout()
+  const { isLoading, logout } = useLogout()
 
   return (
     <div className="pb-[40px] pt-10 md:pb-[414px]">
@@ -35,10 +36,10 @@ const FiledProfile = () => {
           </h1>
           <div>
             <Button
-              className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
+              className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60 w-[114px]"
               onClick={logout}
             >
-              <span>Log out</span>
+              {isLoading ? <Loader /> : 'Log out'}
             </Button>
           </div>
         </div>

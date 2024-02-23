@@ -2,6 +2,7 @@
 import StarRating from '@/components/Review/StarRating/StarRating'
 import RatingInfo from '@/components/Review/RatingInfo/RatingInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
+import Loader from '@/components/UI/Loader/Loader'
 import { IoIosClose } from 'react-icons/io'
 import { useState } from 'react'
 import { useProductRatingStore } from '@/store/ratingStore'
@@ -16,6 +17,7 @@ interface ReviewFormProps {
 }
 
 const ReviewForm = ({ productId }: ReviewFormProps) => {
+  const [loading, setLoading] = useState(false)
   const [reviewText, setReviewText] = useState('')
   const [charCount, setCharCount] = useState(0)
   const { errorMessage, handleError } = useErrorHandler()
@@ -46,11 +48,12 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 
   const handleAddReview = async () => {
     try {
-      const res = await apiAddProductReview(productId, reviewText)
-
-      console.log(res)
+      setLoading(true)
+      await apiAddProductReview(productId, reviewText)
     } catch (error) {
       handleError(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -108,8 +111,8 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
               {errorMessage}
             </div>
           )}
-          <div className='mt-[40px]'>
-            <Button onClick={handleAddReview} disabled={isReviewTextEmpty} className={`${isReviewTextEmpty ? 'opacity-20' : ''} w-[220px]`}>Add a review</Button>
+          <div className='mt-[40px] flex gap-2'>
+            <Button onClick={handleAddReview} disabled={isReviewTextEmpty} className={`${isReviewTextEmpty ? 'opacity-20' : ''} w-[220px] flex items-center justify-center`}> {loading ? < Loader /> : 'Add a review'}</Button>
             {reviewText && (<Button onClick={handleCancel} className='ml-2 w-[108px] bg-secondary text-primary font-medium text-[18px]'>Cancel</Button>)}
           </div>
         </>

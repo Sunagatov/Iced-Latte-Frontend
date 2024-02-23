@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist /*, createJSONStorage */ } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 interface SessionStore {
   selectedRating: number | null
@@ -26,15 +26,23 @@ export const useLocalSessionStore = create<SessionStore>()(
       setIsReviewButtonVisible: (isVisible) =>
         set({ isReviewButtonVisible: isVisible }),
       addPreviousRoute: (route) => {
-        set((state) => ({
-          previousRoutes: [...state.previousRoutes.slice(-3), route],
-        }))
+        set((state) => {
+          const lastRoute =
+            state.previousRoutes[state.previousRoutes.length - 1]
+
+          if (lastRoute !== route) {
+            const updatedRoutes = [...state.previousRoutes.slice(-3), route]
+
+            return { previousRoutes: updatedRoutes }
+          }
+
+          return state
+        })
       },
     }),
     {
       name: 'sessionStore',
-      getStorage: () => sessionStorage,
-      // storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => sessionStorage),
     },
   ),
 )

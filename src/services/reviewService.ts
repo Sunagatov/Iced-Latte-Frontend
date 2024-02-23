@@ -1,38 +1,51 @@
 import { api } from './apiConfig/apiConfig'
+import { AxiosResponse } from 'axios'
+
+interface ProductReview {
+  productReviewId: string
+  text: string
+  createdAt: string
+}
+
+interface Review {
+  rating: number
+  reviewText: string
+  createdAt: string
+  userName: string
+  userLastName: string
+}
+
+interface ReviewsResponse {
+  reviewsWithRatings: Review[]
+}
 
 export async function apiAddProductReview(
   productId: string,
-  review: string,
-): Promise<void> {
-  await api.post(`/api/v1/products/${productId}/reviews`, {
-    review,
-  })
+  reviewText: string,
+): Promise<ProductReview> {
+  const response: AxiosResponse<ProductReview> = await api.post(
+    `/products/${productId}/reviews`,
+    {
+      text: reviewText,
+    },
+  )
 
-  // return response.data
+  return response.data
 }
 
 export async function apiDeleteProductReview(
   productId: string,
   reviewId: string,
 ): Promise<void> {
-  await api.delete(`/api/v1/products/${productId}/reviews/${reviewId}`)
+  await api.delete(`/products/${productId}/reviews/${reviewId}`)
 }
 
 export async function apiGetProductReviews(
   productId: string,
-  page: number,
-  size: number,
-  sortAttribute: string,
-  sortDirection: string,
-) {
-  await api.get(`/api/v1/products/${productId}/reviews`, {
-    params: {
-      page,
-      size,
-      sort_attribute: sortAttribute,
-      sort_direction: sortDirection,
-    },
-  })
+): Promise<ReviewsResponse> {
+  const response: AxiosResponse<ReviewsResponse> = await api.get(
+    `/products/${productId}/reviews`,
+  )
 
-  // return response.data
+  return response.data
 }

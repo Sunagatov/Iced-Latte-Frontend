@@ -48,3 +48,9 @@ export async function apiLoginUser(
 
   return response.data
 }
+
+export async function apiLogoutUser(): Promise<string> {
+  const response: AxiosResponse<string> = await api.post('/auth/logout')
+
+  return response.data
+}

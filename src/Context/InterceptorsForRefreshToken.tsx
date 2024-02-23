@@ -13,7 +13,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
   const { token, refreshToken, authenticate } = useAuthStore()
-  const logout = useLogout()
+  const { logout } = useLogout()
 
   useEffect(() => {
     const requestInterceptor = api.interceptors.request.use((config) => {
