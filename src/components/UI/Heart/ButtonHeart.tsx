@@ -4,15 +4,18 @@ import not_active_heart from '../../../../public/not_active_heart.svg'
 import { twMerge } from 'tailwind-merge'
 import { ButtonHeartProps } from '@/types/ButtonHeart'
 
-export default function ButtonHeart({ active, onClick, className }: Readonly<ButtonHeartProps>) {
-
+export default function ButtonHeart({
+  active,
+  onClick,
+  className,
+}: Readonly<ButtonHeartProps>) {
   const imageUrl = active ? active_heart : not_active_heart
 
   return (
     <button
       onClick={onClick}
       className={twMerge(
-        'duration-400 flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full bg-secondary transition ease-in-out hover:bg-hover-heart',
+        'flex h-[54px] w-[54px]  transform cursor-pointer items-center justify-center rounded-full bg-secondary transition ease-in-out hover:scale-105 duration-500 hover:bg-hover-heart m-2',
         className,
       )}
     >
@@ -20,5 +23,3 @@ export default function ButtonHeart({ active, onClick, className }: Readonly<But
     </button>
   )
 }
-
-

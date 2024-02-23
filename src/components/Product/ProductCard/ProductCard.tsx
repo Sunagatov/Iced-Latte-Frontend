@@ -31,9 +31,9 @@ export default function ProductCard({
   }
 
   return (
-    <div className={'relative flex w-[177px] flex-col gap-y-2 sm:w-[360px]'}>
-      <Link href={`/product/${id}`} className={'flex flex-col gap-y-2 '}>
-        <div className="relative h-[177px] w-full  sm:h-[360px]">
+    <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[360px]'}>
+      <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
+        <div className=" relative h-[177px] w-full  md:h-[360px]">
           <Image
             src={getImgUrl(productFileUrl, productImg)}
             alt="card picture"
@@ -42,11 +42,11 @@ export default function ProductCard({
           />
         </div>
 
-        <div className={'flex w-full flex-col gap-2'}>
-          <h2 className={'text-L font-bold text-primary h-8 sm:text-3XL'}>
+        <div className={'flex w-full flex-col gap-3'}>
+          <h2 className={'text-L font-bold text-primary md:text-3XL'}>
             {name}
           </h2>
-          <div className={' flex items-center gap-2 text-L sm:text-2XL'}>
+          <div className={' flex items-center gap-2 text-L md:text-2XL'}>
             <Image src={star} alt="star" className={'inline-block'} />
             <span>{productRating}</span>
             <span className={'text-placeholder'}>
@@ -55,7 +55,7 @@ export default function ProductCard({
           </div>
         </div>
       </Link>
-      <div className={' absolute right-0 top-0 m-2'}>
+      <div className={' absolute right-0 top-0'}>
         <ButtonHeart
           active={token ? isInFavourites : isActive}
           onClick={handleButtonClick}
@@ -63,18 +63,13 @@ export default function ProductCard({
         />
       </div>
       <div className={'flex items-end justify-between'}>
-        <p className={'text-XL font-medium sm:text-2XL'}>${price}</p>
-        <div className='mx-2'>
-          <CircleAddBtn
-            onClick={() => {
-              addToCart(id, token)
-            }}
-          />
-        </div>
+        <p className={'text-XL font-medium md:text-2XL'}>${price}</p>
+        <CircleAddBtn
+          onClick={() => {
+            addToCart(id, token)
+          }}
+        />
       </div>
     </div>
   )
 }
-
-
-
