@@ -38,7 +38,9 @@ export default function ProductCard({
             src={getImgUrl(productFileUrl, productImg)}
             alt="card picture"
             style={{ objectFit: 'cover' }}
-            fill={true}
+            width={177}
+            height={177}
+
           />
         </div>
 
