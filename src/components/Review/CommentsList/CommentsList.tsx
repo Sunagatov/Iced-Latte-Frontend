@@ -2,6 +2,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
 import { useState } from 'react'
+import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 
 interface Comment {
   id: string;
@@ -85,6 +86,7 @@ const CommentList = ({ comments }: CommentListProps) => {
             </div>
           </li>
         ))}
+        <ScrollUpBtn />
       </ul>
 
       {showLoadMore && (
