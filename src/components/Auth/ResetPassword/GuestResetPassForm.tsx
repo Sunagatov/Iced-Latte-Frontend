@@ -1,44 +1,43 @@
 'use client'
 
+import Loader from '@/components/UI/Loader/Loader'
+import Button from '@/components/UI/Buttons/Button/Button'
+import FormInput from '@/components/UI/FormInput/FormInput'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import Button from '@/components/UI/Buttons/Button/Button'
-import FormInput from '@/components/UI/FormInput/FormInput'
-import { GuestResetPasswordCredentials } from '@/types/services/AuthServices'
+import { useErrorHandler } from '@/services/apiError/apiError'
 import { apiGuestResetPassword } from '@/services/authService'
+import { GuestResetPasswordCredentials } from '@/types/services/AuthServices'
 
 export default function GuestResetPassForm() {
+  const [loading, setLoading] = useState(false)
+  const { errorMessage, handleError } = useErrorHandler()
   const { handleSubmit, register, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
-
   const router = useRouter()
-
   const handleButtonClick = () => {
     router.push('/')
   }
 
   const onSubmit = async () => {
     const storedEmail = localStorage.getItem('emailForReset') || ''
-
     const { code, password } = getValues()
-
     const data: GuestResetPasswordCredentials = {
       code,
       email: storedEmail,
       password,
     }
 
-    console.log('data of the input', data)
-
     try {
+      setLoading(true)
       await apiGuestResetPassword(data)
       setResetSuccessful(true)
-
     } catch (error) {
-      console.error('Error resetting password:', error)
+      handleError(error)
+    } finally {
+      setLoading(false)
     }
-    console.log('reset submitted')
   }
 
   return (
@@ -55,22 +54,25 @@ export default function GuestResetPassForm() {
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Reset your password
           </h2>
+          <p className="mb-8 text-lg font-medium text-slate-950">
+            Almost done. Your password must contain a minimum of 8 characters,
+            one letter, one digit.
+          </p>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <p className="mb-8 text-lg font-medium text-slate-950">
-              Almost done. Your password must contain a minimum of 8 characters,
-              one letter, one digit.
-            </p>
-
+            {errorMessage && (
+              <div className="mt-4 text-negative">
+                {errorMessage}
+              </div>
+            )}
             <FormInput
               id="code"
               register={register}
               name="code"
-              label="code"
+              label="Code from email"
               type="text"
               placeholder="Enter code from email"
               className="mb-5"
             />
-
             <FormInput
               id="password"
               register={register}
@@ -80,7 +82,6 @@ export default function GuestResetPassForm() {
               placeholder="Enter your new password"
               className="mb-5"
             />
-
             <FormInput
               id="password"
               register={register}
@@ -90,9 +91,8 @@ export default function GuestResetPassForm() {
               placeholder="Enter your new password"
               className="mb-5"
             />
-
-            <Button type="submit" className="px-6">
-              Reset password
+            <Button type="submit" className="px-6 my-5">
+              {loading ? <Loader /> : 'Reset password'}
             </Button>
           </form>
         </div>
