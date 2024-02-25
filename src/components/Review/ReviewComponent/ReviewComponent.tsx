@@ -18,17 +18,22 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   }
 
   return (
-    <div className='flex items-baseline mb-[176px] ml-auto mr-auto max-w-[1157px]'>
-      <div className='w-[800px]'>
-        <h2 className='font-medium text-[36px] text-primary'>Rating and reviews</h2>
-        <ReviewForm productId={productId} />
-        {hasComments ? < CommentList comments={comments} /> : <div className='text-end'>No customer review</div>}
+    <div className='max-w-[1157px] ml-auto mr-auto relative'>
+      <div className='flex flex-col-reverse xl:flex-row xl:justify-between'>
+
+        <h2 className='order-[1] font-medium text-3XL text-primary mb-7 xl:order-[0] xl:absolute xl:top-0 xl:left-0 xl:4XL'>Rating and reviews</h2>
+        <div>
+          <div className='xl:max-w-[800px]'>
+            <ReviewForm productId={productId} />
+            {hasComments ? < CommentList comments={comments} /> : <div className='text-end'>No customer review</div>}
+          </div>
+        </div>
+
+        <div className='text-[18px] font-medium text-tertiary'>
+          {hasComments && <ReviewRatingFilter onChange={handleRatingChange} />}
+        </div>
 
       </div>
-      <div className='text-[18px] font-medium text-tertiary pt-[10px] pl-[76px]'>
-        {hasComments && <ReviewRatingFilter onChange={handleRatingChange} />}
-      </div>
-
     </div >
 
   )

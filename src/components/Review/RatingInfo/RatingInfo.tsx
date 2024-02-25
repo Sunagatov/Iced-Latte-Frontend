@@ -9,7 +9,7 @@ const RatingInfo = ({ currentRating, count }: RatingInfoProps) => {
     <div className='flex items-center'>
       <span className='font-medium text-[36px] text-primary mr-[24px]'>{currentRating}/{count}</span>
       {currentRating > 0 && (
-        <span className='font-medium text-[18px] text-tertiary'>A good choice</span>
+        <span className='font-medium text-[18px] text-tertiary absolute left-0 bottom-[-25px] sm:static'>A good choice</span>
       )}
     </div>
   )

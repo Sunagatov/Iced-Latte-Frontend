@@ -26,8 +26,10 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
 
   return (
     <div>
-      <div className='mb-3 font-medium text-[36px] text-primary'>4,8/5</div>
-      <div className='mb-6 font-medium text-[18px] text-tertiary'>Based on 14 reviws</div>
+      <div className='flex gap-4 mb-6'>
+        <div className='font-medium text-4XL text-primary'>4,8/5</div>
+        <div className='self-end font-medium text-L text-tertiary xl:self-center'>Based on 14 reviws</div>
+      </div>
       <div className='flex flex-col gap-3'>
         {[5, 4, 3, 2, 1].map((value) => {
           const stars = Array.from({ length: 5 }, (_, index) => (
@@ -42,7 +44,7 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
 
             <label key={value} className='flex items-center gap-2 cursor-pointer relative'>
               <input
-                className='w-6 h-6 appearance-none bg-secondary rounded-[4px] cursor-pointer checked:bg-inverted'
+                className='inline-flex w-6 h-6 appearance-none bg-secondary rounded-[4px] cursor-pointer checked:bg-inverted'
                 type="checkbox"
                 checked={selectedRating === value}
                 onChange={() => handleCheckboxChange(value)}

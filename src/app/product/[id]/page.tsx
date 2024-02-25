@@ -1,8 +1,8 @@
 import Image from 'next/image'
-import star from '../../../../public/star.png'
+import star from '/public/star.png'
 import AddToCartButton from '../../../components/Product/AddToCard/AddToCart'
 import HeartWrapper from '../../../components/Product/HeartWrapper/HeartWrapper'
-import productImg from '../../../../public/coffee.png'
+import productImg from '/public/coffee.png'
 import getImgUrl from '@/utils/getImgUrl'
 import ReviewComponent from '@/components/Review/ReviewComponent/ReviewComponent'
 import { IProduct } from '@/types/Products'
@@ -28,7 +28,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
     <section>
       <div
         className={
-          'flex flex-col gap-[21px] sm:flex-row sm:justify-center mx-5 '
+          'flex flex-col items-center gap-[21px] lg:flex-row sm:justify-center mx-5'
         }
       >
         <Image
@@ -36,9 +36,9 @@ export default async function Page({ params }: Readonly<ProductProps>) {
           width={500}
           height={500}
           alt="product_image"
-          className={'m-auto md:m-0'}
+          className={'max-w-full md:w-full md:h-[500px] md:object-cover xl:w-[500px] xl:object-contain'}
         />
-        <div className={'flex flex-col gap-6 pb-4 '}>
+        <div className={'flex flex-col justify-center gap-6 pb-4 lg:self-start'}>
           <div
             className={'flex flex-col gap-[18px] '}
           >
@@ -58,7 +58,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
           <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
         </div>
       </div>
-      <div className='mt-[80px]'>
+      <div className='mt-12 mx-5 xl:mt-20'>
         <ReviewComponent productId={product.id} />
       </div>
     </section>

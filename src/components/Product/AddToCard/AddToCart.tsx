@@ -41,7 +41,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
         </div>
       )}
       {productQuantity && (
-        <div className="flex items-center gap-2 sm:mx-auto md:mx-0 cursor-pointer">
+        <div className="flex items-center gap-2 md:mx-0 cursor-pointer">
           <Counter
             theme="dark"
             count={productQuantity}
