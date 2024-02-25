@@ -6,6 +6,7 @@ import {
   ForgotPasswordCredentials,
   GuestResetPasswordCredentials,
   AuthChangePasswordCredentials,
+  ConfirmPasswordCredentials,
 } from '@/types/services/AuthServices'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
@@ -64,6 +65,18 @@ export async function apiForgotPassword(
   return response.data
 }
 
+// Function for GUEST reset password
+export async function apiGuestResetPassword(
+  credentials: GuestResetPasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/auth/password/change',
+    credentials,
+  )
+
+  return response.data
+}
+
 // Function for user to chnage password
 export async function apiAuthChangePassword(
   credentials: AuthChangePasswordCredentials,
@@ -87,23 +100,11 @@ export async function apiAuthInitPasswordChange(): Promise<SuccessResponse> {
 
 // Function for confirming password change
 export async function apiAuthPasswordChangeConfirm(
-  token: string,
-): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
+  token: string | null,
+): Promise<ConfirmPasswordCredentials> {
+  const response: AxiosResponse<ConfirmPasswordCredentials> = await api.post(
     '/users/password/reset/confirm',
-    { token },
-  )
-
-  return response.data
-}
-
-// Function for guest reset password
-export async function apiGuestResetPassword(
-  credentials: GuestResetPasswordCredentials,
-): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/auth/password/change',
-    credentials,
+    { token: token },
   )
 
   return response.data

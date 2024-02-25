@@ -5,15 +5,15 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
-import { apiAuthChangePassword, apiAuthInitPasswordChange, apiAuthPasswordChangeConfirm } from '@/services/authService'
+import { apiAuthChangePassword, apiAuthInitPasswordChange } from '@/services/authService'
 import { AuthChangePasswordCredentials } from '@/types/services/AuthServices'
+
 
 
 
 export default function AuthResetPassForm() {
   const { handleSubmit, register, reset, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
-
 
   const router = useRouter()
 
@@ -26,29 +26,21 @@ export default function AuthResetPassForm() {
     const { newPassword, oldPassword } = getValues()
 
     const data: AuthChangePasswordCredentials = {
-      newPassword,
-      oldPassword,
+      newPassword: newPassword,
+      oldPassword: oldPassword,
     }
 
-    const token = localStorage.getItem('token')
-
-    console.log('token', token)
 
     try {
-      //  Initiate password reset
-      await apiAuthInitPasswordChange()
 
-      // Change password
+      await apiAuthInitPasswordChange()
       await apiAuthChangePassword(data)
       console.log('change password submitted')
 
-      await apiAuthPasswordChangeConfirm(token)
-
-      console.log('change password confirmed')
-
       setResetSuccessful(true)
-      console.log(data)
       reset()
+
+
     } catch (error) {
       console.error('Error resetting password:', error)
     }

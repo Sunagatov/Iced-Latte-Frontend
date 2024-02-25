@@ -27,6 +27,7 @@ export interface ConfirmEmailResponse {
   }
   httpStatusCode: number
 }
+
 export interface ErrorResponse {
   message: string
 }
@@ -44,4 +45,16 @@ export interface GuestResetPasswordCredentials {
   code: string
   email: string
   password: string
+}
+
+export interface ConfirmPasswordCredentials {
+  token: {
+    token: string
+  }
+}
+
+export interface StoredData {
+  state: {
+    token: string
+  }
 }
