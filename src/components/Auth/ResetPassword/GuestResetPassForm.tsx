@@ -4,8 +4,11 @@ import Loader from '@/components/UI/Loader/Loader'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
+import { changePassSchema } from '@/validation/passwordSchema'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { IChangeValues } from '@/types/ChangePassword'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { apiGuestResetPassword } from '@/services/authService'
 import { GuestResetPasswordCredentials } from '@/types/services/AuthServices'
@@ -13,16 +16,26 @@ import { GuestResetPasswordCredentials } from '@/types/services/AuthServices'
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
-  const { handleSubmit, register, getValues } = useForm()
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<IChangeValues>({
+    resolver: yupResolver(changePassSchema),
+    defaultValues: {
+      confirmPassword: ''
+    },
+  })
   const [resetSuccessful, setResetSuccessful] = useState(false)
   const router = useRouter()
+
   const handleButtonClick = () => {
     router.push('/')
   }
 
-  const onSubmit = async () => {
+  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     const storedEmail = localStorage.getItem('emailForReset') || ''
-    const { code, password } = getValues()
+    const { code, password } = values
     const data: GuestResetPasswordCredentials = {
       code,
       email: storedEmail,
@@ -60,9 +73,7 @@ export default function GuestResetPassForm() {
           </p>
           <form onSubmit={handleSubmit(onSubmit)}>
             {errorMessage && (
-              <div className="mt-4 text-negative">
-                {errorMessage}
-              </div>
+              <div className="mt-4 text-negative">{errorMessage}</div>
             )}
             <FormInput
               id="code"
@@ -72,6 +83,7 @@ export default function GuestResetPassForm() {
               type="text"
               placeholder="Enter code from email"
               className="mb-5"
+              error={errors.code}
             />
             <FormInput
               id="password"
@@ -81,17 +93,19 @@ export default function GuestResetPassForm() {
               type="password"
               placeholder="Enter your new password"
               className="mb-5"
+              error={errors.password}
             />
             <FormInput
-              id="password"
+              id="confirmPassword"
               register={register}
-              name="email"
+              name="confirmPassword"
               label="Confirm new password"
               type="password"
-              placeholder="Enter your new password"
+              placeholder="Enter your new password again"
               className="mb-5"
+              error={errors.confirmPassword}
             />
-            <Button type="submit" className="px-6 my-5">
+            <Button type="submit" className="my-6 px-6">
               {loading ? <Loader /> : 'Reset password'}
             </Button>
           </form>

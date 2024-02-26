@@ -10,16 +10,12 @@ import { useRouter } from 'next/navigation'
 import { apiForgotPassword } from '@/services/authService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 
-
 export default function ForgotPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
   const { handleSubmit, register, getValues, reset } = useForm()
   const [emailSent, setEmailSent] = useState(false)
   const router = useRouter()
-  const handleButtonClick = () => {
-    router.push('/resetpass')
-  }
 
   const onSubmit = async () => {
     const { email } = getValues() as { email: string }
@@ -55,10 +51,7 @@ export default function ForgotPassForm() {
             </p>
             <Button
               className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover"
-              onClick={handleButtonClick}>Return to main page</Button>
-            <Button
-              className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover"
-              onClick={handleChangeClick}>Chnage your password</Button>
+              onClick={handleChangeClick}>Continue to chnage your password</Button>
           </div>
         </div>
       ) : (
