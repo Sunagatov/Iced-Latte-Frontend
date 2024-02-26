@@ -2,13 +2,13 @@
 
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
+import Loader from '@/components/UI/Loader/Loader'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { AuthChangePasswordCredentials } from '@/types/services/AuthServices'
 import { apiAuthChangePassword, apiAuthInitPasswordChange } from '@/services/authService'
-import Loader from '@/components/UI/Loader/Loader'
 
 export default function AuthResetPassForm() {
   const [loading, setLoading] = useState(false)
@@ -19,7 +19,6 @@ export default function AuthResetPassForm() {
   const handleButtonClick = () => {
     router.push('/')
   }
-
 
   const onSubmit = async () => {
     const { newPassword, oldPassword } = getValues()
