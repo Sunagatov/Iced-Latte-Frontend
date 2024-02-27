@@ -6,10 +6,16 @@ interface SessionStore {
   isReviewFormVisible: boolean
   isReviewButtonVisible: boolean
   previousRoutes: string[]
+  previousRouteForLogin: string | null
+  routingRelatedRegistrationCompleted: boolean
+  routingRelatedLoginCompleted: boolean
   setSelectedRating: (rating: number | null) => void
   setIsReviewFormVisible: (isVisible: boolean) => void
   setIsReviewButtonVisible: (isVisible: boolean) => void
   addPreviousRoute: (route: string) => void
+  addPreviousRouteForLogin: (route: string) => void
+  setRoutingRelatedRegistrationCompleted: (completed: boolean) => void
+  setRoutingRelatedLoginCompleted: (completed: boolean) => void
 }
 
 export const useLocalSessionStore = create<SessionStore>()(
@@ -19,7 +25,9 @@ export const useLocalSessionStore = create<SessionStore>()(
       isReviewFormVisible: false,
       isReviewButtonVisible: true,
       previousRoutes: [],
-
+      previousRouteForLogin: null,
+      routingRelatedRegistrationCompleted: false,
+      routingRelatedLoginCompleted: false,
       setSelectedRating: (rating) => set({ selectedRating: rating }),
       setIsReviewFormVisible: (isVisible) =>
         set({ isReviewFormVisible: isVisible }),
@@ -27,18 +35,38 @@ export const useLocalSessionStore = create<SessionStore>()(
         set({ isReviewButtonVisible: isVisible }),
       addPreviousRoute: (route) => {
         set((state) => {
-          const lastRoute =
-            state.previousRoutes[state.previousRoutes.length - 1]
+          if (!state.routingRelatedRegistrationCompleted) {
+            const lastRoute =
+              state.previousRoutes[state.previousRoutes.length - 1]
 
-          if (lastRoute !== route) {
-            const updatedRoutes = [...state.previousRoutes.slice(-3), route]
+            if (lastRoute !== route) {
+              const updatedRoutes = [...state.previousRoutes.slice(-3), route]
 
-            return { previousRoutes: updatedRoutes }
+              return { previousRoutes: updatedRoutes }
+            }
           }
 
           return state
         })
       },
+      addPreviousRouteForLogin: (route) => {
+        set((state) => {
+          if (!state.routingRelatedLoginCompleted) {
+            const lastRoute = state.previousRouteForLogin
+
+            if (lastRoute !== route) {
+              return { previousRouteForLogin: route }
+            }
+          }
+
+          return state
+        })
+      },
+
+      setRoutingRelatedRegistrationCompleted: (completed) =>
+        set({ routingRelatedRegistrationCompleted: completed }),
+      setRoutingRelatedLoginCompleted: (completed) =>
+        set({ routingRelatedLoginCompleted: completed }),
     }),
     {
       name: 'sessionStore',

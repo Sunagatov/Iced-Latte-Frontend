@@ -1,5 +1,5 @@
 'use client'
-import useAuthRedirect from '@/hooks/useAuthRedirect'
+import useLoginRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import Loader from '@/components/UI/Loader/Loader'
@@ -7,16 +7,19 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { loginSchema } from '@/validation/loginSchema'
 import { IFormValues } from '@/types/LoginForm'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { setCookie } from '@/utils/cookieUtils'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
-  const { redirectToPreviousRoute } = useAuthRedirect()
+  const { handleRedirectForLogin } = useLoginRedirect()
+  const { errorMessage, handleError } = useErrorHandler()
+  const { setRoutingRelatedLoginCompleted } = useLocalSessionStore()
   const {
     register,
     reset,
@@ -30,7 +33,9 @@ export default function LoginForm() {
     },
   })
 
-  const { errorMessage, handleError } = useErrorHandler()
+  useEffect(() => {
+    setRoutingRelatedLoginCompleted(true)
+  }, [setRoutingRelatedLoginCompleted])
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
@@ -42,7 +47,8 @@ export default function LoginForm() {
       authenticate(data.token)
       setRefreshToken(data.refreshToken)
       reset()
-      redirectToPreviousRoute()
+      handleRedirectForLogin()
+      setRoutingRelatedLoginCompleted(false)
     } catch (error) {
 
       handleError(error)

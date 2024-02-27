@@ -4,7 +4,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import Loader from '@/components/UI/Loader/Loader'
 import useRegistrationRedirect from '@/hooks/useRegistrationRedirect'
 import { useAuthStore } from '@/store/authStore'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiConfirmEmail } from '@/services/authService'
@@ -12,11 +12,14 @@ import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
 import { IFormValues } from '@/types/ConfirmPassword'
 import { setCookie } from '@/utils/cookieUtils'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
+  const { setRoutingRelatedRegistrationCompleted } = useLocalSessionStore()
+  const { handleRedirect } = useRegistrationRedirect()
 
   const {
     register,
@@ -30,7 +33,10 @@ const ConfirmPasswordComponent = () => {
     },
   })
 
-  const { handleRedirect } = useRegistrationRedirect()
+  // route array is not updated redirect to the page that was before registration will happen under any scenarios
+  useEffect(() => {
+    setRoutingRelatedRegistrationCompleted(true)
+  }, [setRoutingRelatedRegistrationCompleted])
 
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
@@ -45,6 +51,7 @@ const ConfirmPasswordComponent = () => {
         reset()
 
         handleRedirect()
+        setRoutingRelatedRegistrationCompleted(false)
       }
     } catch (error) {
       handleError(error)

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useProductRatingStore } from '@/store/ratingStore'
 // import { apiAddProductRating } from '@/services/ratingService'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
 
 interface StarRatingProps {
   productId: string;
@@ -15,6 +17,8 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating, getProductRating } = useProductRatingStore()
+  const { token, setModalState } = useAuthStore()
+  const router = useRouter()
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
   const { rating: currentRating } = productRatingData
@@ -40,7 +44,13 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
       // await apiAddProductRating(productId, rating)
 
       // setRating(productId, rating)
-      setRating(productId, index + 1)
+      if (token) {
+        setRating(productId, index + 1)
+      } else {
+        router.push('/auth/login')
+        setModalState(true)
+      }
+
     } catch (error) {
       handleError(error)
     }

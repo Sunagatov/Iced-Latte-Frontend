@@ -5,17 +5,18 @@ import { usePathname } from 'next/navigation'
 import { RootLayoutProps } from '@/app/layout'
 
 const GlobalRouteTracker = ({ children }: RootLayoutProps) => {
-  const { addPreviousRoute } = useLocalSessionStore()
+  const { addPreviousRoute, addPreviousRouteForLogin } = useLocalSessionStore()
   const pathname = usePathname()
   const isFirstRender = useRef(true)
 
   useEffect(() => {
     if (!isFirstRender.current) {
       addPreviousRoute(pathname)
+      addPreviousRouteForLogin(pathname)
     } else {
       isFirstRender.current = false
     }
-  }, [pathname, addPreviousRoute])
+  }, [pathname, addPreviousRoute, addPreviousRouteForLogin])
 
   return (
     <>
