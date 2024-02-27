@@ -86,12 +86,10 @@ const CommentList = ({ comments }: CommentListProps) => {
               </div>
             </div>
             {comment.text.length > 300 && !expandedComments[comment.id] ? (
-              <>
-                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
-                  {comment.text.slice(0, 300)}
-                  <Button onClick={() => toggleCommentExpansion(comment.id)} className="text-tertiary text-L font-medium inline bg-transparent px-[0]">...see more</Button>
-                </p>
-              </>
+              <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
+                {comment.text.slice(0, 300)}
+                <Button onClick={() => toggleCommentExpansion(comment.id)} className="text-tertiary text-L font-medium inline bg-transparent px-[0]">...see more</Button>
+              </p>
             ) : (
               <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
                 {comment.text}
