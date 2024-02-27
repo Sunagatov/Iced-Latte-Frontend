@@ -25,12 +25,12 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
         <div>
           <div className='xl:max-w-[800px]'>
             <ReviewForm productId={productId} />
-            {hasComments ? < CommentList comments={comments} /> : <div className='text-end'>No customer review</div>}
+            {hasComments && < CommentList comments={comments} />}
           </div>
         </div>
 
         <div className='text-[18px] font-medium text-tertiary'>
-          {hasComments && <ReviewRatingFilter onChange={handleRatingChange} />}
+          {hasComments ? <ReviewRatingFilter onChange={handleRatingChange} /> : <div className='text-end'>No customer review</div>}
         </div>
 
       </div>

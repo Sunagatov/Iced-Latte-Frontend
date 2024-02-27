@@ -1,9 +1,12 @@
 'use client'
 import Button from '@/components/UI/Buttons/Button/Button'
+import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
 import { useState } from 'react'
-import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
+import { useMediaQuery } from 'usehooks-ts'
+
 interface Comment {
   id: string;
   firstName: string;
@@ -21,11 +24,12 @@ interface CommentListProps {
   comments: Comment[];
 }
 
-
 const CommentList = ({ comments }: CommentListProps) => {
   const [loadedComments, setLoadedComments] = useState(comments.slice(0, 3))
   const [lastLoadedIndex, setLastLoadedIndex] = useState(2)
   const [showLoadMore, setShowLoadMore] = useState(true)
+  const { expandedComments, setExpandedComments } = useLocalSessionStore()
+  const ismediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
 
   // Function for uploading additional comments
   const loadMoreComments = () => {
@@ -37,6 +41,13 @@ const CommentList = ({ comments }: CommentListProps) => {
     if (lastLoadedIndex + 3 >= comments.length - 1) {
       setShowLoadMore(false)
     }
+  }
+
+  const toggleCommentExpansion = (commentId: string) => {
+    setExpandedComments(prevState => ({
+      ...prevState,
+      [commentId]: !prevState[commentId]
+    }))
   }
 
   const handleDeleteComment = (commentId: string) => {
@@ -74,10 +85,21 @@ const CommentList = ({ comments }: CommentListProps) => {
                 <span className='ml-2'>{comment.time}</span>
               </div>
             </div>
-            <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>{comment.text}</p>
+            {comment.text.length > 300 && !expandedComments[comment.id] ? (
+              <>
+                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
+                  {comment.text.slice(0, 300)}
+                  <Button onClick={() => toggleCommentExpansion(comment.id)} className="text-tertiary text-L font-medium inline bg-transparent px-[0]">...see more</Button>
+                </p>
+              </>
+            ) : (
+              <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
+                {comment.text}
+              </p>
+            )}
             <div className="flex justify-between items-center">
               {comment.isCurrentUserComment && (
-                <Button onClick={() => handleDeleteComment(comment.id)} className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">Delete</Button>
+                <Button onClick={() => handleDeleteComment(comment.id)} className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{ismediaQuery ? 'Delete my review' : 'Delete'}</Button>
               )}
               <div className='flex gap-2 xl:ml-auto'>
                 <Button onClick={() => handleLikeComment(comment.id)} className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2"><BiLike /><span>{comment.likes}</span></Button>

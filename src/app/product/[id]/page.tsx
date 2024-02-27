@@ -28,7 +28,7 @@ export default async function Page({ params }: Readonly<ProductProps>) {
     <section>
       <div
         className={
-          'flex flex-col items-center gap-[21px] lg:flex-row sm:justify-center mx-5'
+          'flex flex-col items-center gap-[21px] lg:flex-row sm:justify-center mx-5 xl:gap-12'
         }
       >
         <Image

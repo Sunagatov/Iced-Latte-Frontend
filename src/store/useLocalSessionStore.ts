@@ -9,6 +9,7 @@ interface SessionStore {
   previousRouteForLogin: string | null
   routingRelatedRegistrationCompleted: boolean
   routingRelatedLoginCompleted: boolean
+  expandedComments: Record<string, boolean>
   setSelectedRating: (rating: number | null) => void
   setIsReviewFormVisible: (isVisible: boolean) => void
   setIsReviewButtonVisible: (isVisible: boolean) => void
@@ -16,6 +17,9 @@ interface SessionStore {
   addPreviousRouteForLogin: (route: string) => void
   setRoutingRelatedRegistrationCompleted: (completed: boolean) => void
   setRoutingRelatedLoginCompleted: (completed: boolean) => void
+  setExpandedComments: (
+    update: (prevState: Record<string, boolean>) => Record<string, boolean>,
+  ) => void
 }
 
 export const useLocalSessionStore = create<SessionStore>()(
@@ -28,6 +32,7 @@ export const useLocalSessionStore = create<SessionStore>()(
       previousRouteForLogin: null,
       routingRelatedRegistrationCompleted: false,
       routingRelatedLoginCompleted: false,
+      expandedComments: {},
       setSelectedRating: (rating) => set({ selectedRating: rating }),
       setIsReviewFormVisible: (isVisible) =>
         set({ isReviewFormVisible: isVisible }),
@@ -67,6 +72,8 @@ export const useLocalSessionStore = create<SessionStore>()(
         set({ routingRelatedRegistrationCompleted: completed }),
       setRoutingRelatedLoginCompleted: (completed) =>
         set({ routingRelatedLoginCompleted: completed }),
+      setExpandedComments: (update) =>
+        set((state) => ({ expandedComments: update(state.expandedComments) })),
     }),
     {
       name: 'sessionStore',

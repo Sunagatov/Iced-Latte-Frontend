@@ -12,7 +12,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useStoreData } from '@/hooks/useStoreData'
-import { useMediaQuery } from 'react-responsive'
+import { useMediaQuery } from 'usehooks-ts'
 interface ReviewFormProps {
   productId: string;
 }
@@ -25,7 +25,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const { ratings, setRating } = useProductRatingStore()
   const { setIsReviewFormVisible, setIsReviewButtonVisible } = useLocalSessionStore()
   const { token, setModalState } = useAuthStore()
-  const ismediaQuery = useMediaQuery({ maxWidth: 768 })
+  const ismediaQuery = useMediaQuery('(max-width: 768px)', { initializeWithValue: false })
   const router = useRouter()
 
   const isReviewFormVisible = useStoreData(useLocalSessionStore, (state) => state.isReviewFormVisible)
@@ -79,7 +79,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 
   return (
     <>
-      <div className='mt-[40px] mb-[40px] pb-12 border-b border-solid border-primary sm:pb-7'>
+      <div className='mt-[40px] mb-[40px] pb-8 border-b border-solid border-primary sm:pb-7 xl:pb-12'>
         <div className='mb-6 font-medium text-2XL xl:mt-14'>Rating</div>
         <div className='flex items-center relative'>
           <StarRating productId={productId} count={5} activeColor={'#00A30E'} />
