@@ -57,11 +57,7 @@ export const useLocalSessionStore = create<SessionStore>()(
       addPreviousRouteForLogin: (route) => {
         set((state) => {
           if (!state.routingRelatedLoginCompleted) {
-            const lastRoute = state.previousRouteForLogin
-
-            if (lastRoute !== route) {
-              return { previousRouteForLogin: route }
-            }
+            return { previousRouteForLogin: route }
           }
 
           return state

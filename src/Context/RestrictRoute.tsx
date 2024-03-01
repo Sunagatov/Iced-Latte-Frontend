@@ -1,20 +1,31 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useAuthStore } from '@/store/authStore'
 import { RootLayoutProps } from '@/app/layout'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { getCookie } from '@/utils/cookieUtils'
 import Loader from '@/components/UI/Loader/Loader'
 
 const RestrictRoute = ({ children }: RootLayoutProps) => {
   const [loading, setLoading] = useState(true)
-  const { isLoggedIn } = useAuthStore()
+  const router = useRouter()
 
   useEffect(() => {
-    if (isLoggedIn) {
-      redirect('/')
+    const checkToken = async () => {
+      try {
+        setLoading(true)
+        const token = await getCookie()
+
+        if (token) {
+          router.replace('/')
+        }
+      } catch (error) {
+        console.log(error)
+      } finally { setLoading(false) }
     }
-    setLoading(false)
-  }, [isLoggedIn])
+
+    void checkToken()
+
+  }, [router])
 
   if (loading) {
     return (
@@ -28,3 +39,4 @@ const RestrictRoute = ({ children }: RootLayoutProps) => {
 }
 
 export default RestrictRoute
+

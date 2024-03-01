@@ -16,8 +16,6 @@ const useRegistrationRedirect = (): RegistrationRedirectHook => {
 
     if (targetRoute) {
       router.push(targetRoute)
-    } else {
-      router.push('/')
     }
   }
 

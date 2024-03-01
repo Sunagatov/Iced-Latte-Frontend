@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { loginSchema } from '@/validation/loginSchema'
 import { IFormValues } from '@/types/LoginForm'
 import { useErrorHandler } from '@/services/apiError/apiError'
@@ -33,22 +33,21 @@ export default function LoginForm() {
     },
   })
 
-  useEffect(() => {
-    setRoutingRelatedLoginCompleted(true)
-  }, [setRoutingRelatedLoginCompleted])
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
       const data = await apiLoginUser(formData)
 
-      await setCookie('token', data.token, { path: '/' })
+      if (data) {
+        handleRedirectForLogin()
+        authenticate(data.token)
+        setRefreshToken(data.refreshToken)
+        await setCookie('token', data.token, { path: '/' })
+        reset()
+        setRoutingRelatedLoginCompleted(false)
+      }
 
-      authenticate(data.token)
-      setRefreshToken(data.refreshToken)
-      reset()
-      handleRedirectForLogin()
-      setRoutingRelatedLoginCompleted(false)
     } catch (error) {
 
       handleError(error)
