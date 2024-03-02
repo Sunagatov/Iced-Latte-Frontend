@@ -5,9 +5,17 @@ import { usePathname } from 'next/navigation'
 import { RootLayoutProps } from '@/app/layout'
 
 const GlobalRouteTracker = ({ children }: RootLayoutProps) => {
-  const { addPreviousRoute, addPreviousRouteForLogin } = useLocalSessionStore()
+  const { addPreviousRoute, addPreviousRouteForLogin, setRoutingRelatedLoginCompleted } = useLocalSessionStore()
   const pathname = usePathname()
   const isFirstRender = useRef(true)
+
+  useEffect(() => {
+    if (pathname === '/auth/registration' || pathname === '/auth/login') {
+      return setRoutingRelatedLoginCompleted(true)
+    } else {
+      setRoutingRelatedLoginCompleted(false)
+    }
+  }, [pathname, setRoutingRelatedLoginCompleted])
 
   useEffect(() => {
     if (!isFirstRender.current) {

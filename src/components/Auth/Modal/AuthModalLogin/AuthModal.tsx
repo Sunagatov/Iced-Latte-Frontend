@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import LoginForm from '../../Forms/LoginForm/LoginForm'
 import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
@@ -19,14 +18,6 @@ function AuthModal() {
   const router = useRouter()
   const pathname = usePathname()
   const { setModalState } = useAuthStore()
-  const { setRoutingRelatedLoginCompleted } = useLocalSessionStore()
-
-  useEffect(() => {
-    setRoutingRelatedLoginCompleted(true)
-    if (pathname !== '/auth/registration' && pathname !== '/auth/login') {
-      setRoutingRelatedLoginCompleted(false)
-    }
-  }, [pathname, setRoutingRelatedLoginCompleted])
 
   useEffect(() => {
     if (pathname !== '/') {
