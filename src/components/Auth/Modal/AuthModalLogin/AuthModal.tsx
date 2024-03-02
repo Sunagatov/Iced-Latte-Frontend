@@ -1,12 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/authStore'
+import { usePathname } from 'next/navigation'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
 import LoginForm from '../../Forms/LoginForm/LoginForm'
 import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 
 enum SwitchType {
   Login = 'LOGIN',
@@ -15,9 +15,8 @@ enum SwitchType {
 
 function AuthModal() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
-  const router = useRouter()
   const pathname = usePathname()
-  const { setModalState } = useAuthStore()
+  const { handleRedirectForAuth } = useAuthRedirect()
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -40,13 +39,7 @@ function AuthModal() {
   }
 
   const handleCloseModal = () => {
-    if (pathname === '/auth/login') {
-      setModalState(false)
-      router.back()
-    } else if (pathname === '/auth/registration') {
-      setModalState(false)
-      window.history.go(-2)
-    }
+    handleRedirectForAuth()
   }
 
   useEscapeKey(() => {

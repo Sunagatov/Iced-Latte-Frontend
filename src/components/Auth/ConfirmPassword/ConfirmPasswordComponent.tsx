@@ -2,9 +2,8 @@
 import FormInput from '@/components/UI/FormInput/FormInput'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Loader from '@/components/UI/Loader/Loader'
-import useRegistrationRedirect from '@/hooks/useRegistrationRedirect'
 import { useAuthStore } from '@/store/authStore'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiConfirmEmail } from '@/services/authService'
@@ -12,14 +11,12 @@ import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
 import { IFormValues } from '@/types/ConfirmPassword'
 import { setCookie } from '@/utils/cookieUtils'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
-  const { setRoutingRelatedRegistrationCompleted } = useLocalSessionStore()
-  const { handleRedirect } = useRegistrationRedirect()
 
   const {
     register,
@@ -33,10 +30,7 @@ const ConfirmPasswordComponent = () => {
     },
   })
 
-  // route array is not updated redirect to the page that was before registration will happen under any scenarios
-  useEffect(() => {
-    setRoutingRelatedRegistrationCompleted(true)
-  }, [setRoutingRelatedRegistrationCompleted])
+  const { handleRedirectForAuth } = useAuthRedirect()
 
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
@@ -50,8 +44,7 @@ const ConfirmPasswordComponent = () => {
         setRefreshToken(data.token?.refreshToken)
         reset()
 
-        handleRedirect()
-        setRoutingRelatedRegistrationCompleted(false)
+        handleRedirectForAuth()
       }
     } catch (error) {
       handleError(error)

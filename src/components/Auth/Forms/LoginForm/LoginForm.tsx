@@ -1,5 +1,5 @@
 'use client'
-import useLoginRedirect from '@/hooks/useAuthRedirect'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import Loader from '@/components/UI/Loader/Loader'
@@ -12,14 +12,12 @@ import { loginSchema } from '@/validation/loginSchema'
 import { IFormValues } from '@/types/LoginForm'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { setCookie } from '@/utils/cookieUtils'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
-  const { handleRedirectForLogin } = useLoginRedirect()
+  const { handleRedirectForAuth } = useAuthRedirect()
   const { errorMessage, handleError } = useErrorHandler()
-  const { setRoutingRelatedLoginCompleted } = useLocalSessionStore()
   const {
     register,
     reset,
@@ -40,12 +38,11 @@ export default function LoginForm() {
       const data = await apiLoginUser(formData)
 
       if (data) {
-        handleRedirectForLogin()
+        handleRedirectForAuth()
         authenticate(data.token)
         setRefreshToken(data.refreshToken)
         await setCookie('token', data.token, { path: '/' })
         reset()
-        setRoutingRelatedLoginCompleted(false)
       }
 
     } catch (error) {

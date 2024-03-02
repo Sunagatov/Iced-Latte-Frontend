@@ -16,7 +16,7 @@ const RestrictRoute = ({ children }: RootLayoutProps) => {
         const token = await getCookie()
 
         if (token) {
-          router.replace('/')
+          router.push('/')
         }
       } catch (error) {
         console.log(error)

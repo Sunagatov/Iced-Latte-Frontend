@@ -4,24 +4,24 @@ import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useAuthStore } from '@/store/authStore'
 
 interface RegistrationRedirectHook {
-  handleRedirectForLogin: () => void
+  handleRedirectForAuth: () => void
 }
 
-const useLoginRedirect = (): RegistrationRedirectHook => {
+const useAuthRedirect = (): RegistrationRedirectHook => {
   const router = useRouter()
-  const { previousRouteForLogin } = useLocalSessionStore()
+  const { previousRouteForAuth } = useLocalSessionStore()
   const { resetOpenModal } = useAuthStore()
 
-  const handleRedirectForLogin = () => {
-    if (previousRouteForLogin) {
-      router.push(previousRouteForLogin)
+  const handleRedirectForAuth = () => {
+    if (previousRouteForAuth) {
+      router.push(previousRouteForAuth)
       resetOpenModal()
     } else {
       router.push('/')
     }
   }
 
-  return { handleRedirectForLogin }
+  return { handleRedirectForAuth }
 }
 
-export default useLoginRedirect
+export default useAuthRedirect
