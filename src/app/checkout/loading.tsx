@@ -1,6 +1,6 @@
 import Loader from '@/components/UI/Loader/Loader'
 
-const FavouritesLoading = () => {
+const CheckoutLoading = () => {
   return (
     <div className="flex min-h-[100vh] w-full items-center justify-center">
       <Loader />
@@ -8,4 +8,4 @@ const FavouritesLoading = () => {
   )
 }
 
-export default FavouritesLoading
+export default CheckoutLoading
