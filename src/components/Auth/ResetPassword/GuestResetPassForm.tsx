@@ -4,18 +4,21 @@ import Loader from '@/components/UI/Loader/Loader'
 import Button from '@/components/UI/Buttons/Button/Button'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import { useState } from 'react'
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { changePassSchema } from '@/validation/passwordSchema'
+import { changePassSchema } from '@/validation/changePassSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { IChangeValues } from '@/types/ChangePassword'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import { apiGuestResetPassword } from '@/services/authService'
+import { apiGuestResetPassword } from '@/services/userService'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { GuestResetPasswordCredentials } from '@/types/services/AuthServices'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
+  const setEmailChanged = useLocalSessionStore(state => state.setEmailChanged)
+  const emailChanged = useLocalSessionStore(state => state.emailChanged)
   const {
     handleSubmit,
     register,
@@ -44,7 +47,17 @@ export default function GuestResetPassForm() {
 
     try {
       setLoading(true)
+      const passwordChanged = sessionStorage.getItem('passwordChanged')
+
+      setEmailChanged(true)
+      if (passwordChanged) {
+        setResetSuccessful(true)
+        setLoading(false)
+
+        return
+      }
       await apiGuestResetPassword(data)
+      sessionStorage.setItem('passwordChanged', 'true')
       setResetSuccessful(true)
     } catch (error) {
       handleError(error)
@@ -55,7 +68,7 @@ export default function GuestResetPassForm() {
 
   return (
     <div className="mx-auto mt-4 flex max-w-screen-md items-center justify-center px-4">
-      {resetSuccessful ? (
+      {emailChanged ? (
         <div>
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Password has been changed.

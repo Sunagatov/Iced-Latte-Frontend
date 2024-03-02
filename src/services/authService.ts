@@ -3,10 +3,6 @@ import {
   LoginCredentials,
   RegisterCredentials,
   ConfirmEmailResponse,
-  ForgotPasswordCredentials,
-  GuestResetPasswordCredentials,
-  AuthChangePasswordCredentials,
-  ConfirmPasswordCredentials,
 } from '@/types/services/AuthServices'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
@@ -48,63 +44,6 @@ export async function apiLoginUser(
   const response: AxiosResponse<SuccessResponse> = await api.post(
     '/auth/authenticate',
     credentials,
-  )
-
-  return response.data
-}
-
-// Function for forgot password
-export async function apiForgotPassword(
-  email: ForgotPasswordCredentials,
-): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/auth/password/forgot',
-    email,
-  )
-
-  return response.data
-}
-
-// Function for GUEST reset password
-export async function apiGuestResetPassword(
-  credentials: GuestResetPasswordCredentials,
-): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/auth/password/change',
-    credentials,
-  )
-
-  return response.data
-}
-
-// Function for user to chnage password
-export async function apiAuthChangePassword(
-  credentials: AuthChangePasswordCredentials,
-): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.patch(
-    '/users',
-    credentials,
-  )
-
-  return response.data
-}
-
-// Function for user to intialize password change
-export async function apiAuthInitPasswordChange(): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/users/password/reset',
-  )
-
-  return response.data
-}
-
-// Function for confirming password change
-export async function apiAuthPasswordChangeConfirm(
-  token: string | null,
-): Promise<ConfirmPasswordCredentials> {
-  const response: AxiosResponse<ConfirmPasswordCredentials> = await api.post(
-    '/users/password/reset/confirm',
-    { token: token },
   )
 
   return response.data

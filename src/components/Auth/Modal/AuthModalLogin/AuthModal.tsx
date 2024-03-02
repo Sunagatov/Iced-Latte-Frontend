@@ -1,11 +1,14 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import LoginForm from '../../Forms/LoginForm/LoginForm'
-import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
+
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
+import LoginForm from '../../Forms/LoginForm/LoginForm'
+import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
+import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
 import { LoginModalProps } from '@/types/AuthLoginMoadal'
+import { useState, useEffect } from 'react'
 
 enum SwitchType {
   Login = 'LOGIN',
@@ -15,6 +18,8 @@ enum SwitchType {
 function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
+  const router = useRouter()
+  const { resetOpenModal } = useAuthStore()
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -39,7 +44,8 @@ function AuthModal({ onCloseModal }: Readonly<LoginModalProps>) {
   }
 
   const handleForgotPasswordClick = () => {
-    onCloseModal?.()
+    router.push('/forgotpass')
+    resetOpenModal()
   }
 
   return (

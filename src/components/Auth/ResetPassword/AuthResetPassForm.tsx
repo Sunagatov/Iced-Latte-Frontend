@@ -8,7 +8,10 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { AuthChangePasswordCredentials } from '@/types/services/AuthServices'
-import { apiAuthChangePassword, apiAuthInitPasswordChange } from '@/services/authService'
+import { apiAuthChangePassword, apiAuthInitPasswordChange } from '@/services/userService'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { authChangePassSchema } from '@/validation/changePassSchema'
+import { IChangeAuthValues } from '@/types/ChangePassword'
 
 export default function AuthResetPassForm() {
   const [loading, setLoading] = useState(false)
@@ -16,9 +19,20 @@ export default function AuthResetPassForm() {
   const { handleSubmit, register, reset, getValues } = useForm()
   const [resetSuccessful, setResetSuccessful] = useState(false)
   const router = useRouter()
+
   const handleButtonClick = () => {
     router.push('/')
   }
+
+  const {
+    formState: { errors },
+  } = useForm<IChangeAuthValues>({
+    resolver: yupResolver(authChangePassSchema),
+    defaultValues: {
+      oldPassword: '',
+      newPassword: ''
+    },
+  })
 
   const onSubmit = async () => {
     const { newPassword, oldPassword } = getValues()
@@ -73,15 +87,17 @@ export default function AuthResetPassForm() {
               type="password"
               placeholder="Enter your old password"
               className="mb-5"
+              error={errors.oldPassword}
             />
             <FormInput
-              id="password"
+              id="newPassword"
               register={register}
               name="newPassword"
               label="New password"
               type="password"
               placeholder="Enter your new password"
               className="mb-5"
+              error={errors.newPassword}
             />
             <Button type="submit" className="px-6">
               {loading ? <Loader /> : ' Change password'}
