@@ -38,11 +38,11 @@ export default function LoginForm() {
       const data = await apiLoginUser(formData)
 
       if (data) {
-        handleRedirectForAuth()
+        await setCookie('token', data.token, { path: '/' })
         authenticate(data.token)
         setRefreshToken(data.refreshToken)
-        await setCookie('token', data.token, { path: '/' })
         reset()
+        handleRedirectForAuth()
       }
 
     } catch (error) {
