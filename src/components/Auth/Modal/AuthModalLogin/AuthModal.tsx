@@ -18,8 +18,7 @@ function AuthModal() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
   const { handleRedirectForAuth } = useAuthRedirect()
-  const router = useRouter()
-  const { resetOpenModal } = useAuthStore()
+
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -49,11 +48,6 @@ function AuthModal() {
     handleCloseModal()
   })
 
-  const handleForgotPasswordClick = () => {
-    router.push('/forgotpass')
-    resetOpenModal()
-  }
-
   return (
     <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22 grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}>
       <div
@@ -74,7 +68,7 @@ function AuthModal() {
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link onClick={handleForgotPasswordClick}
+            <Link
               href="/forgotpass" className="flex items-center justify-center text-focus mt-[40px]">
               Forgot password
             </Link>
