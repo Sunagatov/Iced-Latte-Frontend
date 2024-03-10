@@ -61,6 +61,7 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'registr': '#682EFF',
       },
+      scale: ['hover', 'focus'],
     },
   },
   plugins: [],

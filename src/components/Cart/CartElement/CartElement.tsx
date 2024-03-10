@@ -63,7 +63,7 @@ export default function CartElement({
         <p className="right-0 top-0 text-lg font-semibold sm:absolute">{`$${productInfo.price.toFixed(
           2,
         )}`}</p>
-        <div className="mt-[22px] flex justify-start">
+        <div className="mt-[22px] flex justify-start items-center">
           <Counter
             theme="light"
             className={'h-[42px]'}

@@ -42,7 +42,7 @@ export default function LoginIcon() {
           <Image src={ProfileImage} alt="auth icon" />
         </Link>
       )}
-      {open && <AuthModal onCloseModal={toggleModal} />}
+      {open && <AuthModal />}
     </>
   )
 }
