@@ -18,3 +18,10 @@ export async function setCookie(
 export async function removeCookie(key: string) {
   cookies().set(key, '', { maxAge: 0 })
 }
+
+// eslint-disable-next-line @typescript-eslint/require-await
+export async function getCookie(): Promise<string | undefined> {
+  const cookie = cookies().get('token')
+
+  return cookie?.value
+}

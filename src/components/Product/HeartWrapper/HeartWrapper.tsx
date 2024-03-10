@@ -9,7 +9,7 @@ export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProp
   const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
   const { token } = useAuthStore()
 
-  const isInFavourites = favourites.some((fav) => fav.id === id)
+  const isInFavourites = favourites?.some((fav) => fav.id === id)
   const isActive = favouriteIds.includes(id)
 
 
