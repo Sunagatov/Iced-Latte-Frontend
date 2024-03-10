@@ -1,25 +1,36 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { AuthModalProps } from '@/types/AuthModalRegistrationType'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import LoginForm from '@/components/Auth/Forms/LoginForm/LoginForm'
 import RegistrationForm from '@/components/Auth/Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
-
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',
 }
 
-function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
+function AuthModalRegistr() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(
     SwitchType.Registration,
   )
   const pathname = usePathname()
+  const { handleRedirectForAuth } = useAuthRedirect()
 
-  if (pathname === '/') return null
+  useEffect(() => {
+    if (pathname !== '/') {
+      document.body.style.overflowY = 'hidden'
+    } else {
+      document.body.style.overflowY = 'auto'
+    }
+
+    return () => {
+      document.body.style.overflowY = 'auto'
+    }
+  }, [pathname])
 
   const handleClickSwitchForm = () => {
     setSwitchForm(
@@ -29,13 +40,21 @@ function AuthModalRegistr({ onCloseModal }: Readonly<AuthModalProps>) {
     )
   }
 
+  const handleCloseModal = () => {
+    handleRedirectForAuth()
+  }
+
+  useEscapeKey(() => {
+    handleCloseModal()
+  })
+
   return (
     <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
-      <Link
-        href="/"
+      <div
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
-        onClick={onCloseModal}
-      ></Link>
+        onClick={handleCloseModal}
+      >
+      </div>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
           <h2 className="text-4XL">Welcome back</h2>

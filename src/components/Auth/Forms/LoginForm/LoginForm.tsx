@@ -16,7 +16,8 @@ import { setCookie } from '@/utils/cookieUtils'
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
-  const { redirectToPreviousRoute } = useAuthRedirect()
+  const { handleRedirectForAuth } = useAuthRedirect()
+  const { errorMessage, handleError } = useErrorHandler()
   const {
     register,
     reset,
@@ -30,19 +31,20 @@ export default function LoginForm() {
     },
   })
 
-  const { errorMessage, handleError } = useErrorHandler()
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
       const data = await apiLoginUser(formData)
 
-      await setCookie('token', data.token, { path: '/' })
+      if (data) {
+        await setCookie('token', data.token, { path: '/' })
+        authenticate(data.token)
+        setRefreshToken(data.refreshToken)
+        reset()
+        handleRedirectForAuth()
+      }
 
-      authenticate(data.token)
-      setRefreshToken(data.refreshToken)
-      reset()
-      redirectToPreviousRoute()
     } catch (error) {
 
       handleError(error)

@@ -1,36 +1,27 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useSelectedLayoutSegment, useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useAuthStore } from '@/store/authStore'
 
-const useAuthRedirect = () => {
+interface RegistrationRedirectHook {
+  handleRedirectForAuth: () => void
+}
+
+const useAuthRedirect = (): RegistrationRedirectHook => {
   const router = useRouter()
-  const params = useParams()
-  const selectedLayoutSegment = useSelectedLayoutSegment()
-  const [previousRoute, setPreviousRoute] = useState<string | null>(null)
+  const { previousRouteForAuth } = useLocalSessionStore()
   const { resetOpenModal } = useAuthStore()
 
-  useEffect(() => {
-    setPreviousRoute(selectedLayoutSegment)
-  }, [selectedLayoutSegment])
-
-  const redirectToPreviousRoute = () => {
-    if (previousRoute) {
-      const dynamicId = params?.id
-
-      const fullRoute = dynamicId
-        ? `/${previousRoute}/${String(dynamicId)}`
-        : `/${previousRoute}`
-
-      router.push(fullRoute)
-
+  const handleRedirectForAuth = () => {
+    if (previousRouteForAuth) {
+      router.push(previousRouteForAuth)
       resetOpenModal()
     } else {
       router.push('/')
     }
   }
 
-  return { redirectToPreviousRoute }
+  return { handleRedirectForAuth }
 }
 
 export default useAuthRedirect
