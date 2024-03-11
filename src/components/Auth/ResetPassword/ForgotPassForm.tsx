@@ -22,6 +22,7 @@ export default function ForgotPassForm() {
   const storedEmailSent = useLocalSessionStore((state) => state.storedEmailSent)
 
 
+
   const { handleSubmit, register, getValues, reset,
     formState: { errors },
   } = useForm<IForgotValues>({
@@ -32,15 +33,15 @@ export default function ForgotPassForm() {
   })
 
 
-
   const onSubmit = async () => {
     const { email } = getValues() as { email: string }
 
     try {
       setLoading(true)
       await apiForgotPassword({ email })
-      setStoredEmailSent(true)
+      console.log('Email saved to localStorage:', email)
       localStorage.setItem('emailForReset', email)
+      setStoredEmailSent(true)
       reset()
     } catch (error) {
       handleError(error)
@@ -52,7 +53,6 @@ export default function ForgotPassForm() {
   const handleChangeClick = () => {
     router.push('/resetpass')
     setStoredEmailSent(false)
-
   }
 
 
@@ -71,7 +71,7 @@ export default function ForgotPassForm() {
             </p>
             <Button
               className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover"
-              onClick={handleChangeClick}>Continue to chnage your password</Button>
+              onClick={handleChangeClick}>Continue to change your password</Button>
           </div>
         </div>
       ) : (
@@ -98,7 +98,7 @@ export default function ForgotPassForm() {
               className="mb-5"
               error={errors.email}
             />
-            <Button type="submit" className="px-6">
+            <Button type="submit" className="mt-6 w-44 flex items-center justify-center hover:bg-brand-solid-hover">
               {loading ? <Loader /> : 'Send reset link'}
             </Button>
           </form>

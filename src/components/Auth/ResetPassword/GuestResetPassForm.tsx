@@ -17,8 +17,10 @@ import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
-  const setEmailChanged = useLocalSessionStore(state => state.setEmailChanged)
-  const emailChanged = useLocalSessionStore(state => state.emailChanged)
+  const setStoredEmailSent = useLocalSessionStore(state => state.setStoredEmailSent)
+  const resetSuccessful = useLocalSessionStore((state) => state.resetSuccessful)
+  const setResetSuccessful = useLocalSessionStore((state) => state.setResetSuccessful)
+
   const {
     handleSubmit,
     register,
@@ -26,15 +28,14 @@ export default function GuestResetPassForm() {
   } = useForm<IChangeValues>({
     resolver: yupResolver(changePassSchema),
     defaultValues: {
+      code: '',
+      password: '',
       confirmPassword: ''
     },
   })
-  const [resetSuccessful, setResetSuccessful] = useState(false)
   const router = useRouter()
 
-  const handleButtonClick = () => {
-    router.push('/')
-  }
+
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     const storedEmail = localStorage.getItem('emailForReset') ?? ''
@@ -45,30 +46,30 @@ export default function GuestResetPassForm() {
       password,
     }
 
+
     try {
       setLoading(true)
-      const passwordChanged = sessionStorage.getItem('passwordChanged')
-
-      setEmailChanged(true)
-      if (passwordChanged) {
-        setResetSuccessful(true)
-        setLoading(false)
-
-        return
-      }
       await apiGuestResetPassword(data)
-      sessionStorage.setItem('passwordChanged', 'true')
       setResetSuccessful(true)
     } catch (error) {
       handleError(error)
     } finally {
       setLoading(false)
+      localStorage.removeItem('emailForReset')
+
     }
   }
 
+  const handleButtonClick = () => {
+    router.push('/')
+    setResetSuccessful(false)
+    setStoredEmailSent(false)
+  }
+
+
   return (
     <div className="mx-auto mt-4 flex max-w-screen-md items-center justify-center px-4">
-      {emailChanged ? (
+      {resetSuccessful ? (
         <div>
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Password has been changed.
@@ -118,7 +119,7 @@ export default function GuestResetPassForm() {
               className="mb-5"
               error={errors.confirmPassword}
             />
-            <Button type="submit" className="my-6 px-6">
+            <Button type="submit" className="mt-6 flex  items-center justify-center hover:bg-brand-solid-hover">
               {loading ? <Loader /> : 'Reset password'}
             </Button>
           </form>

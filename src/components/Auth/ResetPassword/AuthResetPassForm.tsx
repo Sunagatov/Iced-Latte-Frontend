@@ -12,12 +12,14 @@ import { apiAuthChangePassword, apiAuthInitPasswordChange } from '@/services/use
 import { yupResolver } from '@hookform/resolvers/yup'
 import { authChangePassSchema } from '@/validation/changePassSchema'
 import { IChangeAuthValues } from '@/types/ChangePassword'
+import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 
 export default function AuthResetPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
   const { handleSubmit, register, reset, getValues } = useForm()
-  const [resetSuccessful, setResetSuccessful] = useState(false)
+  const resetSuccessful = useLocalSessionStore((state) => state.resetSuccessful)
+  const setResetSuccessful = useLocalSessionStore((state) => state.setResetSuccessful)
   const router = useRouter()
 
   const handleButtonClick = () => {
@@ -99,7 +101,7 @@ export default function AuthResetPassForm() {
               className="mb-5"
               error={errors.newPassword}
             />
-            <Button type="submit" className="px-6">
+            <Button type="submit" className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover">
               {loading ? <Loader /> : ' Change password'}
             </Button>
           </form>
