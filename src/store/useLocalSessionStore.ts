@@ -8,6 +8,11 @@ interface SessionStore {
   previousRouteForAuth: string | null
   routingRelatedAuthCompleted: boolean
   expandedComments: Record<string, boolean>
+  storedEmailSent: boolean
+  resetSuccessful: boolean
+
+  setResetSuccessful: (resetSuccessful: boolean) => void
+  setStoredEmailSent: (storedEmailSent: boolean) => void
   setSelectedRating: (rating: number | null) => void
   setIsReviewFormVisible: (isVisible: boolean) => void
   setIsReviewButtonVisible: (isVisible: boolean) => void
@@ -27,6 +32,15 @@ export const useLocalSessionStore = create<SessionStore>()(
       previousRouteForAuth: null,
       routingRelatedAuthCompleted: false,
       expandedComments: {},
+      storedEmailSent: false,
+      resetSuccessful: false,
+      setResetSuccessful: (resetSuccessful) => {
+        set({ resetSuccessful })
+      },
+      setStoredEmailSent: (storedEmailSent) => {
+        set({ storedEmailSent })
+      },
+
       setSelectedRating: (rating) => set({ selectedRating: rating }),
       setIsReviewFormVisible: (isVisible) =>
         set({ isReviewFormVisible: isVisible }),
@@ -46,6 +60,7 @@ export const useLocalSessionStore = create<SessionStore>()(
       setExpandedComments: (update) =>
         set((state) => ({ expandedComments: update(state.expandedComments) })),
     }),
+
     {
       name: 'sessionStore',
       storage: createJSONStorage(() => sessionStorage),
