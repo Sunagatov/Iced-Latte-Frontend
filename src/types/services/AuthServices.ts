@@ -27,6 +27,34 @@ export interface ConfirmEmailResponse {
   }
   httpStatusCode: number
 }
+
 export interface ErrorResponse {
   message: string
+}
+
+export interface ForgotPasswordCredentials {
+  email: string
+}
+
+export interface AuthChangePasswordCredentials {
+  newPassword: string
+  oldPassword: string
+}
+
+export interface GuestResetPasswordCredentials {
+  code: string
+  email: string
+  password: string
+}
+
+export interface ConfirmPasswordCredentials {
+  token: {
+    token: string
+  }
+}
+
+export interface StoredData {
+  state: {
+    token: string
+  }
 }

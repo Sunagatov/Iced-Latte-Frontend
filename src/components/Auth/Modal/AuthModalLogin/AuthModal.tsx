@@ -7,6 +7,8 @@ import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import Button from '@/components/UI/Buttons/Button/Button'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
+import { useAuthStore } from '@/store/authStore'
+
 
 enum SwitchType {
   Login = 'LOGIN',
@@ -17,6 +19,8 @@ function AuthModal() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
   const { handleRedirectForAuth } = useAuthRedirect()
+  const { resetOpenModal } = useAuthStore()
+
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -37,6 +41,8 @@ function AuthModal() {
         : SwitchType.Login,
     )
   }
+
+
 
   const handleCloseModal = () => {
     handleRedirectForAuth()
@@ -66,7 +72,8 @@ function AuthModal() {
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link href="/" className="flex items-center justify-center text-focus mt-[40px]">
+            <Link onClick={resetOpenModal}
+              href="/forgotpass" className="flex items-center justify-center text-focus mt-[40px]">
               Forgot password
             </Link>
           )}
