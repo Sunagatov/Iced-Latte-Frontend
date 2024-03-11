@@ -11,7 +11,7 @@ export const changePassSchema = yup.object().shape({
     .min(8, 'Password should have a length between 8 and 128 characters')
     .max(128, 'Password should have a length between 8 and 128 characters')
     .matches(
-      /(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}/g,
+      /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
       'Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
     ),
   confirmPassword: yup
@@ -27,7 +27,7 @@ export const authChangePassSchema = yup.object().shape({
     .min(8, 'Password should have a length between 8 and 128 characters')
     .max(128, 'Password should have a length between 8 and 128 characters')
     .matches(
-      /(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}/g,
+      /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
       'Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
     ),
   newPassword: yup
