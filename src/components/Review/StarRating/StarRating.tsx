@@ -2,7 +2,7 @@
 import { FaStar } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 import { useProductRatingStore } from '@/store/ratingStore'
-// import { apiAddProductRating } from '@/services/ratingService'
+import { apiAddProductRating } from '@/services/ratingService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
@@ -26,9 +26,9 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
   const stars = Array(count).fill(0)
 
   useEffect(() => {
-    const fetchData = /* async */ () => {
+    const fetchData = async () => {
       try {
-        // await getProductRating(productId)
+        await getProductRating(productId)
       } catch (error) {
         handleError(error)
       }
@@ -37,13 +37,13 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
     void fetchData()
   }, [getProductRating, handleError, productId])
 
-  const handleRatingClick = (index: number) => {
-    // const rating = index + 1
+  const handleRatingClick = async (index: number) => {
+    const rating = index + 1
 
     try {
-      // await apiAddProductRating(productId, rating)
+      await apiAddProductRating(productId, rating)
 
-      // setRating(productId, rating)
+      setRating(productId, rating)
       if (token) {
         setRating(productId, index + 1)
       } else {
