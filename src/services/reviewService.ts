@@ -7,7 +7,8 @@ interface ProductReview {
   createdAt: string
 }
 
-interface Review {
+// Вынести в types/ProductReview.ts
+export interface Review {
   rating: number
   reviewText: string
   createdAt: string
@@ -42,9 +43,10 @@ export async function apiDeleteProductReview(
 
 export async function apiGetProductReviews(
   productId: string,
+  page: number = 0,
 ): Promise<ReviewsResponse> {
   const response: AxiosResponse<ReviewsResponse> = await api.get(
-    `/products/${productId}/reviews`,
+    `/products/${productId}/reviews?page=${page}`,
   )
 
   return response.data

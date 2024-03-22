@@ -2,13 +2,35 @@
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
 import CommentList from '../CommentsList/CommentsList'
-import comments from '@/constants/coments'
+// import comments from '@/constants/coments'
+import { Review } from '@/services/reviewService'
+import { useEffect, useState } from 'react'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 interface ReviewComponentProps {
   productId: string;
 }
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
+  const [comments, setComments] = useState<Review[]>([])
 
+  const productReviewsData = useProductReviewsStore()
+  const { reviewsWithRatings, getProductReviews } = productReviewsData
+
+  useEffect(() => {
+    async function getProductReviewsById(id: string): Promise<void> {
+      try {
+        await getProductReviews(id)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    void getProductReviewsById(productId)
+  }, [productId])
+
+  useEffect(() => {
+    setComments(reviewsWithRatings)
+  }, [reviewsWithRatings])
 
   const hasComments = comments.length > 0
 
