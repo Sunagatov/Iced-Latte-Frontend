@@ -6,12 +6,14 @@ import CommentList from '../CommentsList/CommentsList'
 import { Review } from '@/services/reviewService'
 import { useEffect, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
+import { useErrorHandler } from '@/services/apiError/apiError'
 interface ReviewComponentProps {
   productId: string;
 }
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   const [comments, setComments] = useState<Review[]>([])
+  const { errorMessage, handleError } = useErrorHandler()
 
   const productReviewsData = useProductReviewsStore()
   const { reviewsWithRatings, getProductReviews } = productReviewsData
@@ -21,12 +23,12 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
       try {
         await getProductReviews(id)
       } catch (error) {
-        console.log(error)
+        handleError(error)
       }
     }
 
     void getProductReviewsById(productId)
-  }, [productId])
+  }, [productId, getProductReviews])
 
   useEffect(() => {
     setComments(reviewsWithRatings)
@@ -48,6 +50,11 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
           <div className='xl:max-w-[800px]'>
             <ReviewForm productId={productId} />
             {hasComments && < CommentList comments={comments} />}
+            {errorMessage && (
+              <div className="mt-4 text-negative">
+                {errorMessage}
+              </div>
+            )}
           </div>
         </div>
 
@@ -57,7 +64,6 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
 
       </div>
     </div >
-
   )
 }
 
