@@ -5,22 +5,10 @@ import { BiLike, BiDislike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
 import { useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
-// import { useMediaQuery } from 'usehooks-ts'
+import { useMediaQuery } from 'usehooks-ts'
 import { Review } from '@/services/reviewService'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
 
-// interface Comment {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   rating: number;
-//   date: string;
-//   time: string;
-//   text: string;
-//   isCurrentUserComment: boolean;
-//   likes: number;
-//   dislikes: number;
-// }
 
 interface CommentListProps {
   comments: Review[];
@@ -31,7 +19,7 @@ const CommentList = ({ comments }: CommentListProps) => {
   const [lastLoadedIndex, setLastLoadedIndex] = useState(2)
   const [showLoadMore, setShowLoadMore] = useState(true)
   const { expandedComments, setExpandedComments } = useLocalSessionStore()
-  // const ismediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
+  const ismediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
 
   // Function for uploading additional comments
   const loadMoreComments = () => {
@@ -45,24 +33,24 @@ const CommentList = ({ comments }: CommentListProps) => {
     }
   }
 
-  const toggleCommentExpansion = (commentId: number) => {
+  const toggleCommentExpansion = (commentId: string) => {
     setExpandedComments(prevState => ({
       ...prevState,
       [commentId]: !prevState[commentId]
     }))
   }
 
-  // const handleDeleteComment = (commentId: string) => {
-  //   console.log(`Deleting comment with ID ${commentId}`)
-  // }
-  //
-  // const handleLikeComment = (commentId: string) => {
-  //   console.log(`Liking comment with ID ${commentId}`)
-  // }
-  //
-  // const handleDislikeComment = (commentId: string) => {
-  //   console.log(`Disliking comment with ID ${commentId}`)
-  // }
+  const handleDeleteComment = (commentId: string) => {
+    console.log(`Deleting comment with ID ${commentId}`)
+  }
+
+  const handleLikeComment = (commentId: string) => {
+    console.log(`Liking comment with ID ${commentId}`)
+  }
+
+  const handleDislikeComment = (commentId: string) => {
+    console.log(`Disliking comment with ID ${commentId}`)
+  }
 
   return (
     <>
@@ -90,39 +78,39 @@ const CommentList = ({ comments }: CommentListProps) => {
                   <span className='ml-2'>{time}</span>
                 </div>
               </div>
-              {comment.reviewText.length > 300 && !expandedComments[index] ? (
-                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary`}>
+              {comment.reviewText.length > 300 && !expandedComments[`${index}`] ? (
+                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
                   {comment.reviewText.slice(0, 300)}
                   <Button
-                    onClick={() => toggleCommentExpansion(index)}
+                    onClick={() => toggleCommentExpansion(`${index}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
               ) : (
-                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary`}>
+                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
                   {comment.reviewText}
                 </p>
               )}
               <div className="flex justify-between items-center">
-                {/*{comment.isCurrentUserComment && (*/}
-                {/*  <Button*/}
-                {/*    onClick={() => handleDeleteComment(comment.id)} */}
-                {/*    className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{ismediaQuery ? 'Delete my review' : 'Delete'}</Button>*/}
-                {/*)}*/}
+                {comment.isCurrentUserComment && (
+                  <Button
+                    onClick={() => handleDeleteComment(`${index}`)}
+                    className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{ismediaQuery ? 'Delete my review' : 'Delete'}</Button>
+                )}
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
-                    // onClick={() => handleLikeComment(comment.id)}
+                    onClick={() => handleLikeComment(`${index}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
                     <span>
-                      {/*{comment.likes}*/}
+                      {comment.likes || 0}
                     </span>
                   </Button>
                   <Button
-                    // onClick={() => handleDislikeComment(comment.id)}
+                    onClick={() => handleDislikeComment(`${index}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
                     <span>
-                      {/*{comment.dislikes}*/}
+                      {comment.dislikes || 0}
                     </span>
                   </Button>
                 </div>

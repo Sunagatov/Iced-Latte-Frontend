@@ -14,6 +14,10 @@ export interface Review {
   createdAt: string
   userName: string
   userLastName: string
+  // id: string
+  isCurrentUserComment: boolean;
+  likes: number;
+  dislikes: number;
 }
 
 interface ReviewsResponse {
