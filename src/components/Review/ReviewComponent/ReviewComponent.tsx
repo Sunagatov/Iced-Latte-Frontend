@@ -7,6 +7,7 @@ import { Review } from '@/services/reviewService'
 import { useEffect, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import _ from 'lodash'
 interface ReviewComponentProps {
   productId: string;
 }
@@ -22,14 +23,19 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     async function getProductReviewsById(id: string): Promise<void> {
       try {
         await getProductReviews(id)
-        setComments(reviewsWithRatings)
       } catch (error) {
         handleError(error)
       }
     }
 
     void getProductReviewsById(productId)
-  }, [productId, getProductReviews, setComments])
+  }, [productId, getProductReviews])
+
+  useEffect(() => {
+    if (!_.isEqual(reviewsWithRatings, comments)) {
+      setComments(reviewsWithRatings)
+    }
+  }, [reviewsWithRatings, setComments])
 
   const hasComments = comments.length > 0
 

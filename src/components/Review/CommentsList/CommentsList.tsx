@@ -69,7 +69,7 @@ const CommentList = ({ comments }: CommentListProps) => {
                     <FaStar className={`w-[18px] h-[18px] ${index < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={index} />
                   ))}
                 </div>
-                <span className="font-medium text-L text-primary ml-2">{comment.rating}/5</span>
+                <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}/5</span>
                 <div className="inline-flex font-medium text-L text-tertiary">
                   <div className='inline-flex relative ml-3'>
                     <span className='ml-[10px] text-L'>{date}</span>
@@ -78,7 +78,7 @@ const CommentList = ({ comments }: CommentListProps) => {
                   <span className='ml-2'>{time}</span>
                 </div>
               </div>
-              {comment.reviewText.length > 300 && !expandedComments[`${index}`] ? (
+              {comment.reviewText && comment.reviewText.length > 300 && !expandedComments[`${index}`] ? (
                 <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
                   {comment.reviewText.slice(0, 300)}
                   <Button
@@ -87,7 +87,7 @@ const CommentList = ({ comments }: CommentListProps) => {
                 </p>
               ) : (
                 <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
-                  {comment.reviewText}
+                  {comment.reviewText || 'No review'}
                 </p>
               )}
               <div className="flex justify-between items-center">
