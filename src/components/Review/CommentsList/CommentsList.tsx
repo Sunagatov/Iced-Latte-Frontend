@@ -3,11 +3,12 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useMediaQuery } from 'usehooks-ts'
 import { Review } from '@/services/reviewService'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
+import _ from 'lodash'
 
 
 interface CommentListProps {
@@ -20,6 +21,12 @@ const CommentList = ({ comments }: CommentListProps) => {
   const [showLoadMore, setShowLoadMore] = useState(true)
   const { expandedComments, setExpandedComments } = useLocalSessionStore()
   const ismediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
+
+  useEffect(() => {
+    if (!_.isEqual(comments.slice(0, 3), loadedComments.slice(0, 3))) {
+      setLoadedComments(comments.slice(0, 3))
+    }
+  }, [comments])
 
   // Function for uploading additional comments
   const loadMoreComments = () => {
