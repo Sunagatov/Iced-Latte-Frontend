@@ -22,17 +22,14 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     async function getProductReviewsById(id: string): Promise<void> {
       try {
         await getProductReviews(id)
+        setComments(reviewsWithRatings)
       } catch (error) {
         handleError(error)
       }
     }
 
     void getProductReviewsById(productId)
-  }, [productId, getProductReviews])
-
-  useEffect(() => {
-    setComments(reviewsWithRatings)
-  }, [reviewsWithRatings])
+  }, [productId, getProductReviews, setComments])
 
   const hasComments = comments.length > 0
 
