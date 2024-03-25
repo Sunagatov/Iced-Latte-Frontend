@@ -2,13 +2,40 @@
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
 import CommentList from '../CommentsList/CommentsList'
-import comments from '@/constants/coments'
+// import comments from '@/constants/coments'
+import { Review } from '@/services/reviewService'
+import { useEffect, useState } from 'react'
+import { useProductReviewsStore } from '@/store/reviewsStore'
+import { useErrorHandler } from '@/services/apiError/apiError'
+import _ from 'lodash'
 interface ReviewComponentProps {
   productId: string;
 }
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
+  const [comments, setComments] = useState<Review[]>([])
+  const { errorMessage, handleError } = useErrorHandler()
 
+  const productReviewsData = useProductReviewsStore()
+  const { reviewsWithRatings, getProductReviews } = productReviewsData
+
+  useEffect(() => {
+    async function getProductReviewsById(id: string): Promise<void> {
+      try {
+        await getProductReviews(id)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
+    void getProductReviewsById(productId)
+  }, [productId, getProductReviews])
+
+  useEffect(() => {
+    if (!_.isEqual(reviewsWithRatings, comments)) {
+      setComments(reviewsWithRatings)
+    }
+  }, [reviewsWithRatings, setComments])
 
   const hasComments = comments.length > 0
 
@@ -26,6 +53,11 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
           <div className='xl:max-w-[800px]'>
             <ReviewForm productId={productId} />
             {hasComments && < CommentList comments={comments} />}
+            {errorMessage && (
+              <div className="mt-4 text-negative">
+                {errorMessage}
+              </div>
+            )}
           </div>
         </div>
 
@@ -35,7 +67,6 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
 
       </div>
     </div >
-
   )
 }
 
