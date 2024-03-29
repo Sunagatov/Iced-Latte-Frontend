@@ -15,12 +15,13 @@ export interface Review {
   userName: string
   userLastName: string
   // id: string
-  isCurrentUserComment: boolean;
-  likes: number;
-  dislikes: number;
+  isCurrentUserComment: boolean
+  likes: number
+  dislikes: number
 }
 
 interface ReviewsResponse {
+  reviewText: string
   reviewsWithRatings: Review[]
 }
 
@@ -51,6 +52,16 @@ export async function apiGetProductReviews(
 ): Promise<ReviewsResponse> {
   const response: AxiosResponse<ReviewsResponse> = await api.get(
     `/products/${productId}/reviews?page=${page}`,
+  )
+
+  return response.data
+}
+
+export async function apiCheckProductReview(
+  productId: string,
+): Promise<ReviewsResponse> {
+  const response: AxiosResponse<ReviewsResponse> = await api.get(
+    `/products/${productId}/review`,
   )
 
   return response.data

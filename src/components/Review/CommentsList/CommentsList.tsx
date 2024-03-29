@@ -61,7 +61,7 @@ const CommentList = ({ comments }: CommentListProps) => {
 
   return (
     <>
-      <ul className='flex gap-10 flex-col'>
+      <ul className='flex gap-10 flex-col mt-10'>
         {loadedComments.map((comment, index) => {
           const { date, time } = formatReviewDate(comment.createdAt)
 

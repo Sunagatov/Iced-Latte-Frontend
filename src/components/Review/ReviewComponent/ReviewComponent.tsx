@@ -1,9 +1,10 @@
+
 'use client'
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
 import CommentList from '../CommentsList/CommentsList'
 // import comments from '@/constants/coments'
-import { Review } from '@/services/reviewService'
+import { Review, apiCheckProductReview } from '@/services/reviewService'
 import { useEffect, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
@@ -18,6 +19,8 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
 
   const productReviewsData = useProductReviewsStore()
   const { reviewsWithRatings, getProductReviews } = productReviewsData
+
+  const [hasUserReviewed, setHasUserReviewed] = useState(false)
 
   useEffect(() => {
     async function getProductReviewsById(id: string): Promise<void> {
@@ -44,6 +47,29 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     console.log(value)
   }
 
+
+  useEffect(() => {
+
+    const checkUserReview = async () => {
+      try {
+        const response = await apiCheckProductReview(productId)
+
+        if (response.reviewText && response.reviewText.trim().length > 0) {
+          setHasUserReviewed(true)
+
+        } else {
+          setHasUserReviewed(false)
+        }
+      } catch (error) {
+        console.error('Error checking user review status:', error)
+        handleError(error)
+      }
+    }
+
+    void checkUserReview()
+  }, [productId])
+
+
   return (
     <div className='max-w-[1157px] ml-auto mr-auto relative'>
       <div className='flex flex-col-reverse xl:flex-row xl:justify-between'>
@@ -51,7 +77,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
         <h2 className='order-[1] font-medium text-3XL text-primary mb-7 xl:order-[0] xl:absolute xl:top-0 xl:left-0 xl:4XL'>Rating and reviews</h2>
         <div>
           <div className='xl:max-w-[800px]'>
-            <ReviewForm productId={productId} />
+            {!hasUserReviewed && <ReviewForm productId={productId} />}
             {hasComments && < CommentList comments={comments} />}
             {errorMessage && (
               <div className="mt-4 text-negative">
@@ -66,8 +92,9 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
         </div>
 
       </div>
-    </div >
+    </div>
   )
 }
+
 
 export default ReviewComponent
