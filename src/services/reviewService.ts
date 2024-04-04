@@ -1,29 +1,6 @@
+import { ProductReview, ReviewsResponse } from '@/types/ProductReview'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
-
-interface ProductReview {
-  productReviewId: string
-  text: string
-  createdAt: string
-}
-
-// Вынести в types/ProductReview.ts
-export interface Review {
-  rating: number
-  reviewText: string
-  createdAt: string
-  userName: string
-  userLastName: string
-  // id: string
-  isCurrentUserComment: boolean
-  likes: number
-  dislikes: number
-}
-
-interface ReviewsResponse {
-  reviewText: string
-  reviewsWithRatings: Review[]
-}
 
 export async function apiAddProductReview(
   productId: string,
