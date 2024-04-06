@@ -3,12 +3,12 @@
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
 import CommentList from '../CommentsList/CommentsList'
-// import comments from '@/constants/coments'
-import { Review, apiCheckProductReview } from '@/services/reviewService'
+import { apiCheckProductReview } from '@/services/reviewService'
 import { useEffect, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import _ from 'lodash'
+import { Review } from '@/types/ProductReview'
 interface ReviewComponentProps {
   productId: string;
 }
@@ -16,23 +16,21 @@ interface ReviewComponentProps {
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   const [comments, setComments] = useState<Review[]>([])
   const { errorMessage, handleError } = useErrorHandler()
-
   const productReviewsData = useProductReviewsStore()
   const { reviewsWithRatings, getProductReviews } = productReviewsData
-
   const [hasUserReviewed, setHasUserReviewed] = useState(false)
 
   useEffect(() => {
-    async function getProductReviewsById(id: string): Promise<void> {
+    async function getProductReviewsById(productId: string): Promise<void> {
       try {
-        await getProductReviews(id)
+        await getProductReviews(productId)
       } catch (error) {
         handleError(error)
       }
     }
 
     void getProductReviewsById(productId)
-  }, [productId, getProductReviews])
+  }, [productId])
 
   useEffect(() => {
     if (!_.isEqual(reviewsWithRatings, comments)) {
@@ -49,7 +47,6 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
 
 
   useEffect(() => {
-
     const checkUserReview = async () => {
       try {
         const response = await apiCheckProductReview(productId)

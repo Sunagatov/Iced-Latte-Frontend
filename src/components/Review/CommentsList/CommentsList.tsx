@@ -6,10 +6,9 @@ import { FaStar } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useMediaQuery } from 'usehooks-ts'
-import { Review } from '@/services/reviewService'
+import { Review } from '@/types/ProductReview'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
 import _ from 'lodash'
-
 
 interface CommentListProps {
   comments: Review[];
@@ -23,10 +22,15 @@ const CommentList = ({ comments }: CommentListProps) => {
   const ismediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
 
   useEffect(() => {
+    const sortedComments = [...comments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
     if (!_.isEqual(comments.slice(0, 3), loadedComments.slice(0, 3))) {
-      setLoadedComments(comments.slice(0, 3))
+
+      setLoadedComments(sortedComments.slice(0, 3))
     }
-  }, [comments])
+
+  }, [comments, setLoadedComments])
+
 
   // Function for uploading additional comments
   const loadMoreComments = () => {

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { apiGetProductReviews, Review } from '@/services/reviewService'
+import { apiGetProductReviews } from '@/services/reviewService'
+import { Review } from '@/types/ProductReview'
 
 interface ReviewsStoreState {
   reviewsWithRatings: Review[]
@@ -22,6 +23,6 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
     }),
     {
       name: 'productReviews',
-    }
+    },
   ),
 )

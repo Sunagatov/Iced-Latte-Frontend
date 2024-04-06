@@ -13,6 +13,9 @@ import { useRouter } from 'next/navigation'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useStoreData } from '@/hooks/useStoreData'
 import { useMediaQuery } from 'usehooks-ts'
+import { useProductReviewsStore } from '@/store/reviewsStore'
+
+
 interface ReviewFormProps {
   productId: string;
 }
@@ -30,13 +33,10 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 
   const isReviewFormVisible = useStoreData(useLocalSessionStore, (state) => state.isReviewFormVisible)
   const isReviewButtonVisible = useStoreData(useLocalSessionStore, (state) => state.isReviewButtonVisible)
-
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
   const currentRating = productRatingData.rating
   const isRatingSelected = currentRating > 0
-
   const isReviewTextEmpty = reviewText.trim().length === 0
-
   const isReviewButtonActive = isRatingSelected || !isReviewTextEmpty
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -51,10 +51,18 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setCharCount(0)
   }
 
+
+  // If i just call this -  getProductReviews(productId) - get "An unknown error occurred"
+
   const handleAddReview = async () => {
     try {
+
       setLoading(true)
       await apiAddProductReview(productId, reviewText)
+
+      await useProductReviewsStore.getState().getProductReviews(productId)
+      setIsReviewFormVisible(false)
+
     } catch (error) {
       handleError(error)
     } finally {
@@ -127,3 +135,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 }
 
 export default ReviewForm
+function getProductReviews(productId: string) {
+  throw new Error('Function not implemented.')
+}
+
