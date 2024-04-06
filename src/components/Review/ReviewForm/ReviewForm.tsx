@@ -135,7 +135,4 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 }
 
 export default ReviewForm
-function getProductReviews(productId: string) {
-  throw new Error('Function not implemented.')
-}
 

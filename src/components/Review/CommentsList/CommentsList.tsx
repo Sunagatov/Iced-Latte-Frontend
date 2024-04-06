@@ -29,7 +29,7 @@ const CommentList = ({ comments }: CommentListProps) => {
       setLoadedComments(sortedComments.slice(0, 3))
     }
 
-  }, [comments, setLoadedComments])
+  }, [comments, loadedComments])
 
 
   // Function for uploading additional comments

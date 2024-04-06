@@ -30,13 +30,13 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     }
 
     void getProductReviewsById(productId)
-  }, [productId])
+  }, [productId, getProductReviews, handleError])
 
   useEffect(() => {
     if (!_.isEqual(reviewsWithRatings, comments)) {
       setComments(reviewsWithRatings)
     }
-  }, [reviewsWithRatings, setComments])
+  }, [reviewsWithRatings, setComments, comments])
 
   const hasComments = comments.length > 0
 
@@ -64,7 +64,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     }
 
     void checkUserReview()
-  }, [productId])
+  }, [productId, handleError])
 
 
   return (

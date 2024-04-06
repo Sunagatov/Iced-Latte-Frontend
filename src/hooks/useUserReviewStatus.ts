@@ -23,7 +23,7 @@ export function useUserReviewStatus(productId: string) {
     }
 
     void checkUserReview()
-  }, [productId])
+  }, [productId, handleError])
 
   return hasUserReviewed
 }
