@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { apiCheckProductReview } from '@/services/reviewService'
+import { apiGetProductUserReview } from '@/services/reviewService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 
 export function useUserReviewStatus(productId: string) {
@@ -9,13 +9,15 @@ export function useUserReviewStatus(productId: string) {
   useEffect(() => {
     const checkUserReview = async () => {
       try {
-        const response = await apiCheckProductReview(productId)
+        const response = await apiGetProductUserReview(productId)
 
-        if (response.reviewText && response.reviewText.trim().length > 0) {
-          setHasUserReviewed(true)
-        } else {
-          setHasUserReviewed(false)
-        }
+        console.log('response', response)
+
+        const reviewIsEmpty = Object.values(response).every(
+          (value) => value === null,
+        )
+
+        setHasUserReviewed(!reviewIsEmpty)
       } catch (error) {
         console.error('Error checking user review status:', error)
         handleError(error)

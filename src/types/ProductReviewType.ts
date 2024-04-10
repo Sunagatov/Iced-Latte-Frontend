@@ -1,12 +1,7 @@
-export interface ProductReview {
-  productReviewId: string
-  text: string
-  createdAt: string
-}
-
 export interface Review {
+  productReviewId: string
   rating: number
-  reviewText: string
+  text: string
   createdAt: string
   userName: string
   userLastName: string
@@ -17,6 +12,9 @@ export interface Review {
 }
 
 export interface ReviewsResponse {
-  reviewText: string
   reviewsWithRatings: Review[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
 }

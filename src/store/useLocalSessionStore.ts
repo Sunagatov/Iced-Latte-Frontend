@@ -10,6 +10,7 @@ interface SessionStore {
   expandedComments: Record<string, boolean>
   storedEmailSent: boolean
   resetSuccessful: boolean
+  isRaitingFormVisible: boolean
 
   setResetSuccessful: (resetSuccessful: boolean) => void
   setStoredEmailSent: (storedEmailSent: boolean) => void
@@ -21,6 +22,7 @@ interface SessionStore {
   setExpandedComments: (
     update: (prevState: Record<string, boolean>) => Record<string, boolean>,
   ) => void
+  setIsRaitingFormVisible: (isVisible: boolean) => void
 }
 
 export const useLocalSessionStore = create<SessionStore>()(
@@ -34,6 +36,11 @@ export const useLocalSessionStore = create<SessionStore>()(
       expandedComments: {},
       storedEmailSent: false,
       resetSuccessful: false,
+
+      isRaitingFormVisible: true,
+      setIsRaitingFormVisible: (isVisible) =>
+        set({ isRaitingFormVisible: isVisible }),
+
       setResetSuccessful: (resetSuccessful) => {
         set({ resetSuccessful })
       },

@@ -1,15 +1,36 @@
-import { ProductReview, ReviewsResponse } from '@/types/ProductReview'
+import { Review } from '@/types/ProductReviewType'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
+
+export interface ReviewsResponse {
+  reviewsWithRatings: Review[]
+}
+export interface SubmittedReviewInfo {
+  productReviewId: string
+  text: string
+  createdAt: string
+}
+
+export async function apiGetProductReviews(
+  productId: string,
+): Promise<ReviewsResponse> {
+  const response: AxiosResponse<ReviewsResponse> = await api.get(
+    `/products/${productId}/reviews`,
+  )
+
+  return response.data
+}
 
 export async function apiAddProductReview(
   productId: string,
   reviewText: string,
-): Promise<ProductReview> {
-  const response: AxiosResponse<ProductReview> = await api.post(
+  currentRating: number,
+): Promise<SubmittedReviewInfo> {
+  const response: AxiosResponse<SubmittedReviewInfo> = await api.post(
     `/products/${productId}/reviews`,
     {
       text: reviewText,
+      rating: currentRating,
     },
   )
 
@@ -18,23 +39,12 @@ export async function apiAddProductReview(
 
 export async function apiDeleteProductReview(
   productId: string,
-  reviewId: string,
+  productReviewId: string,
 ): Promise<void> {
-  await api.delete(`/products/${productId}/reviews/${reviewId}`)
+  await api.delete(`/products/${productId}/reviews/${productReviewId}`)
 }
 
-export async function apiGetProductReviews(
-  productId: string,
-  page: number = 0,
-): Promise<ReviewsResponse> {
-  const response: AxiosResponse<ReviewsResponse> = await api.get(
-    `/products/${productId}/reviews?page=${page}`,
-  )
-
-  return response.data
-}
-
-export async function apiCheckProductReview(
+export async function apiGetProductUserReview(
   productId: string,
 ): Promise<ReviewsResponse> {
   const response: AxiosResponse<ReviewsResponse> = await api.get(

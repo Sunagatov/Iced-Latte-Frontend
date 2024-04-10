@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { ErrorResponse } from '@/types/ErrorResponse'
 
@@ -19,11 +19,11 @@ export const handleAxiosError = (error: unknown): string => {
 export const useErrorHandler = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const handleError = (error: unknown) => {
+  const handleError = useCallback((error: unknown) => {
     const message = handleAxiosError(error)
 
     setErrorMessage(message)
-  }
+  }, [])
 
   return { errorMessage, handleError }
 }

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { apiGetProductReviews } from '@/services/reviewService'
-import { Review } from '@/types/ProductReview'
+import { Review } from '@/types/ProductReviewType'
 
 interface ReviewsStoreState {
   reviewsWithRatings: Review[]
