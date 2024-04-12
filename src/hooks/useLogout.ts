@@ -14,6 +14,7 @@ const useLogout = () => {
   const {
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
+    setIsRaitingFormVisible,
     setSelectedRating,
   } = useLocalSessionStore()
   const router = useRouter()
@@ -26,8 +27,9 @@ const useLogout = () => {
       reset()
       resetFav()
       setIsReviewFormVisible(false)
+      setIsRaitingFormVisible(false)
       setIsReviewButtonVisible(true)
-      setSelectedRating(null)
+      setSelectedRating(null) // ? same as `setIsRaitingFormVisible` ?
       router.push('/')
       // add other features
     } catch (error) {

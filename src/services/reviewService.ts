@@ -55,8 +55,8 @@ export async function apiDeleteProductReview(
 
 export async function apiGetProductUserReview(
   productId: string,
-): Promise<ReviewsResponse> {
-  const response: AxiosResponse<ReviewsResponse> = await api.get(
+): Promise<Review> {
+  const response: AxiosResponse<Review> = await api.get(
     `/products/${productId}/review`,
   )
 

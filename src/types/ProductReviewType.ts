@@ -6,9 +6,9 @@ export interface Review {
   userName: string
   userLastName: string
   // id: string
-  // isCurrentUserComment: boolean
-  likes: number
-  dislikes: number
+  isCurrentUserComment?: boolean
+  likes?: number
+  dislikes?: number
 }
 
 export interface ReviewsResponse {

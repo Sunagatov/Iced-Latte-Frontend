@@ -8,8 +8,8 @@ import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import isEqual from 'lodash/isEqual'
 import { Review } from '@/types/ProductReviewType'
-import { useUserReviewStatus } from '@/components/Review/ReviewComponent/useUserReviewStatus'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
+import { useUserReview } from '@/components/Review/ReviewComponent/useUserReview'
+
 import { useAuthStore } from '@/store/authStore'
 import { apiGetProductUserReview } from '@/services/reviewService'
 
@@ -25,10 +25,8 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   const { errorMessage, handleError } = useErrorHandler()
   const productReviewsData = useProductReviewsStore()
   const { reviewsWithRatings, getProductReviews } = productReviewsData
-  const { setIsReviewFormVisible, setIsReviewButtonVisible, setIsRaitingFormVisible } =
-    useLocalSessionStore()
 
-  const hasUserReviewed = useUserReviewStatus(productId)
+  useUserReview(productId)
   const { isLoggedIn } = useAuthStore()
 
 
@@ -36,11 +34,6 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     async function getProductReviewsById(productId: string): Promise<void> {
       try {
         await getProductReviews(productId)
-
-        setIsReviewButtonVisible(true)
-        setIsReviewFormVisible(false)
-        setIsRaitingFormVisible(true)
-        await apiGetProductUserReview(productId)
       } catch (error) {
         handleError(error)
       }
@@ -51,12 +44,8 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     productId,
     getProductReviews,
     handleError,
-    setIsReviewButtonVisible,
-    setIsReviewFormVisible,
-    setIsRaitingFormVisible,
-    isLoggedIn
   ])
-
+  ///////
   useEffect(() => {
     if (!isEqual(reviewsWithRatings, comments)) {
       setComments(reviewsWithRatings)
@@ -84,7 +73,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
         </h2>
         <div>
           <div className="xl:max-w-[800px]">
-            {!hasUserReviewed && <ReviewForm productId={productId} />}
+            <ReviewForm productId={productId} />
             {hasComments && <CommentList comments={comments} />}
             {errorMessage && (
               <div className="mt-4 text-negative">{errorMessage}</div>
