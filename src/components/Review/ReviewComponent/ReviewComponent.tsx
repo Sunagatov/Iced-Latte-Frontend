@@ -10,6 +10,10 @@ import isEqual from 'lodash/isEqual'
 import { Review } from '@/types/ProductReviewType'
 import { useUserReviewStatus } from '@/components/Review/ReviewComponent/useUserReviewStatus'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
+import { useAuthStore } from '@/store/authStore'
+import { apiGetProductUserReview } from '@/services/reviewService'
+
+
 interface ReviewComponentProps {
   productId: string;
 }
@@ -25,6 +29,8 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     useLocalSessionStore()
 
   const hasUserReviewed = useUserReviewStatus(productId)
+  const { isLoggedIn } = useAuthStore()
+
 
   useEffect(() => {
     async function getProductReviewsById(productId: string): Promise<void> {
@@ -34,6 +40,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
         setIsReviewButtonVisible(true)
         setIsReviewFormVisible(false)
         setIsRaitingFormVisible(true)
+        await apiGetProductUserReview(productId)
       } catch (error) {
         handleError(error)
       }
@@ -47,6 +54,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     setIsReviewButtonVisible,
     setIsReviewFormVisible,
     setIsRaitingFormVisible,
+    isLoggedIn
   ])
 
   useEffect(() => {
@@ -55,12 +63,18 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     }
   }, [reviewsWithRatings, comments])
 
+
+
   const hasComments = comments.length > 0
 
   // function for processing the rating filter
   const handleRatingChange = (value: number | null) => {
     console.log(value)
   }
+
+
+
+
 
   return (
     <div className="relative ml-auto mr-auto max-w-[1157px]">

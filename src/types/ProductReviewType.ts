@@ -6,7 +6,7 @@ export interface Review {
   userName: string
   userLastName: string
   // id: string
-  isCurrentUserComment: boolean
+  // isCurrentUserComment: boolean
   likes: number
   dislikes: number
 }

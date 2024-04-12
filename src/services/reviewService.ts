@@ -11,6 +11,15 @@ export interface SubmittedReviewInfo {
   createdAt: string
 }
 
+export interface RatingResponse {
+  productId: string
+  avgRating: number
+  reviewCount: number
+  ratingMap: {
+    [key: number]: number
+  }
+}
+
 export async function apiGetProductReviews(
   productId: string,
 ): Promise<ReviewsResponse> {
@@ -49,6 +58,16 @@ export async function apiGetProductUserReview(
 ): Promise<ReviewsResponse> {
   const response: AxiosResponse<ReviewsResponse> = await api.get(
     `/products/${productId}/review`,
+  )
+
+  return response.data
+}
+
+export async function apiGetProductRating(
+  productId: string,
+): Promise<RatingResponse> {
+  const response: AxiosResponse<RatingResponse> = await api.get(
+    `/products/${productId}/reviews/statistics`,
   )
 
   return response.data
