@@ -38,7 +38,7 @@ export const useLocalSessionStore = create<SessionStore>()(
       resetSuccessful: false,
 
       isRaitingFormVisible: true,
-      setIsRaitingFormVisible: (isVisible) =>
+      setIsRaitingFormVisible: (isVisible: boolean) =>
         set({ isRaitingFormVisible: isVisible }),
 
       setResetSuccessful: (resetSuccessful) => {

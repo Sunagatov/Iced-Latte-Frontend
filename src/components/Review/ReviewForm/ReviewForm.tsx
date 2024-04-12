@@ -14,7 +14,6 @@ import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useStoreData } from '@/hooks/useStoreData'
 import { useMediaQuery } from 'usehooks-ts'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-import { useUserReviewStatus } from '../ReviewComponent/useUserReviewStatus'
 
 
 interface ReviewFormProps {
@@ -67,6 +66,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       await useProductReviewsStore.getState().getProductReviews(productId)
       setIsReviewFormVisible(false)
       setIsRaitingFormVisible(false)
+      setIsReviewButtonVisible(false)
 
     } catch (error) {
       handleError(error)
@@ -78,11 +78,16 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const handleCancel = () => {
     setRating(productId, 0)
     handleClearText()
+
+    setIsReviewFormVisible(false)
+    setIsRaitingFormVisible(false)
+    setIsReviewButtonVisible(true)
   }
 
   const handleClickReview = () => {
     if (token) {
       setIsReviewFormVisible(true)
+      setIsRaitingFormVisible(true)
       setIsReviewButtonVisible(false)
     } else {
       router.push('/auth/login')
@@ -101,7 +106,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
           <RatingInfo currentRating={currentRating} count={5} />
         </div>
       </div>
-        <h3 className='mb-6 font-medium text-2XL text-primary'>What do you think of this product?</h3>
+      <h3 className='mb-6 font-medium text-2XL text-primary'>What do you think of this product?</h3>
       </>)}
 
       {isReviewButtonVisible && (
