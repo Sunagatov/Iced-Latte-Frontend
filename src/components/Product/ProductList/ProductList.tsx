@@ -5,8 +5,8 @@ import { IOption } from '@/types/Dropdown'
 import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
-import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
+import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 
 export default function ProductList() {
   const [selectedSortOption, setSelectedSortOption] = useState<IOption>(
