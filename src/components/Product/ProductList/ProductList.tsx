@@ -1,16 +1,26 @@
 'use client'
+import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
+import { IOption } from '@/types/Dropdown'
+import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
+import Dropdown from '@/components/UI/Dropdown/Dropdown'
 
 export default function ProductList() {
+  const [selectedSortOption, setSelectedSortOption] = useState<IOption>(
+    sortOptions[0],
+  )
+
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts()
+    useProducts(selectedSortOption)
+
+  function handleSelect(selectedOption: IOption) {
+    setSelectedSortOption(selectedOption)
+  }
 
   if (error) {
-
-
     return (
       <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
         Something went wrong!
@@ -36,9 +46,17 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
+        <div className={'flex w-full justify-end'}>
+          <Dropdown
+            className={'mb-8'}
+            options={sortOptions}
+            onChange={handleSelect}
+            selectedOption={selectedSortOption}
+          />
+        </div>
         <ul
           className={
-            'grid grid-cols-2 gap-x-2 sm:gap-x-8 gap-y-7 min-[1124px]:grid-cols-3 '
+            'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-8 min-[1124px]:grid-cols-3 '
           }
         >
           {data.map((product) => (
@@ -56,7 +74,7 @@ export default function ProductList() {
         {hasNextPage && !isFetchingNextPage && (
           <button
             className={
-              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary m-3'
+              'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
             }
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
