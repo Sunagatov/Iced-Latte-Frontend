@@ -9,18 +9,18 @@ import closedSelect from '../../../../public/open_select_not_opened.svg'
 import checkImageUrl from '../../../../public/check.svg'
 
 const headerStyles =
-  'py-4 px-6 bg-secondary rounded-[46.81px] cursor-pointer flex gap-x-3 items-center text-L font-medium text-primary hover:bg-tertiary'
+  'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center text-L font-medium text-primary hover:bg-tertiary'
 const listStyles =
-  'border-primary border-[1px] rounded-md py-[10px] absolute w-full right-0 top-full bg-primary'
+  'border-primary border rounded-md py-1 absolute w-full right-0 top-full bg-primary'
 const listItemStyles =
-  'text-primary font-medium px-6 flex items-center justify-between cursor-pointer hover:bg-tertiary'
+  'text-primary font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary'
 
-export default function Dropdown({
+export default function Dropdown<T>({
   className,
   options,
   onChange,
   selectedOption,
-}: Readonly<PropsDropdown>) {
+}: Readonly<PropsDropdown<T>>) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -35,14 +35,14 @@ export default function Dropdown({
     setIsOpen((prev) => !prev)
   }
 
-  function handleChange(option: IOption) {
+  function handleChange(option: IOption<T>) {
     return () => {
       onChange(option)
       setIsOpen(false)
     }
   }
 
-  function isSelected(selectedOption: IOption, option: IOption) {
+  function isSelected(selectedOption: IOption<T>, option: IOption<T>) {
     return selectedOption.label === option.label
   }
 
@@ -66,8 +66,7 @@ export default function Dropdown({
             <li
               className={twMerge(
                 listItemStyles,
-                isSelected(selectedOption, option) &&
-                  'rounded-md bg-secondary font-bold',
+                isSelected(selectedOption, option) && 'bg-secondary font-bold',
               )}
               onClick={handleChange(option)}
               key={option.label}

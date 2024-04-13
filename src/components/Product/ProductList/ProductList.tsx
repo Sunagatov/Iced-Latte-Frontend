@@ -1,22 +1,23 @@
 'use client'
 import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
-import { IOption } from '@/types/Dropdown'
 import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
+import { IProductSortParams } from '@/types/ProductSortParams'
+import { IOption } from '@/types/Dropdown'
 
 export default function ProductList() {
-  const [selectedSortOption, setSelectedSortOption] = useState<IOption>(
-    sortOptions[0],
-  )
+  const [selectedSortOption, setSelectedSortOption] = useState<
+    IOption<IProductSortParams>
+  >(sortOptions[0])
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
 
-  function handleSelect(selectedOption: IOption) {
+  function handleSelect(selectedOption: IOption<IProductSortParams>) {
     setSelectedSortOption(selectedOption)
   }
 
@@ -47,7 +48,7 @@ export default function ProductList() {
           All Coffee
         </h1>
         <div className={'flex w-full justify-end'}>
-          <Dropdown
+          <Dropdown<IProductSortParams>
             className={'mb-8'}
             options={sortOptions}
             onChange={handleSelect}

@@ -1,12 +1,11 @@
-export type PropsDropdown = {
-  onChange: (option: IOption) => void
-  options: IOption[]
-  selectedOption: IOption
+export type PropsDropdown<T> = {
+  onChange: (option: IOption<T>) => void
+  options: IOption<T>[]
+  selectedOption: IOption<T>
   className?: string
 }
 
-export interface IOption {
+export interface IOption<T> {
   label: string
-  sortAttribute: string
-  sortDirection: 'asc' | 'desc'
+  value: T
 }

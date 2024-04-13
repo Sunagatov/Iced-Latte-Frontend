@@ -1,14 +1,13 @@
 import { IOption } from '@/types/Dropdown'
+import { IProductSortParams } from '@/types/ProductSortParams'
 
-export const sortOptions: IOption[] = [
+export const sortOptions: IOption<IProductSortParams>[] = [
   {
     label: 'Price: Low to High',
-    sortAttribute: 'price',
-    sortDirection: 'asc',
+    value: { sortAttribute: 'price', sortDirection: 'asc' },
   },
   {
     label: 'Price: High to Low',
-    sortAttribute: 'price',
-    sortDirection: 'desc',
+    value: { sortAttribute: 'price', sortDirection: 'desc' },
   },
 ]
