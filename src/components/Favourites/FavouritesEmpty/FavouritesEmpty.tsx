@@ -3,8 +3,13 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import Image from 'next/image'
 import search from '../../../../public/search_cart.png'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
 
 export default function FavouritesEmpty() {
+  const router = useRouter()
+  const { setModalState } = useAuthStore()
+
   return (
     <div className="w-{800px} 1px h-{513px} mx-auto sm:w-[500px]">
       <h2 className="mx-4 my-6 text-4xl">Favourite Products</h2>
@@ -24,7 +29,10 @@ export default function FavouritesEmpty() {
             </Button>
           </Link>
           <Button
-            onClick={() => { }}
+            onClick={() => {
+              router.push('/auth/login')
+              setModalState(true)
+            }}
             className="h-14 w-[211px] text-lg font-medium"
           >
             Log in
