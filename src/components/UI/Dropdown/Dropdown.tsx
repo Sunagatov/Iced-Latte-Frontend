@@ -11,7 +11,7 @@ import checkImageUrl from '../../../../public/check.svg'
 const headerStyles =
   'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center text-L font-medium text-primary hover:bg-tertiary'
 const listStyles =
-  'border-primary border rounded-md py-1 absolute w-full right-0 top-full bg-primary'
+  'border-primary border rounded-md py-1 absolute w-full right-0 top-full bg-primary z-[5]'
 const listItemStyles =
   'text-primary font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary'
 
@@ -49,7 +49,7 @@ export default function Dropdown<T>({
   const selectImageUrl = isOpen ? openSelect : closedSelect
 
   return (
-    <div ref={ref} className={'relative z-10' + ' ' + (className ?? '')}>
+    <div ref={ref} className={'relative' + ' ' + (className ?? '')}>
       <div
         className={twMerge(
           headerStyles,
