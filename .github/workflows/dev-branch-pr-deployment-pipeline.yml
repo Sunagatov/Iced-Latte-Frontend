@@ -6,6 +6,13 @@ on:
     branches:
       - master
 
+env:
+  ENV_FILE_NAME: .frontend_env
+  DOCKER_COMPOSE_FILE: docker-compose.yml
+  DOCKER_CONTAINER_NAME: latte-frontend
+  DOCKER_IMAGE_NAME: iced-latte-frontend
+  DOCKER_HUB_ACCOUNT_NAME: zufarexplainedit
+  APP_PATH_ON_THE_REMOTE_SERVER: /opt/project/Iced-Latte
 
 jobs:
   build-and-push-docker-image:
@@ -21,18 +28,13 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: dzmitrybond
-          password: Paroldocker789
+          username: ${{ env.DOCKER_HUB_ACCOUNT_NAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build and push docker image
         run: |
-          docker build -t dzmitrybond/iced_front .
-          docker tag dzmitrybond/iced_front:latest dzmitrybond/iced_front:test1
-          docker tag dzmitrybond/iced_front:latest dzmitrybond/iced_front:test2
-      - name: Push Docker image to DockerHub
-        run: |
-          docker push dzmitrybond/iced_front:test1
-          docker push dzmitrybond/iced_front:test2
+          docker-compose -f ${{ env.DOCKER_COMPOSE_FILE }} build
+          docker push ${{ env.DOCKER_HUB_ACCOUNT_NAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
 
   deploy-app-to-server:
     name: Deploy application to remote server via ssh
@@ -53,14 +55,6 @@ jobs:
           key: ${{ secrets.DEV_SSH_PRIV_KEY }}
           envs: DOCKER_IMAGE_TAG
           script: |
-            echo ${{ sevrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-            docker stop iced_front_test1 | true
-            docker rm iced_front_test1 | true
-            docker rmi dzmitrybond/iced_front:test1 | true
-            docker pull dzmitrybond/iced_front:test1 |true
-            docker stop iced_front_test2 | true
-            docker rm iced_front_test2 | true
-            docker rmi dzmitrybond/iced_front:test2 | true
-            docker pull dzmitrybond/iced_front:test2 |true
-            docker run -d --name 'iced_front_test1' --network=iced-latte-network dzmitrybond/iced_front:test1
-            docker run -d --name 'iced_front_test2' --network=iced-latte-network dzmitrybond/iced_front:test2
+            cd ${{ env.APP_PATH_ON_THE_REMOTE_SERVER }} 
+            docker-compose -f ${{ env.DOCKER_COMPOSE_FILE }} down ${{ env.DOCKER_CONTAINER_NAME }}
+            docker-compose -f ${{ env.DOCKER_COMPOSE_FILE }} up -d ${{ env.DOCKER_CONTAINER_NAME }}
