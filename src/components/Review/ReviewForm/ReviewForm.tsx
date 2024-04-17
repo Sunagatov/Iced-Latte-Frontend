@@ -63,6 +63,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       await apiAddProductReview(productId, reviewText, currentRating)
 
       await useProductReviewsStore.getState().getProductReviews(productId)
+      await useProductReviewsStore.getState().getProductUserReview(productId)
 
 
       setIsReviewFormVisible(false)
@@ -73,6 +74,8 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       handleError(error)
     } finally {
       setLoading(false)
+      setRating(productId, 0)
+      handleClearText()
     }
   }
 

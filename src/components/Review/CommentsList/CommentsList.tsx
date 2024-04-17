@@ -71,6 +71,9 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
   const handleDeleteComment = async (productReviewId: string, productId: string): Promise<void> => {
     try {
       await apiDeleteProductReview(productReviewId, productId)
+      await useProductReviewsStore.getState().getProductUserReview(productId)
+      await useProductReviewsStore.getState().getProductReviews(productId)
+
 
 
       setIsReviewFormVisible(false)
@@ -99,39 +102,40 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
 
   }
 
+  const hasUserReview = userReview && Object.values(userReview).some(value => value !== null)
 
-  console.log('userReview', userReview)
+  console.log('userReview:', userReview)
+  console.log('hasUserReview:', hasUserReview)
 
   return (
 
     <>
-
-      {userReview && (
-        <div className='mt-10 xl:mt-20'>
-          <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
-            <span>{userReview.userName} {userReview.userLastName}</span>
-          </div>
-          <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
-            <div className='flex items-center gap-1'>
-              {[...Array(5)].map((_, productReviewId) => (
-                <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
-              ))}
-              <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>s
+      {hasUserReview &&
+        (
+          <div className='mt-10 xl:mt-20'>
+            <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
+              <span>{userReview.userName} {userReview.userLastName}</span>
             </div>
-            <div className="inline-flex font-medium text-L text-tertiary">
-              <div className='inline-flex relative ml-3'>
-                <span className='ml-[10px] text-L'></span>
-                <div className="text-tertiary h-[5px] w-[5px] rounded-full bg-gray-400 absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
+              <div className='flex items-center gap-1'>
+                {[...Array(5)].map((_, productReviewId) => (
+                  <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                ))}
+                <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>s
               </div>
-              <span className='ml-2'>{userReview.createdAt}</span>
+              <div className="inline-flex font-medium text-L text-tertiary">
+                <div className='inline-flex relative ml-3'>
+                  <span className='ml-[10px] text-L'></span>
+                  <div className="text-tertiary h-[5px] w-[5px] rounded-full bg-gray-400 absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2"></div>
+                </div>
+                <span className='ml-2'>{userReview.createdAt}</span>
+              </div>
             </div>
-          </div>
-          <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isLoggedIn ? 'bg-brand-second' : 'bg-brand-default'}`}>{userReview.text}</p>
-          {isLoggedIn && <Button
-            onClick={() => handleDeleteComment(userReview.productReviewId, productId)}
-            className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>}
-        </div >
-      )}
+            <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isLoggedIn ? 'bg-brand-second' : 'bg-brand-default'}`}>{userReview.text}</p>
+            {isLoggedIn && <Button
+              onClick={() => handleDeleteComment(userReview.productReviewId, productId)}
+              className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>}
+          </div >)}
 
       <ul className='flex gap-10 flex-col mt-10'>
         {filteredComments.map((comment, productReviewId) => {
