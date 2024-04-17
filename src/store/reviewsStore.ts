@@ -8,6 +8,9 @@ import { Review } from '@/types/ProductReviewType'
 
 interface ReviewsStoreState {
   reviewsWithRatings: Review[]
+  filteredReviewsWithRatings: Review[]
+  currentPage: number
+  totalElements: number
   userReview: Review | null
   isReviewFormVisible: boolean
   isReviewButtonVisible: boolean
@@ -23,9 +26,13 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
   persist(
     (set) => ({
       reviewsWithRatings: [],
+      filteredReviewsWithRatings: [],
+      currentPage: 0,
+      totalElements: 0,
       userReview: null,
+
       isReviewFormVisible: false,
-      isReviewButtonVisible: true,
+      isReviewButtonVisible: true, // ? false
       isReviewRatingFormVisible: false,
 
       setIsReviewFormVisible: (isVisible: boolean) =>
