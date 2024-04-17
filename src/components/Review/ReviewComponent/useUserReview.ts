@@ -1,15 +1,15 @@
 import { useEffect } from 'react'
 import { apiGetProductUserReview } from '@/services/reviewService'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useAuthStore } from '@/store/authStore'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 export function useUserReview(productId: string) {
   const {
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
-    setIsRaitingFormVisible
-  } = useLocalSessionStore()
+    setIsRaitingFormVisible,
+  } = useProductReviewsStore()
 
   const { token } = useAuthStore()
 
@@ -29,7 +29,6 @@ export function useUserReview(productId: string) {
           setIsReviewButtonVisible(true)
           setIsRaitingFormVisible(false)
         }
-
       } catch (error) {
         console.error('Error checking user review status:', error)
         handleError(error)
@@ -43,8 +42,6 @@ export function useUserReview(productId: string) {
       setIsReviewButtonVisible(true)
       setIsRaitingFormVisible(false)
     }
-
-
   }, [
     productId,
     handleError,

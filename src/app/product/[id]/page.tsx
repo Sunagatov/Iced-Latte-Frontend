@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import star from '/public/star.png'
-import AddToCartButton from '../../../components/Product/AddToCard/AddToCart'
+import AddToCartButton from '../../../components/Product/AddToCart/AddToCart'
 import HeartWrapper from '../../../components/Product/HeartWrapper/HeartWrapper'
 import productImg from '/public/coffee.png'
 import getImgUrl from '@/utils/getImgUrl'

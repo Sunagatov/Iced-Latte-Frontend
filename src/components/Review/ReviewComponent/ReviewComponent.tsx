@@ -10,24 +10,30 @@ import isEqual from 'lodash/isEqual'
 import { Review } from '@/types/ProductReviewType'
 import { useUserReview } from '@/components/Review/ReviewComponent/useUserReview'
 
-import { useAuthStore } from '@/store/authStore'
-import { apiGetProductUserReview } from '@/services/reviewService'
-
-
 interface ReviewComponentProps {
   productId: string;
 }
-
-
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   const [comments, setComments] = useState<Review[]>([])
   const { errorMessage, handleError } = useErrorHandler()
   const productReviewsData = useProductReviewsStore()
-  const { reviewsWithRatings, getProductReviews } = productReviewsData
+  const { reviewsWithRatings, getProductReviews, getProductUserReview, userReview } = productReviewsData
+  const hasComments = comments.length > 0
+
+
+  useEffect(() => {
+    async function getUserReview(productId: string): Promise<void> {
+      try {
+        await getProductUserReview(productId)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+    void getUserReview(productId)
+  }, [productId, getProductUserReview, handleError])
 
   useUserReview(productId)
-  const { isLoggedIn } = useAuthStore()
 
 
   useEffect(() => {
@@ -45,7 +51,8 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     getProductReviews,
     handleError,
   ])
-  ///////
+
+
   useEffect(() => {
     if (!isEqual(reviewsWithRatings, comments)) {
       setComments(reviewsWithRatings)
@@ -54,15 +61,15 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
 
 
 
-  const hasComments = comments.length > 0
-
   // function for processing the rating filter
   const handleRatingChange = (value: number | null) => {
     console.log(value)
   }
 
-
-
+  useEffect(() => {
+    void getProductUserReview(productId)
+    void getProductReviews(productId)
+  }, [productId, getProductUserReview, getProductReviews])
 
 
   return (
@@ -74,7 +81,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
         <div>
           <div className="xl:max-w-[800px]">
             <ReviewForm productId={productId} />
-            {hasComments && <CommentList comments={comments} />}
+            {hasComments && <CommentList comments={comments} userReview={userReview} productId={productId} setComments={setComments} />}
             {errorMessage && (
               <div className="mt-4 text-negative">{errorMessage}</div>
             )}

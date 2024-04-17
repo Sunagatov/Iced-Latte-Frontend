@@ -9,27 +9,43 @@ import { useEffect, useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useMediaQuery } from 'usehooks-ts'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
+import { apiDeleteProductReview } from '@/services/reviewService'
+import { handleAxiosError } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
-
-
-
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 interface CommentListProps {
   comments: Review[];
+  userReview: Review | null;
+  productId: string;
+  setComments: React.Dispatch<React.SetStateAction<Review[]>>;
+
 }
 
-const CommentList = ({ comments }: CommentListProps) => {
+const CommentList = ({ comments, userReview, productId, setComments }: CommentListProps) => {
   const [loadedComments, setLoadedComments] = useState(comments.slice(0, 3))
   const [lastLoadedIndex, setLastLoadedIndex] = useState(2)
   const [showLoadMore, setShowLoadMore] = useState(true)
   const { expandedComments, setExpandedComments } = useLocalSessionStore()
   const isMediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
 
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
 
+
+  const {
+    setIsReviewFormVisible,
+    setIsReviewButtonVisible,
+    setIsRaitingFormVisible,
+  } = useProductReviewsStore()
 
   useEffect(() => {
     setLoadedComments(comments.slice(0, 3))
   }, [comments])
+
+
+  const filteredComments = loadedComments.filter(comment => userReview && comment.productReviewId !== userReview.productReviewId)
+
+
 
   // Function for uploading additional comments
   const loadMoreComments = () => {
@@ -50,9 +66,29 @@ const CommentList = ({ comments }: CommentListProps) => {
     }))
   }
 
-  const handleDeleteComment = (productReviewId: string) => {
-    console.log(`Deleting comment with ID ${productReviewId}`)
+
+
+  const handleDeleteComment = async (productReviewId: string, productId: string): Promise<void> => {
+    try {
+      await apiDeleteProductReview(productReviewId, productId)
+
+
+      setIsReviewFormVisible(false)
+      setIsReviewButtonVisible(true)
+      setIsRaitingFormVisible(false)
+
+    }
+    catch (error) {
+      handleAxiosError(error)
+    }
+
   }
+
+
+
+
+
+  // Like and dislike buttons //
 
   const handleLikeComment = (productReviewId: string) => {
     console.log(`Liking comment with ID ${productReviewId}`)
@@ -63,34 +99,59 @@ const CommentList = ({ comments }: CommentListProps) => {
 
   }
 
-  const { userData } = useAuthStore()
-  const loggedInUserName = userData?.firstName
-  const loggedInUserLastName = userData?.lastName
 
+  console.log('userReview', userReview)
 
   return (
-    <>
-      <ul className='flex gap-10 flex-col mt-20'>
-        {loadedComments.map((comment, productReviewId) => {
-          const { date, time } = formatReviewDate(comment.createdAt)
 
-          const isCurrentUserComment = comment.userName === loggedInUserName && comment.userLastName === loggedInUserLastName
+    <>
+
+      {userReview && (
+        <div className='mt-10 xl:mt-20'>
+          <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
+            <span>{userReview.userName} {userReview.userLastName}</span>
+          </div>
+          <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
+            <div className='flex items-center gap-1'>
+              {[...Array(5)].map((_, productReviewId) => (
+                <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+              ))}
+              <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>s
+            </div>
+            <div className="inline-flex font-medium text-L text-tertiary">
+              <div className='inline-flex relative ml-3'>
+                <span className='ml-[10px] text-L'></span>
+                <div className="text-tertiary h-[5px] w-[5px] rounded-full bg-gray-400 absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2"></div>
+              </div>
+              <span className='ml-2'>{userReview.createdAt}</span>
+            </div>
+          </div>
+          <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isLoggedIn ? 'bg-brand-second' : 'bg-brand-default'}`}>{userReview.text}</p>
+          {isLoggedIn && <Button
+            onClick={() => handleDeleteComment(userReview.productReviewId, productId)}
+            className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>}
+        </div >
+      )}
+
+      <ul className='flex gap-10 flex-col mt-10'>
+        {filteredComments.map((comment, productReviewId) => {
+          const { date, time } = formatReviewDate(comment.createdAt)
 
           return (
 
-            <li className={`pb-6 xl:pb-10 ${productReviewId === loadedComments.length - 1 ? 'pb-0' : 'border-b border-solid border-primary'}`} key={productReviewId} >
+            <li className={`pb-6 xl:pb-10`} key={productReviewId} >
 
               <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
                 <span>{comment.userName} {comment.userLastName}</span>
-
               </div>
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
                 <div className='flex items-center gap-1'>
                   {[...Array(5)].map((_, productReviewId) => (
                     <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
                   ))}
+                  <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}/5</span>
                 </div>
-                <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}/5</span>
+
                 <div className="inline-flex font-medium text-L text-tertiary">
                   <div className='inline-flex relative ml-3'>
                     <span className='ml-[10px] text-L'>{date}</span>
@@ -98,30 +159,34 @@ const CommentList = ({ comments }: CommentListProps) => {
                   </div>
                   <span className='ml-2'>{time}</span>
                 </div>
+
               </div>
+
+
+
+
               {comment.text && comment.text.length > 300 && !expandedComments[`${productReviewId}`] ? (
 
-                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
+                <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 'bg-secondary">
                   {comment.text.slice(0, 300)}
                   <Button
                     onClick={() => toggleCommentExpansion(`${productReviewId}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
+
               ) : (
-                <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
+                <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 'bg-secondary">
                   {comment.text || 'No review'}
                 </p>
               )
               }
               <div className="flex justify-between items-center">
-                {isCurrentUserComment && (
-                  <Button
-                    onClick={() => handleDeleteComment(`${productReviewId}`)}
-                    className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>
-                )}
+
+
+
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
-                    onClick={() => handleLikeComment(`${index}`)}
+                    onClick={() => handleLikeComment(`${productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
                     <span>
@@ -130,7 +195,7 @@ const CommentList = ({ comments }: CommentListProps) => {
                     </span>
                   </Button>
                   <Button
-                    onClick={() => handleDislikeComment(`${index}`)}
+                    onClick={() => handleDislikeComment(`${productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
                     <span>
@@ -146,9 +211,10 @@ const CommentList = ({ comments }: CommentListProps) => {
         <ScrollUpBtn />
       </ul >
 
-      {showLoadMore && (
-        <Button onClick={loadMoreComments} className='flex items-center justify-center rounded-[47px] w-[334px] ml-auto mr-auto mb-[94px] mt-[24px] bg-secondary font-medium text-[18px] text-primary'>Show more</Button>
-      )
+      {
+        showLoadMore && (
+          <Button onClick={loadMoreComments} className='flex items-center justify-center rounded-[47px] w-[334px] ml-auto mr-auto mb-[94px] mt-[24px] bg-secondary font-medium text-[18px] text-primary'>Show more</Button>
+        )
       }
     </>
   )

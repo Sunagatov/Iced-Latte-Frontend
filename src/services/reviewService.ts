@@ -47,8 +47,8 @@ export async function apiAddProductReview(
 }
 
 export async function apiDeleteProductReview(
-  productId: string,
   productReviewId: string,
+  productId: string,
 ): Promise<void> {
   await api.delete(`/products/${productId}/reviews/${productReviewId}`)
 }

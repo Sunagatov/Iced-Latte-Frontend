@@ -10,11 +10,9 @@ import { useErrorHandler } from '@/services/apiError/apiError'
 import { apiAddProductReview } from '@/services/reviewService'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
-import { useStoreData } from '@/hooks/useStoreData'
 import { useMediaQuery } from 'usehooks-ts'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-
+import { useUserReview } from '../ReviewComponent/useUserReview'
 
 interface ReviewFormProps {
   productId: string;
@@ -26,25 +24,20 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const [charCount, setCharCount] = useState(0)
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
-  const { setIsReviewFormVisible, setIsReviewButtonVisible, setIsRaitingFormVisible } = useLocalSessionStore()
+  const { setIsReviewFormVisible, setIsReviewButtonVisible, setIsRaitingFormVisible } = useProductReviewsStore()
   const { token, setModalState } = useAuthStore()
   const ismediaQuery = useMediaQuery('(max-width: 768px)', { initializeWithValue: false })
   const router = useRouter()
 
-  const isReviewFormVisible = useStoreData(useLocalSessionStore, (state) => state.isReviewFormVisible)
-  const isReviewButtonVisible = useStoreData(useLocalSessionStore, (state) => state.isReviewButtonVisible)
-  const isRaitingFormVisible = useStoreData(useLocalSessionStore, (state) => state.isRaitingFormVisible)
+  const isReviewFormVisible = useProductReviewsStore((state) => state.isReviewFormVisible)
+  const isReviewButtonVisible = useProductReviewsStore((state) => state.isReviewButtonVisible)
+  const isReviewRatingFormVisible = useProductReviewsStore((state) => state.isReviewRatingFormVisible)
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
   const currentRating = productRatingData.rating
   const isRatingSelected = currentRating > 0
   const isReviewTextEmpty = reviewText.trim().length === 0
   const isReviewButtonActive = isRatingSelected || !isReviewTextEmpty
-
-
-
-
-  const hasUserReviewed = useUserReviewStatus(productId)
 
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -59,8 +52,9 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setCharCount(0)
   }
 
-
   // If i just call this -  getProductReviews(productId) - get "An unknown error occurred"
+
+
 
   const handleAddReview = async () => {
     try {
@@ -69,6 +63,8 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       await apiAddProductReview(productId, reviewText, currentRating)
 
       await useProductReviewsStore.getState().getProductReviews(productId)
+
+
       setIsReviewFormVisible(false)
       setIsRaitingFormVisible(false)
       setIsReviewButtonVisible(false)
@@ -100,65 +96,65 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     }
   }
 
+  useUserReview(productId)
 
   return (
 
     <>
+      {isReviewRatingFormVisible && (
 
-      {isRaitingFormVisible && (<>   <div className='mt-[40px] mb-[40px] pb-8 border-b border-solid border-primary sm:pb-7 xl:pb-12'>
-        <div className='mb-6 font-medium text-2XL xl:mt-14'>Rating</div>
-        <div className='flex items-center relative'>
-          <StarRating productId={productId} count={5} activeColor={'#00A30E'} />
-          <RatingInfo currentRating={currentRating} count={5} />
-        </div>
-      </div>
-        <h3 className='mb-6 font-medium text-2XL text-primary'>What do you think of this product?</h3>
-      </>)}
-
-      {isReviewButtonVisible && (
-        <Button onClick={handleClickReview} className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus rounded-[47px] w-[278px] mb-12 xl:mb-16'>Add a review</Button>
-      )}
-
-      {isReviewFormVisible && (
-        <>
-
-          <div className='relative'>
-            <textarea
-              className={`text-[18px] w-full pl-[16px] pr-[46px] py-[17px] bg-secondary rounded-lg outline-focus ${reviewText ? 'h-[196px]' : 'h-[56px]'} ${reviewText ? 'pb-[39px]' : ''} placeholder:font-medium placeholder:text-sm `}
-              value={reviewText}
-              onChange={handleTextChange}
-              placeholder={ismediaQuery ? 'Share your impressions' : 'Share your impressions with other customers'}
-              maxLength={1500}
-            ></textarea>
-            {reviewText && (
-              <>
-                <div className='absolute bottom-2 right-4 text-tertiary'>{charCount}/1500</div>
-                <button className='absolute top-4 right-4 text-tertiary' onClick={handleClearText}>
-                  <IoIosClose size={22} />
-                </button>
-              </>
-            )}
+        <div className='my-10 pb-8 border-b border-solid border-primary sm:pb-7 xl:pb-12 '>
+          <div className='mb-6 font-medium text-2XL xl:mt-14'>Rating</div>
+          <div className='flex items-center relative'>
+            <StarRating productId={productId} count={5} activeColor={'#00A30E'} />
+            <RatingInfo currentRating={currentRating} count={5} />
           </div>
+          <h3 className='mb-6 font-medium text-2XL text-primary '>What do you think of this product?</h3>
+        </div >)
+      }
 
-          {errorMessage && (
-            <div className="mt-4 text-negative">
-              {errorMessage}
+      {
+        isReviewButtonVisible && (
+          <Button onClick={handleClickReview} className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus rounded-[47px] sm:w-[278px] mb-10 mt-20 w-full'>Add a review</Button>
+        )
+      }
+
+      {
+        isReviewFormVisible && (
+          <>
+            <div className='relative'>
+              <textarea
+                className={`text-[18px] w-full pl-[16px] pr-[46px] py-[17px] bg-secondary rounded-lg outline-focus ${reviewText ? 'h-[196px]' : 'h-[56px]'} ${reviewText ? 'pb-[39px]' : ''} placeholder:font-medium placeholder:text-sm `}
+                value={reviewText}
+                onChange={handleTextChange}
+                placeholder={ismediaQuery ? 'Share your impressions' : 'Share your impressions with other customers'}
+                maxLength={1500}
+              ></textarea>
+              {reviewText && (
+                <>
+                  <div className='absolute bottom-2 right-4 text-tertiary'>{charCount}/1500</div>
+                  <button className='absolute top-4 right-4 text-tertiary' onClick={handleClearText}>
+                    <IoIosClose size={22} />
+                  </button>
+                </>
+              )}
             </div>
-          )}
-          <div className='mt-6 flex gap-2'>
-            <Button onClick={handleAddReview} disabled={!isReviewButtonActive} className={`${!isReviewButtonActive ? 'opacity-20' : ''} w-[334px] flex items-center justify-center mb-12 xl:w-[278px]`}> {loading ? < Loader /> : 'Add a review'}</Button>
-            {(reviewText || isRatingSelected) && (<Button onClick={handleCancel} className='ml-2 w-[108px] bg-secondary text-primary font-medium text-[18px]'>Cancel</Button>)}
-          </div>
 
-        </>
-      )}
+            {errorMessage && (
+              <div className="mt-4 text-negative">
+                {errorMessage}
+              </div>
+            )}
+            <div className='mt-6 flex gap-2 '>
+              <Button onClick={handleAddReview} disabled={!isReviewButtonActive} className={`${!isReviewButtonActive ? 'opacity-20' : ''} w-[334px] flex items-center justify-center mb-12 xl:w-[278px]`}> {loading ? < Loader /> : 'Add a review'}</Button>
+              {(reviewText || isRatingSelected) && (<Button onClick={handleCancel} className='ml-2 w-[108px] bg-secondary text-primary font-medium text-[18px]'>Cancel</Button>)}
+            </div>
 
-    </>
-  )
-}
+          </>
+        )
+      }
     </>
   )
 }
 
 export default ReviewForm
-
