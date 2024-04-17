@@ -1,12 +1,11 @@
 'use client'
 
-import { fi } from 'date-fns/locale'
 import Label from './Label'
 
 const filterAttributes = [
-  { id: 1, name: 'Brand1', label: 'label-1' },
-  { id: 2, name: 'Seller1', label: 'label-2' },
-  { id: 3, name: 'Seller5', label: 'label-3' }
+  { id: '1', name: 'Brand1', label: 'label-1' },
+  { id: '2', name: 'Seller1', label: 'label-2' },
+  { id: '3', name: 'Seller5', label: 'label-3' }
 ]
 
 
@@ -25,7 +24,7 @@ export default function ProductsFilterLabels() {
         By default
       </button>
 
-      <div className='flex justify-center gap-3'>{filterAttributes.map(label => (<Label name={label.name} />))}</div>
+      <div className='flex justify-center gap-3'>{filterAttributes.map(item => (<Label name={item.name} key={item.id} id={item.id} />))}</div>
     </div >
   )
 }
