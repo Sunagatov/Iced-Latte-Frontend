@@ -12,9 +12,9 @@ const useLogout = () => {
   const { reset } = useAuthStore()
   const { resetFav } = useFavouritesStore()
   const {
-    setIsReviewFormVisible,
-    setIsReviewButtonVisible,
-    setIsRaitingFormVisible,
+    // setIsReviewFormVisible,
+    // setIsReviewButtonVisible,
+    // setIsRaitingFormVisible,
     setSelectedRating,
   } = useLocalSessionStore()
   const router = useRouter()
@@ -26,9 +26,9 @@ const useLogout = () => {
       await removeCookie('token')
       reset()
       resetFav()
-      setIsReviewFormVisible(false)
-      setIsRaitingFormVisible(false)
-      setIsReviewButtonVisible(true)
+      // setIsReviewFormVisible(false)
+      // setIsRaitingFormVisible(false)
+      // setIsReviewButtonVisible(true)
       setSelectedRating(null) // ? same as `setIsRaitingFormVisible` ?
       router.push('/')
       // add other features

@@ -22,7 +22,11 @@ export interface RatingResponse {
 
 export async function apiGetProductReviews(
   productId: string,
+  page?: number,
+  size?: number,
 ): Promise<ReviewsResponse> {
+  const querryStr = `${typeof page === 'number' ? page : ''}`
+
   const response: AxiosResponse<ReviewsResponse> = await api.get(
     `/products/${productId}/reviews`,
   )
