@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
 import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
+import ProductsFilterLabels from '../ProductsFilterLabels/ProductsFilterLabels'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
@@ -47,7 +48,8 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
-        <div className={'flex w-full justify-end'}>
+        <div className={'flex w-full justify-between items-center'}>
+          <ProductsFilterLabels />
           <Dropdown<IProductSortParams>
             className={'mb-8'}
             options={sortOptions}
