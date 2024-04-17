@@ -48,7 +48,7 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
-        <div className={'flex w-full justify-between items-center'}>
+        <div className={'flex w-full justify-between'}>
           <ProductsFilterLabels />
           <Dropdown<IProductSortParams>
             className={'mb-8'}
