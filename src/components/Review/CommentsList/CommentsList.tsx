@@ -22,7 +22,7 @@ interface CommentListProps {
 
 }
 
-const CommentList = ({ comments, userReview, productId, setComments }: CommentListProps) => {
+const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
   const [loadedComments, setLoadedComments] = useState(comments.slice(0, 3))
   const [lastLoadedIndex, setLastLoadedIndex] = useState(2)
   const [showLoadMore, setShowLoadMore] = useState(true)
@@ -104,31 +104,36 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
 
   const hasUserReview = userReview && Object.values(userReview).some(value => value !== null)
 
-  console.log('userReview:', userReview)
-  console.log('hasUserReview:', hasUserReview)
+
 
   return (
 
     <>
       {hasUserReview &&
+
         (
+
           <div className='mt-10 xl:mt-20'>
             <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
               <span>{userReview.userName} {userReview.userLastName}</span>
             </div>
             <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
               <div className='flex items-center gap-1'>
-                {[...Array(5)].map((_, productReviewId) => (
-                  <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
-                ))}
-                <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>s
+                {
+
+                  [...Array(5)].map((_, productReviewId) => (
+
+                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                  ))}
+                <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>
               </div>
               <div className="inline-flex font-medium text-L text-tertiary">
                 <div className='inline-flex relative ml-3'>
                   <span className='ml-[10px] text-L'></span>
                   <div className="text-tertiary h-[5px] w-[5px] rounded-full bg-gray-400 absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2"></div>
                 </div>
-                <span className='ml-2'>{userReview.createdAt}</span>
+                <span className='ml-2'>{formatReviewDate(userReview.createdAt).date}</span>
+                <span className='ml-2'>{formatReviewDate(userReview.createdAt).time}</span>
               </div>
             </div>
             <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isLoggedIn ? 'bg-brand-second' : 'bg-brand-default'}`}>{userReview.text}</p>
