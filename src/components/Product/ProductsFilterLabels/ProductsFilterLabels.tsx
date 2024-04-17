@@ -14,13 +14,13 @@ export default function ProductsFilterLabels() {
   return (
     <div className='flex gap-3 pt-1.5'>
       <button
-        className='text-white bg-black text-lg px-6  rounded-full w-[136px] h-[48px]'
+        className='text-white bg-black text-lg px-6 rounded-full w-[136px] h-[48px]'
         onClick={() => { alert('Кнопку нажали') }}
       >
         By default
       </button>
 
-      <div className='flex justify-center gap-3'>{filterAttributes.map(label => (<Label />))}</div>
+      <div className='flex justify-center gap-3'>{filterAttributes.map(label => (<Label name={label.name} />))}</div>
     </div >
   )
 }
