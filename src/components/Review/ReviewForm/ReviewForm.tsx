@@ -38,18 +38,12 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const currentRating = productRatingData.rating
   const isRatingSelected = currentRating > 0
   const isReviewTextEmpty = reviewText.trim().length === 0
-  const isReviewButtonActive = isRatingSelected || !isReviewTextEmpty
-
-
-
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value
 
     setReviewText(text)
     setCharCount(text.length)
-
-
   }
 
   const handleClearText = () => {
@@ -57,7 +51,6 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setCharCount(0)
 
   }
-
 
 
   // If i just call this -  getProductReviews(productId) - get "An unknown error occurred"
@@ -73,7 +66,10 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
         setIsRaitingFormVisible(false)
         setIsReviewButtonVisible(false)
       } else {
-        // Handle the case where both rating and review are not provided
+        setLoading(false)
+        setIsReviewFormVisible(false)
+        setIsRaitingFormVisible(false)
+        setIsReviewButtonVisible(true)
       }
     } catch (error) {
       handleError(error)

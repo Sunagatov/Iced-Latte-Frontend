@@ -1,5 +1,3 @@
-// Function for formatting the date into the format for the list of product reviews
-// "YYYY-MM-DDThh:mm:ss.sssZ" -> dd.mm.yyyy and hh:mm
 export const formatReviewDate = (dateString: string | null) => {
   if (!dateString) {
     return {
@@ -9,12 +7,14 @@ export const formatReviewDate = (dateString: string | null) => {
   }
 
   const date = new Date(dateString)
-  const day = date.getDate()
-  const month = new Intl.DateTimeFormat('en-US', { month: '2-digit' }).format(date)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0') // Months are zero-indexed
   const year = date.getFullYear()
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
 
   return {
     date: `${day}.${month}.${year}`,
-    time: new Date(dateString).getHours() + ':' + new Date(dateString).getMinutes()
+    time: `${hours}:${minutes}`,
   }
 }
