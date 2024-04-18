@@ -26,9 +26,9 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
 
   return (
     <div>
-      <div className='flex gap-4 mb-6'>
-        <div className='font-medium text-4XL text-primary'>4,8/5</div>
-        <div className='self-end font-medium text-L text-tertiary xl:self-center'>Based on 14 reviws</div>
+      <div className='flex gap-4 mb-6 flex-col'>
+        <div className='font-medium text-4XL text-primary'>4,8</div>
+        <div className='font-medium text-L text-tertiary'>Based on 14 reviws</div>
       </div>
       <div className='flex flex-col gap-3'>
         {[5, 4, 3, 2, 1].map((value) => {

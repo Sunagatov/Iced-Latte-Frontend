@@ -125,7 +125,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
 
                     <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
                   ))}
-                <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>
+                <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}</span>
               </div>
               <div className="inline-flex font-medium text-L text-tertiary">
                 <div className='inline-flex relative ml-3'>
@@ -142,7 +142,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>}
           </div >)}
 
-      <ul className='flex gap-10 flex-col mt-10'>
+      <ul className='flex gap-10 flex-col mt-10 '>
         {filteredComments.map((comment, productReviewId) => {
           const { date, time } = formatReviewDate(comment.createdAt)
 
@@ -154,11 +154,11 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 <span>{comment.userName} {comment.userLastName}</span>
               </div>
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
-                <div className='flex items-center gap-1'>
+                <div className='flex items-center gap-1 '>
                   {[...Array(5)].map((_, productReviewId) => (
                     <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
                   ))}
-                  <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}/5</span>
+                  <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}</span>
                 </div>
 
                 <div className="inline-flex font-medium text-L text-tertiary">
@@ -176,7 +176,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
 
               {comment.text && comment.text.length > 300 && !expandedComments[`${productReviewId}`] ? (
 
-                <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 'bg-secondary">
+                <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary">
                   {comment.text.slice(0, 300)}
                   <Button
                     onClick={() => toggleCommentExpansion(`${productReviewId}`)}
@@ -184,7 +184,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 </p>
 
               ) : (
-                <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 'bg-secondary">
+                <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary">
                   {comment.text || 'No review'}
                 </p>
               )
