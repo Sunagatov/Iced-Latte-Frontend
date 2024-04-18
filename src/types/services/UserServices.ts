@@ -6,8 +6,8 @@ export interface UserData {
   id?: string
   firstName: string
   lastName: string
-  birthDate?: string | null
-  phoneNumber?: string | null
+  birthDate: string
+  phoneNumber: string
   email: string
   avatarLink?: string
   address: {
