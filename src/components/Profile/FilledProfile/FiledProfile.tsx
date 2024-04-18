@@ -24,7 +24,6 @@ const FiledProfile = () => {
     setIsSuccessEditUser(false)
   }
 
-
   const { isLoading, logout } = useLogout()
 
   return (

@@ -19,7 +19,7 @@ module.exports = {
         tertiary: '#04121B7A',
         placeholder: '#04121B5C',
         disabled: '#04121B3D',
-        brand: '682EFF',
+        brand: '#682EFF',
         positive: '#00A30E',
         negative: '#E12E3C',
         inverted: '#FFFFFF',

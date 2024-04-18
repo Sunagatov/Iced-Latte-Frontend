@@ -21,7 +21,7 @@ export const validationSchema = yup.object().shape({
   birthDate: yup.string().required('Birth date is required'),
   phoneNumber: yup
     .string()
-    .required('Phone number is required')
+    .nullable()
     .matches(
       /^[+0-9]{9,}$/,
       'Invalid phone number format. Use only digits and + sign, with a minimum of 9 digits',
@@ -40,12 +40,12 @@ export const validationSchema = yup.object().shape({
     )
     .required(),
   address: yup.object().shape({
-    country: yup.string().required('Country is required'),
-    city: yup.string().required('City is required'),
-    line: yup.string().required('Address is required'),
+    country: yup.string().nullable(),
+    city: yup.string().nullable(),
+    line: yup.string().nullable(),
     postcode: yup
       .string()
-      .required('Postcode is required')
-      .matches(/^\d+$/, 'Invalid postcode format. Use only digits'),
+      .nullable()
+      .matches(/^(\d+)?$/, 'Invalid postcode format. Use only digits'),
   }),
 })
