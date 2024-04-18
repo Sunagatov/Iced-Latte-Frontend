@@ -11,9 +11,9 @@ export interface UserData {
   email: string
   avatarLink?: string
   address: {
-    country?: string | null
-    city?: string | null
-    line?: string | null
-    postcode?: string | null
+    country: string
+    city: string
+    line: string
+    postcode: string
   }
 }
