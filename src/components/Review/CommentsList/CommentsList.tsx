@@ -13,11 +13,13 @@ import { apiDeleteProductReview } from '@/services/reviewService'
 import { handleAxiosError } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
 import { useProductReviewsStore } from '@/store/reviewsStore'
+import { Dispatch, SetStateAction } from 'react'
 
 interface CommentListProps {
   comments: Review[];
   userReview: Review | null;
   productId: string;
+  setComments: Dispatch<SetStateAction<Review[]>>;
 }
 
 const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
