@@ -25,9 +25,6 @@ export default function Dropdown<T>({
 
   const ref = useRef<HTMLDivElement>(null)
 
-  function handleClose() {
-    setIsOpen(false)
-  }
 
   function handleClick() {
     setIsOpen((prev) => !prev)
