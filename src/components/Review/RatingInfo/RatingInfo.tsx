@@ -1,7 +1,6 @@
 
 interface RatingInfoProps {
   currentRating: number;
-  count: number;
 }
 
 const RatingInfo = ({ currentRating }: RatingInfoProps) => {

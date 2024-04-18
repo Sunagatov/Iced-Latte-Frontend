@@ -1,6 +1,6 @@
 'use client'
+
 import React, { useRef, useState } from 'react'
-import { useOnClickOutside } from 'usehooks-ts'
 import { IOption, PropsDropdown } from '@/types/Dropdown'
 import { twMerge } from 'tailwind-merge'
 import Image from 'next/image'
@@ -25,8 +25,6 @@ export default function Dropdown<T>({
 
   const ref = useRef<HTMLDivElement>(null)
 
-  useOnClickOutside(ref, handleClose)
-
   function handleClose() {
     setIsOpen(false)
   }
@@ -47,29 +45,45 @@ export default function Dropdown<T>({
   }
 
   const selectImageUrl = isOpen ? openSelect : closedSelect
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>, option: IOption<T>) => {
+    if (e.key === 'Enter') {
+      handleChange(option)()
+    }
+  }
 
   return (
     <div ref={ref} className={'relative' + ' ' + (className ?? '')}>
+      {/* Header */}
       <div
         className={twMerge(
           headerStyles,
           !isOpen && 'bg-transparent text-brand',
         )}
         onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleClick()
+          }
+        }}
+        tabIndex={0} // Add the tabIndex attribute to make the div focusable
       >
         <span>Sort by: {selectedOption.label}</span>
         <Image src={selectImageUrl} alt="open select icon" />
       </div>
+
+      {/* List of options */}
       {isOpen && (
         <ul className={listStyles}>
           {options.map((option) => (
             <li
               className={twMerge(
                 listItemStyles,
-                isSelected(selectedOption, option) && 'bg-secondary font-bold',
+                isSelected(selectedOption, option) ? 'bg-secondary font-bold' : '',
               )}
               onClick={handleChange(option)}
+              onKeyDown={(e) => handleKeyDown(e, option)}
               key={option.label}
+              tabIndex={0} // Add the tabIndex attribute to make the li element focusable
             >
               <span>{option.label}</span>
               {isSelected(selectedOption, option) && (

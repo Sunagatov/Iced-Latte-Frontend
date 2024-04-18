@@ -20,7 +20,7 @@ export function useUserReview(productId: string) {
       try {
         const response = await apiGetProductUserReview(productId)
 
-        if (response && response.productReviewId) {
+        if (response?.productReviewId) {
           setIsReviewFormVisible(false)
           setIsReviewButtonVisible(false)
           setIsRaitingFormVisible(false)

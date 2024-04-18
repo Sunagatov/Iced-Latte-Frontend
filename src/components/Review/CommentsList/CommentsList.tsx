@@ -18,7 +18,6 @@ interface CommentListProps {
   comments: Review[];
   userReview: Review | null;
   productId: string;
-  setComments: React.Dispatch<React.SetStateAction<Review[]>>;
 }
 
 const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
@@ -132,7 +131,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
                 <div className='flex items-center gap-1 '>
                   {[...Array(5)].map((_, productReviewId) => (
-                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={comment.productReviewId} />
                   ))}
                   <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}</span>
                 </div>
@@ -145,12 +144,12 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 </div>
               </div>
 
-              {comment.text && comment.text.length > 300 && !expandedComments[`${productReviewId}`] ? (
+              {comment.text && comment.text.length > 300 && !expandedComments[`${comment.productReviewId}`] ? (
 
                 <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary">
                   {comment.text.slice(0, 300)}
                   <Button
-                    onClick={() => toggleCommentExpansion(`${productReviewId}`)}
+                    onClick={() => toggleCommentExpansion(`${comment.productReviewId}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
               ) : (
@@ -161,20 +160,18 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               <div className="flex justify-between items-center">
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
-                    onClick={() => handleLikeComment(`${productReviewId}`)}
+                    onClick={() => handleLikeComment(`${comment.productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
                     <span>
-                      {/* {comment.likes || 0} */}
                       {17}
                     </span>
                   </Button>
                   <Button
-                    onClick={() => handleDislikeComment(`${productReviewId}`)}
+                    onClick={() => handleDislikeComment(`${comment.productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
                     <span>
-                      {/* {comment.dislikes || 0} */}
                       {3}
                     </span>
                   </Button>
