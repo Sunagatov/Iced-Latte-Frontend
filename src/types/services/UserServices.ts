@@ -6,14 +6,14 @@ export interface UserData {
   id?: string
   firstName: string
   lastName: string
-  birthDate: string
-  phoneNumber: string
+  birthDate?: string | null
+  phoneNumber?: string | null
   email: string
   avatarLink?: string
   address: {
-    country: string
-    city: string
-    line: string
-    postcode: string
+    country?: string | null
+    city?: string | null
+    line?: string | null
+    postcode?: string | null
   }
 }
