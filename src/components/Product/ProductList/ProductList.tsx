@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
-import { sortOptions } from '@/constants/productSortOptions'
+import { defaultSortOption, sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
@@ -12,7 +12,7 @@ import { IOption } from '@/types/Dropdown'
 export default function ProductList() {
   const [selectedSortOption, setSelectedSortOption] = useState<
     IOption<IProductSortParams>
-  >(sortOptions[0])
+  >(defaultSortOption)
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
