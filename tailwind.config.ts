@@ -64,5 +64,5 @@ module.exports = {
       scale: ['hover', 'focus'],
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 }

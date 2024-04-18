@@ -209,3 +209,10 @@
 .react-calendar .react-calendar__tile:disabled {
   visibility: hidden;
 }
+
+/* styles for checkbox component */
+
+input[type='checkbox']:checked {
+  background-image: url("/checkbox_icon.svg");
+  background-size: 16px 16px;
+}
