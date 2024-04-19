@@ -1,7 +1,9 @@
-export type PropsCheckbox =  {
+export type PropsCheckboxType = {
   label?: string
   id?: string
-  name?: string
+  name?: string,
   isChecked: boolean
-  onCheck: () => void
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  labelClassName?: string
+  inputClassName?: string
 }
