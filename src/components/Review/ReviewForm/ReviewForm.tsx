@@ -113,7 +113,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
           <div className='mb-6 font-medium text-2XL xl:mt-14'>Rating</div>
           <div className='flex items-center relative'>
             <StarRating productId={productId} count={5} activeColor={'#00A30E'} />
-            <RatingInfo currentRating={currentRating} count={5} />
+            <RatingInfo currentRating={currentRating} />
           </div>
         </div >
       )}

@@ -5,7 +5,7 @@ import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { Review } from '@/types/ProductReviewType'
 import { FaStar } from 'react-icons/fa'
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useMediaQuery } from 'usehooks-ts'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
@@ -100,7 +100,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
             <div className='flex items-center gap-1'>
               {
                 [...Array(5)].map((_, productReviewId) => (
-                  <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                  <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={userReview.productReviewId} />
                 ))}
               <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}</span>
             </div>
@@ -131,7 +131,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
                 <div className='flex items-center gap-1 '>
                   {[...Array(5)].map((_, productReviewId) => (
-                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={comment.productReviewId} />
                   ))}
                   <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}</span>
                 </div>
