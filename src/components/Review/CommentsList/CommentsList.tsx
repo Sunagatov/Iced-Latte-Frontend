@@ -168,7 +168,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     <BiLike />
                     <span>
                       {17}
-                      {/* {comment.likes || 0} */}
+
                     </span>
                   </Button>
                   <Button
@@ -178,7 +178,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     <BiDislike />
                     <span>
                       {3}
-                      {/* {comment.dislikes || 0} */}
+
                     </span>
                   </Button>
                 </div>
