@@ -11,7 +11,7 @@ const filterAttributes = [
 
 export default function ProductsFilterLabels() {
 
-  const ClickButton = () => {
+  const handleClickButtonDefault = () => {
     alert('Кнопка нажата')
   }
 
@@ -19,7 +19,7 @@ export default function ProductsFilterLabels() {
     <div className='flex gap-3 pt-1.5'>
       <button
         className='text-white bg-black text-lg px-6 rounded-full w-[136px] h-[48px]'
-        onClick={ClickButton}
+        onClick={handleClickButtonDefault}
       >
         By default
       </button>
