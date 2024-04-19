@@ -1,5 +1,5 @@
 'use client'
-import { PropsCheckboxType } from '@/types/Checkbox'
+import { CheckboxPropsType } from '@/types/Checkbox'
 
 export default function Checkbox({
   label,
@@ -8,8 +8,12 @@ export default function Checkbox({
   onChange = () => {},
   labelClassName = '',
   inputClassName = '',
+  ariaLabel = '',
   ...restProps
-}: PropsCheckboxType) {
+}: CheckboxPropsType) {
+  if (!id) {
+    console.warn('Id is required for checkbox but not given')
+  }
 
   return (
     <>
@@ -20,6 +24,7 @@ export default function Checkbox({
           className={`w-6 h-6 appearance-none bg-secondary rounded-[4px] cursor-pointer checked:bg-inverted bg-no-repeat bg-center checked:bg-[url(/checkbox_icon.svg)] checked:bg-[length:16px_16px] ${inputClassName}`}
           checked={isChecked}
           aria-checked={isChecked}
+          aria-label={ariaLabel}
           onChange={onChange}
           {...restProps}
         />

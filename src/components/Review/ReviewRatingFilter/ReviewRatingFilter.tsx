@@ -39,9 +39,8 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
           ))
 
           return (
-
             <label key={value} className='flex items-center gap-2 cursor-pointer relative'>
-              <Checkbox isChecked={selectedRating === value} onChange={() => handleCheckboxChange(value)} />
+              <Checkbox id={`checkbox-${value}`} ariaLabel={`Filter by ${value} stars`} isChecked={selectedRating === value} onChange={() => handleCheckboxChange(value)} />
               {stars}
               <span className='font-medium text-[18px] text-primary'>{ratings[value]?.quantity ?? 0} reviews</span>
             </label>
