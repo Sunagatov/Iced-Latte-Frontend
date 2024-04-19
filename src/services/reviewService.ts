@@ -4,6 +4,10 @@ import { AxiosResponse } from 'axios'
 
 export interface ReviewsResponse {
   reviewsWithRatings: Review[]
+  page: number
+  totalPages: number
+  totalElements: number
+  size: number
 }
 export interface SubmittedReviewInfo {
   productReviewId: string
@@ -22,13 +26,11 @@ export interface RatingResponse {
 
 export async function apiGetProductReviews(
   productId: string,
-  page?: number,
-  size?: number,
+  page = 0,
+  size = 3,
 ): Promise<ReviewsResponse> {
-  const querryStr = `${typeof page === 'number' ? page : ''}`
-
   const response: AxiosResponse<ReviewsResponse> = await api.get(
-    `/products/${productId}/reviews`,
+    `/products/${productId}/reviews?page=${page}${size ? `&size=${size}` : ''}`,
   )
 
   return response.data

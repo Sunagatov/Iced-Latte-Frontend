@@ -3,9 +3,7 @@
 import Button from '@/components/UI/Buttons/Button/Button'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { BiLike, BiDislike } from 'react-icons/bi'
-import { Review } from '@/types/ProductReviewType'
 import { FaStar } from 'react-icons/fa'
-import { useEffect, useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useMediaQuery } from 'usehooks-ts'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
@@ -15,50 +13,40 @@ import { useAuthStore } from '@/store/authStore'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 
 interface CommentListProps {
-  comments: Review[];
-  userReview: Review | null;
-  productId: string;
-  setComments: React.Dispatch<React.SetStateAction<Review[]>>;
-
+  productId: string
 }
 
-const CommentList = ({ comments, userReview, productId, setComments }: CommentListProps) => {
-  const [loadedComments, setLoadedComments] = useState(comments.slice(0, 3))
-  const [lastLoadedIndex, setLastLoadedIndex] = useState(2)
-  const [showLoadMore, setShowLoadMore] = useState(true)
+const CommentList = ({ productId }: CommentListProps) => {
+  const {
+    setIsReviewFormVisible,
+    setIsReviewButtonVisible,
+    setIsRaitingFormVisible,
+    setProductReviewsData,
+    getProductReviews,
+
+    userReview,
+    totalElements,
+    currentPage,
+    filteredReviewsWithRatings,
+    reviewsWithRatings,
+  } = useProductReviewsStore()
+
   const { expandedComments, setExpandedComments } = useLocalSessionStore()
   const isMediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
 
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
 
-
-  const {
-    setIsReviewFormVisible,
-    setIsReviewButtonVisible,
-    setIsRaitingFormVisible,
-  } = useProductReviewsStore()
-
-  useEffect(() => {
-    setLoadedComments(comments.slice(0, 3))
-  }, [comments])
-
-
-  const filteredComments = loadedComments.filter(comment => userReview && comment.productReviewId !== userReview.productReviewId)
-
-
+  const showLoadMore = totalElements > reviewsWithRatings.length
 
   // Function for uploading additional comments
-  const loadMoreComments = () => {
-    const newComments = comments.slice(lastLoadedIndex + 1, lastLoadedIndex + 4)
+  const loadMoreComments = async () => {
+    const loadedReviews = await getProductReviews(productId, currentPage + 1)
 
-    setLastLoadedIndex(lastLoadedIndex + 3)
-    setLoadedComments((prevComments) => [...prevComments, ...newComments])
-
-    if (lastLoadedIndex + 3 >= comments.length - 1) {
-      setShowLoadMore(false)
-    }
+    setProductReviewsData({
+      reviewsData: loadedReviews,
+      userReview,
+    })
   }
-
   const toggleCommentExpansion = (productReviewId: string) => {
     setExpandedComments(prevState => ({
       ...prevState,
@@ -70,6 +58,7 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
 
   const handleDeleteComment = async (productReviewId: string, productId: string): Promise<void> => {
     try {
+      // перенести в reviewsStore
       await apiDeleteProductReview(productReviewId, productId)
       await useProductReviewsStore.getState().getProductUserReview(productId)
       await useProductReviewsStore.getState().getProductReviews(productId)
@@ -87,10 +76,6 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
 
   }
 
-
-
-
-
   // Like and dislike buttons //
 
   const handleLikeComment = (productReviewId: string) => {
@@ -104,8 +89,6 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
 
   const hasUserReview = userReview && Object.values(userReview).some(value => value !== null)
 
-  console.log('userReview:', userReview)
-  console.log('hasUserReview:', hasUserReview)
 
   return (
 
@@ -119,7 +102,7 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
             <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
               <div className='flex items-center gap-1'>
                 {[...Array(5)].map((_, productReviewId) => (
-                  <FaStar className={`w-[18px] h-[18px] ${productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                  <FaStar className={`w-[18px] h-[18px] ${userReview.rating && productReviewId < userReview.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
                 ))}
                 <span className="font-medium text-L text-primary ml-2">{userReview.rating || 0}/5</span>s
               </div>
@@ -133,12 +116,12 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
             </div>
             <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isLoggedIn ? 'bg-brand-second' : 'bg-brand-default'}`}>{userReview.text}</p>
             {isLoggedIn && <Button
-              onClick={() => handleDeleteComment(userReview.productReviewId, productId)}
+              onClick={() => userReview.productReviewId && handleDeleteComment(userReview.productReviewId, productId)}
               className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>}
           </div >)}
 
       <ul className='flex gap-10 flex-col mt-10'>
-        {filteredComments.map((comment, productReviewId) => {
+        {filteredReviewsWithRatings.map((comment, productReviewId) => {
           const { date, time } = formatReviewDate(comment.createdAt)
 
           return (
@@ -151,7 +134,7 @@ const CommentList = ({ comments, userReview, productId, setComments }: CommentLi
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
                 <div className='flex items-center gap-1'>
                   {[...Array(5)].map((_, productReviewId) => (
-                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
+                    <FaStar className={`w-[18px] h-[18px] ${comment.rating && productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
                   ))}
                   <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}/5</span>
                 </div>

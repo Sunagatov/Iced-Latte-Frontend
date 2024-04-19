@@ -12,7 +12,6 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useMediaQuery } from 'usehooks-ts'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-import { useUserReview } from '../ReviewComponent/useUserReview'
 
 interface ReviewFormProps {
   productId: string;
@@ -62,6 +61,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       setLoading(true)
       await apiAddProductReview(productId, reviewText, currentRating)
 
+      // доделать с учетом нового апи стора ревьюз
       await useProductReviewsStore.getState().getProductReviews(productId)
       await useProductReviewsStore.getState().getProductUserReview(productId)
 
@@ -98,8 +98,6 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       setModalState(true)
     }
   }
-
-  useUserReview(productId)
 
   return (
 
