@@ -94,6 +94,7 @@ export default function RegistrationForm() {
         error={errors.password}
       />
       <Button
+        id="register-btn"
         disabled={false}
         type="submit"
         className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "

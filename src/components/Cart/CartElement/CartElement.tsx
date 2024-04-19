@@ -78,6 +78,7 @@ export default function CartElement({
             addProduct={() => addProduct()}
           />
           <Button
+            id='remove-all-btn'
             className=" bg-white"
             onClick={() => {
               removeAll()

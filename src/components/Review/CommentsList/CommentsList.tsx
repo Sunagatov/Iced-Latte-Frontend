@@ -115,6 +115,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
           </div>
           <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${isLoggedIn ? 'bg-brand-second' : 'bg-secondary'}`}>{userReview.text}</p>
           {isLoggedIn && <Button
+            id="delete-review-btn"
             onClick={() => handleDeleteComment(userReview.productReviewId, productId)}
             className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{isMediaQuery ? 'Delete my review' : 'Delete'}</Button>}
         </div >)}
@@ -149,6 +150,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary">
                   {comment.text.slice(0, 300)}
                   <Button
+                    id="see-more-btn"
                     onClick={() => toggleCommentExpansion(`${comment.productReviewId}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
@@ -160,6 +162,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               <div className="flex justify-between items-center">
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
+                    id="like-btn"
                     onClick={() => handleLikeComment(`${comment.productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
@@ -168,6 +171,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     </span>
                   </Button>
                   <Button
+                    id='dislike-btn'
                     onClick={() => handleDislikeComment(`${comment.productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
@@ -184,7 +188,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
       </ul >
       {
         showLoadMore && (
-          <Button onClick={loadMoreComments} className='flex items-center justify-center rounded-[47px] w-[334px] ml-auto mr-auto mb-[94px] mt-[24px] bg-secondary font-medium text-[18px] text-primary'>Show more</Button>
+          <Button id='showmore-btn' onClick={loadMoreComments} className='flex items-center justify-center rounded-[47px] w-[334px] ml-auto mr-auto mb-[94px] mt-[24px] bg-secondary font-medium text-[18px] text-primary'>Show more</Button>
         )
       }
     </>

@@ -42,6 +42,7 @@ const ProfileInfo = ({
               />
             </ul>
             <Button
+              id="edit-btn"
               onClick={onEditClick}
               className="mb-[32px] flex w-[130px] cursor-pointer items-center justify-center rounded-[47px] bg-brand-solid px-6 py-4 text-lg font-medium text-white transition-opacity  hover:opacity-60"
             >

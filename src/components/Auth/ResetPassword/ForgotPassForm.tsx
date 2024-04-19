@@ -70,6 +70,7 @@ export default function ForgotPassForm() {
               youricedlatteshop@gmail.com
             </p>
             <Button
+              id='reset-continue-btn'
               className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover"
               onClick={handleChangeClick}>Continue to change your password</Button>
           </div>
@@ -98,7 +99,7 @@ export default function ForgotPassForm() {
               className="mb-5"
               error={errors.email}
             />
-            <Button type="submit" className="mt-6 w-44 flex items-center justify-center hover:bg-brand-solid-hover">
+            <Button id='send-reset-btn' type="submit" className="mt-6 w-44 flex items-center justify-center hover:bg-brand-solid-hover">
               {loading ? <Loader /> : 'Send reset link'}
             </Button>
           </form>

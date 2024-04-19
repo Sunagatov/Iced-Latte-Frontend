@@ -24,11 +24,12 @@ export default function FavouritesEmpty() {
         <div className=" mt-12  flex flex-col items-center gap-6 py-4">
           <span>It is empty. </span><span className=" font-bold text-lg">Fill it with your favourite products.</span>
           <Link href={'/'}>
-            <Button className="h-14 w-[211px] text-lg font-medium">
+            <Button id='continue-btn' className="h-14 w-[211px] text-lg font-medium">
               Continue Shopping
             </Button>
           </Link>
           <Button
+            id='login-btn'
             onClick={() => {
               router.push('/auth/login')
               setModalState(true)

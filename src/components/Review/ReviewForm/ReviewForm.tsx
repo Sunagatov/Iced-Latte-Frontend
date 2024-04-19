@@ -119,7 +119,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       )}
 
       {isReviewButtonVisible && (
-        <Button onClick={handleClickReview} className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus rounded-[47px] sm:w-[278px] mb-10 mt-20 w-full'>Add a review</Button>
+        <Button id="add-review-btn" onClick={handleClickReview} className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus rounded-[47px] sm:w-[278px] mb-10 mt-20 w-full'>Add a review</Button>
       )}
 
       {isReviewFormVisible && (
@@ -127,6 +127,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
           <div className='relative'>
             <h3 className='mb-6 font-medium text-2XL text-primary '>What do you think of this product?</h3 >
             <textarea
+              id="review-textarea"
               className={`text-[18px] w-full pl-[16px] pr-[46px] py-[17px] bg-secondary rounded-lg outline-focus ${reviewText ? 'h-[196px]' : 'h-[56px]'} ${reviewText ? 'pb-[39px]' : ''} placeholder:font-medium placeholder:text-sm `}
               value={reviewText}
               onChange={handleTextChange}
@@ -150,10 +151,10 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
             </div>
           )}
           <div className='mt-6 flex gap-2 '>
-            <Button onClick={handleAddReview}
+            <Button id="submit-review-btn" onClick={handleAddReview}
               disabled={!isRatingSelected || isReviewTextEmpty} // Disable the button if either rating or review text is not provided
               className={`${(!isRatingSelected || isReviewTextEmpty) ? 'opacity-20' : ''} w-[334px] flex items-center justify-center mb-12 xl:w-[278px]`}>{loading ? < Loader /> : 'Add a review'}</Button>
-            {(reviewText || isRatingSelected) && (<Button onClick={handleCancel} className='ml-2 w-[108px] bg-secondary text-primary font-medium text-[18px]'>Cancel</Button>)}
+            {(reviewText || isRatingSelected) && (<Button id="submit-cancel-btn" onClick={handleCancel} className='ml-2 w-[108px] bg-secondary text-primary font-medium text-[18px]'>Cancel</Button>)}
           </div>
 
         </>
