@@ -10,11 +10,3 @@ export interface Review {
   likes?: number
   dislikes?: number
 }
-
-export interface ReviewsResponse {
-  reviewsWithRatings: Review[]
-  page: number
-  size: number
-  totalElements: number
-  totalPages: number
-}

@@ -1,3 +1,7 @@
+// This function takes a date string and returns an object with formatted date and time properties. If the input is null, it returns 'N/A' for the date and an empty string for the time. Otherwise, it formats the date as "DD.MM.YYYY" and the time as "HH:MM".
+
+//  "YYYY-MM-DDThh:mm:ss.sssZ" -> dd.mm.yyyy and hh:mm
+
 export const formatReviewDate = (dateString: string | null) => {
   if (!dateString) {
     return {

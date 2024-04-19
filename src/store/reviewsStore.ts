@@ -4,7 +4,7 @@ import {
   apiGetProductReviews,
   apiGetProductUserReview,
 } from '@/services/reviewService'
-import { Review } from '@/types/ProductReviewType'
+import { Review } from '@/types/ReviewType'
 
 interface ReviewsStoreState {
   reviewsWithRatings: Review[]

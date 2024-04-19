@@ -4,22 +4,19 @@ import { useProducts } from '@/hooks/useProducts'
 import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
-import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
 
 export default function ProductList() {
-  const [selectedSortOption, setSelectedSortOption] = useState<
+  const [selectedSortOption] = useState<
     IOption<IProductSortParams>
   >(sortOptions[0])
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
 
-  function handleSelect(selectedOption: IOption<IProductSortParams>) {
-    setSelectedSortOption(selectedOption)
-  }
+
 
   if (error) {
     return (
@@ -47,14 +44,6 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
-        <div className={'flex w-full justify-end'}>
-          <Dropdown<IProductSortParams>
-            className={'mb-8'}
-            options={sortOptions}
-            onChange={handleSelect}
-            selectedOption={selectedSortOption}
-          />
-        </div>
         <ul
           className={
             'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-8 min-[1124px]:grid-cols-3 '

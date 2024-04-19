@@ -3,7 +3,7 @@
 import Button from '@/components/UI/Buttons/Button/Button'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { BiLike, BiDislike } from 'react-icons/bi'
-import { Review } from '@/types/ProductReviewType'
+import { Review } from '@/types/ReviewType'
 import { FaStar } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
@@ -168,6 +168,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     <BiLike />
                     <span>
                       {17}
+                      {/* {comment.likes || 0} */}
                     </span>
                   </Button>
                   <Button
@@ -177,6 +178,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     <BiDislike />
                     <span>
                       {3}
+                      {/* {comment.dislikes || 0} */}
                     </span>
                   </Button>
                 </div>

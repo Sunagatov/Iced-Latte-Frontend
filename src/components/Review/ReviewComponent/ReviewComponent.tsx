@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import isEqual from 'lodash/isEqual'
-import { Review } from '@/types/ProductReviewType'
+import { Review } from '@/types/ReviewType'
 import { useUserReview } from '@/components/Review/ReviewComponent/useUserReview'
 
 interface ReviewComponentProps {
