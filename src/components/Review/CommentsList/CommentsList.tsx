@@ -13,13 +13,11 @@ import { apiDeleteProductReview } from '@/services/reviewService'
 import { handleAxiosError } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-import { Dispatch, SetStateAction } from 'react'
 
 interface CommentListProps {
   comments: Review[];
   userReview: Review | null;
   productId: string;
-  setComments: Dispatch<SetStateAction<Review[]>>;
 }
 
 const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
@@ -122,18 +120,18 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
         </div >)}
 
       <ul className='flex gap-10 flex-col mt-10 '>
-        {filteredComments.map((comment, productReviewId) => {
+        {filteredComments.map((comment) => {
           const { date, time } = formatReviewDate(comment.createdAt)
 
           return (
-            <li className={`pb-6 xl:pb-10`} key={productReviewId} >
+            <li className={`pb-6 xl:pb-10`} key={comment.productReviewId} >
               <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
                 <span>{comment.userName} {comment.userLastName}</span>
               </div>
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
                 <div className='flex items-center gap-1 '>
                   {[...Array(5)].map((_, productReviewId) => (
-                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={comment.productReviewId} />
+                    <FaStar className={`w-[18px] h-[18px] ${productReviewId < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={productReviewId} />
                   ))}
                   <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}</span>
                 </div>
@@ -146,12 +144,12 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 </div>
               </div>
 
-              {comment.text && comment.text.length > 300 && !expandedComments[`${comment.productReviewId}`] ? (
+              {comment.text && comment.text.length > 300 && !expandedComments[`${productReviewId}`] ? (
 
                 <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary">
                   {comment.text.slice(0, 300)}
                   <Button
-                    onClick={() => toggleCommentExpansion(`${comment.productReviewId}`)}
+                    onClick={() => toggleCommentExpansion(`${productReviewId}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
               ) : (
@@ -162,7 +160,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               <div className="flex justify-between items-center">
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
-                    onClick={() => handleLikeComment(`${comment.productReviewId}`)}
+                    onClick={() => handleLikeComment(`${productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
                     <span>
@@ -170,7 +168,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     </span>
                   </Button>
                   <Button
-                    onClick={() => handleDislikeComment(`${comment.productReviewId}`)}
+                    onClick={() => handleDislikeComment(`${productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
                     <span>

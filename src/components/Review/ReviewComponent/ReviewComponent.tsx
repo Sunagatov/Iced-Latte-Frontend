@@ -84,7 +84,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
           <div>
             <div className="xl:max-w-[800px]">
               <ReviewForm productId={productId} />
-              {hasComments && <CommentList comments={comments} userReview={userReview} productId={productId} setComments={setComments} />}
+              {hasComments && <CommentList comments={comments} userReview={userReview} productId={productId} />}
               {errorMessage && (
                 <div className="mt-4 text-negative">{errorMessage}</div>
               )}
