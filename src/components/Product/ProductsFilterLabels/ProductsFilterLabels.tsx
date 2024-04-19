@@ -3,9 +3,9 @@
 import Label from './Label'
 
 const filterAttributes = [
-  { id: '1', name: 'Brand1', label: 'label-1' },
-  { id: '2', name: 'Seller1', label: 'label-2' },
-  { id: '3', name: 'Seller5', label: 'label-3' }
+  { id: '1', name: 'name-1', label: 'Brand1' },
+  { id: '2', name: 'name-2', label: 'Seller1' },
+  { id: '3', name: 'name-3', label: 'Seller5' }
 ]
 
 
@@ -24,7 +24,7 @@ export default function ProductsFilterLabels() {
         By default
       </button>
 
-      <div className='flex justify-center gap-3'>{filterAttributes.map(item => (<Label name={item.name} key={item.id} id={item.id} />))}</div>
+      <div className='flex justify-center gap-3'>{filterAttributes.map(item => (<Label name={item.label} key={item.id} id={item.id} />))}</div>
     </div >
   )
 }
