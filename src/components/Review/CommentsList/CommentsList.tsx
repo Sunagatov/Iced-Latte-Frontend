@@ -144,12 +144,12 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 </div>
               </div>
 
-              {comment.text && comment.text.length > 300 && !expandedComments[`${productReviewId}`] ? (
+              {comment.text && comment.text.length > 300 && !expandedComments[`${comment.productReviewId}`] ? (
 
                 <p className="rounded-[8px] text-L px-4 py-[17px] mb-6 bg-secondary">
                   {comment.text.slice(0, 300)}
                   <Button
-                    onClick={() => toggleCommentExpansion(`${productReviewId}`)}
+                    onClick={() => toggleCommentExpansion(`${comment.productReviewId}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
               ) : (
@@ -160,7 +160,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
               <div className="flex justify-between items-center">
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
-                    onClick={() => handleLikeComment(`${productReviewId}`)}
+                    onClick={() => handleLikeComment(`${comment.productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
                     <span>
@@ -168,7 +168,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                     </span>
                   </Button>
                   <Button
-                    onClick={() => handleDislikeComment(`${productReviewId}`)}
+                    onClick={() => handleDislikeComment(`${comment.productReviewId}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
                     <span>
