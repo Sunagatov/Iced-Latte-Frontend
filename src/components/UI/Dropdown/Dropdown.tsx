@@ -46,11 +46,11 @@ export default function Dropdown<T>({
   }
 
   return (
-    <div ref={ref} className={'relative text-L text-primary' + ' ' + (className ?? '')}>
+    <div id="dropdown" ref={ref} className={'relative text-L text-primary' + ' ' + (className ?? '')}>
       <div
         className={twMerge(
           headerStyles,
-          !isOpen && 'bg-transparent pr-0 hover:px-6',
+          !isOpen && 'bg-transparent',
         )}
         onClick={handleClick}
       >

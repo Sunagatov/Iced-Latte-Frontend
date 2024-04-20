@@ -1,7 +1,4 @@
-import { IOption } from '@/types/Dropdown'
-import { IProductSortParams } from '@/types/ProductSortParams'
-
-export const sortOptions: IOption<IProductSortParams>[] = [
+export const sortOptions = [
   {
     label: 'Price: Low to High',
     value: { sortAttribute: 'price', sortDirection: 'asc' },
@@ -22,8 +19,5 @@ export const sortOptions: IOption<IProductSortParams>[] = [
     label: 'Best Sellers',
     value: { sortAttribute: '', sortDirection: 'asc' }, //not implemented on the backend yet
   },
-]
-
-export const defaultSortOption = sortOptions.filter(
-  (sortOption) => sortOption.label === 'Best Sellers',
-)[0]
+] as const
+ 

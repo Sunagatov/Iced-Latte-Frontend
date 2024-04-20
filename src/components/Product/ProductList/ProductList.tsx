@@ -1,23 +1,29 @@
 'use client'
 import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
-import { defaultSortOption, sortOptions } from '@/constants/productSortOptions'
+import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
-import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
+import { ProductSortLabel, ProductSortValue } from '@/types/ProductSortParams'
+
+function getDefaultSortOption(label: ProductSortLabel) {
+  return sortOptions.filter(
+    (sortOption) => sortOption.label === label,
+  )[0]
+}
 
 export default function ProductList() {
   const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<IProductSortParams>
-  >(defaultSortOption)
+    IOption<ProductSortValue>
+  >(() => getDefaultSortOption("Best Sellers"))
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
 
-  function handleSelect(selectedOption: IOption<IProductSortParams>) {
+  function handleSelect(selectedOption: IOption<ProductSortValue>) {
     setSelectedSortOption(selectedOption)
   }
 
@@ -48,8 +54,8 @@ export default function ProductList() {
           All Coffee
         </h1>
         <div className={'flex w-full justify-end'}>
-          <Dropdown<IProductSortParams>
-            className={'mb-8'}
+          <Dropdown<ProductSortValue>
+            className={'mb-8 -mr-6'}
             options={sortOptions}
             onChange={handleSelect}
             selectedOption={selectedSortOption}
