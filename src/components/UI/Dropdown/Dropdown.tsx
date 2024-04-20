@@ -16,6 +16,7 @@ const listItemStyles =
 
 export default function Dropdown<T>({
   className,
+  headerClassName,
   options,
   onChange,
   selectedOption,
@@ -49,7 +50,7 @@ export default function Dropdown<T>({
     <div id="dropdown" ref={ref} className={'relative text-L text-primary' + ' ' + (className ?? '')}>
       <div
         className={twMerge(
-          headerStyles,
+          headerStyles + ' ' + (headerClassName ?? ''),
           !isOpen && 'bg-transparent',
         )}
         onClick={handleClick}

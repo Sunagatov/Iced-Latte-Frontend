@@ -3,6 +3,7 @@ export type PropsDropdown<T> = {
   options: readonly IOption<T>[] | IOption<T>[]
   selectedOption: IOption<T>
   className?: string
+  headerClassName?: string
 }
 
 export interface IOption<T> {
