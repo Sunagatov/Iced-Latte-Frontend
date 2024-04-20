@@ -1,6 +1,6 @@
 export type PropsDropdown<T> = {
   onChange: (option: IOption<T>) => void
-  options: IOption<T>[]
+  options: readonly IOption<T>[] | IOption<T>[]
   selectedOption: IOption<T>
   className?: string
 }
