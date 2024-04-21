@@ -1,30 +1,24 @@
-'use client'
+'use client';
 
-import Label from './Label'
-
-const filterAttributes = [
-  { id: '1', name: 'name-1', label: 'Brand1' },
-  { id: '2', name: 'name-2', label: 'Seller1' },
-  { id: '3', name: 'name-3', label: 'Seller5' }
-]
+import Label from './Label';
 
 
-export default function ProductsFilterLabels() {
-
-  const handleClickButtonDefault = () => {
-    alert('Кнопка нажата')
-  }
+export default function ProductsFilterLabels({ labelsList, handleClickByDefault, handleLabel }: any) {
 
   return (
-    <div className='flex gap-3 pt-1.5'>
+    <div className="flex gap-3 pt-1.5">
       <button
-        className='text-white bg-black text-lg px-6 rounded-full w-[136px] h-[48px]'
-        onClick={handleClickButtonDefault}
+        className="text-white bg-black text-lg px-6 rounded-full w-[136px] h-[48px]"
+        onClick={handleClickByDefault}
       >
         By default
       </button>
 
-      <div className='flex justify-center gap-3'>{filterAttributes.map(item => (<Label name={item.label} key={item.id} id={item.id} />))}</div>
-    </div >
-  )
+      <div className="flex justify-center gap-3">
+        {labelsList.map((item: { label: string; id: string; }) => (
+          <Label name={item.label} key={item.id} id={item.id} handleClickLabel={() => handleLabel(item.label, item.id)} />
+        ))}
+      </div>
+    </div>
+  );
 }

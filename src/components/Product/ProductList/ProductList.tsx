@@ -3,14 +3,29 @@ import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
 import { sortOptions } from '@/constants/productSortOptions'
 import ProductCard from '../ProductCard/ProductCard'
-import ProductsFilterLabels from '../ProductsFilterLabels/ProductsFilterLabels'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
+import ProductsFilterLabels from '../ProductsFilterLabels/ProductsFilterLabels'
 
 export default function ProductList() {
+  const filterAttributes = [
+    { id: '1', name: 'name-1', label: 'Brand1' },
+    { id: '2', name: 'name-2', label: 'Seller1' },
+    { id: '3', name: 'name-3', label: 'Seller5' },
+  ];
+
+  const handleClickByDefault = () => {
+    return alert("Button 'By default' clicked")
+  }
+
+  const handleClickLabel = (name: string, id: string) => {
+    alert(`Label: ${name} id: ${id}`)
+  }
+
+
   const [selectedSortOption, setSelectedSortOption] = useState<
     IOption<IProductSortParams>
   >(sortOptions[0])
@@ -49,7 +64,11 @@ export default function ProductList() {
           All Coffee
         </h1>
         <div className={'flex w-full justify-between'}>
-          <ProductsFilterLabels />
+          <ProductsFilterLabels
+            labelsList={filterAttributes}
+            handleClickByDefault={handleClickByDefault}
+            handleLabel={handleClickLabel}
+          />
           <Dropdown<IProductSortParams>
             className={'mb-8'}
             options={sortOptions}
