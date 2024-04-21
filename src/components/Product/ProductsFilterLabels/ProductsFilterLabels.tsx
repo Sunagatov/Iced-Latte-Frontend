@@ -2,8 +2,13 @@
 
 import Label from './Label';
 
+interface IFilterLabels {
+  labelsList: { label: string; id: string; }[];
+  handleClickByDefault: () => void;
+  handleLabel: (label: string, id: string) => void;
+}
 
-export default function ProductsFilterLabels({ labelsList, handleClickByDefault, handleLabel }: any) {
+export default function ProductsFilterLabels({ labelsList, handleClickByDefault, handleLabel }: IFilterLabels) {
 
   return (
     <div className="flex gap-3 pt-1.5">

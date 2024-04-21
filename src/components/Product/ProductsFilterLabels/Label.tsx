@@ -6,7 +6,7 @@ interface Ilabel {
   handleClickLabel: () => void
 }
 
-export default function Label({ name, id, handleClickLabel }: Ilabel) {
+export default function Label({ name, handleClickLabel }: Ilabel) {
 
 
   return (
