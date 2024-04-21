@@ -10,15 +10,13 @@ import { IOption } from '@/types/Dropdown'
 import { ProductSortLabel, ProductSortValue } from '@/types/ProductSortParams'
 
 function getDefaultSortOption(label: ProductSortLabel) {
-  return sortOptions.filter(
-    (sortOption) => sortOption.label === label,
-  )[0]
+  return sortOptions.filter((sortOption) => sortOption.label === label)[0]
 }
 
 export default function ProductList() {
   const [selectedSortOption, setSelectedSortOption] = useState<
     IOption<ProductSortValue>
-  >(() => getDefaultSortOption("Best Sellers"))
+  >(() => getDefaultSortOption('Best Sellers'))
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
@@ -55,7 +53,7 @@ export default function ProductList() {
         </h1>
         <div className={'flex w-full justify-end'}>
           <Dropdown<ProductSortValue>
-            className={'mb-8 -mr-6'}
+            className={'-mr-6 mb-8'}
             options={sortOptions}
             onChange={handleSelect}
             selectedOption={selectedSortOption}
