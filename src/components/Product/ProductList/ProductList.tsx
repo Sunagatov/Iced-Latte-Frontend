@@ -15,7 +15,7 @@ export default function ProductList() {
   >(sortOptions[0])
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption)
+    useProducts()
 
   function handleSelect(selectedOption: IOption<IProductSortParams>) {
     setSelectedSortOption(selectedOption)

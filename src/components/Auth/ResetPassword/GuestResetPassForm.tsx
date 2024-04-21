@@ -74,7 +74,7 @@ export default function GuestResetPassForm() {
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Password has been changed.
           </h2>
-          <Button onClick={handleButtonClick}>Return to main page</Button>
+          <Button id='return-btn' onClick={handleButtonClick}>Return to main page</Button>
         </div>
       ) : (
         <div>
@@ -119,7 +119,7 @@ export default function GuestResetPassForm() {
               className="mb-5"
               error={errors.confirmPassword}
             />
-            <Button type="submit" className="mt-6 flex  items-center justify-center hover:bg-brand-solid-hover">
+            <Button id='reset-btn' type="submit" className="mt-6 flex  items-center justify-center hover:bg-brand-solid-hover">
               {loading ? <Loader /> : 'Reset password'}
             </Button>
           </form>

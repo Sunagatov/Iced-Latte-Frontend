@@ -75,7 +75,7 @@ const ConfirmPasswordComponent = () => {
             className="w-full"
           />
         </div>
-        <Button type="submit"
+        <Button id="confirm-pass-btn" type="submit"
           className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover w-[220px]"
         >
           {loading ? <Loader /> : 'Confirm Registration'}</Button>

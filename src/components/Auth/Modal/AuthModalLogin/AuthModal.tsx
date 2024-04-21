@@ -85,6 +85,7 @@ function AuthModal() {
               <h2 className="text-4XL">I’m new here</h2>
               <Link href="/auth/registration">
                 <Button
+                  id="register-btn"
                   onClick={handleClickSwitchFrom}
                   className="mt-6 w-full hover:bg-brand-solid-hover"
                 >

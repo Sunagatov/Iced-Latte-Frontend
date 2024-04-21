@@ -64,7 +64,7 @@ export default function AuthResetPassForm() {
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Password has been changed.
           </h2>
-          <Button onClick={handleButtonClick}>Return to main page</Button>
+          <Button id='reset-pass-btn' onClick={handleButtonClick}>Return to main page</Button>
         </div>
       ) : (
         <div>
@@ -101,7 +101,7 @@ export default function AuthResetPassForm() {
               className="mb-5"
               error={errors.newPassword}
             />
-            <Button type="submit" className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover">
+            <Button id='reset-confirm-btn' type="submit" className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover">
               {loading ? <Loader /> : ' Change password'}
             </Button>
           </form>

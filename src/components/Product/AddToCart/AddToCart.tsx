@@ -34,7 +34,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
     <>
       {!productQuantity && (
         <div>
-          <Button className='w-full md:w-[278px] ' onClick={addProduct}>
+          <Button id='add-btn' className='w-full md:w-[278px] ' onClick={addProduct}>
             Add to cart &#x2022; ${product.price}
 
           </Button>

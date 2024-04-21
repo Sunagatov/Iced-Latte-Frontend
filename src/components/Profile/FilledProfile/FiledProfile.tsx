@@ -35,6 +35,7 @@ const FiledProfile = () => {
           </h1>
           <div>
             <Button
+              id='logout-btn'
               className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60 w-[114px]"
               onClick={logout}
             >
@@ -65,7 +66,7 @@ const FiledProfile = () => {
             Password
           </h3>
           <Link href="/resetpass">
-            <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
+            <Button id='change-btn' className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
               <span>Change password</span>
             </Button>
           </Link>
