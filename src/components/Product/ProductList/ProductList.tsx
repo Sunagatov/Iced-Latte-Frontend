@@ -11,7 +11,6 @@ import { IOption } from '@/types/Dropdown'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 
-
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
   { id: '1', name: 'name-1', label: 'Brand1' },
@@ -21,20 +20,19 @@ const _filterLabelsMock: IProductFilterLabel[] = [
 
 export default function ProductList() {
   const handleFilterByDefault = () => {
-    console.log('Button \'By default\' clicked')
+    console.log("Button 'By default' clicked")
   }
 
   const handleFilterLabelClick = (name: string, id: string) => {
     console.log(`Label: ${name} id: ${id}`)
   }
 
-
   const [selectedSortOption, setSelectedSortOption] = useState<
     IOption<IProductSortParams>
   >(sortOptions[0])
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption)
+    useProducts()
 
   function handleSelect(selectedOption: IOption<IProductSortParams>) {
     setSelectedSortOption(selectedOption)

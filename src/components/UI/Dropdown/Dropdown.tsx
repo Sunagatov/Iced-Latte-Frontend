@@ -15,13 +15,14 @@ const listStyles =
 const listItemStyles =
   'text-primary font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary'
 
-const Dropdown = <T, >({
+const Dropdown = <T,>({
   className,
   options,
   onChange,
   selectedOption,
 }: Readonly<PropsDropdown<T>>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
+
   const ref = useRef<HTMLDivElement>(null)
 
   useOnClickOutside(ref, handleClose)
@@ -31,7 +32,7 @@ const Dropdown = <T, >({
   }
 
   function handleClick() {
-    setIsOpen(prev => !prev)
+    setIsOpen((prev) => !prev)
   }
 
   function handleChange(option: IOption<T>) {
@@ -48,16 +49,19 @@ const Dropdown = <T, >({
   const selectImageUrl = isOpen ? openSelect : closedSelect
 
   return (
-    <div ref={ref} className={`relative ${className ?? ''}`}>
+    <div ref={ref} className={'relative' + ' ' + (className ?? '')}>
       <div
         className={twMerge(
           headerStyles,
           !isOpen && 'bg-transparent text-brand',
         )}
         onClick={handleClick}
+        role="button"
+        onKeyDown={() => {}}
+        tabIndex={0}
       >
         <span>Sort by: {selectedOption.label}</span>
-        <Image src={selectImageUrl} alt="open select icon"/>
+        <Image src={selectImageUrl} alt="open select icon" />
       </div>
       {isOpen && (
         <ul className={listStyles}>
@@ -72,7 +76,7 @@ const Dropdown = <T, >({
             >
               <span>{option.label}</span>
               {isSelected(selectedOption, option) && (
-                <Image src={checkImageUrl} alt="selected icon"/>
+                <Image src={checkImageUrl} alt="selected icon" />
               )}
             </li>
           ))}
@@ -81,6 +85,5 @@ const Dropdown = <T, >({
     </div>
   )
 }
-
 
 export default Dropdown

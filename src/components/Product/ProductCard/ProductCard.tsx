@@ -20,14 +20,22 @@ export default function ProductCard({
 }: Readonly<CardProps>) {
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)
-  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
+  const { addFavourite, removeFavourite, favourites, favouriteIds } =
+    useFavouritesStore()
 
   const isInFavourites = favourites?.some((fav) => fav.id === id)
 
   const isActive = favouriteIds.includes(id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(id, token, isInFavourites, isActive, addFavourite, removeFavourite)
+    await handleFavouriteButtonClick(
+      id,
+      token,
+      isInFavourites,
+      isActive,
+      addFavourite,
+      removeFavourite,
+    )
   }
 
   return (
@@ -39,6 +47,10 @@ export default function ProductCard({
             alt="card picture"
             style={{ objectFit: 'cover' }}
             fill={true}
+            sizes="(max-width: 768px) 100vw,
+         (max-width: 1200px) 50vw,
+         33vw"
+            priority={true}
           />
         </div>
 

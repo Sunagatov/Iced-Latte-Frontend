@@ -2,14 +2,15 @@
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
 import CommentList from '../CommentsList/CommentsList'
-// import comments from '@/constants/coments'
-import { Review } from '@/services/reviewService'
 import { useEffect, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import _ from 'lodash'
+import isEqual from 'lodash/isEqual'
+import { Review } from '@/types/ReviewType'
+import { useUserReview } from '@/components/Review/ReviewComponent/useUserReview'
+
 interface ReviewComponentProps {
-  productId: string;
+  productId: string
 }
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
@@ -20,56 +21,97 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   } = useErrorHandler()
 
   const productReviewsData = useProductReviewsStore()
-  const { reviewsWithRatings, getProductReviews } = productReviewsData
+  const {
+    reviewsWithRatings,
+    getProductReviews,
+    getProductUserReview,
+    userReview,
+  } = productReviewsData
+  const hasComments = comments.length > 0
 
   useEffect(() => {
-    async function getProductReviewsById(id: string): Promise<void> {
+    async function getUserReview(productId: string): Promise<void> {
       try {
-        await getProductReviews(id)
+        await getProductUserReview(productId)
+      } catch (error) {
+        // handleError(error)
+      }
+    }
+    void getUserReview(productId)
+  }, [productId, getProductUserReview])
+
+  useUserReview(productId)
+
+  useEffect(() => {
+    async function getProductReviewsById(productId: string): Promise<void> {
+      try {
+        await getProductReviews(productId)
       } catch (error) {
         // handleError(error)
       }
     }
 
     void getProductReviewsById(productId)
-  }, [productId, getProductReviews])
+  }, [
+    productId,
+    getProductReviews,
+    // handleError,
+  ])
 
   useEffect(() => {
-    if (!_.isEqual(reviewsWithRatings, comments)) {
+    if (!isEqual(reviewsWithRatings, comments)) {
       setComments(reviewsWithRatings)
     }
   }, [reviewsWithRatings, setComments, comments])
-
-  const hasComments = comments.length > 0
 
   // function for processing the rating filter
   const handleRatingChange = (value: number | null) => {
     console.log(value)
   }
 
-  return (
-    <div className='max-w-[1157px] ml-auto mr-auto relative'>
-      <div className='flex flex-col-reverse xl:flex-row xl:justify-between'>
+  useEffect(() => {
+    void getProductUserReview(productId)
+    void getProductReviews(productId)
+  }, [productId, getProductUserReview, getProductReviews])
 
-        <h2 className='order-[1] font-medium text-3XL text-primary mb-7 xl:order-[0] xl:absolute xl:top-0 xl:left-0 xl:4XL'>Rating and reviews</h2>
-        <div>
-          <div className='xl:max-w-[800px]'>
-            <ReviewForm productId={productId} />
-            {hasComments && < CommentList comments={comments} />}
-            {errorMessage && (
-              <div className="mt-4 text-negative">
-                {errorMessage}
-              </div>
+  return (
+    <div className="relative ml-auto mr-auto max-w-[1157px]">
+      <div className="flex flex-col-reverse xl:flex-row">
+        <h2 className="xl:4XL order-[1] mb-7 text-4XL font-medium text-primary xl:absolute xl:left-0 xl:top-0 xl:order-[0] ">
+          Rating and reviews
+        </h2>
+
+        <div className="flex-1">
+          {' '}
+          {/* Left div */}
+          <div>
+            <div className="xl:max-w-[800px]">
+              <ReviewForm productId={productId} />
+              {hasComments && (
+                <CommentList
+                  comments={comments}
+                  userReview={userReview}
+                  productId={productId}
+                />
+              )}
+              {errorMessage && (
+                <div className="mt-4 text-negative">{errorMessage}</div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="mr-auto">
+          {' '}
+          <div className="text-[18px] font-medium text-tertiary">
+            {hasComments ? (
+              <ReviewRatingFilter onChange={handleRatingChange} />
+            ) : (
+              <div className="text-end">No customer review</div>
             )}
           </div>
         </div>
-
-        <div className='text-[18px] font-medium text-tertiary'>
-          {hasComments ? <ReviewRatingFilter onChange={handleRatingChange} /> : <div className='text-end'>No customer review</div>}
-        </div>
-
       </div>
-    </div >
+    </div>
   )
 }
 

@@ -35,7 +35,8 @@ const FiledProfile = () => {
           </h1>
           <div>
             <Button
-              className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60 w-[114px]"
+              id="logout-btn"
+              className="flex w-[114px] items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
               onClick={logout}
             >
               {isLoading ? <Loader /> : 'Log out'}
@@ -48,10 +49,7 @@ const FiledProfile = () => {
         {isSuccessEditUser && !isEditing ? (
           <>
             <ImageUpload />
-            <ProfileInfo
-              userData={userData}
-              onEditClick={handleEditClick}
-            />
+            <ProfileInfo userData={userData} onEditClick={handleEditClick} />
           </>
         ) : (
           <FormProfile
@@ -65,7 +63,10 @@ const FiledProfile = () => {
             Password
           </h3>
           <Link href="/resetpass">
-            <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
+            <Button
+              id="change-btn"
+              className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
+            >
               <span>Change password</span>
             </Button>
           </Link>

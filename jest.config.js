@@ -1,3 +1,5 @@
+require('@testing-library/jest-dom/jest-globals')
+require('@testing-library/jest-dom')
 const nextJest = require('next/jest')
 
 const createJestConfig = nextJest({

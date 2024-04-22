@@ -3,7 +3,7 @@ import RestrictRoute from '@/Context/RestrictRoute'
 
 function AuthModalLogin() {
   return (
-    <RestrictRoute>
+    <RestrictRoute parallel={null}>
       <AuthModal />
     </RestrictRoute>
   )

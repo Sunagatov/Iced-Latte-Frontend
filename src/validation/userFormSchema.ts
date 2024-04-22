@@ -17,6 +17,7 @@ export const validationSchema = yup.object().shape({
       /^[a-zA-Z\u0080-\u00FF]+$/,
       'Invalid Last name format. Use extended Latin letters',
     ),
+
   birthDate: yup.string().nullable(),
   phoneNumber: yup
     .string()

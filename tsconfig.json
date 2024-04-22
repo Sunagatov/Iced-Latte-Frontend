@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["react", "node", "jest", "mocha"],
+    "types": ["react", "node", "jest", "mocha", "@testing-library/jest-dom"],
     "plugins": [
       {
         "name": "next",

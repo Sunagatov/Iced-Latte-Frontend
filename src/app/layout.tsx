@@ -18,20 +18,24 @@ export const metadata: Metadata = {
 }
 
 export interface RootLayoutProps {
-  children?: React.ReactNode
+  children: React.ReactNode
+  parallel: React.ReactNode
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function RootLayout({ children }: Readonly<RootLayoutProps>) {
+export default function RootLayout({
+  children,
+  parallel,
+}: Readonly<RootLayoutProps>) {
   return (
     <html lang="en">
       <body className={inter.className + ' flex min-h-screen flex-col'}>
-        <ToastContainer/>
-        <InterceptorsForRefreshToken>
-          <GlobalFavoritesAndCartInit>
-            <Header/>
+        <ToastContainer />
+        <InterceptorsForRefreshToken parallel={null}>
+          <GlobalFavoritesAndCartInit parallel={null}>
+            <Header />
             <main className={'min-w-[360px] grow'}>{children}</main>
-            <Footer/>
+            <Footer />
           </GlobalFavoritesAndCartInit>
         </InterceptorsForRefreshToken>
       </body>
