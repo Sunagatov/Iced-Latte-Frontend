@@ -81,7 +81,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
   }
 
   const handleLikeComment = (productReviewId: string) => {
-    console.log(`Liking comment with ID ${productReviewId}`)
+    console.log(`Liking comment with id ${productReviewId}`)
   }
 
   const handleDislikeComment = (productReviewId: string) => {
