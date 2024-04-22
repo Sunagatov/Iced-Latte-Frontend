@@ -17,12 +17,16 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
     }))
   }
 
-  return (
-    <p className="mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L">
-      {comment.text &&
+  const renderContent = () => {
+    if (!comment.text) {
+      return 'No review'
+    }
+    if (
       comment.text.length > 300 &&
-      !expandedComments[comment.productReviewId] ? (
-        <>
+      !expandedComments[comment.productReviewId]
+    ) {
+      return (
+        <span>
           {comment.text.slice(0, 300)}
           <Button
             id="see-more-btn"
@@ -31,10 +35,16 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
           >
             ...see more
           </Button>
-        </>
-      ) : (
-        comment.text || 'No review'
-      )}
+        </span>
+      )
+    }
+
+    return comment.text
+  }
+
+  return (
+    <p className="mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L">
+      {renderContent()}
     </p>
   )
 }
