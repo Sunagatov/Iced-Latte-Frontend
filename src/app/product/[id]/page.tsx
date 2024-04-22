@@ -44,7 +44,13 @@ export default async function Page({ params }: Readonly<ProductProps>) {
           <div className={'flex flex-col gap-[18px] '}>
             <h2 className={'text-4XL'}>{product.name}</h2>
             <div className={'flex items-center gap-2 text-L'}>
-              <Image src="star.png" alt="star" className={'inline-block'} />
+              <Image
+                src="/star.png"
+                alt="star"
+                className={'inline-block'}
+                width={16}
+                height={15}
+              />
               <span>{productRating}</span>
               <span className={'text-placeholder'}>
                 &#x2022; {productSize} g.

@@ -4,14 +4,14 @@ import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { Review } from '@/types/ReviewType'
 import { FaStar } from 'react-icons/fa'
-import { useEffect, useState } from 'react'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
+import React, { useEffect, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import { formatReviewDate } from '@/components/Review/CommentsList/formatReviewDate'
 import { apiDeleteProductReview } from '@/services/reviewService'
 import { handleAxiosError } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
 import { useProductReviewsStore } from '@/store/reviewsStore'
+import Comment from '@/components/Review/CommentsList/Comment'
 
 interface CommentListProps {
   comments: Review[]
@@ -23,7 +23,6 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
   const [loadedComments, setLoadedComments] = useState(comments.slice(0, 3))
   const [lastLoadedIndex, setLastLoadedIndex] = useState(2)
   const [showLoadMore, setShowLoadMore] = useState(true)
-  const { expandedComments, setExpandedComments } = useLocalSessionStore()
   const isMediaQuery = useMediaQuery('(min-width: 768px)', {
     initializeWithValue: false,
   })
@@ -54,13 +53,6 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
     if (lastLoadedIndex + 3 >= comments.length - 1) {
       setShowLoadMore(false)
     }
-  }
-
-  const toggleCommentExpansion = (productReviewId: string) => {
-    setExpandedComments((prevState) => ({
-      ...prevState,
-      [productReviewId]: !prevState[productReviewId],
-    }))
   }
 
   const handleDeleteComment = async (
@@ -179,26 +171,7 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 </div>
               </div>
 
-              <p className="mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L">
-                {comment.text &&
-                comment.text.length > 300 &&
-                !expandedComments[`${comment.productReviewId}`] ? (
-                  <>
-                    {comment.text.slice(0, 300)}
-                    <Button
-                      id="see-more-btn"
-                      onClick={() =>
-                        toggleCommentExpansion(`${comment.productReviewId}`)
-                      }
-                      className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
-                    >
-                      ...see more
-                    </Button>
-                  </>
-                ) : (
-                  comment.text || 'No review'
-                )}
-              </p>
+              <Comment comment={comment} />
 
               <div className="flex items-center justify-between">
                 <div className="flex gap-2 xl:ml-auto">
