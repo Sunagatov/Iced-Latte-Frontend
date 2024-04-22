@@ -20,7 +20,7 @@ const _filterLabelsMock: IProductFilterLabel[] = [
 
 export default function ProductList() {
   const handleFilterByDefault = () => {
-    console.log("Button 'By default' clicked")
+    console.log(`Button 'By default' clicked`)
   }
 
   const handleFilterLabelClick = (name: string, id: string) => {

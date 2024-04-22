@@ -31,8 +31,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className + ' flex min-h-screen flex-col'}>
         <ToastContainer />
-        <InterceptorsForRefreshToken parallel={null}>
-          <GlobalFavoritesAndCartInit parallel={null}>
+        <InterceptorsForRefreshToken parallel={parallel}>
+          <GlobalFavoritesAndCartInit parallel={parallel}>
             <Header />
             <main className={'min-w-[360px] grow'}>{children}</main>
             <Footer />
