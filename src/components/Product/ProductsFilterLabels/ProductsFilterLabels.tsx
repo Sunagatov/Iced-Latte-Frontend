@@ -13,7 +13,10 @@ interface IProductsFilterLabels {
 export default function ProductsFilterLabels({ filterLabels, handleFilterLabelClick = () => {}, handleFilterByDefault = () => {} }: IProductsFilterLabels) {
   return (
     <div className="flex gap-2 pt-1.5 flex-wrap justify-left">
-      <Button onClick={handleFilterByDefault} className="px-7 bg-inverted rounded-[40px]">
+      <Button
+        onClick={handleFilterByDefault} className="px-7 bg-inverted rounded-[40px]"
+        id='default-filter-btn'
+      >
         By default
       </Button>
 
@@ -21,7 +24,12 @@ export default function ProductsFilterLabels({ filterLabels, handleFilterLabelCl
         const handleLabelClick = () => handleFilterLabelClick(name, id)
 
         return (
-          <Button onClick={handleLabelClick} key={id} className="bg-inverted flex items-center gap-3 px-7">
+          <Button
+            onClick={handleLabelClick}
+            key={id}
+            className="bg-inverted flex items-center gap-3 px-7"
+            id={`filter-label-${id}`}
+          >
             <Image width={11} height={11} src='cross.svg' alt={`Filter by ${label}`} />
             <span>{label}</span>
           </Button>
