@@ -2,27 +2,30 @@
 import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
 import { sortOptions } from '@/constants/productSortOptions'
-import ProductCard from '../ProductCard/ProductCard'
+import ProductCard from '@/components/Product/ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
-import ProductsFilterLabels from '../ProductsFilterLabels/ProductsFilterLabels'
+import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
+import { IProductFilterLabel } from '@/types/IProductFilterLabel'
+
+
+// @TODO/DEL when backend will be ready
+const _filterLabelsMock: IProductFilterLabel[] = [
+  { id: '1', name: 'name-1', label: 'Brand1' },
+  { id: '2', name: 'name-2', label: 'Seller1' },
+  { id: '3', name: 'name-3', label: 'Seller5' },
+]
 
 export default function ProductList() {
-  const filterAttributes = [
-    { id: '1', name: 'name-1', label: 'Brand1' },
-    { id: '2', name: 'name-2', label: 'Seller1' },
-    { id: '3', name: 'name-3', label: 'Seller5' },
-  ];
-
-  const handleClickByDefault = () => {
-    return alert("Button 'By default' clicked")
+  const handleFilterByDefault = () => {
+    console.log('Button \'By default\' clicked')
   }
 
-  const handleClickLabel = (name: string, id: string) => {
-    alert(`Label: ${name} id: ${id}`)
+  const handleFilterLabelClick = (name: string, id: string) => {
+    console.log(`Label: ${name} id: ${id}`)
   }
 
 
@@ -65,9 +68,9 @@ export default function ProductList() {
         </h1>
         <div className={'flex w-full justify-between'}>
           <ProductsFilterLabels
-            labelsList={filterAttributes}
-            handleClickByDefault={handleClickByDefault}
-            handleLabel={handleClickLabel}
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
           />
           <Dropdown<IProductSortParams>
             className={'mb-8'}

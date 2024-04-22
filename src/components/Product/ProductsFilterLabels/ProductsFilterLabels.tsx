@@ -1,29 +1,32 @@
-'use client';
+'use client'
+import Image from 'next/image'
+import { IProductFilterLabel } from '@/types/IProductFilterLabel'
+import Button from '@/components/UI/Buttons/Button/Button'
 
-import Label from './Label';
 
-interface IFilterLabels {
-  labelsList: { label: string; id: string; }[];
-  handleClickByDefault: () => void;
-  handleLabel: (label: string, id: string) => void;
+interface IProductsFilterLabels {
+  filterLabels: IProductFilterLabel[]
+  handleFilterByDefault: () => void
+  handleFilterLabelClick: (label: string, id: string) => void
 }
 
-export default function ProductsFilterLabels({ labelsList, handleClickByDefault, handleLabel }: IFilterLabels) {
-
+export default function ProductsFilterLabels({ filterLabels, handleFilterLabelClick = () => {}, handleFilterByDefault = () => {} }: IProductsFilterLabels) {
   return (
-    <div className="flex gap-3 pt-1.5">
-      <button
-        className="text-white bg-black text-lg px-6 rounded-full w-[136px] h-[48px]"
-        onClick={handleClickByDefault}
-      >
+    <div className="flex gap-2 pt-1.5 flex-wrap justify-left">
+      <Button onClick={handleFilterByDefault} className="px-7 bg-inverted rounded-[40px]">
         By default
-      </button>
+      </Button>
 
-      <div className="flex justify-center gap-3">
-        {labelsList.map((item: { label: string; id: string; }) => (
-          <Label name={item.label} key={item.id} id={item.id} handleClickLabel={() => handleLabel(item.label, item.id)} />
-        ))}
-      </div>
+      {filterLabels.map(({ name, id, label }) => {
+        const handleLabelClick = () => handleFilterLabelClick(name, id)
+
+        return (
+          <Button onClick={handleLabelClick} key={id} className="bg-inverted flex items-center gap-3 px-7">
+            <Image width={11} height={11} src='cross.svg' alt={`Filter by ${label}`} />
+            <span>{label}</span>
+          </Button>
+        )
+      })}
     </div>
-  );
+  )
 }
