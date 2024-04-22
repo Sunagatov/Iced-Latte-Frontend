@@ -14,7 +14,10 @@ interface ReviewComponentProps {
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   const [comments, setComments] = useState<Review[]>([])
-  const { errorMessage, handleError } = useErrorHandler()
+  const {
+    errorMessage,
+    // handleError
+  } = useErrorHandler()
 
   const productReviewsData = useProductReviewsStore()
   const { reviewsWithRatings, getProductReviews } = productReviewsData
@@ -24,7 +27,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
       try {
         await getProductReviews(id)
       } catch (error) {
-        handleError(error)
+        // handleError(error)
       }
     }
 
@@ -35,7 +38,7 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
     if (!_.isEqual(reviewsWithRatings, comments)) {
       setComments(reviewsWithRatings)
     }
-  }, [reviewsWithRatings, setComments])
+  }, [reviewsWithRatings, setComments, comments])
 
   const hasComments = comments.length > 0
 

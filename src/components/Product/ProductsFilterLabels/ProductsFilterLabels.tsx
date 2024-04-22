@@ -10,7 +10,7 @@ interface IProductsFilterLabels {
   handleFilterLabelClick: (label: string, id: string) => void
 }
 
-export default function ProductsFilterLabels({ filterLabels, handleFilterLabelClick = () => {}, handleFilterByDefault = () => {} }: IProductsFilterLabels) {
+const ProductsFilterLabels = ({ filterLabels, handleFilterLabelClick, handleFilterByDefault }: Readonly<IProductsFilterLabels>) => {
   return (
     <div className="flex gap-2 pt-1.5 flex-wrap justify-left">
       <Button
@@ -30,7 +30,7 @@ export default function ProductsFilterLabels({ filterLabels, handleFilterLabelCl
             className="bg-inverted flex items-center gap-3 px-7"
             id={`filter-label-${id}`}
           >
-            <Image width={11} height={11} src='cross.svg' alt={`Filter by ${label}`} />
+            <Image width={11} height={11} src='cross.svg' alt={`Filter by ${label}`}/>
             <span>{label}</span>
           </Button>
         )
@@ -38,3 +38,5 @@ export default function ProductsFilterLabels({ filterLabels, handleFilterLabelCl
     </div>
   )
 }
+
+export default ProductsFilterLabels

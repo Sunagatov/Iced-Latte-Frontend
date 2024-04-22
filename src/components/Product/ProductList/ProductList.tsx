@@ -12,7 +12,7 @@ import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/Prod
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 
 
-// @TODO/DEL when backend will be ready
+// @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
   { id: '1', name: 'name-1', label: 'Brand1' },
   { id: '2', name: 'name-2', label: 'Seller1' },

@@ -7,28 +7,31 @@ import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import InterceptorsForRefreshToken from '@/Context/InterceptorsForRefreshToken'
 import GlobalFavoritesAndCartInit from '@/Context/GlobalFavoritesAndCartInit'
+import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const metadata: Metadata = {
   title: 'Iced Latte',
   description: 'Iced Latte',
 }
 
 export interface RootLayoutProps {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
-export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html lang="en">
       <body className={inter.className + ' flex min-h-screen flex-col'}>
-        <ToastContainer />
+        <ToastContainer/>
         <InterceptorsForRefreshToken>
-          <GlobalFavoritesAndCartInit >
-            <Header />
+          <GlobalFavoritesAndCartInit>
+            <Header/>
             <main className={'min-w-[360px] grow'}>{children}</main>
-            <Footer />
+            <Footer/>
           </GlobalFavoritesAndCartInit>
         </InterceptorsForRefreshToken>
       </body>

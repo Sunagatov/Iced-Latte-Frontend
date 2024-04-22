@@ -9,11 +9,12 @@ export default function Button({
   type = 'button',
   disabled,
   children,
+  id,
 }: Readonly<PropsBtn>) {
   const styles = defaultStyles + ' ' + (className ?? '')
 
   return (
-    <button className={styles} type={type} onClick={onClick} disabled={disabled} >
+    <button id={id} className={styles} type={type} onClick={onClick} disabled={disabled} >
       {children}
     </button>
   )

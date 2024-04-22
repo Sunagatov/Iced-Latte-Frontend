@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import circle_btn from '../../../../../public/plus.svg'
 
-export default function CircleAddBtn({ onClick }: { onClick: () => void }) {
+const CircleAddBtn = ({ onClick }: { onClick: () => void }) => {
   return (
     <div onClick={onClick} onKeyDown={onClick}>
       <button
@@ -15,3 +15,5 @@ export default function CircleAddBtn({ onClick }: { onClick: () => void }) {
     </div>
   )
 }
+
+export default CircleAddBtn

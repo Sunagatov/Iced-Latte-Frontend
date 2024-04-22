@@ -26,7 +26,7 @@ const CommentList = ({ comments }: CommentListProps) => {
     if (!_.isEqual(comments.slice(0, 3), loadedComments.slice(0, 3))) {
       setLoadedComments(comments.slice(0, 3))
     }
-  }, [comments])
+  }, [comments, loadedComments])
 
   // Function for uploading additional comments
   const loadMoreComments = () => {
@@ -66,14 +66,14 @@ const CommentList = ({ comments }: CommentListProps) => {
           const { date, time } = formatReviewDate(comment.createdAt)
 
           return (
-            <li className={`pb-6 xl:pb-10 ${index === loadedComments.length - 1 ? 'pb-0' : 'border-b border-solid border-primary'}`} key={index} >
+            <li className={`pb-6 xl:pb-10 ${index === loadedComments.length - 1 ? 'pb-0' : 'border-b border-solid border-primary'}`} key={comment.productReviewId} >
               <div className="font-medium text-XL text-primary mb-2 xl:text-2XL">
                 <span>{comment.userName} {comment.userLastName}</span>
               </div>
               <div className="font-medium text-[18px] text-primary mb-6 flex items-center">
                 <div className='flex items-center gap-1'>
                   {[...Array(5)].map((_, index) => (
-                    <FaStar className={`w-[18px] h-[18px] ${index < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={index} />
+                    <FaStar className={`w-[18px] h-[18px] ${index < comment.rating ? 'text-positive' : 'text-disabled'} xl:w-6 xl:h-6`} key={comment.productReviewId} />
                   ))}
                 </div>
                 <span className="font-medium text-L text-primary ml-2">{comment.rating || 0}/5</span>
@@ -89,6 +89,7 @@ const CommentList = ({ comments }: CommentListProps) => {
                 <p className={`rounded-[8px] text-L px-4 py-[17px] mb-6 ${comment.isCurrentUserComment ? 'bg-brand-second' : 'bg-secondary'}`}>
                   {comment.reviewText.slice(0, 300)}
                   <Button
+                    id={`toggle-comment-${index}-btn`}
                     onClick={() => toggleCommentExpansion(`${index}`)}
                     className="pl-0 h-auto text-tertiary text-L font-medium inline-flex bg-transparent">...see more</Button>
                 </p>
@@ -100,12 +101,14 @@ const CommentList = ({ comments }: CommentListProps) => {
               <div className="flex justify-between items-center">
                 {comment.isCurrentUserComment && (
                   <Button
+                    id={`delete-comment-${index}-btn`}
                     onClick={() => handleDeleteComment(`${index}`)}
                     className="w-[126px] rounded-[47px] py-4 px-6 bg-secondary font-medium text-L text-primary mr-auto md:w-[196px]">{ismediaQuery ? 'Delete my review' : 'Delete'}</Button>
                 )}
                 <div className='flex gap-2 xl:ml-auto'>
                   <Button
                     onClick={() => handleLikeComment(`${index}`)}
+                    id={`like-comment-${index}-btn`}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiLike />
                     <span>
@@ -113,6 +116,7 @@ const CommentList = ({ comments }: CommentListProps) => {
                     </span>
                   </Button>
                   <Button
+                    id={`like-comment-${index}-btn`}
                     onClick={() => handleDislikeComment(`${index}`)}
                     className="rounded-[47px] bg-secondary w-[88px] text-tertiary font-medium flex items-center justify-center gap-2">
                     <BiDislike />
@@ -129,7 +133,9 @@ const CommentList = ({ comments }: CommentListProps) => {
       </ul>
 
       {showLoadMore && (
-        <Button onClick={loadMoreComments} className='flex items-center justify-center rounded-[47px] w-[334px] ml-auto mr-auto mb-[94px] mt-[24px] bg-secondary font-medium text-[18px] text-primary'>Show more</Button>
+        <Button
+          id='show-more-reviews-btn'
+          onClick={loadMoreComments} className='flex items-center justify-center rounded-[47px] w-[334px] ml-auto mr-auto mb-[94px] mt-[24px] bg-secondary font-medium text-[18px] text-primary'>Show more</Button>
       )}
     </>
   )

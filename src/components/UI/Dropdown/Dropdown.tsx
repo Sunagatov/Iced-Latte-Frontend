@@ -15,14 +15,13 @@ const listStyles =
 const listItemStyles =
   'text-primary font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary'
 
-export default function Dropdown<T>({
+const Dropdown = <T, >({
   className,
   options,
   onChange,
   selectedOption,
-}: Readonly<PropsDropdown<T>>) {
+}: Readonly<PropsDropdown<T>>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-
   const ref = useRef<HTMLDivElement>(null)
 
   useOnClickOutside(ref, handleClose)
@@ -32,7 +31,7 @@ export default function Dropdown<T>({
   }
 
   function handleClick() {
-    setIsOpen((prev) => !prev)
+    setIsOpen(prev => !prev)
   }
 
   function handleChange(option: IOption<T>) {
@@ -49,7 +48,7 @@ export default function Dropdown<T>({
   const selectImageUrl = isOpen ? openSelect : closedSelect
 
   return (
-    <div ref={ref} className={'relative' + ' ' + (className ?? '')}>
+    <div ref={ref} className={`relative ${className ?? ''}`}>
       <div
         className={twMerge(
           headerStyles,
@@ -58,7 +57,7 @@ export default function Dropdown<T>({
         onClick={handleClick}
       >
         <span>Sort by: {selectedOption.label}</span>
-        <Image src={selectImageUrl} alt="open select icon" />
+        <Image src={selectImageUrl} alt="open select icon"/>
       </div>
       {isOpen && (
         <ul className={listStyles}>
@@ -73,7 +72,7 @@ export default function Dropdown<T>({
             >
               <span>{option.label}</span>
               {isSelected(selectedOption, option) && (
-                <Image src={checkImageUrl} alt="selected icon" />
+                <Image src={checkImageUrl} alt="selected icon"/>
               )}
             </li>
           ))}
@@ -82,3 +81,6 @@ export default function Dropdown<T>({
     </div>
   )
 }
+
+
+export default Dropdown

@@ -10,13 +10,13 @@ import { debounce } from 'lodash'
 const defaultStyles =
   'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium transition ease-in-out'
 
-export default function Counter({
+const Counter = ({
   theme,
   className,
   count,
   addProduct,
   removeProduct,
-}: Readonly<PropsCounter>) {
+}: Readonly<PropsCounter>) => {
   const computedStyles =
     defaultStyles +
     ' ' +
@@ -57,3 +57,5 @@ export default function Counter({
     </div>
   )
 }
+
+export default Counter
