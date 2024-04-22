@@ -15,10 +15,7 @@ interface ReviewComponentProps {
 
 const ReviewComponent = ({ productId }: ReviewComponentProps) => {
   const [comments, setComments] = useState<Review[]>([])
-  const {
-    errorMessage,
-    // handleError
-  } = useErrorHandler()
+  const { errorMessage, handleError } = useErrorHandler()
 
   const productReviewsData = useProductReviewsStore()
   const {
@@ -34,11 +31,11 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
       try {
         await getProductUserReview(productId)
       } catch (error) {
-        // handleError(error)
+        handleError(error)
       }
     }
     void getUserReview(productId)
-  }, [productId, getProductUserReview])
+  }, [productId, getProductUserReview, handleError])
 
   useUserReview(productId)
 
@@ -47,16 +44,12 @@ const ReviewComponent = ({ productId }: ReviewComponentProps) => {
       try {
         await getProductReviews(productId)
       } catch (error) {
-        // handleError(error)
+        handleError(error)
       }
     }
 
     void getProductReviewsById(productId)
-  }, [
-    productId,
-    getProductReviews,
-    // handleError,
-  ])
+  }, [productId, getProductReviews, handleError])
 
   useEffect(() => {
     if (!isEqual(reviewsWithRatings, comments)) {
