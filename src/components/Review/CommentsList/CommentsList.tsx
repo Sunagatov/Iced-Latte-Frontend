@@ -179,26 +179,27 @@ const CommentList = ({ comments, userReview, productId }: CommentListProps) => {
                 </div>
               </div>
 
-              {comment.text &&
-              comment.text.length > 300 &&
-              !expandedComments[`${comment.productReviewId}`] ? (
-                <p className="mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L">
-                  {comment.text.slice(0, 300)}
-                  <Button
-                    id="see-more-btn"
-                    onClick={() =>
-                      toggleCommentExpansion(`${comment.productReviewId}`)
-                    }
-                    className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
-                  >
-                    ...see more
-                  </Button>
-                </p>
-              ) : (
-                <p className="mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L">
-                  {comment.text || 'No review'}
-                </p>
-              )}
+              <p className="mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L">
+                {comment.text &&
+                comment.text.length > 300 &&
+                !expandedComments[`${comment.productReviewId}`] ? (
+                  <>
+                    {comment.text.slice(0, 300)}
+                    <Button
+                      id="see-more-btn"
+                      onClick={() =>
+                        toggleCommentExpansion(`${comment.productReviewId}`)
+                      }
+                      className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
+                    >
+                      ...see more
+                    </Button>
+                  </>
+                ) : (
+                  comment.text || 'No review'
+                )}
+              </p>
+
               <div className="flex items-center justify-between">
                 <div className="flex gap-2 xl:ml-auto">
                   <Button
