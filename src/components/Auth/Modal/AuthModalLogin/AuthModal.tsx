@@ -9,7 +9,6 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
 import { useAuthStore } from '@/store/authStore'
 
-
 enum SwitchType {
   Login = 'LOGIN',
   Registration = 'REGISTRATION',
@@ -20,7 +19,6 @@ function AuthModal() {
   const pathname = usePathname()
   const { handleRedirectForAuth } = useAuthRedirect()
   const { resetOpenModal } = useAuthStore()
-
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -42,8 +40,6 @@ function AuthModal() {
     )
   }
 
-
-
   const handleCloseModal = () => {
     handleRedirectForAuth()
   }
@@ -53,10 +49,17 @@ function AuthModal() {
   })
 
   return (
-    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22 grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}>
+    <div
+      className={
+        'sm:top-22 fixed bottom-0 right-0 top-14 z-30 flex w-full grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'
+      }
+    >
       <div
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
         onClick={handleCloseModal}
+        role="button"
+        onKeyDown={() => {}}
+        tabIndex={0}
       ></div>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
@@ -66,14 +69,21 @@ function AuthModal() {
           {switchForm === SwitchType.Login ? (
             <LoginForm />
           ) : (
-            <Link href="/auth/login" onClick={handleClickSwitchFrom}
-              className="mt-[10px] w-full hover:text-focus flex text-[gray]">
-              Already have account? <span className='text-primary ml-[5px] underline' >Sign In</span>
+            <Link
+              href="/auth/login"
+              onClick={handleClickSwitchFrom}
+              className="mt-[10px] flex w-full text-[gray] hover:text-focus"
+            >
+              Already have account?{' '}
+              <span className="ml-[5px] text-primary underline">Sign In</span>
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link onClick={resetOpenModal}
-              href="/forgotpass" className="flex items-center justify-center text-focus mt-[40px]">
+            <Link
+              onClick={resetOpenModal}
+              href="/forgotpass"
+              className="mt-[40px] flex items-center justify-center text-focus"
+            >
               Forgot password
             </Link>
           )}

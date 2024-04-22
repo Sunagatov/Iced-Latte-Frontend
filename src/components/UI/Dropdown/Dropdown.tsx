@@ -15,12 +15,12 @@ const listStyles =
 const listItemStyles =
   'text-primary font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary'
 
-export default function Dropdown<T>({
+const Dropdown = <T,>({
   className,
   options,
   onChange,
   selectedOption,
-}: Readonly<PropsDropdown<T>>) {
+}: Readonly<PropsDropdown<T>>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -56,6 +56,9 @@ export default function Dropdown<T>({
           !isOpen && 'bg-transparent text-brand',
         )}
         onClick={handleClick}
+        role="button"
+        onKeyDown={() => {}}
+        tabIndex={0}
       >
         <span>Sort by: {selectedOption.label}</span>
         <Image src={selectImageUrl} alt="open select icon" />
@@ -82,3 +85,5 @@ export default function Dropdown<T>({
     </div>
   )
 }
+
+export default Dropdown

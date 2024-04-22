@@ -42,7 +42,6 @@ export default function RegistrationForm() {
         router.push('/confirm_registration')
         resetOpenModal()
       }
-
     } catch (error) {
       handleError(error)
     } finally {
@@ -52,11 +51,7 @@ export default function RegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && (
-        <div className="mt-4 text-negative">
-          {errorMessage}
-        </div>
-      )}
+      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
       <FormInput
         id="firstName"
         register={register}

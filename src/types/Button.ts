@@ -6,5 +6,5 @@ export type PropsBtn = {
   className?: string
   children: ReactNode
   disabled?: boolean
-  id: string
+  id?: string
 }

@@ -1,10 +1,8 @@
 import Image from 'next/image'
-import arrowup from '/public/arrowup.svg'
 import { useEffect, useState } from 'react'
 import Button from '../Button/Button'
 
 export default function ScrollUpBtn() {
-
   const [showButton, setShowButton] = useState(false)
 
   useEffect(() => {
@@ -20,13 +18,21 @@ export default function ScrollUpBtn() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     })
   }
 
   return (
     <>
-      {showButton && (<Button id='scroll-btn' className="flex items-center justify-center m-2 fixed bottom-2 right-2 bg-secondary bg-opacity-90 p-1 rounded-full w-[60px] h-[60px] transition-all duration-900 ease-in-out transform hover:-translate-y-1 hover:scale-110 border-focus border" onClick={scrollToTop}><Image src={arrowup} alt="up_arrow" /></Button>)}
+      {showButton && (
+        <Button
+          id="scroll-btn"
+          className="duration-900 fixed bottom-2 right-2 m-2 flex h-[60px] w-[60px] transform items-center justify-center rounded-full border border-focus bg-secondary bg-opacity-90 p-1 transition-all ease-in-out hover:-translate-y-1 hover:scale-110"
+          onClick={scrollToTop}
+        >
+          <Image src="arrowup.svg" alt="up_arrow" width={16} height={20} />
+        </Button>
+      )}
     </>
   )
 }
