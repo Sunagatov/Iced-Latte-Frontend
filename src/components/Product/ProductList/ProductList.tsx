@@ -57,7 +57,7 @@ export default function ProductList() {
         </div>
         <ul
           className={
-            'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-8 min-[1124px]:grid-cols-3 '
+            'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1124px]:grid-cols-3 '
           }
         >
           {data.map((product) => (
