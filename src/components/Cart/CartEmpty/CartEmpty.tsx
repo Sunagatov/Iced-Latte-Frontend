@@ -17,7 +17,10 @@ export default function CartEmpty() {
         />
         <div className=" mt-12  flex flex-col items-center gap-6 py-4">
           <p>Your cart is empty</p>
-          <Button id='continue-btn' className="h-14 w-[211px] text-lg font-medium">
+          <Button
+            id="continue-btn"
+            className="h-14 w-[211px] text-lg font-medium"
+          >
             <Link href={'/'}>Continue Shopping</Link>
           </Button>
         </div>

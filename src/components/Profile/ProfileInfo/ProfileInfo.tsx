@@ -3,10 +3,7 @@ import { UserProfileInfoProps } from '@/types/ProfileInfo'
 import ProfileListItem from '@/components/UI/ProfileListItem/ProfileListItem'
 import Button from '@/components/UI/Buttons/Button/Button'
 
-const ProfileInfo = ({
-  userData,
-  onEditClick,
-}: UserProfileInfoProps) => {
+const ProfileInfo = ({ userData, onEditClick }: UserProfileInfoProps) => {
   return (
     <>
       {userData && (
