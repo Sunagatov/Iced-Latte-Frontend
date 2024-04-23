@@ -19,7 +19,7 @@
       "./node_modules/@types",
       "../node_modules/@testing-library",
     ],
-    "types": ["react", "node", "jest", "mocha"],
+    "types": ["react", "node"],
     "plugins": [
       {
         "name": "next",
