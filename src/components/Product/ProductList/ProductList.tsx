@@ -32,7 +32,7 @@ export default function ProductList() {
   >(sortOptions[0])
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts()
+    useProducts(selectedSortOption)
 
   function handleSelect(selectedOption: IOption<IProductSortParams>) {
     setSelectedSortOption(selectedOption)
