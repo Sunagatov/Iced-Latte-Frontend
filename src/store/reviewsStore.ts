@@ -1,7 +1,10 @@
-import {create} from 'zustand'
-import {persist} from 'zustand/middleware'
-import {apiGetProductReviews, apiGetProductUserReview,} from '@/services/reviewService'
-import {Review} from '@/types/ProductReviewType'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import {
+  apiGetProductReviews,
+  apiGetProductUserReview,
+} from '@/services/reviewService'
+import { Review } from '@/types/ReviewType'
 
 interface IGetProductReviews {
   reviewsWithRatings: Review[]

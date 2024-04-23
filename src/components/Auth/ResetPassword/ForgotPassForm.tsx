@@ -13,25 +13,27 @@ import { useErrorHandler } from '@/services/apiError/apiError'
 import { forgotPassSchema } from '@/validation/forgotPassSchema'
 import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 
-
 export default function ForgotPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
-  const setStoredEmailSent = useLocalSessionStore((state) => state.setStoredEmailSent)
+  const setStoredEmailSent = useLocalSessionStore(
+    (state) => state.setStoredEmailSent,
+  )
   const storedEmailSent = useLocalSessionStore((state) => state.storedEmailSent)
 
-
-
-  const { handleSubmit, register, getValues, reset,
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    reset,
     formState: { errors },
   } = useForm<IForgotValues>({
     resolver: yupResolver(forgotPassSchema),
     defaultValues: {
-      email: ''
+      email: '',
     },
   })
-
 
   const onSubmit = async () => {
     const { email } = getValues() as { email: string }
@@ -47,14 +49,12 @@ export default function ForgotPassForm() {
       handleError(error)
     } finally {
       setLoading(false)
-
     }
   }
   const handleChangeClick = () => {
     router.push('/resetpass')
     setStoredEmailSent(false)
   }
-
 
   return (
     <div className="mx-auto mt-4 flex  max-w-screen-md items-center justify-center px-4">
@@ -70,8 +70,12 @@ export default function ForgotPassForm() {
               youricedlatteshop@gmail.com
             </p>
             <Button
+              id="reset-continue-btn"
               className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover"
-              onClick={handleChangeClick}>Continue to change your password</Button>
+              onClick={handleChangeClick}
+            >
+              Continue to change your password
+            </Button>
           </div>
         </div>
       ) : (
@@ -80,13 +84,12 @@ export default function ForgotPassForm() {
             Forgot password?
           </h2>
           <p className="mb-8 text-lg font-medium text-slate-950">
-            All good. Enter your account`s email address and we`ll send you a code to reset your password.
+            All good. Enter your account`s email address and we`ll send you a
+            code to reset your password.
           </p>
           <form onSubmit={handleSubmit(onSubmit)}>
             {errorMessage && (
-              <div className="mt-4 text-negative">
-                {errorMessage}
-              </div>
+              <div className="mt-4 text-negative">{errorMessage}</div>
             )}
             <FormInput
               id="email"
@@ -98,7 +101,11 @@ export default function ForgotPassForm() {
               className="mb-5"
               error={errors.email}
             />
-            <Button type="submit" className="mt-6 w-44 flex items-center justify-center hover:bg-brand-solid-hover">
+            <Button
+              id="send-reset-btn"
+              type="submit"
+              className="mt-6 flex w-44 items-center justify-center hover:bg-brand-solid-hover"
+            >
               {loading ? <Loader /> : 'Send reset link'}
             </Button>
           </form>
@@ -107,5 +114,3 @@ export default function ForgotPassForm() {
     </div>
   )
 }
-
-

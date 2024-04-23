@@ -1,16 +1,44 @@
 'use client'
+import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
-import ProductCard from '../ProductCard/ProductCard'
+import { sortOptions } from '@/constants/productSortOptions'
+import ProductCard from '@/components/Product/ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
+import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
+import { IProductSortParams } from '@/types/ProductSortParams'
+import { IOption } from '@/types/Dropdown'
+import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
+import { IProductFilterLabel } from '@/types/IProductFilterLabel'
+
+// @NOTE: need to delete when backend will be ready
+const _filterLabelsMock: IProductFilterLabel[] = [
+  { id: '1', name: 'name-1', label: 'Brand1' },
+  { id: '2', name: 'name-2', label: 'Seller1' },
+  { id: '3', name: 'name-3', label: 'Seller5' },
+]
 
 export default function ProductList() {
+  const handleFilterByDefault = () => {
+    console.log(`Button 'By default' clicked`)
+  }
+
+  const handleFilterLabelClick = (name: string, id: string) => {
+    console.log(`Label: ${name} id: ${id}`)
+  }
+
+  const [selectedSortOption, setSelectedSortOption] = useState<
+    IOption<IProductSortParams>
+  >(sortOptions[0])
+
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts()
+    useProducts(selectedSortOption)
+
+  function handleSelect(selectedOption: IOption<IProductSortParams>) {
+    setSelectedSortOption(selectedOption)
+  }
 
   if (error) {
-
-
     return (
       <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
         Something went wrong!
@@ -36,9 +64,22 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
+        <div className={'flex w-full justify-between'}>
+          <ProductsFilterLabels
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
+          />
+          <Dropdown<IProductSortParams>
+            className={'mb-8'}
+            options={sortOptions}
+            onChange={handleSelect}
+            selectedOption={selectedSortOption}
+          />
+        </div>
         <ul
           className={
-            'grid grid-cols-2 gap-x-2 sm:gap-x-8 gap-y-7 min-[1124px]:grid-cols-3 '
+            'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-8 min-[1124px]:grid-cols-3 '
           }
         >
           {data.map((product) => (
@@ -56,7 +97,7 @@ export default function ProductList() {
         {hasNextPage && !isFetchingNextPage && (
           <button
             className={
-              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary m-3'
+              'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
             }
             onClick={() => {
               fetchNext().catch((e) => console.log(e))

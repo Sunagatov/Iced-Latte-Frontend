@@ -30,7 +30,10 @@ export default function CartFull() {
         <p className="">${totalPrice.toFixed(2)}</p>
       </div>
       <div className="flex justify-center">
-        <Button className="my-6 h-14 w-full text-lg font-medium sm:w-[211px]">
+        <Button
+          id="go-checkout-btn"
+          className="my-6 h-14 w-full text-lg font-medium sm:w-[211px]"
+        >
           <Link href={'/'}>Go to checkout</Link>
         </Button>
       </div>

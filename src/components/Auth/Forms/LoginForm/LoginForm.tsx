@@ -31,7 +31,6 @@ export default function LoginForm() {
     },
   })
 
-
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
@@ -44,11 +43,8 @@ export default function LoginForm() {
         reset()
         handleRedirectForAuth()
       }
-
     } catch (error) {
-
       handleError(error)
-
     } finally {
       setLoading(false)
     }
@@ -56,11 +52,7 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && (
-        <div className="mt-4 text-negative">
-          {errorMessage}
-        </div>
-      )}
+      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
       <FormInput
         id="email"
         register={register}
@@ -80,6 +72,7 @@ export default function LoginForm() {
         error={errors.password}
       />
       <Button
+        id="login-btn"
         type="submit"
         className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover"
       >

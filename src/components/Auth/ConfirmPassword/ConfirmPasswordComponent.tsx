@@ -55,13 +55,15 @@ const ConfirmPasswordComponent = () => {
 
   return (
     <>
-      <h1 className='text-[36px] text-primary font-medium mb-[16px]'>Confirm password</h1>
-      <p className='text-[18px] text-primary font-medium mb-[40px]'>Enter code that was sent to your email to confirm registration.</p>
-      <form onSubmit={handleSubmit(onSubmit)} >
+      <h1 className="mb-[16px] text-[36px] font-medium text-primary">
+        Confirm password
+      </h1>
+      <p className="mb-[40px] text-[18px] font-medium text-primary">
+        Enter code that was sent to your email to confirm registration.
+      </p>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {errorMessage && (
-          <div className="mt-4 text-negative">
-            {errorMessage}
-          </div>
+          <div className="mt-4 text-negative">{errorMessage}</div>
         )}
         <div className="flex-grow md:w-full">
           <FormInput
@@ -75,11 +77,14 @@ const ConfirmPasswordComponent = () => {
             className="w-full"
           />
         </div>
-        <Button type="submit"
-          className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover w-[220px]"
+        <Button
+          id="confirm-pass-btn"
+          type="submit"
+          className="mt-6 flex w-[220px] items-center justify-center hover:bg-brand-solid-hover"
         >
-          {loading ? <Loader /> : 'Confirm Registration'}</Button>
-      </form >
+          {loading ? <Loader /> : 'Confirm Registration'}
+        </Button>
+      </form>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { Review } from '@/types/ProductReviewType'
+import { Review } from '@/types/ReviewType'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
 

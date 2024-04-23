@@ -10,11 +10,11 @@ import {
   useProductReviewsStore,
 } from '@/store/reviewsStore'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import { Review } from '@/types/ProductReviewType'
+import { Review } from '@/types/ReviewType'
 import { useAuthStore } from '@/store/authStore'
 
 interface ReviewComponentProps {
-  productId: string;
+  productId: string
 }
 
 const ReviewComponent = React.memo(function ReviewComponent1({ productId }: ReviewComponentProps) {
@@ -174,36 +174,41 @@ const ReviewComponent = React.memo(function ReviewComponent1({ productId }: Revi
 
   return (
     <div className="relative ml-auto mr-auto max-w-[1157px]">
-      <div className="flex flex-col-reverse xl:flex-row xl:justify-between">
+      <div className="flex flex-col-reverse xl:flex-row">
         <h2 className="xl:4XL order-[1] mb-7 text-4XL font-medium text-primary xl:absolute xl:left-0 xl:top-0 xl:order-[0] ">
           Rating and reviews
         </h2>
-        <div>
-          <div className="xl:max-w-[800px]">
-            <ReviewForm productId={productId} />
-            {hasComments && (
-              <CommentList
-                productId={productId}
-              />
-            )}
-            {errorMessage && (
-              <div className="mt-4 text-negative">{errorMessage}</div>
-            )}
+
+        <div className="flex-1">
+          {' '}
+          {/* Left div */}
+          <div>
+            <div className="xl:max-w-[800px]">
+              <ReviewForm productId={productId} />
+              {hasComments && (
+                <CommentList
+                  productId={productId}
+                />
+              )}
+              {errorMessage && (
+                <div className="mt-4 text-negative">{errorMessage}</div>
+              )}
+            </div>
           </div>
         </div>
-
-        <div className="text-[18px] font-medium text-tertiary">
-          {hasComments ? (
-            <ReviewRatingFilter onChange={handleRatingChange} />
-          ) : (
-            <div className="text-end">No customer review</div>
-          )}
+        <div className="mr-auto">
+          {' '}
+          <div className="text-[18px] font-medium text-tertiary">
+            {hasComments ? (
+              <ReviewRatingFilter onChange={handleRatingChange} />
+            ) : (
+              <div className="text-end">No customer review</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   )
 })
-
-
 
 export default ReviewComponent

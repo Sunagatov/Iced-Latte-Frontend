@@ -4,7 +4,11 @@ import { editUserProfile } from '@/services/userService'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { isValid as isValidDate, format } from 'date-fns'
-import { ValuePiece, Value, FormProfileProps } from '../../../types/FormProfileTypes'
+import {
+  ValuePiece,
+  Value,
+  FormProfileProps,
+} from '../../../types/FormProfileTypes'
 import { validationSchema } from '@/validation/userFormSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
@@ -36,8 +40,6 @@ const FormProfile = ({
     defaultValues: initialUserData,
   })
 
-
-
   useEscapeKey(() => {
     setIsCalendarOpen(false)
   })
@@ -67,7 +69,9 @@ const FormProfile = ({
   }
 
   // function for closing the calendar by clicking anywhere in the viewport
-  const clickBackdrop = (e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent) => {
+  const clickBackdrop = (
+    e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent,
+  ) => {
     if (e.currentTarget === e.target) {
       setIsCalendarOpen(false)
     }
@@ -136,6 +140,8 @@ const FormProfile = ({
               className="fixed bottom-0 left-0 right-0 top-0 z-10"
               onClick={clickBackdrop}
               onKeyDown={clickBackdrop}
+              role="button"
+              tabIndex={0}
             >
               <div className="z-20">
                 {isCalendarOpen && (
@@ -244,15 +250,16 @@ const FormProfile = ({
         </div>
         <div className="mt-4">
           {errorMessage && (
-            <div className="mt-4 text-negative">
-              {errorMessage}
-            </div>
+            <div className="mt-4 text-negative">{errorMessage}</div>
           )}
           <Button
+            id="save-btn"
             type="submit"
-            className={`${Object.keys(errors).length > 0
-              ? 'cursor-not-allowed bg-brand-solid opacity-20'
-              : 'bg-brand-solid hover:bg-indigo-700'} mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
+            className={`${
+              Object.keys(errors).length > 0
+                ? 'cursor-not-allowed bg-brand-solid opacity-20'
+                : 'bg-brand-solid hover:bg-indigo-700'
+            } mt-[24px] rounded-[47px] border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus:outline-focus focus:ring-2 focus:ring-offset-2`}
           >
             <span>Save Changes</span>
           </Button>
