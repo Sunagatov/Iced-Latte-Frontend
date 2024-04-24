@@ -8,6 +8,7 @@ import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
+import { twMerge } from 'tailwind-merge'
 
 export default function ProductList() {
   const [selectedSortOption, setSelectedSortOption] = useState<
@@ -20,6 +21,8 @@ export default function ProductList() {
   function handleSelect(selectedOption: IOption<IProductSortParams>) {
     setSelectedSortOption(selectedOption)
   }
+
+  const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
 
   if (error) {
     return (
@@ -38,7 +41,12 @@ export default function ProductList() {
   }
 
   return (
-    <section className={'mt-5 text-center min-[1124px]:mt-16  '}>
+    <section
+      className={twMerge(
+        'mt-5 text-center min-[1124px]:mt-16',
+        !isShowLoadMoreBtn ? 'mb-14' : '',
+      )}
+    >
       <div className={'inline-flex flex-col items-center text-left '}>
         <h1
           className={
@@ -72,7 +80,7 @@ export default function ProductList() {
             </li>
           ))}
         </ul>
-        {hasNextPage && !isFetchingNextPage && (
+        {isShowLoadMoreBtn && (
           <button
             className={
               'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
