@@ -11,6 +11,8 @@ import { IOption } from '@/types/Dropdown'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
+import FilterSidebar from '@/components/FilterSidebar/FilterSidebar'
+import MobileFilterSidebar from '@/components/FilterSidebar/MobileFilterSidebar'
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
@@ -32,6 +34,16 @@ export default function ProductList() {
     IOption<IProductSortParams>
   >(sortOptions[0])
 
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+
+  const handleFilterClick = () => {
+    setIsMobileFilterOpen(prev => !prev)
+  }
+
+  const handleCloseMobileFilter = () => {
+    setIsMobileFilterOpen(false)
+  }
+  
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
 
@@ -78,31 +90,45 @@ export default function ProductList() {
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
           />
+        </div>
+        <div className={'mb-6 mt-1.5 flex w-full items-center justify-between'}>
+          <div
+            onClick={handleFilterClick}
+            className='hidden max-[1100px]:block cursor-pointer text-brand text-L font-medium'>
+              Filter
+          </div>
           <Dropdown<IProductSortParams>
-            className={'mb-8'}
+            className='ml-auto'
             options={sortOptions}
             onChange={handleSelect}
             selectedOption={selectedSortOption}
           />
         </div>
-        <ul
-          className={
-            'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1124px]:grid-cols-3 '
-          }
-        >
-          {data.map((product) => (
-            <li key={product.id}>
-              <ProductCard
-                id={product.id}
-                name={product.name}
-                price={product.price}
-                description={product.description}
-                productFileUrl={product.productFileUrl}
-              />
-            </li>
-          ))}
-        </ul>
-        {isShowLoadMoreBtn && (
+        <div className='inline-flex gap-x-8'>
+          <FilterSidebar className='hidden min-[1100px]:block' />
+          { isMobileFilterOpen && <MobileFilterSidebar
+            onClose={handleCloseMobileFilter}
+            className='min-[1100px]:hidden'
+          /> }
+          <ul
+            className={
+              'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3 '
+            }
+          >
+            {data.map((product) => (
+              <li key={product.id} >
+                <ProductCard
+                  id={product.id}
+                  name={product.name}
+                  price={product.price}
+                  description={product.description}
+                  productFileUrl={product.productFileUrl}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+        {hasNextPage && !isFetchingNextPage && (
           <button
             className={
               'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
@@ -111,7 +137,7 @@ export default function ProductList() {
               fetchNext().catch((e) => console.log(e))
             }}
           >
-            Show more
+              Show more
           </button>
         )}
         {isFetchingNextPage && (

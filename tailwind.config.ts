@@ -41,6 +41,9 @@ module.exports = {
         error: '#EB5757',
         focus: '#682EFF',
       },
+      boxShadow: {
+        'primary': '0px -1px 0px 0px #0000001A',
+      },
       fontSize: {
         'XS': ['14px', '18px'],
         'M': ['16px', '20px'],
