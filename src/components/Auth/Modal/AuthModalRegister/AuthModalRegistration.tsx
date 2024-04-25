@@ -49,25 +49,34 @@ function AuthModalRegistr() {
   })
 
   return (
-    <div className={'fixed bottom-0 right-0 top-14 z-30 flex w-full sm:top-22'}>
+    <div className={'sm:top-22 fixed bottom-0 right-0 top-14 z-30 flex w-full'}>
       <div
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
         onClick={handleCloseModal}
-      >
-      </div>
+        role="button"
+        onKeyDown={() => {}}
+        tabIndex={0}
+      ></div>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
           <h2 className="text-4XL">Welcome back</h2>
           {switchForm === SwitchType.Login ? (
             <LoginForm />
           ) : (
-            <Link href="/auth/login" onClick={handleClickSwitchForm}
-              className="mt-[10px] w-full hover:text-focus flex text-[gray]">
-              Already have account? <span className='text-primary ml-[5px] underline' >Sign In</span>
+            <Link
+              href="/auth/login"
+              onClick={handleClickSwitchForm}
+              className="mt-[10px] flex w-full text-[gray] hover:text-focus"
+            >
+              Already have account?{' '}
+              <span className="ml-[5px] text-primary underline">Sign In</span>
             </Link>
           )}
           {switchForm === SwitchType.Login && (
-            <Link href="/" className="flex items-center justify-center text-focus mt-[40px]">
+            <Link
+              href="/"
+              className="mt-[40px] flex items-center justify-center text-focus"
+            >
               Forgot password
             </Link>
           )}
@@ -81,7 +90,7 @@ function AuthModalRegistr() {
               <h2 className="text-4XL">I’m new here</h2>
               <Link href="/auth/registration">
                 <Button
-                  id='register-btn'
+                  id="register-btn"
                   type="button"
                   onClick={handleClickSwitchForm}
                   className="mt-6 w-full hover:bg-brand-solid-hover"

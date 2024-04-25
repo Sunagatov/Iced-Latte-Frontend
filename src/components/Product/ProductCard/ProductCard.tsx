@@ -20,18 +20,30 @@ export default function ProductCard({
 }: Readonly<CardProps>) {
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)
-  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
+  const { addFavourite, removeFavourite, favourites, favouriteIds } =
+    useFavouritesStore()
 
   const isInFavourites = favourites?.some((fav) => fav.id === id)
 
   const isActive = favouriteIds.includes(id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(id, token, isInFavourites, isActive, addFavourite, removeFavourite)
+    await handleFavouriteButtonClick(
+      id,
+      token,
+      isInFavourites,
+      isActive,
+      addFavourite,
+      removeFavourite,
+    )
   }
 
   return (
-    <div className={'relative flex w-[177px] flex-col gap-y-4 md:w-[346px]'}>
+    <div
+      className={
+        'relative flex h-full w-[177px] flex-col justify-between gap-y-4 md:w-[360px]'
+      }
+    >
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
         <div className=" relative h-[177px] w-full  md:h-[360px]">
           <Image

@@ -16,8 +16,7 @@ import { useProductReviewsStore } from '@/store/reviewsStore'
 import { useUserReview } from '../ReviewComponent/useUserReview'
 
 interface ReviewFormProps {
-  productId: string;
-
+  productId: string
 }
 
 const ReviewForm = ({ productId }: ReviewFormProps) => {
@@ -26,14 +25,26 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const [charCount, setCharCount] = useState(0)
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
-  const { setIsReviewFormVisible, setIsReviewButtonVisible, setIsRaitingFormVisible } = useProductReviewsStore()
+  const {
+    setIsReviewFormVisible,
+    setIsReviewButtonVisible,
+    setIsRaitingFormVisible,
+  } = useProductReviewsStore()
   const { token, setModalState } = useAuthStore()
-  const ismediaQuery = useMediaQuery('(max-width: 768px)', { initializeWithValue: false })
+  const ismediaQuery = useMediaQuery('(max-width: 768px)', {
+    initializeWithValue: false,
+  })
   const router = useRouter()
 
-  const isReviewFormVisible = useProductReviewsStore((state) => state.isReviewFormVisible)
-  const isReviewButtonVisible = useProductReviewsStore((state) => state.isReviewButtonVisible)
-  const isReviewRatingFormVisible = useProductReviewsStore((state) => state.isReviewRatingFormVisible)
+  const isReviewFormVisible = useProductReviewsStore(
+    (state) => state.isReviewFormVisible,
+  )
+  const isReviewButtonVisible = useProductReviewsStore(
+    (state) => state.isReviewButtonVisible,
+  )
+  const isReviewRatingFormVisible = useProductReviewsStore(
+    (state) => state.isReviewRatingFormVisible,
+  )
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
   const currentRating = productRatingData.rating
@@ -50,15 +61,14 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const handleClearText = () => {
     setReviewText('')
     setCharCount(0)
-
   }
-
 
   // If i just call this -  getProductReviews(productId) - get "An unknown error occurred"
 
   const handleAddReview = async () => {
     try {
-      if (isRatingSelected && !isReviewTextEmpty) { // Check if both rating and review text are provided
+      if (isRatingSelected && !isReviewTextEmpty) {
+        // Check if both rating and review text are provided
         setLoading(true)
         await apiAddProductReview(productId, reviewText, currentRating)
         await useProductReviewsStore.getState().getProductReviews(productId)
@@ -103,42 +113,59 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
 
   useUserReview(productId)
 
-
-
   return (
-
     <>
       {isReviewRatingFormVisible && (
-        <div className='my-10 pb-8 border-b border-solid border-primary sm:pb-7 xl:pb-12 '>
-          <div className='mb-6 font-medium text-2XL xl:mt-14'>Rating</div>
-          <div className='flex items-center relative'>
-            <StarRating productId={productId} count={5} activeColor={'#00A30E'} />
+        <div className="my-10 border-b border-solid border-primary pb-8 sm:pb-7 xl:pb-12 ">
+          <div className="mb-6 text-2XL font-medium xl:mt-14">Rating</div>
+          <div className="relative flex items-center">
+            <StarRating
+              productId={productId}
+              count={5}
+              activeColor={'#00A30E'}
+            />
             <RatingInfo currentRating={currentRating} />
           </div>
-        </div >
+        </div>
       )}
 
       {isReviewButtonVisible && (
-        <Button id="add-review-btn" onClick={handleClickReview} className='flex items-center justify-center font-medium text-[18px] text-inverted bg-focus rounded-[47px] sm:w-[278px] mb-10 mt-20 w-full'>Add a review</Button>
+        <Button
+          id="add-review-btn"
+          onClick={handleClickReview}
+          className="mb-10 mt-20 flex w-full items-center justify-center rounded-[47px] bg-focus text-[18px] font-medium text-inverted sm:w-[278px]"
+        >
+          Add a review
+        </Button>
       )}
 
       {isReviewFormVisible && (
         <>
-          <div className='relative'>
-            <h3 className='mb-6 font-medium text-2XL text-primary '>What do you think of this product?</h3 >
+          <div className="relative">
+            <h3 className="mb-6 text-2XL font-medium text-primary ">
+              What do you think of this product?
+            </h3>
             <textarea
               id="review-textarea"
-              className={`text-[18px] w-full pl-[16px] pr-[46px] py-[17px] bg-secondary rounded-lg outline-focus ${reviewText ? 'h-[196px]' : 'h-[56px]'} ${reviewText ? 'pb-[39px]' : ''} placeholder:font-medium placeholder:text-sm `}
+              className={`w-full rounded-lg bg-secondary py-[17px] pl-[16px] pr-[46px] text-[18px] outline-focus ${reviewText ? 'h-[196px]' : 'h-[56px]'} ${reviewText ? 'pb-[39px]' : ''} placeholder:text-sm placeholder:font-medium `}
               value={reviewText}
               onChange={handleTextChange}
-              placeholder={ismediaQuery ? 'Share your impressions' : 'Share your impressions with other customers'}
+              placeholder={
+                ismediaQuery
+                  ? 'Share your impressions'
+                  : 'Share your impressions with other customers'
+              }
               maxLength={1500}
-
             ></textarea>
             {reviewText && (
               <>
-                <div className='absolute bottom-2 right-4 text-tertiary'>{charCount}/1500</div>
-                <button className='absolute top-4 right-4 text-tertiary' onClick={handleClearText}>
+                <div className="absolute bottom-2 right-4 text-tertiary">
+                  {charCount}/1500
+                </div>
+                <button
+                  className="absolute right-4 top-4 text-tertiary"
+                  onClick={handleClearText}
+                >
                   <IoIosClose size={22} />
                 </button>
               </>
@@ -146,20 +173,29 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
           </div>
 
           {errorMessage && (
-            <div className="mt-4 text-negative">
-              {errorMessage}
-            </div>
+            <div className="mt-4 text-negative">{errorMessage}</div>
           )}
-          <div className='mt-6 flex gap-2 '>
-            <Button id="submit-review-btn" onClick={handleAddReview}
+          <div className="mt-6 flex gap-2 ">
+            <Button
+              id="submit-review-btn"
+              onClick={handleAddReview}
               disabled={!isRatingSelected || isReviewTextEmpty} // Disable the button if either rating or review text is not provided
-              className={`${(!isRatingSelected || isReviewTextEmpty) ? 'opacity-20' : ''} w-[334px] flex items-center justify-center mb-12 xl:w-[278px]`}>{loading ? < Loader /> : 'Add a review'}</Button>
-            {(reviewText || isRatingSelected) && (<Button id="submit-cancel-btn" onClick={handleCancel} className='ml-2 w-[108px] bg-secondary text-primary font-medium text-[18px]'>Cancel</Button>)}
+              className={`${!isRatingSelected || isReviewTextEmpty ? 'opacity-20' : ''} mb-12 flex w-[334px] items-center justify-center xl:w-[278px]`}
+            >
+              {loading ? <Loader /> : 'Add a review'}
+            </Button>
+            {(reviewText || isRatingSelected) && (
+              <Button
+                id="submit-cancel-btn"
+                onClick={handleCancel}
+                className="ml-2 w-[108px] bg-secondary text-[18px] font-medium text-primary"
+              >
+                Cancel
+              </Button>
+            )}
           </div>
-
         </>
-      )
-      }
+      )}
     </>
   )
 }

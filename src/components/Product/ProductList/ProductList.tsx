@@ -2,24 +2,44 @@
 import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
 import { sortOptions } from '@/constants/productSortOptions'
-import ProductCard from '../ProductCard/ProductCard'
+import ProductCard from '@/components/Product/ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
+import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
+import { IProductFilterLabel } from '@/types/IProductFilterLabel'
+import { twMerge } from 'tailwind-merge'
+
+// @NOTE: need to delete when backend will be ready
+const _filterLabelsMock: IProductFilterLabel[] = [
+  { id: '1', name: 'name-1', label: 'Brand1' },
+  { id: '2', name: 'name-2', label: 'Seller1' },
+  { id: '3', name: 'name-3', label: 'Seller5' },
+]
 
 export default function ProductList() {
+  const handleFilterByDefault = () => {
+    console.log(`Button 'By default' clicked`)
+  }
+
+  const handleFilterLabelClick = (name: string, id: string) => {
+    console.log(`Label: ${name} id: ${id}`)
+  }
+
   const [selectedSortOption, setSelectedSortOption] = useState<
     IOption<IProductSortParams>
   >(sortOptions[0])
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts()
+    useProducts(selectedSortOption)
 
   function handleSelect(selectedOption: IOption<IProductSortParams>) {
     setSelectedSortOption(selectedOption)
   }
+
+  const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
 
   if (error) {
     return (
@@ -38,7 +58,12 @@ export default function ProductList() {
   }
 
   return (
-    <section className={'mt-5 text-center min-[1124px]:mt-16  '}>
+    <section
+      className={twMerge(
+        'mt-5 text-center min-[1124px]:mt-16',
+        !isShowLoadMoreBtn ? 'mb-14' : '',
+      )}
+    >
       <div className={'inline-flex flex-col items-center text-left '}>
         <h1
           className={
@@ -47,7 +72,12 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
-        <div className={'flex w-full justify-end'}>
+        <div className={'flex w-full justify-between'}>
+          <ProductsFilterLabels
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
+          />
           <Dropdown<IProductSortParams>
             className={'mb-8'}
             options={sortOptions}
@@ -72,7 +102,7 @@ export default function ProductList() {
             </li>
           ))}
         </ul>
-        {hasNextPage && !isFetchingNextPage && (
+        {isShowLoadMoreBtn && (
           <button
             className={
               'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'

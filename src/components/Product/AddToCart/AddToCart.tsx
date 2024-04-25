@@ -15,8 +15,9 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
   const token = useAuthStore((state) => state.token)
   const items = useStoreData(useCombinedStore, (state) => state.itemsIds)
 
-  const productQuantity = items?.find((item) => item.productId === product.id)
-    ?.productQuantity
+  const productQuantity = items?.find(
+    (item) => item.productId === product.id,
+  )?.productQuantity
 
   const addProduct = () => {
     add(product.id, token)
@@ -34,24 +35,25 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
     <>
       {!productQuantity && (
         <div>
-          <Button id='add-btn' className='w-full md:w-[278px] ' onClick={addProduct}>
+          <Button
+            id="add-btn"
+            className="w-full md:w-[278px] "
+            onClick={addProduct}
+          >
             Add to cart &#x2022; ${product.price}
-
           </Button>
         </div>
       )}
       {productQuantity && (
-        <div className="flex items-center gap-2 md:mx-0 cursor-pointer">
+        <div className="flex cursor-pointer items-center gap-2 md:mx-0">
           <Counter
             theme="dark"
             count={productQuantity}
             addProduct={addProduct}
             removeProduct={removeProduct}
           />
-          <div className='w-[123px] h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted flex items-center justify-center cursor-default'>
-            <span className='pointer-events-none '>
-              ${product.price}
-            </span>
+          <div className="flex h-[54px] w-[123px] cursor-default items-center justify-center rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted">
+            <span className="pointer-events-none ">${product.price}</span>
           </div>
         </div>
       )}

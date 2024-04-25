@@ -17,9 +17,13 @@ import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
-  const setStoredEmailSent = useLocalSessionStore(state => state.setStoredEmailSent)
+  const setStoredEmailSent = useLocalSessionStore(
+    (state) => state.setStoredEmailSent,
+  )
   const resetSuccessful = useLocalSessionStore((state) => state.resetSuccessful)
-  const setResetSuccessful = useLocalSessionStore((state) => state.setResetSuccessful)
+  const setResetSuccessful = useLocalSessionStore(
+    (state) => state.setResetSuccessful,
+  )
 
   const {
     handleSubmit,
@@ -30,12 +34,10 @@ export default function GuestResetPassForm() {
     defaultValues: {
       code: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     },
   })
   const router = useRouter()
-
-
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     const storedEmail = localStorage.getItem('emailForReset') ?? ''
@@ -46,7 +48,6 @@ export default function GuestResetPassForm() {
       password,
     }
 
-
     try {
       setLoading(true)
       await apiGuestResetPassword(data)
@@ -56,7 +57,6 @@ export default function GuestResetPassForm() {
     } finally {
       setLoading(false)
       localStorage.removeItem('emailForReset')
-
     }
   }
 
@@ -66,7 +66,6 @@ export default function GuestResetPassForm() {
     setStoredEmailSent(false)
   }
 
-
   return (
     <div className="mx-auto mt-4 flex max-w-screen-md items-center justify-center px-4">
       {resetSuccessful ? (
@@ -74,7 +73,9 @@ export default function GuestResetPassForm() {
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Password has been changed.
           </h2>
-          <Button id='return-btn' onClick={handleButtonClick}>Return to main page</Button>
+          <Button id="return-btn" onClick={handleButtonClick}>
+            Return to main page
+          </Button>
         </div>
       ) : (
         <div>
@@ -119,7 +120,11 @@ export default function GuestResetPassForm() {
               className="mb-5"
               error={errors.confirmPassword}
             />
-            <Button id='reset-btn' type="submit" className="mt-6 flex  items-center justify-center hover:bg-brand-solid-hover">
+            <Button
+              id="reset-btn"
+              type="submit"
+              className="mt-6 flex  items-center justify-center hover:bg-brand-solid-hover"
+            >
               {loading ? <Loader /> : 'Reset password'}
             </Button>
           </form>

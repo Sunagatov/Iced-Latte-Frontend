@@ -8,7 +8,10 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { AuthChangePasswordCredentials } from '@/types/services/AuthServices'
-import { apiAuthChangePassword, apiAuthInitPasswordChange } from '@/services/userService'
+import {
+  apiAuthChangePassword,
+  apiAuthInitPasswordChange,
+} from '@/services/userService'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { authChangePassSchema } from '@/validation/changePassSchema'
 import { IChangeAuthValues } from '@/types/ChangePassword'
@@ -19,7 +22,9 @@ export default function AuthResetPassForm() {
   const { errorMessage, handleError } = useErrorHandler()
   const { handleSubmit, register, reset, getValues } = useForm()
   const resetSuccessful = useLocalSessionStore((state) => state.resetSuccessful)
-  const setResetSuccessful = useLocalSessionStore((state) => state.setResetSuccessful)
+  const setResetSuccessful = useLocalSessionStore(
+    (state) => state.setResetSuccessful,
+  )
   const router = useRouter()
 
   const handleButtonClick = () => {
@@ -32,7 +37,7 @@ export default function AuthResetPassForm() {
     resolver: yupResolver(authChangePassSchema),
     defaultValues: {
       oldPassword: '',
-      newPassword: ''
+      newPassword: '',
     },
   })
 
@@ -51,8 +56,7 @@ export default function AuthResetPassForm() {
       reset()
     } catch (error) {
       handleError(error)
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -64,7 +68,9 @@ export default function AuthResetPassForm() {
           <h2 className="mb-4 pt-6 text-4xl font-medium text-slate-950">
             Password has been changed.
           </h2>
-          <Button id='reset-pass-btn' onClick={handleButtonClick}>Return to main page</Button>
+          <Button id="reset-pass-btn" onClick={handleButtonClick}>
+            Return to main page
+          </Button>
         </div>
       ) : (
         <div>
@@ -77,9 +83,7 @@ export default function AuthResetPassForm() {
           </p>
           <form onSubmit={handleSubmit(onSubmit)}>
             {errorMessage && (
-              <div className="mt-4 text-negative">
-                {errorMessage}
-              </div>
+              <div className="mt-4 text-negative">{errorMessage}</div>
             )}
             <FormInput
               id="password"
@@ -101,7 +105,11 @@ export default function AuthResetPassForm() {
               className="mb-5"
               error={errors.newPassword}
             />
-            <Button id='reset-confirm-btn' type="submit" className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover">
+            <Button
+              id="reset-confirm-btn"
+              type="submit"
+              className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover"
+            >
               {loading ? <Loader /> : ' Change password'}
             </Button>
           </form>
