@@ -10,6 +10,7 @@ import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
+import { twMerge } from 'tailwind-merge'
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
@@ -38,6 +39,8 @@ export default function ProductList() {
     setSelectedSortOption(selectedOption)
   }
 
+  const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
+
   if (error) {
     return (
       <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
@@ -55,7 +58,12 @@ export default function ProductList() {
   }
 
   return (
-    <section className={'mt-5 text-center min-[1124px]:mt-16  '}>
+    <section
+      className={twMerge(
+        'mt-5 text-center min-[1124px]:mt-16',
+        !isShowLoadMoreBtn ? 'mb-14' : '',
+      )}
+    >
       <div className={'inline-flex flex-col items-center text-left '}>
         <h1
           className={
@@ -94,7 +102,7 @@ export default function ProductList() {
             </li>
           ))}
         </ul>
-        {hasNextPage && !isFetchingNextPage && (
+        {isShowLoadMoreBtn && (
           <button
             className={
               'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
