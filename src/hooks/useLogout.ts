@@ -5,12 +5,21 @@ import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
 import { apiLogoutUser } from '@/services/authService'
 import { useState } from 'react'
+import {useProductReviewsStore} from "@/store/reviewsStore";
+// import {useProductRatingStore} from "@/store/ratingStore";
 
 const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { reset } = useAuthStore()
   const { resetFav } = useFavouritesStore()
   const router = useRouter()
+  const {
+    setIsRaitingFormVisible,
+    setIsReviewFormVisible,
+    setIsReviewButtonVisible,
+  } = useProductReviewsStore()
+
+  // const { setRating } = useProductRatingStore()
 
   const logout = async () => {
     try {
@@ -19,10 +28,10 @@ const useLogout = () => {
       await removeCookie('token')
       reset()
       resetFav()
-      // setIsReviewFormVisible(false)
-      // setIsRaitingFormVisible(false)
-      // setIsReviewButtonVisible(true)
-      // setSelectedRating(null) // ? same as `setIsRaitingFormVisible` ?
+      setIsReviewFormVisible(false)
+      setIsRaitingFormVisible(false)
+      setIsReviewButtonVisible(true)
+      // setRating(null,0)
 
       router.push('/')
       // add other features

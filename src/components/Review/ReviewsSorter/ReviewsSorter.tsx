@@ -20,6 +20,7 @@ const ReviewsSorter: React.FC<IReviewsSorter> = ({
         onChange={selectOption}
         options={reviewsSortOptions}
         selectedOption={selectedOption}
+        className='mt-10 mb-10'
       />
     </>
   )

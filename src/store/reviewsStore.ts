@@ -12,12 +12,17 @@ interface ReviewsStoreState {
   setIsReviewFormVisible: (isVisible: boolean) => void
   setIsReviewButtonVisible: (isVisible: boolean) => void
   setIsRaitingFormVisible: (isVisible: boolean) => void
-  resetProductReviewsData: () => void
   setTotalReviewsCount: (value: number) => void
   setShouldRevalidateStatistics: (value: boolean) => void
   shouldRevalidateStatistics: boolean
+  setShouldRevalidateReviews: (value: boolean) => void
+  shouldRevalidateReviews: boolean
+  setShouldRevalidateUserReview: (value: boolean) => void
+  shouldRevalidateUserReview: boolean
   reviewsStatistics: IProductReviewsStatistics | null,
   setReviewsStatistics: (value: IProductReviewsStatistics | null) => void
+  reviewFormRating: number,
+  setReviewFormRating: (value: number) => void
 }
 
 export const checkIfUserReviewExists = (review: Review | null): boolean => {
@@ -32,6 +37,9 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
       totalPages: 0,
       shouldRevalidateStatistics: true,
       reviewsStatistics: null,
+      reviewFormRating: 0,
+      shouldRevalidateReviews: false,
+      shouldRevalidateUserReview: true,
 
       isReviewFormVisible: false,
       isReviewButtonVisible: true, // ? false
@@ -47,19 +55,6 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
         set(state => ({
           ...state,
           wasRend: true
-        }))
-      },
-      resetProductReviewsData: () => {
-        set((state) => ({
-          ...state,
-          reviewsWithRatings: [],
-          filteredReviewsWithRatings: [],
-          currentPage: 0,
-          currentSize: 0,
-          totalPages: 0,
-          totalElements: 0,
-          userReview: null,
-          wasRend: false,
         }))
       },
       setTotalReviewsCount: (value: number) => {
@@ -78,6 +73,24 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
         set(state => ({
           ...state,
           reviewsStatistics: value,
+        }))
+      },
+      setReviewFormRating: (value: number) => {
+        set(state => ({
+          ...state,
+          reviewFormRating: value,
+        }))
+      },
+      setShouldRevalidateReviews: (value: boolean) => {
+        set(state => ({
+          ...state,
+          shouldRevalidateReviews: value,
+        }))
+      },
+      setShouldRevalidateUserReview: (value: boolean) => {
+        set(state => ({
+          ...state,
+          shouldRevalidateUserReview: value,
         }))
       },
     }),

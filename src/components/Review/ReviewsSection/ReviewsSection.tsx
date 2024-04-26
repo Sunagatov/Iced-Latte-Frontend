@@ -13,6 +13,7 @@ import ReviewsSorter from "@/components/Review/ReviewsSorter/ReviewsSorter";
 import {IOption} from "@/types/Dropdown";
 import {IReviewsSortParams} from "@/types/IReviewsSortParams";
 import {reviewsSortOptions} from "@/constants/reviewsSortOptions";
+import {useProductReviewsStore} from "@/store/reviewsStore";
 
 interface ReviewComponentProps {
   productId: string
@@ -23,22 +24,75 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
   const { token } = useAuthStore()
   const [userReview, setUserReview] = useState<Review | null>(null)
 
+  const {
+    setIsReviewFormVisible,
+    setIsRaitingFormVisible,
+    setIsReviewButtonVisible,
+    shouldRevalidateReviews,
+    setShouldRevalidateReviews,
+    shouldRevalidateUserReview,
+    setShouldRevalidateUserReview,
+  } = useProductReviewsStore()
+
   useEffect(() => {
     const getUserReview = async (productId: string) => {
       try {
         const userReview = await apiGetProductUserReview(productId)
 
-        setUserReview(userReview)
+        setShouldRevalidateUserReview(false)
+
+        if (Object.values(userReview).some(value => value !== null)) {
+          setUserReview(userReview)
+
+          setIsReviewFormVisible(false)
+          setIsRaitingFormVisible(false)
+          setIsReviewButtonVisible(false)
+        }
+
       } catch (error) {
         handleError(error)
+        setShouldRevalidateReviews(true)
+        setUserReview(null)
       }
     }
 
-    if (token) {
+    if (token && shouldRevalidateUserReview) {
       void getUserReview(productId)
     }
-  }, [token, productId, setUserReview, handleError])
+  }, [
+    token,
+    productId,
+    setUserReview,
+    handleError,
+    setIsReviewFormVisible,
+    setIsRaitingFormVisible,
+    setIsReviewButtonVisible,
+    shouldRevalidateUserReview,
+    setShouldRevalidateUserReview,
+  ])
 
+  useEffect(() => {
+    if (userReview) {
+      setIsReviewFormVisible(false)
+      setIsRaitingFormVisible(false)
+      setIsReviewButtonVisible(false)
+
+      return
+    }
+
+    setIsReviewFormVisible(false)
+    setIsRaitingFormVisible(false)
+    setIsReviewButtonVisible(true)
+  }, [
+    setIsReviewFormVisible,
+    setIsRaitingFormVisible,
+    setIsReviewButtonVisible,
+    userReview,
+  ])
+
+  useEffect(() => {
+    return () => setShouldRevalidateUserReview(true)
+  }, [])
 
   const [
     selectedFilterRating,
@@ -72,13 +126,34 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
     hasNextPage,
     isLoading,
     isFetchingNextPage,
-    error
+    error,
+    refreshReviews,
   } = useReviews({
     productId,
     userReview,
     sortOption: selectedSortOption,
     ratingFilter: selectedFilterRating
   })
+
+  useEffect(() => {
+    async function refreshProductReviews() {
+      try {
+        await refreshReviews()
+      } catch (error) {
+        handleError(error)
+      } finally {
+        setShouldRevalidateReviews(false)
+      }
+    }
+
+    if (shouldRevalidateReviews) {
+      void refreshProductReviews()
+    }
+  }, [
+    shouldRevalidateReviews,
+    setShouldRevalidateReviews,
+    handleError,
+  ])
 
   const showMoreReviews = () => {
     fetchNext().catch((e) => handleError(e))

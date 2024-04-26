@@ -12,7 +12,6 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useMediaQuery } from 'usehooks-ts'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-import { useUserReview } from '../ReviewsSection/useUserReview'
 
 interface ReviewFormProps {
   productId: string
@@ -28,6 +27,9 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
     setIsRaitingFormVisible,
+    setShouldRevalidateStatistics,
+    setShouldRevalidateUserReview,
+    setShouldRevalidateReviews,
   } = useProductReviewsStore()
   const { token, setModalState } = useAuthStore()
   const ismediaQuery = useMediaQuery('(max-width: 768px)', {
@@ -64,23 +66,18 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setCharCount(0)
   }
 
-  // If i just call this -  getProductReviews(productId) - get "An unknown error occurred"
-
   const handleAddReview = async () => {
     try {
-
       setLoading(true)
       await apiAddProductReview(productId, reviewText, currentRating)
 
-      // доделать с учетом нового апи стора ревьюз
-      await useProductReviewsStore.getState().getProductReviews(productId)
-      await useProductReviewsStore.getState().getProductUserReview(productId)
-
+      setShouldRevalidateStatistics(true)
+      setShouldRevalidateReviews(true)
+      setShouldRevalidateUserReview(true)
 
       setIsReviewFormVisible(false)
       setIsRaitingFormVisible(false)
       setIsReviewButtonVisible(false)
-
     } catch (error) {
       handleError(error)
     } finally {

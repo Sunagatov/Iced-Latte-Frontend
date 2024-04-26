@@ -12,7 +12,7 @@ interface IReview {
   isUserReview: boolean
   review: Review | null
   toggleReviewExpansion?: (id: string | null | undefined) => void
-  deleteReview?: (id: string | null | undefined) => void
+  deleteReview?: (id: string) => void
   likeReview?: (id: string | null | undefined) => void
   disLikeReview?: (id: string | null | undefined) => void
   isExpanded?: boolean
@@ -34,7 +34,7 @@ const Review: React.FC<IReview> = ({
   }
 
   const deleteReviewHandler = () => {
-    deleteReview(review?.productReviewId)
+    deleteReview(review!.productReviewId!)
   }
 
   const likeReviewHandler = () => {

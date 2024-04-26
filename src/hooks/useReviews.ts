@@ -25,7 +25,7 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     return `/products/${productId}/reviews?page=${pageIndex}&size=3&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${productRatingQuery}`
   }
 
-  const { data, error, isLoading, size, setSize } = useSWRInfinite<
+  const { data, error, isLoading, size, setSize, mutate  } = useSWRInfinite<
     IReviews,
     Error
   >(getKey, apiGetAllReviews, {
@@ -52,6 +52,8 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     (isLoading && !error) || // initial loading
     (size > 0 && data && typeof data[size - 1] === 'undefined')
 
+  const refreshReviews = () => mutate()
+
   return {
     data: filteredReviews,
     fetchNext,
@@ -59,5 +61,6 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     isLoading,
     isFetchingNextPage,
     error,
+    refreshReviews,
   }
 }

@@ -4,8 +4,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import React from 'react'
 import { apiDeleteProductReview } from '@/services/reviewService'
-import { handleAxiosError } from '@/services/apiError/apiError'
-import { useAuthStore } from '@/store/authStore'
+import { useErrorHandler } from '@/services/apiError/apiError'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { Review as ReviewType } from '@/types/ReviewType'
 import Loader from "@/components/UI/Loader/Loader";
@@ -32,26 +31,30 @@ const ReviewsList: React.FC<IReviewsList> = ({
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
     setIsRaitingFormVisible,
+    setShouldRevalidateStatistics,
+    setShouldRevalidateUserReview,
+    setShouldRevalidateReviews,
   } = useProductReviewsStore()
 
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
+  const {
+    handleError,
+    // errorMessage
+  } = useErrorHandler()
 
-  const handleDeleteComment = async (productReviewId: string | null | undefined, productId: string): Promise<void> => {
+  const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
     try {
-      // перенести в reviewsStore
       productReviewId && await apiDeleteProductReview(productReviewId, productId)
-      await useProductReviewsStore.getState().getProductUserReview(productId)
-      await useProductReviewsStore.getState().getProductReviews(productId)
 
-
+      setShouldRevalidateStatistics(true)
+      setShouldRevalidateReviews(true)
+      setShouldRevalidateUserReview(true)
 
       setIsReviewFormVisible(false)
       setIsReviewButtonVisible(true)
       setIsRaitingFormVisible(false)
-
     }
     catch (error) {
-      handleAxiosError(error)
+      handleError(error)
     }
 
   }
@@ -74,7 +77,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
           <Review
             isUserReview
             review={userReview}
-            deleteReview={(id) => handleDeleteComment(id, productId)}
+            deleteReview={(id) => deleteReviewHandler(id)}
           />
         </div>
       )}
