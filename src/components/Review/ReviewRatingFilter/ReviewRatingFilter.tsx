@@ -24,10 +24,10 @@ const ReviewRatingFilter = ({
     <div>
       <div className="mb-6 flex flex-col gap-4">
         <div className="text-4XL font-medium text-primary">
-          {reviewsStatistics?.avgRating || 0}
+          {reviewsStatistics?.avgRating ?? 0}
         </div>
         <div className="text-L font-medium text-tertiary">
-          Based on {reviewsStatistics?.reviewsCount || 0} reviews
+          Based on {reviewsStatistics?.reviewsCount ?? 0} reviews
         </div>
       </div>
       <div className="flex flex-col gap-3">

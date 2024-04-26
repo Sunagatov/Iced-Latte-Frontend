@@ -6,7 +6,6 @@ import { removeCookie } from '@/utils/cookieUtils'
 import { apiLogoutUser } from '@/services/authService'
 import { useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-// import {useProductRatingStore} from "@/store/ratingStore";
 
 const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,8 +18,6 @@ const useLogout = () => {
     setIsReviewButtonVisible,
   } = useProductReviewsStore()
 
-  // const { setRating } = useProductRatingStore()
-
   const logout = async () => {
     try {
       setIsLoading(true)
@@ -31,7 +28,6 @@ const useLogout = () => {
       setIsReviewFormVisible(false)
       setIsRaitingFormVisible(false)
       setIsReviewButtonVisible(true)
-      // setRating(null,0)
 
       router.push('/')
       // add other features

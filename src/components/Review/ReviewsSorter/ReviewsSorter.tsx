@@ -15,14 +15,12 @@ const ReviewsSorter: React.FC<IReviewsSorter> = ({
   selectOption = () => {},
 }) => {
   return (
-    <>
-      <Dropdown
-        onChange={selectOption}
-        options={reviewsSortOptions}
-        selectedOption={selectedOption}
-        className="mb-10 mt-10"
-      />
-    </>
+    <Dropdown
+      onChange={selectOption}
+      options={reviewsSortOptions}
+      selectedOption={selectedOption}
+      className="mb-10 mt-10"
+    />
   )
 }
 

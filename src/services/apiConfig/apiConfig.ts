@@ -2,7 +2,7 @@ import axios from 'axios'
 import { setupCache } from 'axios-cache-interceptor'
 
 const baseConfig = {
-  baseURL: 'https://iced-latte.uk/backend/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_HOST_REMOTE,
   headers: {
     'Content-Type': 'application/json',
   },

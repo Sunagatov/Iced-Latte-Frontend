@@ -22,7 +22,7 @@ export async function apiGetProductReviews(
   size = 3,
 ): Promise<IReviews> {
   const response: AxiosResponse<IReviews> = await api.get(
-    `/products/${productId}/reviews?page=${page}${size ? `&size=${size}` : ''}`,
+    `/products/${productId}/reviews?page=${page}${size ? '&size=' + size : ''}`,
   )
 
   return response.data
