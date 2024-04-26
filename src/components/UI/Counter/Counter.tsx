@@ -41,25 +41,12 @@ const Counter = ({
 
   return (
     <div className={computedStyles}>
-      <button id="min-btn">
-        <Image
-          src={theme === 'dark' ? minus : minusDark}
-          alt="minus"
-          className={
-            'cursor-pointer' +
-            (count === 1 ? ' pointer-events-none opacity-10' : '')
-          }
-          onClick={onMinus}
-        />
+      <button id="min-btn" onClick={onMinus}>
+        <Image src={theme === 'dark' ? minus : minusDark} alt="minus" />
       </button>
       <span className={'block w-[31px] text-center'}>{count}</span>
-      <button id="plus-btn">
-        <Image
-          src={theme === 'dark' ? plus : plusDark}
-          alt="plus"
-          className={'cursor-pointer'}
-          onClick={onPlus}
-        />
+      <button id="plus-btn" onClick={onPlus}>
+        <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
       </button>
     </div>
   )
