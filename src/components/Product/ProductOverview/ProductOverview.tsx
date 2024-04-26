@@ -7,12 +7,16 @@ import { productSize } from '@/constants/product'
 import { IProduct } from '@/types/Products'
 import AddToCartButton from '@/components/Product/AddToCart/AddToCart'
 import HeartWrapper from '@/components/Product/HeartWrapper/HeartWrapper'
+import {useProductReviewsStore} from "@/store/reviewsStore";
 
 interface IProductOverview {
   product: IProduct
 }
 
 const ProductOverview:React.FC<IProductOverview> = ({ product })  => {
+
+  const { reviewsStatistics } = useProductReviewsStore()
+
   return (
     <>
       <Image
@@ -36,9 +40,10 @@ const ProductOverview:React.FC<IProductOverview> = ({ product })  => {
               width={16}
               height={15}
             />
-            <span>{product.averageRating}</span>
+            <span>{reviewsStatistics?.avgRating || 0}</span>
+            <span>&#x2022; Reviews: {reviewsStatistics?.reviewsCount}</span>
             <span className={'text-placeholder'}>
-                &#x2022; {productSize} g.
+                &#x2022; Size: {productSize} g.
             </span>
           </div>
         </div>

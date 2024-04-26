@@ -1,6 +1,7 @@
 import { Review } from '@/types/ReviewType'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
+import { IProductReviewsStatistics } from "@/types/IProductReviewsStatistics";
 
 export interface IReviews {
   reviewsWithRatings: Review[]
@@ -13,15 +14,6 @@ export interface SubmittedReviewInfo {
   productReviewId: string
   text: string
   createdAt: string
-}
-
-export interface RatingResponse {
-  productId: string
-  avgRating: number
-  reviewCount: number
-  ratingMap: {
-    [key: number]: number
-  }
 }
 
 export async function apiGetProductReviews(
@@ -75,10 +67,8 @@ export async function apiGetProductUserReview(
   return response.data
 }
 
-export async function apiGetProductRating(
-  productId: string,
-): Promise<RatingResponse> {
-  const response: AxiosResponse<RatingResponse> = await api.get(
+export async function apiGetProductReviewsStatistics(productId: string) {
+  const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
     `/products/${productId}/reviews/statistics`,
   )
 

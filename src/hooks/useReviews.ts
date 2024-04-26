@@ -1,24 +1,28 @@
 import useSWRInfinite from 'swr/infinite'
-// import { IOption } from '@/types/Dropdown'
 import { apiGetAllReviews, IReviews } from '@/services/reviewService'
 import {Review} from "@/types/ReviewType";
+import {IOption} from "@/types/Dropdown";
+import {IReviewsSortParams} from "@/types/IReviewsSortParams";
 
 // export function useReviews(sortOption: IOption<IProductSortParams>) {
 
 type UseReviewsParamsType = {
   productId: string
   userReview: Review | null
+  sortOption: IOption<IReviewsSortParams>
+  ratingFilter: number[]
 }
 
-export function useReviews({ productId, userReview }: UseReviewsParamsType) {
-  // const { sortAttribute, sortDirection } = sortOption.value
+export function useReviews({ productId, userReview, sortOption, ratingFilter }: UseReviewsParamsType) {
+  const { sortAttribute, sortDirection } = sortOption.value
 
   const getKey = (pageIndex: number, previousData: IReviews) => {
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
 
-    // return `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}`
-    return `/products/${productId}/reviews?page=${pageIndex}&size=3`
+    const productRatingQuery = ratingFilter.length > 0 ? `&product_ratings=${ratingFilter.join(',')}` : ''
+
+    return `/products/${productId}/reviews?page=${pageIndex}&size=3&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${productRatingQuery}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<
@@ -26,8 +30,6 @@ export function useReviews({ productId, userReview }: UseReviewsParamsType) {
     Error
   >(getKey, apiGetAllReviews, {
     initialSize: 1,
-    revalidateAll: false,
-    revalidateFirstPage: false
   })
 
   const totalPages = data?.[0]?.totalPages ?? 0

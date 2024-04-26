@@ -56,10 +56,10 @@ const Review: React.FC<IReview> = ({
       </div>
       <div className="mb-6 flex items-center text-[18px] font-medium text-primary">
         <div className="flex items-center gap-1">
-          {[...Array(5)].map((_, productReviewId) => (
+          {[...Array(5)].map((_, starValue) => (
             <FaStar
-              className={`h-[18px] w-[18px] ${review.productRating && productReviewId < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
-              key={review.productReviewId}
+              className={`h-[18px] w-[18px] ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
+              key={review.productReviewId! + starValue}
             />
           ))}
           <span className="ml-2 text-L font-medium text-primary">
