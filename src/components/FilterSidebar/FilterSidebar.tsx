@@ -1,14 +1,15 @@
 import { twMerge } from 'tailwind-merge'
-import Filters from './Filters'
+import { ReactNode } from 'react'
 
 interface IFilterSidebar {
   className?: string
+  children: ReactNode
 }
 
-export default function FilterSidebar({ className }: IFilterSidebar) {
+export default function FilterSidebar({ className, children }: IFilterSidebar) {
   return (
     <aside className={twMerge('w-[266px] flex-col', className)}>
-      <Filters />
+      {children}
     </aside>
   )
 }

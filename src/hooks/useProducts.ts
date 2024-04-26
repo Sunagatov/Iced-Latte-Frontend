@@ -4,14 +4,18 @@ import useSWRInfinite from 'swr/infinite'
 import { IOption } from '@/types/Dropdown'
 import { IProductSortParams } from '@/types/ProductSortParams'
 
-export function useProducts(sortOption: IOption<IProductSortParams>) {
+export function useProducts(sortOption: IOption<IProductSortParams>, brandOptions: string[]) {
   const { sortAttribute, sortDirection } = sortOption.value
+  const brandNames = brandOptions.join(',') || null
 
   const getKey = (pageIndex: number, previousData: IProductsList) => {
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
+    let requestUrl = `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}`
 
-    return `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}`
+    requestUrl = brandNames ?`${requestUrl}&brand_names=${brandNames}` : requestUrl
+
+    return requestUrl
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<

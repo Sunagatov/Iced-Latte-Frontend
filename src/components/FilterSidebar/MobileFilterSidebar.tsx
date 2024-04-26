@@ -1,14 +1,14 @@
 import { twMerge } from 'tailwind-merge'
-import Filters from './Filters'
 import CircleCloseButton from '../UI/Buttons/CircleCloseButton/CircleCloseButton'
-import { useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 
 interface IMobileFilterSidebar {
   className?: string
+  children: ReactNode
   onClose: () => void
 }
 
-export default function MobileFilterSidebar({ onClose, className }: IMobileFilterSidebar) {
+export default function MobileFilterSidebar({ onClose, className, children }: IMobileFilterSidebar) {
   const sidebarRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function MobileFilterSidebar({ onClose, className }: IMobileFilte
         <h2 className='text-primary text-4XL font-medium'>Filters</h2>
         <CircleCloseButton onClick={onClose}/>
       </div>
-      <Filters />
+      {children}
     </aside>
   )
 }

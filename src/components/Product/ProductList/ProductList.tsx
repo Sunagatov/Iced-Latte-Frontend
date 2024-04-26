@@ -13,6 +13,9 @@ import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
 import FilterSidebar from '@/components/FilterSidebar/FilterSidebar'
 import MobileFilterSidebar from '@/components/FilterSidebar/MobileFilterSidebar'
+import { useImmer } from 'use-immer'
+import Filters from '@/components/FilterSidebar/Filters'
+import { ICheckboxFilterOption } from '@/types/ICheckboxFilterOption'
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
@@ -36,19 +39,41 @@ export default function ProductList() {
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
+  // @NOTE: replace with brands from backend when backend will be ready
+  const [brandOptions, updateBrandCheckboxes] = useImmer<ICheckboxFilterOption[]>([
+    {
+      label: 'Starbucks',
+      value: 'Starbucks',
+      isChecked: false
+    },
+    {
+      label: 'Java Bean Coffee',
+      value: 'JavaBeanCoffee',
+      isChecked: false
+    },
+  ])
+  const handleBrandCheckboxChange = (index: number) => {
+    updateBrandCheckboxes(draft => {
+      draft[index].isChecked = !draft[index].isChecked
+    })
+  }
+  const selectedBrandOptions = brandOptions
+    .filter(brandOption => brandOption.isChecked).map(brandOption => brandOption.value)
+
+
+  const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
+    useProducts(selectedSortOption, selectedBrandOptions)
+
+  function handleSelect(selectedOption: IOption<IProductSortParams>) {
+    setSelectedSortOption(selectedOption)
+  }
+
   const handleFilterClick = () => {
     setIsMobileFilterOpen(prev => !prev)
   }
 
   const handleCloseMobileFilter = () => {
     setIsMobileFilterOpen(false)
-  }
-  
-  const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption)
-
-  function handleSelect(selectedOption: IOption<IProductSortParams>) {
-    setSelectedSortOption(selectedOption)
   }
 
   const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
@@ -68,6 +93,7 @@ export default function ProductList() {
       </div>
     )
   }
+  const filtersContent = <Filters brandOptions={brandOptions} onBrandCheckboxChange={handleBrandCheckboxChange} />
 
   return (
     <section
@@ -104,12 +130,16 @@ export default function ProductList() {
             selectedOption={selectedSortOption}
           />
         </div>
-        <div className='inline-flex gap-x-8'>
-          <FilterSidebar className='hidden min-[1100px]:block' />
+        <div className='w-full inline-flex gap-x-8'>
+          <FilterSidebar className='hidden min-[1100px]:block'>
+            {filtersContent}
+          </FilterSidebar>
           { isMobileFilterOpen && <MobileFilterSidebar
             onClose={handleCloseMobileFilter}
             className='min-[1100px]:hidden'
-          /> }
+          >
+            {filtersContent}
+          </MobileFilterSidebar> }
           <ul
             className={
               'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3 '
