@@ -39,7 +39,7 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
               width={16}
               height={15}
             />
-            <span>{reviewsStatistics?.avgRating || 0}</span>
+            <span>{reviewsStatistics?.avgRating ?? 0}</span>
             <span>&#x2022; Reviews: {reviewsStatistics?.reviewsCount}</span>
             <span className={'text-placeholder'}>
               &#x2022; Size: {productSize} g.

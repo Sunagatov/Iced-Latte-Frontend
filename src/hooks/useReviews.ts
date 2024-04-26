@@ -4,8 +4,6 @@ import { Review } from '@/types/ReviewType'
 import { IOption } from '@/types/Dropdown'
 import { IReviewsSortParams } from '@/types/IReviewsSortParams'
 
-// export function useReviews(sortOption: IOption<IProductSortParams>) {
-
 type UseReviewsParamsType = {
   productId: string
   userReview: Review | null

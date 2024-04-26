@@ -11,14 +11,14 @@ import Button from '@/components/UI/Buttons/Button/Button'
 interface IReview {
   isUserReview: boolean
   review: Review | null
-  toggleReviewExpansion?: (id: string | null | undefined) => void
+  toggleReviewExpansion?: (id: string) => void
   deleteReview?: (id: string) => void
-  likeReview?: (id: string | null | undefined) => void
-  disLikeReview?: (id: string | null | undefined) => void
+  likeReview?: (id: string) => void
+  disLikeReview?: (id: string) => void
   isExpanded?: boolean
 }
 
-const Review: React.FC<IReview> = ({
+const Review: React.FC<Readonly<IReview>> = ({
   isUserReview = false,
   review,
   toggleReviewExpansion = () => {},
@@ -32,7 +32,7 @@ const Review: React.FC<IReview> = ({
   })
 
   const toggleReviewExpansionHandler = () => {
-    toggleReviewExpansion(review?.productReviewId)
+    toggleReviewExpansion(review!.productReviewId!)
   }
 
   const deleteReviewHandler = () => {
@@ -40,11 +40,11 @@ const Review: React.FC<IReview> = ({
   }
 
   const likeReviewHandler = () => {
-    likeReview(review?.productReviewId)
+    likeReview(review!.productReviewId!)
   }
 
   const disLikeReviewHandler = () => {
-    disLikeReview(review?.productReviewId)
+    disLikeReview(review!.productReviewId!)
   }
 
   if (!review) return <></>
@@ -61,11 +61,11 @@ const Review: React.FC<IReview> = ({
           {[...Array(5)].map((_, starValue) => (
             <FaStar
               className={`h-[18px] w-[18px] ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
-              key={review.productReviewId! + starValue}
+              key={review.productReviewId! + Math.random()}
             />
           ))}
           <span className="ml-2 text-L font-medium text-primary">
-            {review.productRating || 0}
+            {review.productRating ?? 0}
           </span>
         </div>
         <div className="inline-flex text-L font-medium text-tertiary">
@@ -85,7 +85,7 @@ const Review: React.FC<IReview> = ({
         <p
           className={'mb-6 rounded-[8px] bg-brand-second px-4 py-[17px] text-L'}
         >
-          {review.text || 'No review'}
+          {review.text ?? 'No review'}
         </p>
       ) : (
         <p className={'mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L'}>
@@ -133,7 +133,7 @@ const Review: React.FC<IReview> = ({
               className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary"
             >
               <BiLike />
-              <span>{(review && review.likes) || 17}</span>
+              <span>{review ? review.likes : 17}</span>
             </Button>
             <Button
               id="dislike-btn"
@@ -141,7 +141,7 @@ const Review: React.FC<IReview> = ({
               className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary"
             >
               <BiDislike />
-              <span>{(review && review.dislikes) || 3}</span>
+              <span>{review ? review.dislikes : 3}</span>
             </Button>
           </div>
         </div>
