@@ -1,6 +1,6 @@
 export interface Review {
   productReviewId: string | null
-  rating: number | null
+  productRating: number | null
   text: string | null
   createdAt: string | null
   userName: string | null

@@ -2,7 +2,7 @@ import { Review } from '@/types/ReviewType'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
 
-export interface ReviewsResponse {
+export interface IReviews {
   reviewsWithRatings: Review[]
   page: number
   totalPages: number
@@ -28,10 +28,16 @@ export async function apiGetProductReviews(
   productId: string,
   page = 0,
   size = 3,
-): Promise<ReviewsResponse> {
-  const response: AxiosResponse<ReviewsResponse> = await api.get(
+): Promise<IReviews> {
+  const response: AxiosResponse<IReviews> = await api.get(
     `/products/${productId}/reviews?page=${page}${size ? `&size=${size}` : ''}`,
   )
+
+  return response.data
+}
+
+export async function apiGetAllReviews(url: string) {
+  const response: AxiosResponse<IReviews> = await api.get(url)
 
   return response.data
 }

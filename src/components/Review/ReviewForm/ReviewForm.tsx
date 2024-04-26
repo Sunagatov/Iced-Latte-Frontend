@@ -12,7 +12,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useMediaQuery } from 'usehooks-ts'
 import { useProductReviewsStore } from '@/store/reviewsStore'
-import { useUserReview } from '../ReviewComponent/useUserReview'
+import { useUserReview } from '../ReviewsSection/useUserReview'
 
 interface ReviewFormProps {
   productId: string
