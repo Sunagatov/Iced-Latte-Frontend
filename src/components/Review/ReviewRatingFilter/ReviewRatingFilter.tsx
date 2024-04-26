@@ -1,7 +1,7 @@
 'use client'
 import { FaStar } from 'react-icons/fa'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
-import {useProductReviewsStore} from "@/store/reviewsStore";
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 interface ReviewRatingFilterProps {
   onChange: (value: number) => void
@@ -14,7 +14,6 @@ const ReviewRatingFilter = ({
   onChange,
   selectedOptions = [],
 }: ReviewRatingFilterProps) => {
-
   const { reviewsStatistics } = useProductReviewsStore()
 
   const handleCheckboxChange = (value: number) => {

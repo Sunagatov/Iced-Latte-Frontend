@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
 import { apiLogoutUser } from '@/services/authService'
 import { useState } from 'react'
-import {useProductReviewsStore} from "@/store/reviewsStore";
+import { useProductReviewsStore } from '@/store/reviewsStore'
 // import {useProductRatingStore} from "@/store/ratingStore";
 
 const useLogout = () => {

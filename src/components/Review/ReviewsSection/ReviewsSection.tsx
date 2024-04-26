@@ -1,19 +1,19 @@
 'use client'
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { Review } from '@/types/ReviewType'
 import { useAuthStore } from '@/store/authStore'
-import {useReviews} from "@/hooks/useReviews";
-import {apiGetProductUserReview} from "@/services/reviewService";
-import Loader from "@/components/UI/Loader/Loader";
-import ReviewsList from "@/components/Review/ReviewsList/ReviewsList";
-import ReviewsSorter from "@/components/Review/ReviewsSorter/ReviewsSorter";
-import {IOption} from "@/types/Dropdown";
-import {IReviewsSortParams} from "@/types/IReviewsSortParams";
-import {reviewsSortOptions} from "@/constants/reviewsSortOptions";
-import {useProductReviewsStore} from "@/store/reviewsStore";
+import { useReviews } from '@/hooks/useReviews'
+import { apiGetProductUserReview } from '@/services/reviewService'
+import Loader from '@/components/UI/Loader/Loader'
+import ReviewsList from '@/components/Review/ReviewsList/ReviewsList'
+import ReviewsSorter from '@/components/Review/ReviewsSorter/ReviewsSorter'
+import { IOption } from '@/types/Dropdown'
+import { IReviewsSortParams } from '@/types/IReviewsSortParams'
+import { reviewsSortOptions } from '@/constants/reviewsSortOptions'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 interface ReviewComponentProps {
   productId: string
@@ -41,14 +41,13 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
 
         setShouldRevalidateUserReview(false)
 
-        if (Object.values(userReview).some(value => value !== null)) {
+        if (Object.values(userReview).some((value) => value !== null)) {
           setUserReview(userReview)
 
           setIsReviewFormVisible(false)
           setIsRaitingFormVisible(false)
           setIsReviewButtonVisible(false)
         }
-
       } catch (error) {
         handleError(error)
         setShouldRevalidateReviews(true)
@@ -69,6 +68,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
     setIsReviewButtonVisible,
     shouldRevalidateUserReview,
     setShouldRevalidateUserReview,
+    setShouldRevalidateReviews,
   ])
 
   useEffect(() => {
@@ -92,15 +92,12 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
 
   useEffect(() => {
     return () => setShouldRevalidateUserReview(true)
-  }, [])
+  }, [setShouldRevalidateUserReview])
 
-  const [
-    selectedFilterRating,
-    setSelectedFilterRating
-  ] = useState<number[]>([])
+  const [selectedFilterRating, setSelectedFilterRating] = useState<number[]>([])
 
   const ratingFilterChangeHandler = (value: number) => {
-    setSelectedFilterRating(prevState => {
+    setSelectedFilterRating((prevState) => {
       const indexOfValue = prevState.indexOf(value)
 
       if (indexOfValue === -1) {
@@ -111,10 +108,9 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
     })
   }
 
-  const [
-    selectedSortOption,
-    setSelectedSortOption
-  ] = useState<IOption<IReviewsSortParams>>(reviewsSortOptions[0])
+  const [selectedSortOption, setSelectedSortOption] = useState<
+    IOption<IReviewsSortParams>
+  >(reviewsSortOptions[0])
 
   const selectSortOptionHandler = (option: IOption<IReviewsSortParams>) => {
     setSelectedSortOption(option)
@@ -132,7 +128,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
     productId,
     userReview,
     sortOption: selectedSortOption,
-    ratingFilter: selectedFilterRating
+    ratingFilter: selectedFilterRating,
   })
 
   useEffect(() => {
@@ -153,6 +149,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
     shouldRevalidateReviews,
     setShouldRevalidateReviews,
     handleError,
+    refreshReviews,
   ])
 
   const showMoreReviews = () => {

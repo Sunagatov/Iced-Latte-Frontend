@@ -1,19 +1,18 @@
 'use client'
 
-import React, {useEffect} from 'react'
-import {apiGetProductReviewsStatistics} from "@/services/reviewService"
-import {useProductReviewsStore} from "@/store/reviewsStore";
+import React, { useEffect } from 'react'
+import { apiGetProductReviewsStatistics } from '@/services/reviewService'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 import { IProduct } from '@/types/Products'
 import ReviewsSection from '@/components/Review/ReviewsSection/ReviewsSection'
 import ProductOverview from '@/components/Product/ProductOverview/ProductOverview'
-import {useErrorHandler} from "@/services/apiError/apiError";
+import { useErrorHandler } from '@/services/apiError/apiError'
 
 interface IProductWithReviews {
   product: IProduct
 }
 
-const ProductWithReviews:React.FC<IProductWithReviews> = ({ product }) => {
-
+const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
   const {
     shouldRevalidateStatistics,
     setShouldRevalidateStatistics,
@@ -21,7 +20,7 @@ const ProductWithReviews:React.FC<IProductWithReviews> = ({ product }) => {
   } = useProductReviewsStore()
   const {
     // errorMessage,
-    handleError
+    handleError,
   } = useErrorHandler()
 
   useEffect(() => {
@@ -55,7 +54,7 @@ const ProductWithReviews:React.FC<IProductWithReviews> = ({ product }) => {
           'mx-5 flex flex-col items-center gap-[21px] sm:justify-center lg:flex-row xl:gap-12'
         }
       >
-        <ProductOverview product={product}/>
+        <ProductOverview product={product} />
       </div>
 
       <div className="mx-5 mt-12 xl:mt-20">

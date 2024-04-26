@@ -1,7 +1,7 @@
 import { Review } from '@/types/ReviewType'
 import { api } from './apiConfig/apiConfig'
 import { AxiosResponse } from 'axios'
-import { IProductReviewsStatistics } from "@/types/IProductReviewsStatistics";
+import { IProductReviewsStatistics } from '@/types/IProductReviewsStatistics'
 
 export interface IReviews {
   reviewsWithRatings: Review[]

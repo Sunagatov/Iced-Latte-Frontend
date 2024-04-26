@@ -1,12 +1,12 @@
 'use client'
 
 import React from 'react'
-import {useMediaQuery} from "usehooks-ts";
-import {BiDislike, BiLike} from "react-icons/bi";
-import {FaStar} from "react-icons/fa";
-import {Review} from "@/types/ReviewType";
-import {formatReviewDate} from "@/components/Review/ReviewsList/formatReviewDate";
-import Button from "@/components/UI/Buttons/Button/Button";
+import { useMediaQuery } from 'usehooks-ts'
+import { BiDislike, BiLike } from 'react-icons/bi'
+import { FaStar } from 'react-icons/fa'
+import { Review } from '@/types/ReviewType'
+import { formatReviewDate } from '@/components/Review/ReviewsList/formatReviewDate'
+import Button from '@/components/UI/Buttons/Button/Button'
 
 interface IReview {
   isUserReview: boolean
@@ -25,9 +25,11 @@ const Review: React.FC<IReview> = ({
   deleteReview = () => {},
   likeReview = () => {},
   disLikeReview = () => {},
-  isExpanded
+  isExpanded,
 }) => {
-  const isMediaQuery = useMediaQuery('(min-width: 768px)', { initializeWithValue: false })
+  const isMediaQuery = useMediaQuery('(min-width: 768px)', {
+    initializeWithValue: false,
+  })
 
   const toggleReviewExpansionHandler = () => {
     toggleReviewExpansion(review?.productReviewId)
@@ -68,9 +70,10 @@ const Review: React.FC<IReview> = ({
         </div>
         <div className="inline-flex text-L font-medium text-tertiary">
           <div className="relative ml-3 inline-flex">
-            <span className="ml-[10px] text-L">{formatReviewDate(review.createdAt).date}</span>
-            <div
-              className="absolute left-0 top-1/2 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-gray-400 text-tertiary"></div>
+            <span className="ml-[10px] text-L">
+              {formatReviewDate(review.createdAt).date}
+            </span>
+            <div className="absolute left-0 top-1/2 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-gray-400 text-tertiary"></div>
           </div>
           <span className="ml-2">
             {formatReviewDate(review.createdAt).time}
@@ -78,46 +81,38 @@ const Review: React.FC<IReview> = ({
         </div>
       </div>
 
-      {isUserReview
-        ? (
-          <p
-            className={'mb-6 rounded-[8px] px-4 py-[17px] text-L bg-brand-second'}
-          >
-            {review.text || 'No review'}
-          </p>
-        )
-        : (
-          <p
-            className={'mb-6 rounded-[8px] px-4 py-[17px] text-L bg-secondary'}
-          >
-            <span>
-              {review.text
-                ? (
-                  <>
-                    {
-                      review.text.length > 300 && !isExpanded
-                        ? (
-                          <span>
-                            {review.text.slice(0, 300)}
-                            <Button
-                              id="see-more-btn"
-                              onClick={toggleReviewExpansionHandler}
-                              className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
-                            >
+      {isUserReview ? (
+        <p
+          className={'mb-6 rounded-[8px] bg-brand-second px-4 py-[17px] text-L'}
+        >
+          {review.text || 'No review'}
+        </p>
+      ) : (
+        <p className={'mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L'}>
+          <span>
+            {review.text ? (
+              <>
+                {review.text.length > 300 && !isExpanded ? (
+                  <span>
+                    {review.text.slice(0, 300)}
+                    <Button
+                      id="see-more-btn"
+                      onClick={toggleReviewExpansionHandler}
+                      className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
+                    >
                       ...see more
-                            </Button>
-                          </span>
-                        )
-                        : review.text
-                    }
-                  </>
-                )
-                : 'No review'
-              }
-            </span>
-          </p>
-        )
-      }
+                    </Button>
+                  </span>
+                ) : (
+                  review.text
+                )}
+              </>
+            ) : (
+              'No review'
+            )}
+          </span>
+        </p>
+      )}
 
       {isUserReview && (
         <Button

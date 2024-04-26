@@ -7,8 +7,8 @@ import { apiDeleteProductReview } from '@/services/reviewService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { Review as ReviewType } from '@/types/ReviewType'
-import Loader from "@/components/UI/Loader/Loader";
-import Review from "@/components/Review/Review/Review";
+import Loader from '@/components/UI/Loader/Loader'
+import Review from '@/components/Review/Review/Review'
 
 interface IReviewsList {
   productId: string
@@ -41,9 +41,12 @@ const ReviewsList: React.FC<IReviewsList> = ({
     // errorMessage
   } = useErrorHandler()
 
-  const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
+  const deleteReviewHandler = async (
+    productReviewId: string,
+  ): Promise<void> => {
     try {
-      productReviewId && await apiDeleteProductReview(productReviewId, productId)
+      productReviewId &&
+        (await apiDeleteProductReview(productReviewId, productId))
 
       setShouldRevalidateStatistics(true)
       setShouldRevalidateReviews(true)
@@ -52,11 +55,9 @@ const ReviewsList: React.FC<IReviewsList> = ({
       setIsReviewFormVisible(false)
       setIsReviewButtonVisible(true)
       setIsRaitingFormVisible(false)
-    }
-    catch (error) {
+    } catch (error) {
       handleError(error)
     }
-
   }
 
   const handleLikeComment = (productReviewId: string | null | undefined) => {
@@ -65,10 +66,10 @@ const ReviewsList: React.FC<IReviewsList> = ({
 
   const handleDislikeComment = (productReviewId: string | null | undefined) => {
     console.log(`Disliking comment with ID ${productReviewId}`)
-
   }
 
-  const hasUserReview = userReview && Object.values(userReview).some(value => value !== null)
+  const hasUserReview =
+    userReview && Object.values(userReview).some((value) => value !== null)
 
   return (
     <>
@@ -92,8 +93,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
               disLikeReview={handleDislikeComment}
             />
           </li>
-        )
-        )}
+        ))}
         <ScrollUpBtn />
       </ul>
 

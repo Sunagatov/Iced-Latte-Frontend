@@ -51,8 +51,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const currentRating = productRatingData.rating
   const isRatingSelected = currentRating > 0
   const isReviewTextEmpty = reviewText.trim().length === 0
-  const isReviewButtonActive = isRatingSelected || !isReviewTextEmpty
-
+  // const isReviewButtonActive = isRatingSelected || !isReviewTextEmpty
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value
