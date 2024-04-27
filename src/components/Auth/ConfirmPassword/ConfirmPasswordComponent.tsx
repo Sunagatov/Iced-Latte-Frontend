@@ -4,7 +4,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import Loader from '@/components/UI/Loader/Loader'
 import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useController, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiConfirmEmail } from '@/services/authService'
 import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
@@ -23,12 +23,39 @@ const ConfirmPasswordComponent = () => {
     reset,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm<IFormValues>({
     resolver: yupResolver(confirmPasswordSchema),
     defaultValues: {
       confirmPassword: '',
     },
   })
+
+  const { field } = useController({
+    name: 'confirmPassword',
+    control,
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value
+
+    if (inputValue.length > 11) {
+      return
+    }
+
+    const formattedInputValue = inputValue
+      .replace(/\D/g, '')
+      .replace(/(\d{3})(\d{1,3})?(\d{1,3})?/, (_, p1, p2, p3) => {
+        let result: string = p1
+
+        if (p2) result += `-${p2}`
+        if (p3) result += `-${p3}`
+
+        return result
+      })
+
+    field.onChange(formattedInputValue)
+  }
 
   const { handleRedirectForAuth } = useAuthRedirect()
 
@@ -56,7 +83,7 @@ const ConfirmPasswordComponent = () => {
   return (
     <>
       <h1 className="mb-[16px] text-[36px] font-medium text-primary">
-        Confirm password
+        Confirm registration
       </h1>
       <p className="mb-[40px] text-[18px] font-medium text-primary">
         Enter code that was sent to your email to confirm registration.
@@ -67,12 +94,14 @@ const ConfirmPasswordComponent = () => {
         )}
         <div className="flex-grow md:w-full">
           <FormInput
+            value={field.value}
+            onChange={handleInputChange}
             id="confirmPassword"
             register={register}
             label="Enter code that was sent to your email"
             name="confirmPassword"
             type="text"
-            placeholder="Confirm password ###-###-###"
+            placeholder="Confirmation code ###-###-###"
             error={errors.confirmPassword}
             className="w-full"
           />
