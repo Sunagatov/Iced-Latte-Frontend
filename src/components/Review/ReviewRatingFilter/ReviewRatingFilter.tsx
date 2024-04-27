@@ -1,39 +1,37 @@
 'use client'
 import { FaStar } from 'react-icons/fa'
-import { useProductRatingStore } from '@/store/ratingStore'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
-import { useStoreData } from '@/hooks/useStoreData'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 interface ReviewRatingFilterProps {
-  onChange: (value: number | null) => void
+  onChange: (value: number) => void
+  selectedOptions: Array<number>
 }
 
-const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
-  const { ratings } = useProductRatingStore()
+const stars: Array<5 | 4 | 3 | 2 | 1> = [5, 4, 3, 2, 1]
 
-  const { setSelectedRating } = useLocalSessionStore()
-
-  const selectedRating = useStoreData(
-    useLocalSessionStore,
-    (state) => state.selectedRating,
-  )
+const ReviewRatingFilter = ({
+  onChange,
+  selectedOptions = [],
+}: ReviewRatingFilterProps) => {
+  const { reviewsStatistics } = useProductReviewsStore()
 
   const handleCheckboxChange = (value: number) => {
-    setSelectedRating(selectedRating === value ? null : value)
-    onChange(selectedRating === value ? null : value)
+    onChange(value)
   }
 
   return (
     <div>
       <div className="mb-6 flex flex-col gap-4">
-        <div className="text-4XL font-medium text-primary">4,8</div>
+        <div className="text-4XL font-medium text-primary">
+          {reviewsStatistics?.avgRating ?? 0}
+        </div>
         <div className="text-L font-medium text-tertiary">
-          Based on 14 reviws
+          Based on {reviewsStatistics?.reviewsCount ?? 0} reviews
         </div>
       </div>
       <div className="flex flex-col gap-3">
-        {[5, 4, 3, 2, 1].map((value) => {
+        {stars.map((value) => {
           const stars = Array.from({ length: 5 }, (_, index) => (
             <FaStar
               className="h-6 w-6"
@@ -50,12 +48,12 @@ const ReviewRatingFilter = ({ onChange }: ReviewRatingFilterProps) => {
               <Checkbox
                 id={`checkbox-${value}`}
                 ariaLabel={`Filter by ${value} stars`}
-                isChecked={selectedRating === value}
+                isChecked={selectedOptions.includes(value)}
                 onChange={() => handleCheckboxChange(value)}
               />
               {stars}
               <span className="text-[18px] font-medium text-primary">
-                {ratings[value]?.quantity ?? 0} reviews
+                {reviewsStatistics?.ratingMap[`star${value}`]} reviews
               </span>
             </label>
           )
