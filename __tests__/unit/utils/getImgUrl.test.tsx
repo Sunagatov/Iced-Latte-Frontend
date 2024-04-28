@@ -1,5 +1,6 @@
 import getImgUrl from '../../../src/utils/getImgUrl'
 import productImg from '../../../../public/coffee.png'
+import '@testing-library/jest-dom'
 
 describe('getImgUrl', () => {
   /* Uncomment out when img loading optimization is ready IL-263

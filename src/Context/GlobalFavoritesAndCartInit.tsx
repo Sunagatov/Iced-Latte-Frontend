@@ -49,11 +49,7 @@ const GlobalFavoritesAndCartInit = ({ children }: RootLayoutProps) => {
     void fetchData()
   }, [getFavouriteProducts, syncBackendFav, token])
 
-  return (
-    <GlobalRouteTracker>
-      {children}
-    </GlobalRouteTracker>
-  )
+  return <GlobalRouteTracker parallel={null}>{children}</GlobalRouteTracker>
 }
 
 export default GlobalFavoritesAndCartInit

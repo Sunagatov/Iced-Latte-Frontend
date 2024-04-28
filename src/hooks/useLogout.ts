@@ -1,22 +1,22 @@
 'use client'
 import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
-import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
 import { apiLogoutUser } from '@/services/authService'
 import { useState } from 'react'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { reset } = useAuthStore()
   const { resetFav } = useFavouritesStore()
+  const router = useRouter()
   const {
+    setIsRaitingFormVisible,
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
-    setSelectedRating,
-  } = useLocalSessionStore()
-  const router = useRouter()
+  } = useProductReviewsStore()
 
   const logout = async () => {
     try {
@@ -26,8 +26,9 @@ const useLogout = () => {
       reset()
       resetFav()
       setIsReviewFormVisible(false)
+      setIsRaitingFormVisible(false)
       setIsReviewButtonVisible(true)
-      setSelectedRating(null)
+
       router.push('/')
       // add other features
     } catch (error) {
