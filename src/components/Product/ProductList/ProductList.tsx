@@ -82,7 +82,7 @@ export default function ProductList() {
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
           />
-          <Dropdown<IProductSortParams>
+          <Dropdown<ProductSortValue>
             className={'mb-8'}
             options={sortOptions}
             onChange={handleSelect}
