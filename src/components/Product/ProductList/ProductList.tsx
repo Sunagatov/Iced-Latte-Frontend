@@ -158,7 +158,7 @@ export default function ProductList() {
             ))}
           </ul>
         </div>
-        {hasNextPage && !isFetchingNextPage && (
+        {isShowLoadMoreBtn && (
           <button
             className={
               'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'

@@ -1,6 +1,8 @@
 import { twMerge } from 'tailwind-merge'
 import CircleCloseButton from '../UI/Buttons/CircleCloseButton/CircleCloseButton'
 import { ReactNode, useEffect, useRef } from 'react'
+import { useOnClickOutside } from 'usehooks-ts'
+import { useMediaQuery } from 'usehooks-ts'
 
 interface IMobileFilterSidebar {
   className?: string
@@ -11,46 +13,26 @@ interface IMobileFilterSidebar {
 export default function MobileFilterSidebar({ onClose, className, children }: IMobileFilterSidebar) {
   const sidebarRef = useRef<HTMLElement>(null)
 
+  useOnClickOutside(sidebarRef, onClose)
+  const isMobile = useMediaQuery('(max-width: 500px)')
+
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        onClose()
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [onClose])
-
-
-  /*This useEffect turns off scroll only for screens less then 500px */
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 500px)')
-
-    const handleMediaQueryChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        document.body.style.overflowY = 'hidden'
-      } else {
-        document.body.style.overflowY = 'auto'
-      }
-    }
-
-    mediaQuery.addEventListener('change', handleMediaQueryChange)
-    handleMediaQueryChange(mediaQuery as unknown as MediaQueryListEvent)
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleMediaQueryChange)
+    if (isMobile) {
+      document.body.style.overflowY = 'hidden'
+    } else {
       document.body.style.overflowY = 'auto'
     }
-  }, [])
+
+    return () => {
+      document.body.style.overflowY = 'auto'
+    }
+  }, [isMobile])
 
   return (
     <aside ref={sidebarRef} className={twMerge('max-[500px]:w-full w-[266px] fixed bg-primary top-14 p-4 h-full left-0 z-20 shadow-primary flex-col', className)}>
       <div className='flex justify-between items-center mb-6'>
         <h2 className='text-primary text-4XL font-medium'>Filters</h2>
-        <CircleCloseButton onClick={onClose}/>
+        <CircleCloseButton id='close-sidebar' onClick={onClose}/>
       </div>
       {children}
     </aside>
