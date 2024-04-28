@@ -2,8 +2,8 @@ import Checkbox from '../UI/Checkbox/Checkbox'
 import { ICheckboxFilterOption } from '@/types/ICheckboxFilterOption'
 
 interface IFilters {
-  brandOptions: ICheckboxFilterOption[]
-  onBrandCheckboxChange: (index: number) => void
+  readonly brandOptions: ICheckboxFilterOption[]
+  readonly onBrandCheckboxChange: (index: number) => void
 }
 
 export default function Filters({ brandOptions, onBrandCheckboxChange }: IFilters) {
@@ -15,7 +15,7 @@ export default function Filters({ brandOptions, onBrandCheckboxChange }: IFilter
         {brandOptions.map((option, i) => (
           <Checkbox
             id={option.label}
-            key={i}
+            key={option.label}
             isChecked={option.isChecked}
             onChange={() => onBrandCheckboxChange(i)} label={option.label}
           />

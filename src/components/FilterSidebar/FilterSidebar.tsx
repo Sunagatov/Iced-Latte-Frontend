@@ -2,8 +2,8 @@ import { twMerge } from 'tailwind-merge'
 import { ReactNode } from 'react'
 
 interface IFilterSidebar {
-  className?: string
-  children: ReactNode
+  readonly className?: string
+  readonly children: ReactNode
 }
 
 export default function FilterSidebar({ className, children }: IFilterSidebar) {

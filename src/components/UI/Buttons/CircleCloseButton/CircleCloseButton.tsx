@@ -3,8 +3,8 @@ import Image from 'next/image'
 import CloseIcon from '@/../public/close.svg'
 
 interface ICircleCloseBtn {
-  onClick: () => void;
-  id: string
+  readonly onClick: () => void;
+  readonly id: string
 }
 
 export default function CircleCloseBtn({ onClick, ...restProps }: ICircleCloseBtn) {

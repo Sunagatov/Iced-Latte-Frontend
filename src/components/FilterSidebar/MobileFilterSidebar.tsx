@@ -1,13 +1,12 @@
 import { twMerge } from 'tailwind-merge'
 import CircleCloseButton from '../UI/Buttons/CircleCloseButton/CircleCloseButton'
 import { ReactNode, useEffect, useRef } from 'react'
-import { useOnClickOutside } from 'usehooks-ts'
-import { useMediaQuery } from 'usehooks-ts'
+import { useOnClickOutside, useMediaQuery } from 'usehooks-ts'
 
 interface IMobileFilterSidebar {
-  className?: string
-  children: ReactNode
-  onClose: () => void
+  readonly className?: string
+  readonly children: ReactNode
+  readonly onClose: () => void
 }
 
 export default function MobileFilterSidebar({ onClose, className, children }: IMobileFilterSidebar) {
