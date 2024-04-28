@@ -1,31 +1,48 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import {
-  apiGetProductReviews,
-  apiGetProductUserReview,
-} from '@/services/reviewService'
 import { Review } from '@/types/ReviewType'
+import { IProductReviewsStatistics } from '@/types/IProductReviewsStatistics'
 
 interface ReviewsStoreState {
-  reviewsWithRatings: Review[]
-  userReview: Review | null
+  currentPage: number
+  totalElements: number
   isReviewFormVisible: boolean
   isReviewButtonVisible: boolean
   isReviewRatingFormVisible: boolean
   setIsReviewFormVisible: (isVisible: boolean) => void
   setIsReviewButtonVisible: (isVisible: boolean) => void
   setIsRaitingFormVisible: (isVisible: boolean) => void
-  getProductReviews: (productId: string) => Promise<void>
-  getProductUserReview: (productId: string) => Promise<void>
+  setTotalReviewsCount: (value: number) => void
+  setShouldRevalidateStatistics: (value: boolean) => void
+  shouldRevalidateStatistics: boolean
+  setShouldRevalidateReviews: (value: boolean) => void
+  shouldRevalidateReviews: boolean
+  setShouldRevalidateUserReview: (value: boolean) => void
+  shouldRevalidateUserReview: boolean
+  reviewsStatistics: IProductReviewsStatistics | null
+  setReviewsStatistics: (value: IProductReviewsStatistics | null) => void
+  reviewFormRating: number
+  setReviewFormRating: (value: number) => void
+}
+
+export const checkIfUserReviewExists = (review: Review | null): boolean => {
+  return !!review && !Object.values(review).every((prop) => prop === null)
 }
 
 export const useProductReviewsStore = create<ReviewsStoreState>()(
   persist(
     (set) => ({
-      reviewsWithRatings: [],
-      userReview: null,
+      currentPage: 0,
+      totalElements: 0,
+      totalPages: 0,
+      shouldRevalidateStatistics: true,
+      reviewsStatistics: null,
+      reviewFormRating: 0,
+      shouldRevalidateReviews: false,
+      shouldRevalidateUserReview: true,
+
       isReviewFormVisible: false,
-      isReviewButtonVisible: true,
+      isReviewButtonVisible: true, // ? false
       isReviewRatingFormVisible: false,
 
       setIsReviewFormVisible: (isVisible: boolean) =>
@@ -34,21 +51,46 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
         set({ isReviewButtonVisible: isVisible }),
       setIsRaitingFormVisible: (isVisible: boolean) =>
         set({ isReviewRatingFormVisible: isVisible }),
-
-      getProductReviews: async (productId: string) => {
-        const reviews = await apiGetProductReviews(productId)
-
+      setwasRend: () => {
         set((state) => ({
           ...state,
-          reviewsWithRatings: reviews.reviewsWithRatings || [],
+          wasRend: true,
         }))
       },
-      getProductUserReview: async (productId: string) => {
-        const userReview = await apiGetProductUserReview(productId)
-
+      setTotalReviewsCount: (value: number) => {
         set((state) => ({
           ...state,
-          userReview,
+          totalElements: value,
+        }))
+      },
+      setShouldRevalidateStatistics: (value: boolean) => {
+        set((state) => ({
+          ...state,
+          shouldRevalidateStatistics: value,
+        }))
+      },
+      setReviewsStatistics: (value: IProductReviewsStatistics | null) => {
+        set((state) => ({
+          ...state,
+          reviewsStatistics: value,
+        }))
+      },
+      setReviewFormRating: (value: number) => {
+        set((state) => ({
+          ...state,
+          reviewFormRating: value,
+        }))
+      },
+      setShouldRevalidateReviews: (value: boolean) => {
+        set((state) => ({
+          ...state,
+          shouldRevalidateReviews: value,
+        }))
+      },
+      setShouldRevalidateUserReview: (value: boolean) => {
+        set((state) => ({
+          ...state,
+          shouldRevalidateUserReview: value,
         }))
       },
     }),
