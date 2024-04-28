@@ -11,9 +11,7 @@ import { apiAddProductReview } from '@/services/reviewService'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 import { useMediaQuery } from 'usehooks-ts'
-
 import { useProductReviewsStore } from '@/store/reviewsStore'
-import { useUserReview } from '../ReviewComponent/useUserReview'
 
 interface ReviewFormProps {
   productId: string
@@ -29,6 +27,9 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
     setIsRaitingFormVisible,
+    setShouldRevalidateStatistics,
+    setShouldRevalidateUserReview,
+    setShouldRevalidateReviews,
   } = useProductReviewsStore()
   const { token, setModalState } = useAuthStore()
   const ismediaQuery = useMediaQuery('(max-width: 768px)', {
@@ -50,6 +51,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
   const currentRating = productRatingData.rating
   const isRatingSelected = currentRating > 0
   const isReviewTextEmpty = reviewText.trim().length === 0
+  // const isReviewButtonActive = isRatingSelected || !isReviewTextEmpty
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = event.target.value
@@ -63,25 +65,18 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setCharCount(0)
   }
 
-  // If i just call this -  getProductReviews(productId) - get "An unknown error occurred"
-
   const handleAddReview = async () => {
     try {
-      if (isRatingSelected && !isReviewTextEmpty) {
-        // Check if both rating and review text are provided
-        setLoading(true)
-        await apiAddProductReview(productId, reviewText, currentRating)
-        await useProductReviewsStore.getState().getProductReviews(productId)
-        await useProductReviewsStore.getState().getProductUserReview(productId)
-        setIsReviewFormVisible(false)
-        setIsRaitingFormVisible(false)
-        setIsReviewButtonVisible(false)
-      } else {
-        setLoading(false)
-        setIsReviewFormVisible(false)
-        setIsRaitingFormVisible(false)
-        setIsReviewButtonVisible(true)
-      }
+      setLoading(true)
+      await apiAddProductReview(productId, reviewText, currentRating)
+
+      setShouldRevalidateStatistics(true)
+      setShouldRevalidateReviews(true)
+      setShouldRevalidateUserReview(true)
+
+      setIsReviewFormVisible(false)
+      setIsRaitingFormVisible(false)
+      setIsReviewButtonVisible(false)
     } catch (error) {
       handleError(error)
     } finally {
@@ -110,8 +105,6 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       setModalState(true)
     }
   }
-
-  useUserReview(productId)
 
   return (
     <>

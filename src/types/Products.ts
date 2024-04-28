@@ -14,4 +14,5 @@ export interface IProduct {
   quantity: number
   active: boolean
   productFileUrl: string | null
+  averageRating: number
 }
