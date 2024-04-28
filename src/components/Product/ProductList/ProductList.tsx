@@ -118,11 +118,12 @@ export default function ProductList() {
           />
         </div>
         <div className={'mb-6 mt-1.5 flex w-full items-center justify-between'}>
-          <div
+          <button
+            id='filter-btn'
             onClick={handleFilterClick}
             className='hidden max-[1100px]:block cursor-pointer text-brand text-L font-medium'>
               Filter
-          </div>
+          </button>
           <Dropdown<IProductSortParams>
             className='ml-auto'
             options={sortOptions}
