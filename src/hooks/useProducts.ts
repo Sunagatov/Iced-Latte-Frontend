@@ -2,9 +2,9 @@ import { IProductsList } from '@/types/Products'
 import { getAllProducts } from '@/services/apiService'
 import useSWRInfinite from 'swr/infinite'
 import { IOption } from '@/types/Dropdown'
-import { IProductSortParams } from '@/types/ProductSortParams'
+import { ProductSortValue } from '@/types/ProductSortParams'
 
-export function useProducts(sortOption: IOption<IProductSortParams>) {
+export function useProducts(sortOption: IOption<ProductSortValue>) {
   const { sortAttribute, sortDirection } = sortOption.value
 
   const getKey = (pageIndex: number, previousData: IProductsList) => {

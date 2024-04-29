@@ -4,19 +4,19 @@ import { useOnClickOutside } from 'usehooks-ts'
 import { IOption, PropsDropdown } from '@/types/Dropdown'
 import { twMerge } from 'tailwind-merge'
 import Image from 'next/image'
-import openSelect from '../../../../public/open_select.svg'
-import closedSelect from '../../../../public/open_select_not_opened.svg'
+import selectImageUrl from '../../../../public/open_select.svg'
 import checkImageUrl from '../../../../public/check.svg'
 
 const headerStyles =
-  'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center text-L font-medium text-primary hover:bg-tertiary'
+  'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center font-medium text-primary hover:bg-tertiary'
 const listStyles =
   'border-primary border rounded-md py-1 absolute w-full right-0 top-full bg-primary z-[5]'
 const listItemStyles =
-  'text-primary font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary'
+  'font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary leading-5'
 
 const Dropdown = <T,>({
   className,
+  headerClassName,
   options,
   onChange,
   selectedOption,
@@ -46,14 +46,16 @@ const Dropdown = <T,>({
     return selectedOption.label === option.label
   }
 
-  const selectImageUrl = isOpen ? openSelect : closedSelect
-
   return (
-    <div ref={ref} className={'relative' + ' ' + (className ?? '')}>
+    <div
+      id="dropdown"
+      ref={ref}
+      className={'relative text-L text-primary' + ' ' + (className ?? '')}
+    >
       <div
         className={twMerge(
-          headerStyles,
-          !isOpen && 'bg-transparent text-brand',
+          headerStyles + ' ' + (headerClassName ?? ''),
+          !isOpen && 'bg-transparent',
         )}
         onClick={handleClick}
         role="button"

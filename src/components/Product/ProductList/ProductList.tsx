@@ -6,11 +6,15 @@ import ProductCard from '@/components/Product/ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
-import { IProductSortParams } from '@/types/ProductSortParams'
 import { IOption } from '@/types/Dropdown'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
+import { ProductSortLabel, ProductSortValue } from '@/types/ProductSortParams'
+
+function getDefaultSortOption(label: ProductSortLabel) {
+  return sortOptions.filter((sortOption) => sortOption.label === label)[0]
+}
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
@@ -29,13 +33,13 @@ export default function ProductList() {
   }
 
   const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<IProductSortParams>
-  >(sortOptions[0])
+    IOption<ProductSortValue>
+  >(() => getDefaultSortOption('High rating first'))
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption)
 
-  function handleSelect(selectedOption: IOption<IProductSortParams>) {
+  function handleSelect(selectedOption: IOption<ProductSortValue>) {
     setSelectedSortOption(selectedOption)
   }
 
@@ -78,8 +82,9 @@ export default function ProductList() {
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
           />
-          <Dropdown<IProductSortParams>
-            className={'mb-8'}
+          <Dropdown<ProductSortValue>
+            className="mb-8"
+            headerClassName="-mr-6"
             options={sortOptions}
             onChange={handleSelect}
             selectedOption={selectedSortOption}
