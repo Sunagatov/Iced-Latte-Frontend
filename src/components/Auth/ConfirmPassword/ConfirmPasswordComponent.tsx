@@ -4,7 +4,7 @@ import Button from '@/components/UI/Buttons/Button/Button'
 import Loader from '@/components/UI/Loader/Loader'
 import { useAuthStore } from '@/store/authStore'
 import { useState } from 'react'
-import { SubmitHandler, useController, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiConfirmEmail } from '@/services/authService'
 import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
@@ -23,7 +23,8 @@ const ConfirmPasswordComponent = () => {
     reset,
     handleSubmit,
     formState: { errors },
-    control,
+    getValues,
+    setValue,
   } = useForm<IFormValues>({
     resolver: yupResolver(confirmPasswordSchema),
     defaultValues: {
@@ -31,15 +32,12 @@ const ConfirmPasswordComponent = () => {
     },
   })
 
-  const { field } = useController({
-    name: 'confirmPassword',
-    control,
-  })
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value
+  const handleChange = () => {
+    const inputValue = getValues('confirmPassword')
 
     if (inputValue.length > 11) {
+      setValue('confirmPassword', inputValue.slice(0, 11))
+
       return
     }
 
@@ -54,7 +52,7 @@ const ConfirmPasswordComponent = () => {
         return result
       })
 
-    field.onChange(formattedInputValue)
+    setValue('confirmPassword', formattedInputValue)
   }
 
   const { handleRedirectForAuth } = useAuthRedirect()
@@ -94,8 +92,7 @@ const ConfirmPasswordComponent = () => {
         )}
         <div className="flex-grow md:w-full">
           <FormInput
-            value={field.value}
-            onChange={handleInputChange}
+            onChange={handleChange}
             id="confirmPassword"
             register={register}
             label="Enter code that was sent to your email"

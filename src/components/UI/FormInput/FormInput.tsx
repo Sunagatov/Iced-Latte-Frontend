@@ -11,8 +11,7 @@ export default function FormInput<T extends FieldValues>({
   type = 'text',
   error,
   className,
-  onChange,
-  value,
+  onChange = () => {},
 }: Readonly<InputProps<T>>) {
   return (
     <div className={twMerge('mt-6', className)}>
@@ -32,9 +31,7 @@ export default function FormInput<T extends FieldValues>({
         id={id}
         type={type}
         placeholder={placeholder}
-        {...register(name)}
-        value={value}
-        onChange={onChange}
+        {...register(name, { onChange })}
       />
       {error && (
         <div className="mt-2 font-medium text-negative">{error.message}</div>
