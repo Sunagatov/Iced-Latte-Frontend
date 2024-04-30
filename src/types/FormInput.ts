@@ -10,5 +10,4 @@ export type InputProps<T extends FieldValues> = {
   placeholder: string
   error?: FieldError
   className?: string
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }

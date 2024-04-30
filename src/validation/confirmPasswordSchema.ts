@@ -4,5 +4,5 @@ export const confirmPasswordSchema = yup.object().shape({
   confirmPassword: yup
     .string()
     .required('Confirmation code is required')
-    .matches(/^\d{3}-\d{3}-\d{3}$/, 'Invalid format. Use ###-###-###'),
+    .matches(/^\d{9}$/, 'Invalid code format'),
 })

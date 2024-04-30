@@ -23,37 +23,12 @@ const ConfirmPasswordComponent = () => {
     reset,
     handleSubmit,
     formState: { errors },
-    getValues,
-    setValue,
   } = useForm<IFormValues>({
     resolver: yupResolver(confirmPasswordSchema),
     defaultValues: {
       confirmPassword: '',
     },
   })
-
-  const handleChange = () => {
-    const inputValue = getValues('confirmPassword')
-
-    if (inputValue.length > 11) {
-      setValue('confirmPassword', inputValue.slice(0, 11))
-
-      return
-    }
-
-    const formattedInputValue = inputValue
-      .replace(/\D/g, '')
-      .replace(/(\d{3})(\d{1,3})?(\d{1,3})?/, (_, p1, p2, p3) => {
-        let result: string = p1
-
-        if (p2) result += `-${p2}`
-        if (p3) result += `-${p3}`
-
-        return result
-      })
-
-    setValue('confirmPassword', formattedInputValue)
-  }
 
   const { handleRedirectForAuth } = useAuthRedirect()
 
@@ -92,13 +67,12 @@ const ConfirmPasswordComponent = () => {
         )}
         <div className="flex-grow md:w-full">
           <FormInput
-            onChange={handleChange}
             id="confirmPassword"
             register={register}
             label="Enter code that was sent to your email"
             name="confirmPassword"
             type="text"
-            placeholder="Confirmation code ###-###-###"
+            placeholder="Confirmation code"
             error={errors.confirmPassword}
             className="w-full"
           />
