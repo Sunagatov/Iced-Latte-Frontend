@@ -11,17 +11,30 @@ import { IOption } from '@/types/Dropdown'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
-import FilterSidebar from '@/components/FilterSidebar/FilterSidebar'
-import MobileFilterSidebar from '@/components/FilterSidebar/MobileFilterSidebar'
-import { useImmer } from 'use-immer'
-import Filters from '@/components/FilterSidebar/Filters'
+import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
+import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
+import Filters from '@/components/Product/FilterSidebar/Filters'
 import { ICheckboxFilterOption } from '@/types/ICheckboxFilterOption'
+import _ from 'lodash'
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
   { id: '1', name: 'name-1', label: 'Brand1' },
   { id: '2', name: 'name-2', label: 'Seller1' },
   { id: '3', name: 'name-3', label: 'Seller5' },
+]
+
+// @NOTE: replace with brands from backend when backend will be ready
+const _brandOptionsMock: ICheckboxFilterOption[] = [
+  {
+    label: 'Starbucks',
+    value: 'Starbucks',
+  },
+  {
+    label: 'Java Bean Coffee',
+    value: 'JavaBeanCoffee',
+  },
+
 ]
 
 export default function ProductList() {
@@ -36,30 +49,20 @@ export default function ProductList() {
   const [selectedSortOption, setSelectedSortOption] = useState<
     IOption<IProductSortParams>
   >(sortOptions[0])
+  
+  const [selectedBrandOptions, setSelectedBrandOptions] = useState<string[]>([])
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
-  // @NOTE: replace with brands from backend when backend will be ready
-  const [brandOptions, updateBrandCheckboxes] = useImmer<ICheckboxFilterOption[]>([
-    {
-      label: 'Starbucks',
-      value: 'Starbucks',
-      isChecked: false
-    },
-    {
-      label: 'Java Bean Coffee',
-      value: 'JavaBeanCoffee',
-      isChecked: false
-    },
-  ])
-  const handleBrandCheckboxChange = (index: number) => {
-    updateBrandCheckboxes(draft => {
-      draft[index].isChecked = !draft[index].isChecked
+  const handleBrandCheckboxChange = (value: string) => {
+    setSelectedBrandOptions(prevSelectedOptions => {
+      if (prevSelectedOptions.includes(value)) {
+        return prevSelectedOptions.filter(option => option !== value)
+      } else {
+        return [...prevSelectedOptions, value]
+      }
     })
   }
-  const selectedBrandOptions = brandOptions
-    .filter(brandOption => brandOption.isChecked).map(brandOption => brandOption.value)
-
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption, selectedBrandOptions)
@@ -93,7 +96,6 @@ export default function ProductList() {
       </div>
     )
   }
-  const filtersContent = <Filters brandOptions={brandOptions} onBrandCheckboxChange={handleBrandCheckboxChange} />
 
   return (
     <section
@@ -122,7 +124,7 @@ export default function ProductList() {
             id='filter-btn'
             onClick={handleFilterClick}
             className='hidden max-[1100px]:block cursor-pointer text-brand text-L font-medium'>
-              Filter
+            Filter
           </button>
           <Dropdown<IProductSortParams>
             className='ml-auto'
@@ -133,14 +135,20 @@ export default function ProductList() {
         </div>
         <div className='w-full inline-flex gap-x-8'>
           <FilterSidebar className='hidden min-[1100px]:block'>
-            {filtersContent}
+            <Filters brandOptions={_brandOptionsMock}
+              onBrandCheckboxChange={handleBrandCheckboxChange}
+              selectedBrandOptions={selectedBrandOptions}
+            />
           </FilterSidebar>
-          { isMobileFilterOpen && <MobileFilterSidebar
+          {isMobileFilterOpen && <MobileFilterSidebar
             onClose={handleCloseMobileFilter}
             className='min-[1100px]:hidden'
           >
-            {filtersContent}
-          </MobileFilterSidebar> }
+            <Filters brandOptions={_brandOptionsMock}
+              onBrandCheckboxChange={handleBrandCheckboxChange}
+              selectedBrandOptions={selectedBrandOptions}
+            />
+          </MobileFilterSidebar>}
           <ul
             className={
               'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3 '
@@ -168,7 +176,7 @@ export default function ProductList() {
               fetchNext().catch((e) => console.log(e))
             }}
           >
-              Show more
+            Show more
           </button>
         )}
         {isFetchingNextPage && (

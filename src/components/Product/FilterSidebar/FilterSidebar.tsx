@@ -2,11 +2,11 @@ import { twMerge } from 'tailwind-merge'
 import { ReactNode } from 'react'
 
 interface IFilterSidebar {
-  readonly className?: string
-  readonly children: ReactNode
+  className?: string
+  children: ReactNode
 }
 
-export default function FilterSidebar({ className, children }: IFilterSidebar) {
+export default function FilterSidebar({ className, children }: Readonly<IFilterSidebar>) {
   return (
     <aside className={twMerge('w-[266px] flex-col', className)}>
       {children}
