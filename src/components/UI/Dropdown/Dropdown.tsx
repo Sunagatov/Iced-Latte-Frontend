@@ -4,8 +4,6 @@ import { useOnClickOutside } from 'usehooks-ts'
 import { IOption, PropsDropdown } from '@/types/Dropdown'
 import { twMerge } from 'tailwind-merge'
 import Image from 'next/image'
-import selectImageUrl from '../../../../public/open_select.svg'
-import checkImageUrl from '../../../../public/check.svg'
 
 const headerStyles =
   'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center font-medium text-primary hover:bg-tertiary'
@@ -18,8 +16,9 @@ const Dropdown = <T,>({
   className,
   headerClassName,
   options,
-  onChange,
+  onChange = () => {},
   selectedOption,
+  id,
 }: Readonly<PropsDropdown<T>>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -48,13 +47,14 @@ const Dropdown = <T,>({
 
   return (
     <div
-      id="dropdown"
+      id={id}
       ref={ref}
-      className={'relative text-L text-primary' + ' ' + (className ?? '')}
+      className={twMerge('relative text-L text-primary', className)}
     >
       <div
         className={twMerge(
-          headerStyles + ' ' + (headerClassName ?? ''),
+          headerStyles,
+          headerClassName,
           !isOpen && 'bg-transparent',
         )}
         onClick={handleClick}
@@ -63,7 +63,12 @@ const Dropdown = <T,>({
         tabIndex={0}
       >
         <span>Sort by: {selectedOption.label}</span>
-        <Image src={selectImageUrl} alt="open select icon" />
+        <Image
+          src={'/open_select.svg'}
+          alt="open select icon"
+          width={17}
+          height={10}
+        />
       </div>
       {isOpen && (
         <ul className={listStyles}>
@@ -78,7 +83,12 @@ const Dropdown = <T,>({
             >
               <span>{option.label}</span>
               {isSelected(selectedOption, option) && (
-                <Image src={checkImageUrl} alt="selected icon" />
+                <Image
+                  src={'/check.svg'}
+                  alt="selected icon"
+                  width={14}
+                  height={10}
+                />
               )}
             </li>
           ))}
