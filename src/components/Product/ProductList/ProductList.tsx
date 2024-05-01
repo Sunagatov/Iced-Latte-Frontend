@@ -14,8 +14,7 @@ import { twMerge } from 'tailwind-merge'
 import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
 import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
 import Filters from '@/components/Product/FilterSidebar/Filters'
-import { ICheckboxFilterOption } from '@/types/ICheckboxFilterOption'
-import _ from 'lodash'
+import { useProductFiltersStore } from '@/store/productFiltersStore'
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
@@ -24,18 +23,6 @@ const _filterLabelsMock: IProductFilterLabel[] = [
   { id: '3', name: 'name-3', label: 'Seller5' },
 ]
 
-// @NOTE: replace with brands from backend when backend will be ready
-const _brandOptionsMock: ICheckboxFilterOption[] = [
-  {
-    label: 'Starbucks',
-    value: 'Starbucks',
-  },
-  {
-    label: 'Java Bean Coffee',
-    value: 'JavaBeanCoffee',
-  },
-
-]
 
 export default function ProductList() {
   const handleFilterByDefault = () => {
@@ -50,19 +37,10 @@ export default function ProductList() {
     IOption<IProductSortParams>
   >(sortOptions[0])
   
-  const [selectedBrandOptions, setSelectedBrandOptions] = useState<string[]>([])
+  // const [selectedBrandOptions, setSelectedBrandOptions] = useState<string[]>([])
+  const selectedBrandOptions = useProductFiltersStore(state => state.selectedBrandOptions)
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
-
-  const handleBrandCheckboxChange = (value: string) => {
-    setSelectedBrandOptions(prevSelectedOptions => {
-      if (prevSelectedOptions.includes(value)) {
-        return prevSelectedOptions.filter(option => option !== value)
-      } else {
-        return [...prevSelectedOptions, value]
-      }
-    })
-  }
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption, selectedBrandOptions)
@@ -135,19 +113,13 @@ export default function ProductList() {
         </div>
         <div className='w-full inline-flex gap-x-8'>
           <FilterSidebar className='hidden min-[1100px]:block'>
-            <Filters brandOptions={_brandOptionsMock}
-              onBrandCheckboxChange={handleBrandCheckboxChange}
-              selectedBrandOptions={selectedBrandOptions}
-            />
+            <Filters/>
           </FilterSidebar>
           {isMobileFilterOpen && <MobileFilterSidebar
             onClose={handleCloseMobileFilter}
             className='min-[1100px]:hidden'
           >
-            <Filters brandOptions={_brandOptionsMock}
-              onBrandCheckboxChange={handleBrandCheckboxChange}
-              selectedBrandOptions={selectedBrandOptions}
-            />
+            <Filters/>
           </MobileFilterSidebar>}
           <ul
             className={
