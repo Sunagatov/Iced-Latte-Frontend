@@ -5,19 +5,17 @@ import productImg from '../../../../public/coffee.png'
 import CircleAddBtn from '../../UI/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/utils/getImgUrl'
 import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
-import { productRating, productSize } from '@/constants/product'
+import { productSize } from '@/constants/product'
 import { useCombinedStore } from '@/store/store'
 import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
 import { CardProps } from '@/types/ProductCard'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
 
-export default function ProductCard({
-  id,
-  name,
-  price,
-  productFileUrl,
-}: Readonly<CardProps>) {
+export default function ProductCard({ product }: Readonly<CardProps>) {
+  const { id, name, productFileUrl, price, averageRating, reviewsCount } =
+    product
+
   const addToCart = useCombinedStore((state) => state.add)
   const token = useAuthStore((state) => state.token)
   const { addFavourite, removeFavourite, favourites, favouriteIds } =
@@ -62,11 +60,19 @@ export default function ProductCard({
           <h2 className={'text-L font-bold text-primary md:text-3XL'}>
             {name}
           </h2>
-          <div className={' flex items-center gap-2 text-L md:text-2XL'}>
-            <Image src={star} alt="star" className={'inline-block'} />
-            <span>{productRating}</span>
+          <div className={'flex items-center gap-2 text-M font-medium'}>
+            {averageRating ? (
+              <>
+                <Image src={star} alt="star" className={'inline-block'} />
+                <span>
+                  {averageRating.toString().replace('.', ',')} ({reviewsCount})
+                </span>
+              </>
+            ) : (
+              <span className={'text-L text-tertiary'}>No rating</span>
+            )}
             <span className={'text-placeholder'}>
-              &#x2022; {productSize} g.
+              &nbsp; &#x2022; &nbsp; {productSize} g.
             </span>
           </div>
         </div>
