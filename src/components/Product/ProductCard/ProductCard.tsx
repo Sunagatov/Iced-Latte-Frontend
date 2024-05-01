@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
 import { CardProps } from '@/types/ProductCard'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
+import ProductRating from '@/components/UI/ProductRating/ProductRating'
 
 export default function ProductCard({ product }: Readonly<CardProps>) {
   const { id, name, productFileUrl, price, averageRating, reviewsCount } =
@@ -65,7 +66,8 @@ export default function ProductCard({ product }: Readonly<CardProps>) {
               <>
                 <Image src={star} alt="star" className={'inline-block'} />
                 <span>
-                  {averageRating.toString().replace('.', ',')} ({reviewsCount})
+                  <ProductRating amount={averageRating} />{' '}
+                  <span>({reviewsCount})</span>
                 </span>
               </>
             ) : (
