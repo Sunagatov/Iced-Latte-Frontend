@@ -2,12 +2,12 @@ import useSWRInfinite from 'swr/infinite'
 import { apiGetAllReviews, IReviews } from '@/services/reviewService'
 import { Review } from '@/types/ReviewType'
 import { IOption } from '@/types/Dropdown'
-import { IReviewsSortParams } from '@/types/IReviewsSortParams'
+import { ISortParams } from '@/types/ISortParams'
 
 type UseReviewsParamsType = {
   productId: string
   userReview: Review | null
-  sortOption: IOption<IReviewsSortParams>
+  sortOption: IOption<ISortParams>
   ratingFilter: number[]
 }
 

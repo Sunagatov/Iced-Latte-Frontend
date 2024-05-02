@@ -10,10 +10,11 @@ import { apiGetProductUserReview } from '@/services/reviewService'
 import Loader from '@/components/UI/Loader/Loader'
 import ReviewsList from '@/components/Review/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/components/Review/ReviewsSorter/ReviewsSorter'
-import { IOption } from '@/types/Dropdown'
-import { IReviewsSortParams } from '@/types/IReviewsSortParams'
 import { reviewsSortOptions } from '@/constants/reviewsSortOptions'
 import { useProductReviewsStore } from '@/store/reviewsStore'
+import { IOption } from '@/types/Dropdown'
+import { ISortParams } from '@/types/ISortParams'
+import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
 
 interface ReviewComponentProps {
   productId: string
@@ -109,10 +110,10 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
   }
 
   const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<IReviewsSortParams>
-  >(reviewsSortOptions[0])
+    IOption<ISortParams>
+  >(() => getDefaultSortOption(reviewsSortOptions))
 
-  const selectSortOptionHandler = (option: IOption<IReviewsSortParams>) => {
+  const selectSortOptionHandler = (option: IOption<ISortParams>) => {
     setSelectedSortOption(option)
   }
 
