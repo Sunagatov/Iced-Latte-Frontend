@@ -37,8 +37,7 @@ export default function ProductList() {
     IOption<IProductSortParams>
   >(sortOptions[0])
   
-  // const [selectedBrandOptions, setSelectedBrandOptions] = useState<string[]>([])
-  const selectedBrandOptions = useProductFiltersStore(state => state.selectedBrandOptions)
+  const { selectedBrandOptions } = useProductFiltersStore()
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 

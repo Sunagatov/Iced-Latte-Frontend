@@ -13,11 +13,13 @@ export const useProductFiltersStore = create<IProductFiltersStore>()(
     selectedBrandOptions: [],
     selectBrandOption: (value: string) => set((state) => (
       { 
+        ...state,
         selectedBrandOptions: [...state.selectedBrandOptions, value]
       }
     )),
     removeBrandOption: (value: string) => set((state) => (
-      { 
+      {
+        ...state,
         selectedBrandOptions: state.selectedBrandOptions.filter(option => option !== value)
       }
     )),

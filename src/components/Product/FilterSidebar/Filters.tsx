@@ -1,24 +1,34 @@
 import { useProductFiltersStore } from '@/store/productFiltersStore'
-import Checkbox from '../../UI/Checkbox/Checkbox'
-import { ICheckboxFilterOption } from '@/types/ICheckboxFilterOption'
+import Checkbox from '@/components/UI/Checkbox/Checkbox'
+import { IProductFilterOptionCheckbox } from '@/types/IProductFilterOptionCheckbox'
 
 
 // @NOTE: replace with brands from backend when backend will be ready
-const _brandOptionsMock: ICheckboxFilterOption[] = [
+const _brandOptionsMock: IProductFilterOptionCheckbox[] = [
   {
     label: 'Starbucks',
     value: 'Starbucks',
   },
   {
-    label: 'Java Bean Coffee',
-    value: 'JavaBeanCoffee',
+    label: 'Folgers',
+    value: 'Folgers',
+  },
+  {
+    label: 'Illy',
+    value: 'Illy',
+  },
+  {
+    label: 'Nescafe',
+    value: 'Nescafe',
+  },
+  {
+    label: 'Lavazza',
+    value: 'Lavazza',
   },
 ]
 
 export default function Filters() {
-  const selectedBrandOptions = useProductFiltersStore(state => state.selectedBrandOptions)
-  const selectBrandOption = useProductFiltersStore(state => state.selectBrandOption)
-  const removeBrandOption = useProductFiltersStore(state => state.removeBrandOption)
+  const { selectedBrandOptions, selectBrandOption, removeBrandOption } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
     if (selectedBrandOptions.includes(value)) {
