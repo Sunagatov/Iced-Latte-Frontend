@@ -1,3 +1,4 @@
-export interface ProductRatingProps {
+export interface IProductRatingProps {
   amount: number
+  reviewsCount: number
 }

@@ -1,5 +1,5 @@
 import { IProduct } from './Products'
 
-export interface CardProps {
+export interface ICardProps {
   product: IProduct
 }

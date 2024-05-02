@@ -9,11 +9,11 @@ import { productSize } from '@/constants/product'
 import { useCombinedStore } from '@/store/store'
 import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
-import { CardProps } from '@/types/ProductCard'
+import { ICardProps } from '@/types/ProductCard'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
-import ProductRating from '@/components/UI/ProductRating/ProductRating'
+import ProductRating from '@/components/Product/ProductRating/ProductRating'
 
-export default function ProductCard({ product }: Readonly<CardProps>) {
+export default function ProductCard({ product }: Readonly<ICardProps>) {
   const { id, name, productFileUrl, price, averageRating, reviewsCount } =
     product
 
@@ -65,10 +65,10 @@ export default function ProductCard({ product }: Readonly<CardProps>) {
             {averageRating ? (
               <>
                 <Image src={star} alt="star" className={'inline-block'} />
-                <span>
-                  <ProductRating amount={averageRating} />{' '}
-                  <span>({reviewsCount})</span>
-                </span>
+                <ProductRating
+                  amount={averageRating}
+                  reviewsCount={reviewsCount}
+                />
               </>
             ) : (
               <span className={'text-L text-tertiary'}>No rating</span>
