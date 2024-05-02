@@ -1,13 +1,13 @@
 'use client'
 import React from 'react'
 import { reviewsSortOptions } from '@/constants/reviewsSortOptions'
-import { IOption } from '@/types/Dropdown'
-import { IReviewsSortParams } from '@/types/IReviewsSortParams'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
+import { IOption } from '@/types/Dropdown'
+import { ISortParams } from '@/types/ISortParams'
 
 interface IReviewsSorter {
-  selectedOption: IOption<IReviewsSortParams>
-  selectOption: (option: IOption<IReviewsSortParams>) => void
+  selectedOption: IOption<ISortParams>
+  selectOption: (option: IOption<ISortParams>) => void
 }
 
 const ReviewsSorter: React.FC<IReviewsSorter> = ({
@@ -16,6 +16,7 @@ const ReviewsSorter: React.FC<IReviewsSorter> = ({
 }) => {
   return (
     <Dropdown
+      id="reviewsDropdown"
       onChange={selectOption}
       options={reviewsSortOptions}
       selectedOption={selectedOption}
