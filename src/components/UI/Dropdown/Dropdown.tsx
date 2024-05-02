@@ -9,8 +9,8 @@ const headerStyles =
   'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center font-medium text-primary hover:bg-tertiary'
 const listStyles =
   'border-primary border rounded-md py-1 absolute w-full right-0 top-full bg-primary z-[5]'
-const listItemStyles =
-  'font-medium rounded-md px-6 py-1.5 flex items-center justify-between cursor-pointer hover:bg-tertiary leading-5'
+const optionBtnStyles =
+  'font-medium leading-5 rounded-md flex items-center justify-between w-full px-6 py-1.5 hover:bg-tertiary'
 
 const Dropdown = <T,>({
   className,
@@ -51,15 +51,13 @@ const Dropdown = <T,>({
       ref={ref}
       className={twMerge('relative w-max text-L text-primary', className)}
     >
-      <div
+      <button
         className={twMerge(
           headerStyles,
           headerClassName,
           !isOpen && 'bg-transparent',
         )}
         onClick={handleClick}
-        role="button"
-        onKeyDown={() => {}}
         tabIndex={0}
       >
         <span>Sort by: {selectedOption.label}</span>
@@ -69,27 +67,29 @@ const Dropdown = <T,>({
           width={17}
           height={10}
         />
-      </div>
+      </button>
       {isOpen && (
         <ul className={listStyles}>
           {options.map((option) => (
-            <li
-              className={twMerge(
-                listItemStyles,
-                isSelected(selectedOption, option) && 'bg-secondary font-bold',
-              )}
-              onClick={handleChange(option)}
-              key={option.label}
-            >
-              <span>{option.label}</span>
-              {isSelected(selectedOption, option) && (
-                <Image
-                  src={'/check.svg'}
-                  alt="selected icon"
-                  width={14}
-                  height={10}
-                />
-              )}
+            <li key={option.label}>
+              <button
+                className={twMerge(
+                  optionBtnStyles,
+                  isSelected(selectedOption, option) &&
+                    'bg-secondary font-bold',
+                )}
+                onClick={handleChange(option)}
+              >
+                <span>{option.label}</span>
+                {isSelected(selectedOption, option) && (
+                  <Image
+                    src={'/check.svg'}
+                    alt="selected icon"
+                    width={14}
+                    height={10}
+                  />
+                )}
+              </button>
             </li>
           ))}
         </ul>
