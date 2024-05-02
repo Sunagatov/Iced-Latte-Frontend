@@ -49,7 +49,7 @@ const Dropdown = <T,>({
     <div
       id={id}
       ref={ref}
-      className={twMerge('relative text-L text-primary', className)}
+      className={twMerge('relative w-max text-L text-primary', className)}
     >
       <div
         className={twMerge(
