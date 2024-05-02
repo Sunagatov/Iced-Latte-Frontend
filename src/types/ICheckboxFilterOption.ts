@@ -1,4 +1,4 @@
 export interface IProductFilterOptionCheckbox {
-  label: string,
+  label: string
   value: string
 }

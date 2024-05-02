@@ -1,4 +1,4 @@
-export interface IProductSortParams {
+export interface ISortParams {
   sortAttribute: string
   sortDirection: 'asc' | 'desc'
 }

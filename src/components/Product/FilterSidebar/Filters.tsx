@@ -1,7 +1,6 @@
 import { useProductFiltersStore } from '@/store/productFiltersStore'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
-import { IProductFilterOptionCheckbox } from '@/types/IProductFilterOptionCheckbox'
-
+import { IProductFilterOptionCheckbox } from '@/types/ICheckboxFilterOption'
 
 // @NOTE: replace with brands from backend when backend will be ready
 const _brandOptionsMock: IProductFilterOptionCheckbox[] = [
@@ -28,7 +27,8 @@ const _brandOptionsMock: IProductFilterOptionCheckbox[] = [
 ]
 
 export default function Filters() {
-  const { selectedBrandOptions, selectBrandOption, removeBrandOption } = useProductFiltersStore()
+  const { selectedBrandOptions, selectBrandOption, removeBrandOption } =
+    useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
     if (selectedBrandOptions.includes(value)) {
@@ -40,8 +40,8 @@ export default function Filters() {
 
   return (
     <>
-      <h3 className='text-2XL text-primary font-medium mb-4'>Brand</h3>
-      <div className='flex flex-col gap-2'>
+      <h3 className="mb-4 text-2XL font-medium text-primary">Brand</h3>
+      <div className="flex flex-col gap-2">
         {_brandOptionsMock.map((option) => (
           <Checkbox
             id={option.label}

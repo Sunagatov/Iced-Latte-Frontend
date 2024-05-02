@@ -1,10 +1,13 @@
 import { IProductsList } from '@/types/Products'
 import { getAllProducts } from '@/services/apiService'
 import useSWRInfinite from 'swr/infinite'
+import { ISortParams } from '@/types/ISortParams'
 import { IOption } from '@/types/Dropdown'
-import { IProductSortParams } from '@/types/ProductSortParams'
 
-export function useProducts(sortOption: IOption<IProductSortParams>, brandOptions: string[]) {
+export function useProducts(
+  sortOption: IOption<ISortParams>,
+  brandOptions: string[],
+) {
   const { sortAttribute, sortDirection } = sortOption.value
   const brandNames = brandOptions.join(',') || null
 
@@ -13,7 +16,9 @@ export function useProducts(sortOption: IOption<IProductSortParams>, brandOption
       return null
     let requestUrl = `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}`
 
-    requestUrl = brandNames ?`${requestUrl}&brand_names=${brandNames}` : requestUrl
+    requestUrl = brandNames
+      ? `${requestUrl}&brand_names=${brandNames}`
+      : requestUrl
 
     return requestUrl
   }

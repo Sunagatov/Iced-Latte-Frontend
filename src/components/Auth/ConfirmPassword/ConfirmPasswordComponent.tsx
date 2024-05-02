@@ -56,7 +56,7 @@ const ConfirmPasswordComponent = () => {
   return (
     <>
       <h1 className="mb-[16px] text-[36px] font-medium text-primary">
-        Confirm password
+        Confirm registration
       </h1>
       <p className="mb-[40px] text-[18px] font-medium text-primary">
         Enter code that was sent to your email to confirm registration.
@@ -72,7 +72,7 @@ const ConfirmPasswordComponent = () => {
             label="Enter code that was sent to your email"
             name="confirmPassword"
             type="text"
-            placeholder="Confirm password ###-###-###"
+            placeholder="Confirmation code"
             error={errors.confirmPassword}
             className="w-full"
           />

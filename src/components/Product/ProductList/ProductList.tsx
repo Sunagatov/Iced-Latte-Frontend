@@ -6,8 +6,6 @@ import ProductCard from '@/components/Product/ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
-import { IProductSortParams } from '@/types/ProductSortParams'
-import { IOption } from '@/types/Dropdown'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
@@ -15,6 +13,9 @@ import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
 import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
 import Filters from '@/components/Product/FilterSidebar/Filters'
 import { useProductFiltersStore } from '@/store/productFiltersStore'
+import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
+import { ISortParams } from '@/types/ISortParams'
+import { IOption } from '@/types/Dropdown'
 
 // @NOTE: need to delete when backend will be ready
 const _filterLabelsMock: IProductFilterLabel[] = [
@@ -22,7 +23,6 @@ const _filterLabelsMock: IProductFilterLabel[] = [
   { id: '2', name: 'name-2', label: 'Seller1' },
   { id: '3', name: 'name-3', label: 'Seller5' },
 ]
-
 
 export default function ProductList() {
   const handleFilterByDefault = () => {
@@ -34,9 +34,9 @@ export default function ProductList() {
   }
 
   const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<IProductSortParams>
-  >(sortOptions[0])
-  
+    IOption<ISortParams>
+  >(() => getDefaultSortOption(sortOptions))
+
   const { selectedBrandOptions } = useProductFiltersStore()
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
@@ -44,12 +44,12 @@ export default function ProductList() {
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption, selectedBrandOptions)
 
-  function handleSelect(selectedOption: IOption<IProductSortParams>) {
+  function handleSelect(selectedOption: IOption<ISortParams>) {
     setSelectedSortOption(selectedOption)
   }
 
   const handleFilterClick = () => {
-    setIsMobileFilterOpen(prev => !prev)
+    setIsMobileFilterOpen((prev) => !prev)
   }
 
   const handleCloseMobileFilter = () => {
@@ -98,35 +98,40 @@ export default function ProductList() {
         </div>
         <div className={'mb-6 mt-1.5 flex w-full items-center justify-between'}>
           <button
-            id='filter-btn'
+            id="filter-btn"
             onClick={handleFilterClick}
-            className='hidden max-[1100px]:block cursor-pointer text-brand text-L font-medium'>
+            className="hidden cursor-pointer text-L font-medium text-brand max-[1100px]:block"
+          >
             Filter
           </button>
-          <Dropdown<IProductSortParams>
-            className='ml-auto'
+          <Dropdown<ISortParams>
+            id="productDropdown"
+            className="ml-auto"
+            headerClassName="-mr-6"
             options={sortOptions}
             onChange={handleSelect}
             selectedOption={selectedSortOption}
           />
         </div>
-        <div className='w-full inline-flex gap-x-8'>
-          <FilterSidebar className='hidden min-[1100px]:block'>
-            <Filters/>
+        <div className="inline-flex w-full gap-x-8">
+          <FilterSidebar className="hidden min-[1100px]:block">
+            <Filters />
           </FilterSidebar>
-          {isMobileFilterOpen && <MobileFilterSidebar
-            onClose={handleCloseMobileFilter}
-            className='min-[1100px]:hidden'
-          >
-            <Filters/>
-          </MobileFilterSidebar>}
+          {isMobileFilterOpen && (
+            <MobileFilterSidebar
+              onClose={handleCloseMobileFilter}
+              className="min-[1100px]:hidden"
+            >
+              <Filters />
+            </MobileFilterSidebar>
+          )}
           <ul
             className={
               'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3 '
             }
           >
             {data.map((product) => (
-              <li key={product.id} >
+              <li key={product.id}>
                 <ProductCard
                   id={product.id}
                   name={product.name}
