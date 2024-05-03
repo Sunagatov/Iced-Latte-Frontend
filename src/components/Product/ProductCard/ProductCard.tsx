@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import star from '../../../../public/star.png'
 import productImg from '../../../../public/coffee.png'
 import CircleAddBtn from '../../UI/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/utils/getImgUrl'
@@ -62,17 +61,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
             {name}
           </h2>
           <div className={'flex items-center gap-2 text-M font-medium'}>
-            {averageRating ? (
-              <>
-                <Image src={star} alt="star" className={'inline-block'} />
-                <ProductRating
-                  amount={averageRating}
-                  reviewsCount={reviewsCount}
-                />
-              </>
-            ) : (
-              <span className={'text-L text-tertiary'}>No rating</span>
-            )}
+            <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
             <span className={'text-placeholder'}>
               &nbsp; &#x2022; &nbsp; {productSize} g.
             </span>

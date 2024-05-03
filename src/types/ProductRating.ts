@@ -1,4 +1,4 @@
 export interface IProductRatingProps {
-  amount: number
+  rating: number | null
   reviewsCount: number
 }
