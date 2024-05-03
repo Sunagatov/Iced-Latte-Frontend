@@ -13,7 +13,6 @@ export default function ProductRating({
 
   return (
     <>
-      {' '}
       {rating ? (
         <>
           <Image
