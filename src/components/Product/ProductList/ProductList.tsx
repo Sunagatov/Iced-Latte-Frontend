@@ -94,9 +94,16 @@ export default function ProductList() {
             filterLabels={_filterLabelsMock}
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
+            className='min-[1100px]:hidden'
           />
         </div>
         <div className={'mb-6 mt-1.5 flex w-full items-center justify-between'}>
+          <ProductsFilterLabels
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
+            className='max-[1100px]:hidden'
+          />
           <button
             id="filter-btn"
             onClick={handleFilterClick}
