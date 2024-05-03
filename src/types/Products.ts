@@ -15,4 +15,5 @@ export interface IProduct {
   active: boolean
   productFileUrl: string | null
   averageRating: number
+  reviewsCount: number
 }

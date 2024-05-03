@@ -1,6 +1,5 @@
 import { IProduct } from './Products'
 
-export type CardProps = Pick<
-  IProduct,
-  'id' | 'name' | 'price' | 'description' | 'productFileUrl'
->
+export interface ICardProps {
+  product: IProduct
+}
