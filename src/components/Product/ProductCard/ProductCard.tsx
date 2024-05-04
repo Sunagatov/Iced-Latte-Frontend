@@ -39,7 +39,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
   return (
     <div
       className={
-        'relative flex h-full w-[177px] flex-col justify-between gap-y-4 md:w-[360px]'
+        'relative flex h-full w-[177px] flex-col justify-between gap-y-4 md:w-[346px]'
       }
     >
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>

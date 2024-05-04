@@ -9,6 +9,10 @@ import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
+import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
+import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
+import Filters from '@/components/Product/FilterSidebar/Filters'
+import { useProductFiltersStore } from '@/store/productFiltersStore'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
 import { ISortParams } from '@/types/ISortParams'
 import { IOption } from '@/types/Dropdown'
@@ -33,11 +37,23 @@ export default function ProductList() {
     IOption<ISortParams>
   >(() => getDefaultSortOption(sortOptions))
 
+  const { selectedBrandOptions } = useProductFiltersStore()
+
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption)
+    useProducts(selectedSortOption, selectedBrandOptions)
 
   function handleSelect(selectedOption: IOption<ISortParams>) {
     setSelectedSortOption(selectedOption)
+  }
+
+  const handleFilterClick = () => {
+    setIsMobileFilterOpen((prev) => !prev)
+  }
+
+  const handleCloseMobileFilter = () => {
+    setIsMobileFilterOpen(false)
   }
 
   const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
@@ -78,15 +94,59 @@ export default function ProductList() {
             filterLabels={_filterLabelsMock}
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
+            className="min-[1100px]:hidden"
           />
+        </div>
+        <div
+          className={
+            'mb-6 mt-1.5 flex w-full items-center justify-between gap-2'
+          }
+        >
+          <ProductsFilterLabels
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
+            className="max-[1100px]:hidden"
+          />
+          <button
+            id="filter-btn"
+            onClick={handleFilterClick}
+            className="hidden cursor-pointer text-L font-medium text-brand max-[1100px]:block"
+          >
+            Filter
+          </button>
           <Dropdown<ISortParams>
             id="productDropdown"
-            className="mb-8"
+            className="ml-auto"
             headerClassName="-mr-6"
             options={sortOptions}
             onChange={handleSelect}
             selectedOption={selectedSortOption}
           />
+        </div>
+        <div className="inline-flex w-full justify-center gap-x-8">
+          <FilterSidebar className="mr-auto hidden min-[1100px]:block">
+            <Filters />
+          </FilterSidebar>
+          {isMobileFilterOpen && (
+            <MobileFilterSidebar
+              onClose={handleCloseMobileFilter}
+              className="min-[1100px]:hidden"
+            >
+              <Filters />
+            </MobileFilterSidebar>
+          )}
+          <ul
+            className={
+              'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3 '
+            }
+          >
+            {data.map((product) => (
+              <li key={product.id}>
+                <ProductCard product={product} />
+              </li>
+            ))}
+          </ul>
         </div>
         <ul
           className={
