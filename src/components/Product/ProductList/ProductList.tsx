@@ -143,17 +143,22 @@ export default function ProductList() {
           >
             {data.map((product) => (
               <li key={product.id}>
-                <ProductCard
-                  id={product.id}
-                  name={product.name}
-                  price={product.price}
-                  description={product.description}
-                  productFileUrl={product.productFileUrl}
-                />
+                <ProductCard product={product} />
               </li>
             ))}
           </ul>
         </div>
+        <ul
+          className={
+            'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-8 min-[1124px]:grid-cols-3 '
+          }
+        >
+          {data.map((product) => (
+            <li key={product.id}>
+              <ProductCard product={product} />
+            </li>
+          ))}
+        </ul>
         {isShowLoadMoreBtn && (
           <button
             className={
