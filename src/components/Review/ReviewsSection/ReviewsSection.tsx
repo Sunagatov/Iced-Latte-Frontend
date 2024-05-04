@@ -11,7 +11,10 @@ import Loader from '@/components/UI/Loader/Loader'
 import ReviewsList from '@/components/Review/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/components/Review/ReviewsSorter/ReviewsSorter'
 import { reviewsSortOptions } from '@/constants/reviewsSortOptions'
-import { useProductReviewsStore } from '@/store/reviewsStore'
+import {
+  checkIfUserReviewExists,
+  useProductReviewsStore,
+} from '@/store/reviewsStore'
 import { IOption } from '@/types/Dropdown'
 import { ISortParams } from '@/types/ISortParams'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
@@ -40,7 +43,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
 
         setShouldRevalidateUserReview(false)
 
-        if (Object.values(userReview).some((value) => value !== null)) {
+        if (checkIfUserReviewExists(userReview)) {
           setUserReview(userReview)
           setIsReviewButtonVisible(false)
         } else {
