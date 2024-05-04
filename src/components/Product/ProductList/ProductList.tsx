@@ -97,7 +97,7 @@ export default function ProductList() {
             className='min-[1100px]:hidden'
           />
         </div>
-        <div className={'mb-6 mt-1.5 flex w-full items-center justify-between'}>
+        <div className={'mb-6 mt-1.5 flex w-full items-center justify-between gap-2 overflow-x-hidden'}>
           <ProductsFilterLabels
             filterLabels={_filterLabelsMock}
             handleFilterLabelClick={handleFilterLabelClick}
@@ -120,8 +120,8 @@ export default function ProductList() {
             selectedOption={selectedSortOption}
           />
         </div>
-        <div className="inline-flex w-full gap-x-8">
-          <FilterSidebar className="hidden min-[1100px]:block">
+        <div className="inline-flex w-full gap-x-8 justify-center">
+          <FilterSidebar className="hidden min-[1100px]:block mr-auto">
             <Filters />
           </FilterSidebar>
           {isMobileFilterOpen && (
