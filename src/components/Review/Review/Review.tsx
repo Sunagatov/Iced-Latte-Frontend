@@ -10,11 +10,10 @@ import Button from '@/components/UI/Buttons/Button/Button'
 
 interface IReview {
   isUserReview: boolean
-  review: ReviewType | null
+  review: ReviewType
   toggleReviewExpansion?: (id: string) => void
   deleteReview?: (id: string) => void
-  likeReview?: (id: string) => void
-  disLikeReview?: (id: string) => void
+  rateReview?: (id: string, isLike: boolean) => void
   isExpanded?: boolean
 }
 
@@ -23,8 +22,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   review,
   toggleReviewExpansion = () => {},
   deleteReview = () => {},
-  likeReview = () => {},
-  disLikeReview = () => {},
+  rateReview = () => {},
   isExpanded,
 }) => {
   const isMediaQuery = useMediaQuery('(min-width: 768px)', {
@@ -32,19 +30,23 @@ const Review: React.FC<Readonly<IReview>> = ({
   })
 
   const toggleReviewExpansionHandler = () => {
-    toggleReviewExpansion(review!.productReviewId!)
+    toggleReviewExpansion(review.productReviewId!)
   }
 
   const deleteReviewHandler = () => {
-    deleteReview(review!.productReviewId!)
+    deleteReview(review.productReviewId!)
   }
 
   const likeReviewHandler = () => {
-    likeReview(review!.productReviewId!)
+    const isLike = true
+
+    rateReview(review.productReviewId!, isLike)
   }
 
-  const disLikeReviewHandler = () => {
-    disLikeReview(review!.productReviewId!)
+  const dislikeReviewHandler = () => {
+    const isLike = false
+
+    rateReview(review.productReviewId!, isLike)
   }
 
   if (!review) return <></>
@@ -61,7 +63,7 @@ const Review: React.FC<Readonly<IReview>> = ({
           {[...Array(5)].map((_, starValue) => (
             <FaStar
               className={`h-[18px] w-[18px] ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
-              key={review.productReviewId! + _}
+              key={review.productReviewId! + starValue}
             />
           ))}
           <span className="ml-2 text-L font-medium text-primary">
@@ -114,38 +116,35 @@ const Review: React.FC<Readonly<IReview>> = ({
         </p>
       )}
 
-      {isUserReview && (
-        <Button
-          id="delete-review-btn"
-          onClick={deleteReviewHandler}
-          className="mr-auto w-[126px] rounded-[47px] bg-secondary px-6 py-4 text-L font-medium text-primary md:w-[196px]"
-        >
-          {isMediaQuery ? 'Delete my review' : 'Delete'}
-        </Button>
-      )}
-
-      {!isUserReview && (
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2 xl:ml-auto">
-            <Button
-              id="like-btn"
-              onClick={likeReviewHandler}
-              className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary"
-            >
-              <BiLike />
-              <span>{review ? review.likes : 17}</span>
-            </Button>
-            <Button
-              id="dislike-btn"
-              onClick={disLikeReviewHandler}
-              className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary"
-            >
-              <BiDislike />
-              <span>{review ? review.dislikes : 3}</span>
-            </Button>
-          </div>
+      <div className="flex items-center justify-between">
+        {isUserReview && (
+          <Button
+            id="delete-review-btn"
+            onClick={deleteReviewHandler}
+            className="mr-auto w-[126px] rounded-[47px] bg-secondary px-6 py-4 text-L font-medium text-primary hover:bg-tertiary md:w-[196px]"
+          >
+            {isMediaQuery ? 'Delete my review' : 'Delete'}
+          </Button>
+        )}
+        <div className="flex gap-2 xl:ml-auto">
+          <Button
+            id={`like-btn-${review.productReviewId}`}
+            onClick={likeReviewHandler}
+            className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary hover:bg-tertiary"
+          >
+            <BiLike />
+            <span>{review.likesCount}</span>
+          </Button>
+          <Button
+            id={`dislike-btn-${review.productReviewId}`}
+            onClick={dislikeReviewHandler}
+            className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary hover:bg-tertiary"
+          >
+            <BiDislike />
+            <span>{review.dislikesCount}</span>
+          </Button>
         </div>
-      )}
+      </div>
     </>
   )
 }

@@ -16,6 +16,8 @@ const ReviewRatingFilter = ({
 }: ReviewRatingFilterProps) => {
   const { reviewsStatistics } = useProductReviewsStore()
 
+  console.log(reviewsStatistics)
+
   const handleCheckboxChange = (value: number) => {
     onChange(value)
   }

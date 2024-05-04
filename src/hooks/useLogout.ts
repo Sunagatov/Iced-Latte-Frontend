@@ -4,7 +4,7 @@ import { useFavouritesStore } from '@/store/favStore'
 import { useRouter } from 'next/navigation'
 import { removeCookie } from '@/utils/cookieUtils'
 import { apiLogoutUser } from '@/services/authService'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 
 const useLogout = () => {
@@ -18,7 +18,7 @@ const useLogout = () => {
     setIsReviewButtonVisible,
   } = useProductReviewsStore()
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       setIsLoading(true)
       await apiLogoutUser()
@@ -36,7 +36,14 @@ const useLogout = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [
+    reset,
+    resetFav,
+    router,
+    setIsRaitingFormVisible,
+    setIsReviewButtonVisible,
+    setIsReviewFormVisible,
+  ])
 
   return { logout, isLoading }
 }
