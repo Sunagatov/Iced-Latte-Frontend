@@ -94,15 +94,19 @@ export default function ProductList() {
             filterLabels={_filterLabelsMock}
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
-            className='min-[1100px]:hidden'
+            className="min-[1100px]:hidden"
           />
         </div>
-        <div className={'mb-6 mt-1.5 flex w-full items-center justify-between gap-2 overflow-x-hidden'}>
+        <div
+          className={
+            'mb-6 mt-1.5 flex w-full items-center justify-between gap-2'
+          }
+        >
           <ProductsFilterLabels
             filterLabels={_filterLabelsMock}
             handleFilterLabelClick={handleFilterLabelClick}
             handleFilterByDefault={handleFilterByDefault}
-            className='max-[1100px]:hidden'
+            className="max-[1100px]:hidden"
           />
           <button
             id="filter-btn"
@@ -120,8 +124,8 @@ export default function ProductList() {
             selectedOption={selectedSortOption}
           />
         </div>
-        <div className="inline-flex w-full gap-x-8 justify-center">
-          <FilterSidebar className="hidden min-[1100px]:block mr-auto">
+        <div className="inline-flex w-full justify-center gap-x-8">
+          <FilterSidebar className="mr-auto hidden min-[1100px]:block">
             <Filters />
           </FilterSidebar>
           {isMobileFilterOpen && (
