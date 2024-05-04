@@ -63,7 +63,7 @@ const Review: React.FC<Readonly<IReview>> = ({
           {[...Array(5)].map((_, starValue) => (
             <FaStar
               className={`h-[18px] w-[18px] ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
-              key={review.productReviewId! + starValue}
+              key={review.productReviewId![starValue] + starValue}
             />
           ))}
           <span className="ml-2 text-L font-medium text-primary">
