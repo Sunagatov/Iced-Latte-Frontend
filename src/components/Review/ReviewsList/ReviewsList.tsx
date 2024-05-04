@@ -68,10 +68,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
     }
   }
 
-  const handleRateComment = async (
-    productReviewId: string,
-    isLike: boolean,
-  ) => {
+  const handleRateReview = async (productReviewId: string, isLike: boolean) => {
     try {
       if (!token) {
         router.push('/auth/login')
@@ -96,7 +93,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
             isUserReview
             review={userReview}
             deleteReview={deleteReviewHandler}
-            rateReview={handleRateComment}
+            rateReview={handleRateReview}
           />
         </div>
       )}
@@ -107,7 +104,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
             <Review
               isUserReview={false}
               review={review}
-              rateReview={handleRateComment}
+              rateReview={handleRateReview}
             />
           </li>
         ))}
