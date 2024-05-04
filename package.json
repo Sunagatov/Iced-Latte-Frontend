@@ -21,6 +21,7 @@
     "axios-cache-interceptor": "^1.5.1",
     "date-fns": "^2.30.0",
     "debug": "^4.3.4",
+    "immer": "^10.0.4",
     "lodash": "^4.17.21",
     "next": "13.5.6",
     "postcss": "^8",

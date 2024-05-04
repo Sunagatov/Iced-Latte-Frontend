@@ -7,7 +7,7 @@ const CircleAddBtn = ({ onClick }: { onClick: () => void }) => {
     <div onClick={onClick} onKeyDown={onClick}>
       <button
         className={
-          'flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-inverted  focus:bg-inverted active:bg-fullpage-tint transition-all duration-500 ease-in-out transform hover:scale-105'
+          'flex h-12 w-12 transform cursor-pointer items-center justify-center rounded-full  bg-inverted transition-all duration-500 ease-in-out hover:scale-105 focus:bg-inverted active:bg-fullpage-tint'
         }
       >
         <Image src={circle_btn} alt="add to cart" />

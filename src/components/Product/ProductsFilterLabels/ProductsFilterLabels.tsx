@@ -2,20 +2,23 @@
 import Image from 'next/image'
 import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import Button from '@/components/UI/Buttons/Button/Button'
+import { twMerge } from 'tailwind-merge'
 
 interface IProductsFilterLabels {
   filterLabels: IProductFilterLabel[]
   handleFilterByDefault: () => void
   handleFilterLabelClick: (label: string, id: string) => void
+  className?: string
 }
 
 const ProductsFilterLabels = ({
   filterLabels,
   handleFilterLabelClick,
   handleFilterByDefault,
+  className
 }: Readonly<IProductsFilterLabels>) => {
   return (
-    <div className="justify-left flex flex-wrap gap-2 pt-1.5">
+    <div className={twMerge('justify-left flex flex-wrap gap-2 pt-1.5', className)}>
       <Button
         onClick={handleFilterByDefault}
         className="rounded-[40px] bg-inverted px-6 py-4"
