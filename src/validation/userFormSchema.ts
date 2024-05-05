@@ -31,11 +31,13 @@ export const validationSchema = yup.object().shape({
   email: yup
     .string()
     .email('Invalid email')
+    .max(64, 'Email should not exceed 64 characters')
     .test(
       'email-format',
       'Invalid email format',
       (value: string | undefined) => {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        const emailRegex =
+          /^[-!#$%&'*+/=?^_`{|}~A-Za-z0-9]+(?:\.[-!#$%&'*+/=?^_`{|}~A-Za-z0-9]+)*@([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9]/
 
         return emailRegex.test(value ?? '')
       },
