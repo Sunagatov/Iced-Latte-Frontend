@@ -3,19 +3,21 @@ import * as yup from 'yup'
 export const validationSchema = yup.object().shape({
   firstName: yup
     .string()
-    .required('name is required')
-    .max(255, 'name should not exceed 255 characters')
+    .required('Name is required')
+    .min(2, 'Name should be at least 2 characters')
+    .max(128, 'Name should not exceed 128 characters')
     .matches(
-      /^[a-zA-Z\u0080-\u00FF\-."':;, ]+$/,
-      'Invalid name format. Use extended Latin letters, spaces, and specified symbols',
+      /^[a-zA-Z-'.]+$/,
+      `Invalid name format. Use Latin letters and special characters (-'.)`,
     ),
   lastName: yup
     .string()
     .required('Last name is required')
-    .max(255, 'Last name should not exceed 255 characters')
+    .min(2, 'Last name should be at least 2 characters')
+    .max(128, 'Last name should not exceed 128 characters')
     .matches(
-      /^[a-zA-Z\u0080-\u00FF -]+$/,
-      'Invalid Last name format. Use extended Latin letters',
+      /^[a-zA-Z-'.]+$/,
+      `Invalid last name format. Use Latin letters and special characters (-'.)`,
     ),
 
   birthDate: yup.string().nullable(),
