@@ -7,7 +7,7 @@ import { FaStar } from 'react-icons/fa'
 import { Review as ReviewType } from '@/types/ReviewType'
 import { formatReviewDate } from '@/components/Review/ReviewsList/formatReviewDate'
 import Button from '@/components/UI/Buttons/Button/Button'
-import { v4 as uuidv4 } from 'uuid'
+import { nanoid } from 'nanoid'
 
 interface IReview {
   isUserReview: boolean
@@ -64,7 +64,7 @@ const Review: React.FC<Readonly<IReview>> = ({
           {[...Array(5)].map((_, starValue) => (
             <FaStar
               className={`h-[18px] w-[18px] ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
-              key={uuidv4()}
+              key={nanoid()}
             />
           ))}
           <span className="ml-2 text-L font-medium text-primary">
