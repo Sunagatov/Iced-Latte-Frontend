@@ -74,3 +74,16 @@ export async function apiGetProductReviewsStatistics(productId: string) {
 
   return response.data
 }
+
+export async function apiRateProductReview(
+  productId: string,
+  productReviewId: string,
+  isLike: boolean,
+) {
+  const response: AxiosResponse<IProductReviewsStatistics> = await api.post(
+    `/products/${productId}/reviews/${productReviewId}/rate`,
+    { isLike },
+  )
+
+  return response.data
+}

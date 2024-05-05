@@ -47,6 +47,10 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
     setReviewsStatistics,
   ])
 
+  useEffect(() => {
+    return () => setShouldRevalidateStatistics(true)
+  }, [setShouldRevalidateStatistics])
+
   return (
     <section>
       <div

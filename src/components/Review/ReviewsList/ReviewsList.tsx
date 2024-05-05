@@ -3,12 +3,17 @@
 import Button from '@/components/UI/Buttons/Button/Button'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import React from 'react'
-import { apiDeleteProductReview } from '@/services/reviewService'
+import {
+  apiDeleteProductReview,
+  apiRateProductReview,
+} from '@/services/reviewService'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { useProductReviewsStore } from '@/store/reviewsStore'
 import { Review as ReviewType } from '@/types/ReviewType'
 import Loader from '@/components/UI/Loader/Loader'
 import Review from '@/components/Review/Review/Review'
+import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
 
 interface IReviewsList {
   productId: string
@@ -27,6 +32,9 @@ const ReviewsList: React.FC<IReviewsList> = ({
   isFetchingNextPage,
   userReview,
 }) => {
+  const { token, setModalState } = useAuthStore()
+  const router = useRouter()
+
   const {
     setIsReviewFormVisible,
     setIsReviewButtonVisible,
@@ -60,25 +68,32 @@ const ReviewsList: React.FC<IReviewsList> = ({
     }
   }
 
-  const handleLikeComment = (productReviewId: string | null | undefined) => {
-    console.log(`Liking comment with ID ${productReviewId}`)
-  }
+  const handleRateReview = async (productReviewId: string, isLike: boolean) => {
+    try {
+      if (!token) {
+        router.push('/auth/login')
+        setModalState(true)
 
-  const handleDislikeComment = (productReviewId: string | null | undefined) => {
-    console.log(`Disliking comment with ID ${productReviewId}`)
-  }
+        return
+      }
+      await apiRateProductReview(productId, productReviewId, isLike)
 
-  const hasUserReview =
-    userReview && Object.values(userReview).some((value) => value !== null)
+      setShouldRevalidateReviews(true)
+      setShouldRevalidateUserReview(true)
+    } catch (error) {
+      handleError(error)
+    }
+  }
 
   return (
     <>
-      {hasUserReview && (
-        <div className="mt-10 xl:mt-20">
+      {userReview && (
+        <div className="mt-10">
           <Review
             isUserReview
             review={userReview}
-            deleteReview={(id) => deleteReviewHandler(id)}
+            deleteReview={deleteReviewHandler}
+            rateReview={handleRateReview}
           />
         </div>
       )}
@@ -89,8 +104,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
             <Review
               isUserReview={false}
               review={review}
-              likeReview={handleLikeComment}
-              disLikeReview={handleDislikeComment}
+              rateReview={handleRateReview}
             />
           </li>
         ))}
