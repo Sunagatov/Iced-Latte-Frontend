@@ -170,6 +170,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
                   <ReviewsSorter
                     selectedOption={selectedSortOption}
                     selectOption={selectSortOptionHandler}
+                    userReview={userReview}
                   />
                   <ReviewsList
                     productId={productId}

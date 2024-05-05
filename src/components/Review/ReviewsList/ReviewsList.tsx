@@ -88,7 +88,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
   return (
     <>
       {userReview && (
-        <div className="mt-10 xl:mt-20">
+        <div className="mt-10">
           <Review
             isUserReview
             review={userReview}
