@@ -11,17 +11,29 @@ export default function CartButton() {
   return (
     <Link href={'/cart'}>
       <button
-        onClick={() => { }}
-        className={'relative flex items-center gap-2 rounded-full px-4 py-2 font-medium text-primary sm:bg-secondary'}>
-        <div className={'h-[24px] w-[24px] sm:h-[24px] sm:w-[24px]'}>
-          <Image src={cart_icon} width={24} height={24} alt="Cart" priority />
+        onClick={() => {}}
+        className={
+          'relative flex items-center gap-2 rounded-full px-4 font-medium text-primary  '
+        }
+      >
+        <div className="flex flex-col items-center ">
+          <Image
+            src={cart_icon}
+            width={24}
+            height={24}
+            alt="Cart"
+            priority
+            className="sm:mb-2"
+          />
+          <p className="hidden items-center text-primary text-opacity-50 sm:flex">
+            cart
+          </p>
         </div>
         {!!count && (
-          <div className="absolute left-[-16px] top-0 h-7 w-7 rounded-full bg-fullpage-tint p-1 text-XS leading-5 text-black sm:top-[-12px]">
-            <span>{count}</span>
+          <div className="absolute right-[12px] top-[2px] flex h-5 w-5 items-center justify-center rounded-full border bg-brand-solid p-1 sm:right-[15px] ">
+            <span className="text-[8px] text-white">{count}</span>
           </div>
         )}
-        <p className={'hidden items-center sm:flex'}>Cart</p>
       </button>
     </Link>
   )

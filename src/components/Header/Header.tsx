@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header
       className={
-        'sticky left-0 top-0 z-10 mx-auto mt-2 flex h-14 w-full items-center justify-between bg-primary pl-6 pr-6'
+        'sticky left-0 top-0 z-10 mx-auto mt-2 flex h-20 w-full items-center justify-between bg-primary pl-6 pr-6'
       }
     >
       <Link href="/">
@@ -17,9 +17,7 @@ export default function Header() {
           <div className={'h-[21px] w-[19px] sm:h-[31px] sm:w-[28px]'}>
             <Image src={logo} width={28} alt="Logo" priority />
           </div>
-          <span className={'hidden items-center text-L sm:flex'}>
-            Iced Latte
-          </span>
+          <span className={'hidden items-center text-L sm:flex'}>IL</span>
           <span
             className={
               'flex items-center text-L font-medium text-primary sm:hidden'
@@ -29,10 +27,10 @@ export default function Header() {
           </span>
         </div>
       </Link>
-      <div className={'flex items-center justify-between gap-6'}>
+      <div className={'flex h-14 items-center '}>
         <HeaderHeart />
-        <LoginIcon />
         <CartButton />
+        <LoginIcon />
       </div>
     </header>
   )
