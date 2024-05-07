@@ -51,16 +51,15 @@ function AuthModal() {
   return (
     <div
       className={
-        'sm:top-22 fixed bottom-0 right-0 top-14 z-30 flex w-full grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'
+        'sm:top-22 fixed bottom-0 right-0 top-20 z-30 flex w-full grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'
       }
     >
-      <div
+      <button
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
         onClick={handleCloseModal}
-        role="button"
         onKeyDown={() => {}}
         tabIndex={0}
-      ></div>
+      ></button>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
           <h2 className="text-4XL">Welcome back</h2>
@@ -70,7 +69,7 @@ function AuthModal() {
             <LoginForm />
           ) : (
             <Link
-              href="/auth/login"
+              href={'/auth/login'}
               onClick={handleClickSwitchFrom}
               className="mt-[10px] flex w-full text-[gray] hover:text-focus"
             >
@@ -81,7 +80,7 @@ function AuthModal() {
           {switchForm === SwitchType.Login && (
             <Link
               onClick={resetOpenModal}
-              href="/forgotpass"
+              href={'/forgotpass'}
               className="mt-[40px] flex items-center justify-center text-focus"
             >
               Forgot password
@@ -93,7 +92,7 @@ function AuthModal() {
           ) : (
             <>
               <h2 className="text-4XL">I’m new here</h2>
-              <Link href="/auth/registration">
+              <Link href={'/auth/registration'}>
                 <Button
                   id="register-btn"
                   onClick={handleClickSwitchFrom}

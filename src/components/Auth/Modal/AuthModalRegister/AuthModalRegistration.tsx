@@ -49,14 +49,13 @@ function AuthModalRegistr() {
   })
 
   return (
-    <div className={'sm:top-22 fixed bottom-0 right-0 top-14 z-30 flex w-full'}>
-      <div
+    <div className={'sm:top-22 fixed bottom-0 right-0 top-20 z-30 flex w-full'}>
+      <button
         className={'grow-0 bg-gray-500 bg-opacity-75 min-[440px]:grow'}
         onClick={handleCloseModal}
-        role="button"
         onKeyDown={() => {}}
         tabIndex={0}
-      ></div>
+      ></button>
       <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
         <div className="px-4 sm:px-6">
           <h2 className="text-4XL">Welcome back</h2>
