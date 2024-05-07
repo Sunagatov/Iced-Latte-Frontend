@@ -18,11 +18,7 @@ export default function Header() {
             <Image src={logo} width={28} alt="Logo" priority />
           </div>
           <span className={'hidden items-center text-L sm:flex'}>IL</span>
-          <span
-            className={
-              'flex items-center text-L font-medium text-primary sm:hidden'
-            }
-          >
+          <span className="flex items-center text-L font-medium text-primary sm:hidden">
             IL
           </span>
         </div>

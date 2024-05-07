@@ -11,17 +11,9 @@ export default function HeaderHeart() {
 
   return (
     <Link href={'/favourites'}>
-      <button
-        className={
-          'relative flex items-center  gap-2 rounded-full px-4 font-medium text-primary'
-        }
-      >
+      <div className="relative flex items-center gap-2 rounded-full px-4 font-medium text-primary">
         <div className="flex flex-col items-center">
-          <div
-            className={
-              'flex h-[24px] w-[24px] justify-center sm:mb-2 sm:h-[24px] sm:w-[24px]'
-            }
-          >
+          <div className="flex h-[24px] w-[24px] justify-center sm:mb-2 sm:h-[24px] sm:w-[24px]">
             <Image
               src={favouriteIds.length > 0 ? heart_purple : heart_black}
               alt={'heart'}
@@ -32,7 +24,7 @@ export default function HeaderHeart() {
             favorites
           </p>
         </div>
-      </button>
+      </div>
     </Link>
   )
 }
