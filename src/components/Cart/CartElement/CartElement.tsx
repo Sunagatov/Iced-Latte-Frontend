@@ -72,7 +72,7 @@ export default function CartElement({
         <p className="text-lg font-semibold">{productInfo.name}</p>
         <p className={'font-medium text-placeholder'}>{` ${productSize} g.`}</p>
         <p className="right-0 top-0 text-lg font-semibold sm:absolute">
-          {totalProductPrice}
+          {`$${totalProductPrice}`}
         </p>
         <div className="mt-[22px] flex items-center justify-start">
           <Counter
