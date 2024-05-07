@@ -88,17 +88,33 @@ export const createCartSlice: StateCreator<
       }
     } else {
       const updatedCart = addToCart(id, itemsIds)
+      const count = getProductsCount(updatedCart)
 
-      set(
-        (state) =>
-          ({
-            ...state,
-            itemsIds: updatedCart,
-            items: state.items,
-            tempItems: state.tempItems,
-            count: state.count + 1,
-          }) as CartSliceState,
+      if (!cartItem) {
+        set((state) => ({
+          ...state,
+          itemsIds: updatedCart,
+          count,
+        }))
+
+        return
+      }
+
+      const updatedTempItems = tempItems.map((tempItem) =>
+        tempItem.productInfo.id === id
+          ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
+          : tempItem,
       )
+
+      const totalPrice = getTotalPrice(updatedTempItems)
+
+      set((state) => ({
+        ...state,
+        itemsIds: updatedCart,
+        tempItems: updatedTempItems,
+        count,
+        totalPrice,
+      }))
     }
   },
   getCartItems: async () => {
@@ -137,8 +153,9 @@ export const createCartSlice: StateCreator<
     }
   },
   remove: (id: string, token: string | null) => {
+    const { tempItems, itemsIds, updateCartItem } = get()
+
     if (token) {
-      const { tempItems, updateCartItem } = get()
       const productCartSlotId = getProductCartSlotId(id, tempItems)
       const itemChanges: ICartUpdatedItem = {
         shoppingCartItemId: productCartSlotId!,
@@ -149,21 +166,24 @@ export const createCartSlice: StateCreator<
         throw new Error((e as Error).message)
       })
     } else {
-      const { tempItems, itemsIds } = get()
-
       const updatedCart = removeItem(id, itemsIds)
-      const totalPrice = getTotalPrice(tempItems)
+      const count = getProductsCount(updatedCart)
 
-      set(
-        (state) =>
-          ({
-            ...state,
-            itemsIds: updatedCart,
-            items: state.items,
-            count: state.count - 1,
-            totalPrice,
-          }) as CartSliceState,
+      const updatedTempItems = tempItems.map((tempItem) =>
+        tempItem.productInfo.id === id
+          ? { ...tempItem, productQuantity: tempItem.productQuantity - 1 }
+          : tempItem,
       )
+
+      const totalPrice = getTotalPrice(updatedTempItems)
+
+      set((state) => ({
+        ...state,
+        itemsIds: updatedCart,
+        tempItems: updatedTempItems,
+        count,
+        totalPrice,
+      }))
     }
   },
   removeFullProduct: (id: string, token: string | null) => {
