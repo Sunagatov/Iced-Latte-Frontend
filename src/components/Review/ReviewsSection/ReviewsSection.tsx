@@ -11,7 +11,10 @@ import Loader from '@/components/UI/Loader/Loader'
 import ReviewsList from '@/components/Review/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/components/Review/ReviewsSorter/ReviewsSorter'
 import { reviewsSortOptions } from '@/constants/reviewsSortOptions'
-import { useProductReviewsStore } from '@/store/reviewsStore'
+import {
+  checkIfUserReviewExists,
+  useProductReviewsStore,
+} from '@/store/reviewsStore'
 import { IOption } from '@/types/Dropdown'
 import { ISortParams } from '@/types/ISortParams'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
@@ -26,8 +29,6 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
   const [userReview, setUserReview] = useState<Review | null>(null)
 
   const {
-    setIsReviewFormVisible,
-    setIsRaitingFormVisible,
     setIsReviewButtonVisible,
     shouldRevalidateReviews,
     setShouldRevalidateReviews,
@@ -42,12 +43,12 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
 
         setShouldRevalidateUserReview(false)
 
-        if (Object.values(userReview).some((value) => value !== null)) {
+        if (checkIfUserReviewExists(userReview)) {
           setUserReview(userReview)
-
-          setIsReviewFormVisible(false)
-          setIsRaitingFormVisible(false)
           setIsReviewButtonVisible(false)
+        } else {
+          setUserReview(null)
+          setIsReviewButtonVisible(true)
         }
       } catch (error) {
         handleError(error)
@@ -60,35 +61,13 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
       void getUserReview(productId)
     }
   }, [
-    token,
-    productId,
-    setUserReview,
     handleError,
-    setIsReviewFormVisible,
-    setIsRaitingFormVisible,
+    productId,
     setIsReviewButtonVisible,
-    shouldRevalidateUserReview,
-    setShouldRevalidateUserReview,
     setShouldRevalidateReviews,
-  ])
-
-  useEffect(() => {
-    if (userReview) {
-      setIsReviewFormVisible(false)
-      setIsRaitingFormVisible(false)
-      setIsReviewButtonVisible(false)
-
-      return
-    }
-
-    setIsReviewFormVisible(false)
-    setIsRaitingFormVisible(false)
-    setIsReviewButtonVisible(true)
-  }, [
-    setIsReviewFormVisible,
-    setIsRaitingFormVisible,
-    setIsReviewButtonVisible,
-    userReview,
+    setShouldRevalidateUserReview,
+    shouldRevalidateUserReview,
+    token,
   ])
 
   useEffect(() => {
@@ -118,7 +97,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
   }
 
   const {
-    data,
+    data: reviews,
     fetchNext,
     hasNextPage,
     isLoading,
@@ -186,15 +165,16 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
           <div>
             <div className="xl:max-w-[800px]">
               <ReviewForm productId={productId} />
-              {data.length > 0 && (
+              {(reviews.length > 0 || userReview) && (
                 <>
                   <ReviewsSorter
                     selectedOption={selectedSortOption}
                     selectOption={selectSortOptionHandler}
+                    userReview={userReview}
                   />
                   <ReviewsList
                     productId={productId}
-                    reviews={data}
+                    reviews={reviews}
                     showMoreReviews={showMoreReviews}
                     isFetchingNextPage={isFetchingNextPage}
                     hasNextPage={hasNextPage}
@@ -211,7 +191,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
         <div className="mr-auto">
           {' '}
           <div className="text-[18px] font-medium text-tertiary">
-            {data.length > 0 ? (
+            {reviews.length > 0 || userReview ? (
               <ReviewRatingFilter
                 onChange={ratingFilterChangeHandler}
                 selectedOptions={selectedFilterRating}
