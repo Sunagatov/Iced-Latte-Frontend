@@ -26,7 +26,9 @@ export default function CartElement({
 
   const productQuantity = items?.find(
     (item) => item.productId === productInfo.id,
-  )?.productQuantity
+  )!.productQuantity
+
+  const totalProductPrice = (productInfo.price * productQuantity!).toFixed(2)
 
   const addProduct = () => {
     add()
@@ -69,9 +71,9 @@ export default function CartElement({
       <div className="relative ml-4 grow">
         <p className="text-lg font-semibold">{productInfo.name}</p>
         <p className={'font-medium text-placeholder'}>{` ${productSize} g.`}</p>
-        <p className="right-0 top-0 text-lg font-semibold sm:absolute">{`$${productInfo.price.toFixed(
-          2,
-        )}`}</p>
+        <p className="right-0 top-0 text-lg font-semibold sm:absolute">
+          {`$${totalProductPrice}`}
+        </p>
         <div className="mt-[22px] flex items-center justify-start">
           <Counter
             theme="light"
