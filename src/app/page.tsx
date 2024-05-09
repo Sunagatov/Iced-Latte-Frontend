@@ -23,8 +23,8 @@ const getSellers = async () => {
 }
 
 export default async function Home() {
-  const productBrands = (await getBrands()) || []
-  const productSellers = (await getSellers()) || []
+  const productBrands = (await getBrands()) ?? []
+  const productSellers = (await getSellers()) ?? []
 
   return (
     <>
