@@ -7,20 +7,17 @@ import { IOption } from '@/types/Dropdown'
 export function useProducts(
   sortOption: IOption<ISortParams>,
   brandOptions: string[],
+  sellerOptions: string[],
 ) {
   const { sortAttribute, sortDirection } = sortOption.value
-  const brandNames = brandOptions.join(',') || null
+  const brandNames = brandOptions.join(',') || ''
+  const sellerNames = sellerOptions.join(',') || ''
 
   const getKey = (pageIndex: number, previousData: IProductsList) => {
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
-    let requestUrl = `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}`
 
-    requestUrl = brandNames
-      ? `${requestUrl}&brand_names=${brandNames}`
-      : requestUrl
-
-    return requestUrl
+    return `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${sellerNames && '&seller_names=' + sellerNames}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<

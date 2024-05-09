@@ -1,5 +1,10 @@
 import { AxiosResponse } from 'axios'
-import { IProduct, IProductsList } from '@/types/Products'
+import {
+  IGetProductBrands,
+  IGetProductSellers,
+  IProduct,
+  IProductsList,
+} from '@/types/Products'
 import { api } from './apiConfig/apiConfig'
 
 export async function getAllProducts(url: string) {
@@ -20,6 +25,20 @@ export async function getProductByIds(ids: string[]) {
     '/products/ids',
     body,
   )
+
+  return response.data
+}
+
+export const getProductSellers = async (): Promise<IGetProductSellers> => {
+  const response: AxiosResponse<IGetProductSellers> =
+    await api.get('/products/sellers')
+
+  return response.data
+}
+
+export const getProductBrands = async (): Promise<IGetProductBrands> => {
+  const response: AxiosResponse<IGetProductBrands> =
+    await api.get('/products/brands')
 
   return response.data
 }
