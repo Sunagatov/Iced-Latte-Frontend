@@ -1,16 +1,11 @@
 import Image from 'next/image'
 import { IProductRatingProps } from '@/types/ProductRating'
+import Rating from '@/components/UI/Rating/Rating'
 
 export default function ProductRating({
   rating,
   reviewsCount,
 }: Readonly<IProductRatingProps>) {
-  const formattedRating = new Intl.NumberFormat('ru', {
-    style: 'decimal',
-    maximumFractionDigits: 1,
-    minimumFractionDigits: 1,
-  }).format(rating ?? 0)
-
   return (
     <>
       {rating ? (
@@ -23,7 +18,7 @@ export default function ProductRating({
             width={16}
           />
           <span>
-            <span>{formattedRating}</span> <span>({reviewsCount})</span>
+            <Rating rating={rating} /> <span>({reviewsCount})</span>
           </span>
         </>
       ) : (

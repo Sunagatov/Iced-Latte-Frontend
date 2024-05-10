@@ -7,15 +7,13 @@ import { productSize } from '@/constants/product'
 import { IProduct } from '@/types/Products'
 import AddToCartButton from '@/components/Product/AddToCart/AddToCart'
 import HeartWrapper from '@/components/Product/HeartWrapper/HeartWrapper'
-import { useProductReviewsStore } from '@/store/reviewsStore'
+import Rating from '@/components/UI/Rating/Rating'
 
 interface IProductOverview {
   product: IProduct
 }
 
 const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
-  const { reviewsStatistics } = useProductReviewsStore()
-
   return (
     <>
       <Image
@@ -31,17 +29,23 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
       <div className={'flex flex-col justify-center gap-6 pb-4 lg:self-start'}>
         <div className={'flex flex-col gap-[18px] '}>
           <h2 className={'text-4XL'}>{product.name}</h2>
-          <div className={'flex items-center gap-2 text-L'}>
-            <Image
-              src="/star.png"
-              alt="star"
-              className={'inline-block'}
-              width={16}
-              height={15}
-            />
-            <span>{reviewsStatistics?.avgRating ?? 0}</span>
-            <span>&#x2022; Reviews: {reviewsStatistics?.reviewsCount}</span>
-            <span className={'text-placeholder'}>
+          <div className={'flex items-center gap-2 text-L font-medium'}>
+            {product.averageRating ? (
+              <>
+                <Image
+                  src="/star.png"
+                  alt="star"
+                  className={'inline-block'}
+                  width={16}
+                  height={15}
+                />
+                <Rating rating={product.averageRating} />
+                <span>&#x2022; Reviews: {product.reviewsCount}</span>
+              </>
+            ) : (
+              <span className="text-tertiary">No rating</span>
+            )}
+            <span className={'text-tertiary'}>
               &#x2022; Size: {productSize} g.
             </span>
           </div>
