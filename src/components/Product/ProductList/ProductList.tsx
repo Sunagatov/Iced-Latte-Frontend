@@ -24,7 +24,15 @@ const _filterLabelsMock: IProductFilterLabel[] = [
   { id: '3', name: 'name-3', label: 'Seller5' },
 ]
 
-export default function ProductList() {
+interface IProductList {
+  brands: string[]
+  sellers: string[]
+}
+
+export default function ProductList({
+  brands,
+  sellers,
+}: Readonly<IProductList>) {
   const handleFilterByDefault = () => {
     console.log(`Button 'By default' clicked`)
   }
@@ -37,12 +45,13 @@ export default function ProductList() {
     IOption<ISortParams>
   >(() => getDefaultSortOption(sortOptions))
 
-  const { selectedBrandOptions } = useProductFiltersStore()
+  const { selectedBrandOptions, selectedSellerOptions } =
+    useProductFiltersStore()
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption, selectedBrandOptions)
+    useProducts(selectedSortOption, selectedBrandOptions, selectedSellerOptions)
 
   function handleSelect(selectedOption: IOption<ISortParams>) {
     setSelectedSortOption(selectedOption)
@@ -126,14 +135,14 @@ export default function ProductList() {
         </div>
         <div className="inline-flex w-full justify-center gap-x-8">
           <FilterSidebar className="mr-auto hidden min-[1100px]:block">
-            <Filters />
+            <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (
             <MobileFilterSidebar
               onClose={handleCloseMobileFilter}
               className="min-[1100px]:hidden"
             >
-              <Filters />
+              <Filters brands={brands} sellers={sellers} />
             </MobileFilterSidebar>
           )}
           <ul

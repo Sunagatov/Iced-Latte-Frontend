@@ -1,57 +1,51 @@
 import { useProductFiltersStore } from '@/store/productFiltersStore'
-import Checkbox from '@/components/UI/Checkbox/Checkbox'
-import { IProductFilterOptionCheckbox } from '@/types/ICheckboxFilterOption'
+import FilterCheckboxGroup from '@/components/Product/FilterSidebar/FilterCheckboxGroup'
 
-// @NOTE: replace with brands from backend when backend will be ready
-const _brandOptionsMock: IProductFilterOptionCheckbox[] = [
-  {
-    label: 'Starbucks',
-    value: 'Starbucks',
-  },
-  {
-    label: 'Folgers',
-    value: 'Folgers',
-  },
-  {
-    label: 'Illy',
-    value: 'Illy',
-  },
-  {
-    label: 'Nescafe',
-    value: 'Nescafe',
-  },
-  {
-    label: 'Lavazza',
-    value: 'Lavazza',
-  },
-]
-
-export default function Filters() {
-  const { selectedBrandOptions, selectBrandOption, removeBrandOption } =
-    useProductFiltersStore()
+interface IFilters {
+  brands: string[]
+  sellers: string[]
+}
+export default function Filters({ sellers, brands }: Readonly<IFilters>) {
+  const {
+    selectedBrandOptions,
+    selectBrandOption,
+    removeBrandOption,
+    selectSellerOption,
+    selectedSellerOptions,
+    removeSellerOption,
+  } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
-    if (selectedBrandOptions.includes(value)) {
+    if (selectedSellerOptions.includes(value)) {
       removeBrandOption(value)
     } else {
       selectBrandOption(value)
     }
   }
 
+  const handleSellerCheckboxChange = (value: string) => {
+    if (selectedBrandOptions.includes(value)) {
+      removeSellerOption(value)
+    } else {
+      selectSellerOption(value)
+    }
+  }
+
   return (
-    <>
-      <h3 className="mb-4 text-2XL font-medium text-primary">Brand</h3>
-      <div className="flex flex-col gap-2">
-        {_brandOptionsMock.map((option) => (
-          <Checkbox
-            id={option.label}
-            key={option.label}
-            isChecked={selectedBrandOptions.includes(option.value)}
-            onChange={() => handleBrandCheckboxChange(option.value)}
-            label={option.label}
-          />
-        ))}
-      </div>
-    </>
+    <div className={'flex flex-col gap-5'}>
+      <FilterCheckboxGroup
+        selectedItems={selectedBrandOptions}
+        items={brands}
+        onFilterCheckboxClick={handleBrandCheckboxChange}
+        title={'Brand'}
+      />
+
+      <FilterCheckboxGroup
+        selectedItems={selectedSellerOptions}
+        items={sellers}
+        onFilterCheckboxClick={handleSellerCheckboxChange}
+        title={'Seller'}
+      />
+    </div>
   )
 }
