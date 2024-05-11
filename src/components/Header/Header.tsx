@@ -7,7 +7,10 @@ import HeaderHeart from '../UI/HeaderHeart/HeaderHeart'
 
 export default function Header() {
   return (
-    <header className="sticky left-0 top-0 z-10 mx-auto mt-2 flex h-20 w-full items-center justify-between bg-primary pl-6 pr-6">
+    <header
+      className="sticky left-0 top-0 z-10 mx-auto mt-2 flex h-20 w-full items-center justify-between bg-primary
+shadow-header sm:px-20"
+    >
       <Link href="/">
         <div className=" flex items-center gap-4">
           <div className="h-[21px] w-[19px] sm:h-[31px] sm:w-[28px]">
@@ -19,7 +22,7 @@ export default function Header() {
           </span>
         </div>
       </Link>
-      <div className="flex h-12 items-center ">
+      <div className="flex h-12 items-center gap-4 sm:gap-5 ">
         <HeaderHeart />
         <CartButton />
         <LoginIcon />
