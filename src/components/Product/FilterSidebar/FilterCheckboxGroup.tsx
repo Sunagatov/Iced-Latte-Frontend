@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Image from 'next/image'
@@ -17,14 +17,17 @@ const FilterCheckboxGroup = ({
   title = '',
 }: IFilterCheckboxGroup) => {
   const [isItemsToggled, setIsItemsToggled] = useState(true)
+  const [displayedItems, setDisplayedItems] = useState(() => items.slice(0, 5))
 
-  const displayedItems = useMemo(() => {
+  useEffect(() => {
     if (isItemsToggled) {
-      return items.slice(0, 5)
+      setDisplayedItems(items.slice(0, 5))
+
+      return
     }
 
-    return items
-  }, [items, isItemsToggled])
+    setDisplayedItems(items)
+  }, [isItemsToggled, items])
 
   const toggleItemsButtonClick = () => {
     setIsItemsToggled((prev) => !prev)
