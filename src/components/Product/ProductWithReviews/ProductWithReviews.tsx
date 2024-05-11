@@ -62,7 +62,7 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
       </div>
 
       <div className="mx-5 mt-12 xl:mt-20">
-        <ReviewsSection productId={product.id} />
+        <ReviewsSection product={product} />
       </div>
     </section>
   )
