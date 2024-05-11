@@ -1,6 +1,5 @@
 'use client'
-import Image from 'next/image'
-import ProfileImage from '../../../../public/person.svg'
+
 import Link from 'next/link'
 import AuthModal from '@/components/Auth/Modal/AuthModalLogin/AuthModal'
 import UserBar from '../UserBar/UserBar'
@@ -14,15 +13,9 @@ export default function LoginIcon() {
   const pathname = usePathname()
   const { toggleModal, resetOpenModal } = useAuthStore()
 
-  const isLoggedIn = useStoreData(
-    useAuthStore,
-    (state) => state.isLoggedIn,
-  )
+  const isLoggedIn = useStoreData(useAuthStore, (state) => state.isLoggedIn)
 
-  const open = useStoreData(
-    useAuthStore,
-    (state) => state.openModal,
-  )
+  const open = useStoreData(useAuthStore, (state) => state.openModal)
 
   useEffect(() => {
     // Close the modal window when navigating to a page specified in pagePaths
@@ -34,15 +27,21 @@ export default function LoginIcon() {
   return (
     <>
       {isLoggedIn ? (
-        <Link href="/profile" className="inline-flex">
+        <Link href={'/profile'} className="inline-flex">
           <UserBar />
         </Link>
       ) : (
-        <Link href="/auth/login" className="inline-flex" onClick={toggleModal}>
-          <Image src={ProfileImage} alt="auth icon" />
+        <Link
+          href={'/auth/login'}
+          className="inline-flex"
+          onClick={toggleModal}
+        >
+          <div className=" mx-6 flex h-[54px] items-center justify-center rounded-[48px] bg-brand-solid px-6 text-lg text-inverted">
+            Log in
+          </div>
         </Link>
       )}
-      {open && <AuthModal onCloseModal={toggleModal} />}
+      {open && <AuthModal />}
     </>
   )
 }

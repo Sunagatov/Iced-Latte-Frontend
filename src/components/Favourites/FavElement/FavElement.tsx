@@ -14,7 +14,8 @@ import { FavElementProps } from '@/types/FavElement'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
 
 export default function FavElement({ product }: Readonly<FavElementProps>) {
-  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
+  const { addFavourite, removeFavourite, favourites, favouriteIds } =
+    useFavouritesStore()
   const { add } = useCombinedStore()
   const { token } = useAuthStore()
 
@@ -26,7 +27,14 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
   }
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(product.id, token, isInFavourites, isActive, addFavourite, removeFavourite)
+    await handleFavouriteButtonClick(
+      product.id,
+      token,
+      isInFavourites,
+      isActive,
+      addFavourite,
+      removeFavourite,
+    )
   }
 
   return (
@@ -55,15 +63,20 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
 
           <span>{productRating}</span>
         </div>
-        <div className="flex">
-          <Button onClick={addToCart} className={'mr-2'}>
+        <div className="flex items-center">
+          <Button
+            id="add-cart-btn"
+            onClick={addToCart}
+            className={'mr-2 flex items-center justify-center'}
+          >
             Add to cart
           </Button>
-          <ButtonHeart
-            active={token ? isInFavourites : isActive}
-            onClick={handleButtonClick}
-            className="ml-2"
-          />
+          <div>
+            <ButtonHeart
+              active={token ? isInFavourites : isActive}
+              onClick={handleButtonClick}
+            />
+          </div>
         </div>
       </div>
     </div>

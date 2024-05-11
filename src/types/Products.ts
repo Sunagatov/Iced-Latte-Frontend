@@ -14,4 +14,14 @@ export interface IProduct {
   quantity: number
   active: boolean
   productFileUrl: string | null
+  averageRating: number
+  reviewsCount: number
+}
+
+export interface IGetProductSellers {
+  sellers: string[]
+}
+
+export interface IGetProductBrands {
+  brands: string[]
 }

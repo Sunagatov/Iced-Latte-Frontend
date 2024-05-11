@@ -24,8 +24,11 @@ export default function CartElement({
 
   const items = useStoreData(useCombinedStore, (state) => state.itemsIds)
 
-  const productQuantity = items?.find((item) => item.productId === productInfo.id)
-    ?.productQuantity
+  const productQuantity = items?.find(
+    (item) => item.productId === productInfo.id,
+  )!.productQuantity
+
+  const totalProductPrice = (productInfo.price * productQuantity!).toFixed(2)
 
   const addProduct = () => {
     add()
@@ -33,13 +36,21 @@ export default function CartElement({
 
   const token = useAuthStore((state) => state.token)
 
-  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
+  const { addFavourite, removeFavourite, favourites, favouriteIds } =
+    useFavouritesStore()
 
   const isInFavourites = favourites?.some((fav) => fav.id === productInfo.id)
   const isActive = favouriteIds.includes(productInfo.id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(productInfo.id, token, isInFavourites, isActive, addFavourite, removeFavourite)
+    await handleFavouriteButtonClick(
+      productInfo.id,
+      token,
+      isInFavourites,
+      isActive,
+      addFavourite,
+      removeFavourite,
+    )
   }
 
   return (
@@ -60,24 +71,23 @@ export default function CartElement({
       <div className="relative ml-4 grow">
         <p className="text-lg font-semibold">{productInfo.name}</p>
         <p className={'font-medium text-placeholder'}>{` ${productSize} g.`}</p>
-        <p className="right-0 top-0 text-lg font-semibold sm:absolute">{`$${productInfo.price.toFixed(
-          2,
-        )}`}</p>
-        <div className="mt-[22px] flex justify-start">
+        <p className="right-0 top-0 text-lg font-semibold sm:absolute">
+          {`$${totalProductPrice}`}
+        </p>
+        <div className="mt-[22px] flex items-center justify-start">
           <Counter
             theme="light"
             className={'h-[42px]'}
             count={productQuantity!}
-            removeProduct={
-              () => {
-                if (productQuantity! > 1) {
-                  remove()
-                }
+            removeProduct={() => {
+              if (productQuantity! > 1) {
+                remove()
               }
-            }
+            }}
             addProduct={() => addProduct()}
           />
           <Button
+            id="remove-all-btn"
             className=" bg-white"
             onClick={() => {
               removeAll()

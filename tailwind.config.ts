@@ -19,7 +19,7 @@ module.exports = {
         tertiary: '#04121B7A',
         placeholder: '#04121B5C',
         disabled: '#04121B3D',
-        brand: '682EFF',
+        brand: '#682EFF',
         positive: '#00A30E',
         negative: '#E12E3C',
         inverted: '#FFFFFF',
@@ -41,6 +41,9 @@ module.exports = {
         error: '#EB5757',
         focus: '#682EFF',
       },
+      boxShadow: {
+        'primary': '0px -1px 0px 0px #0000001A',
+      },
       fontSize: {
         'XS': ['14px', '18px'],
         'M': ['16px', '20px'],
@@ -61,6 +64,7 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'registr': '#682EFF',
       },
+      scale: ['hover', 'focus'],
     },
   },
   plugins: [],

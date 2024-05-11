@@ -8,15 +8,15 @@ import { PropsCounter } from '@/types/Counter'
 import { debounce } from 'lodash'
 
 const defaultStyles =
-  'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium hover:scale-105 transition ease-in-out'
+  'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium transition ease-in-out'
 
-export default function Counter({
+const Counter = ({
   theme,
   className,
   count,
   addProduct,
   removeProduct,
-}: Readonly<PropsCounter>) {
+}: Readonly<PropsCounter>) => {
   const computedStyles =
     defaultStyles +
     ' ' +
@@ -41,19 +41,19 @@ export default function Counter({
 
   return (
     <div className={computedStyles}>
-      <Image
-        src={theme === 'dark' ? minus : minusDark}
-        alt="minus"
-        className={'cursor-pointer' + (count === 1 ? ' opacity-10 pointer-events-none' : '')}
+      <button
+        id="min-btn"
         onClick={onMinus}
-      />
+        className={count === 1 ? 'pointer-events-none opacity-10' : ''}
+      >
+        <Image src={theme === 'dark' ? minus : minusDark} alt="minus" />
+      </button>
       <span className={'block w-[31px] text-center'}>{count}</span>
-      <Image
-        src={theme === 'dark' ? plus : plusDark}
-        alt="plus"
-        className={'cursor-pointer'}
-        onClick={onPlus}
-      />
+      <button id="plus-btn" onClick={onPlus}>
+        <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
+      </button>
     </div>
   )
 }
+
+export default Counter

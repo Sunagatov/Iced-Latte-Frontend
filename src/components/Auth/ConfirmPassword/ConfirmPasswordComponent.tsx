@@ -1,6 +1,5 @@
 'use client'
 import FormInput from '@/components/UI/FormInput/FormInput'
-import useAuthRedirect from '@/hooks/useAuthRedirect'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Loader from '@/components/UI/Loader/Loader'
 import { useAuthStore } from '@/store/authStore'
@@ -12,12 +11,13 @@ import { confirmPasswordSchema } from '@/validation/confirmPasswordSchema'
 import { IFormValues } from '@/types/ConfirmPassword'
 import { setCookie } from '@/utils/cookieUtils'
 import { useErrorHandler } from '@/services/apiError/apiError'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
-  const { redirectToPreviousRoute } = useAuthRedirect()
+
   const {
     register,
     reset,
@@ -30,19 +30,22 @@ const ConfirmPasswordComponent = () => {
     },
   })
 
+  const { handleRedirectForAuth } = useAuthRedirect()
+
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
       setLoading(true)
 
       const data = await apiConfirmEmail(values.confirmPassword)
 
-      authenticate(data.token?.token)
-      setRefreshToken(data.token?.refreshToken)
-      await setCookie('token', data.token?.token, { path: '/' })
+      if (data) {
+        await setCookie('token', data.token?.token, { path: '/' })
+        authenticate(data.token?.token)
+        setRefreshToken(data.token?.refreshToken)
+        reset()
 
-      reset()
-
-      redirectToPreviousRoute()
+        handleRedirectForAuth()
+      }
     } catch (error) {
       handleError(error)
     } finally {
@@ -52,13 +55,15 @@ const ConfirmPasswordComponent = () => {
 
   return (
     <>
-      <h1 className='text-[36px] text-primary font-medium mb-[16px]'>Confirm password</h1>
-      <p className='text-[18px] text-primary font-medium mb-[40px]'>Enter code that was sent to your email to confirm registration.</p>
-      <form onSubmit={handleSubmit(onSubmit)} >
+      <h1 className="mb-[16px] text-[36px] font-medium text-primary">
+        Confirm registration
+      </h1>
+      <p className="mb-[40px] text-[18px] font-medium text-primary">
+        Enter code that was sent to your email to confirm registration.
+      </p>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {errorMessage && (
-          <div className="mt-4 text-negative">
-            {errorMessage}
-          </div>
+          <div className="mt-4 text-negative">{errorMessage}</div>
         )}
         <div className="flex-grow md:w-full">
           <FormInput
@@ -67,16 +72,19 @@ const ConfirmPasswordComponent = () => {
             label="Enter code that was sent to your email"
             name="confirmPassword"
             type="text"
-            placeholder="Confirm password ###-###-###"
+            placeholder="Confirmation code"
             error={errors.confirmPassword}
             className="w-full"
           />
         </div>
-        <Button type="submit"
-          className="mt-6 flex items-center justify-center hover:bg-brand-solid-hover w-[220px]"
+        <Button
+          id="confirm-pass-btn"
+          type="submit"
+          className="mt-6 flex w-[220px] items-center justify-center hover:bg-brand-solid-hover"
         >
-          {loading ? <Loader /> : 'Confirm Registration'}</Button>
-      </form >
+          {loading ? <Loader /> : 'Confirm Registration'}
+        </Button>
+      </form>
     </>
   )
 }

@@ -1,22 +1,18 @@
 'use client'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
-import { useRouter } from 'next/navigation'
-import { removeCookie } from '@/utils/cookieUtils'
-import { useFavouritesStore } from '@/store/favStore'
 import FormProfile from '../FormProfile/FormProfile'
 import ProfileInfo from '../ProfileInfo/ProfileInfo'
 import Button from '@/components/UI/Buttons/Button/Button'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
 import Link from 'next/link'
+import useLogout from '@/hooks/useLogout'
+import Loader from '@/components/UI/Loader/Loader'
 
 const FiledProfile = () => {
   const [isSuccessEditUser, setIsSuccessEditUser] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const { reset, setUserData, userData } = useAuthStore()
-  const { resetFav } = useFavouritesStore()
-
-  const router = useRouter()
+  const { setUserData, userData } = useAuthStore()
 
   const handleSuccessEdit = () => {
     setIsSuccessEditUser(true)
@@ -28,17 +24,7 @@ const FiledProfile = () => {
     setIsSuccessEditUser(false)
   }
 
-  const handleLogout = async () => {
-    try {
-      // logic logout
-      reset()
-      await removeCookie('token')
-      router.push('/')
-      resetFav()
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const { isLoading, logout } = useLogout()
 
   return (
     <div className="pb-[40px] pt-10 md:pb-[414px]">
@@ -49,10 +35,11 @@ const FiledProfile = () => {
           </h1>
           <div>
             <Button
-              className="flex items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
-              onClick={handleLogout}
+              id="logout-btn"
+              className="flex w-[114px] items-center justify-center rounded-full bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
+              onClick={logout}
             >
-              <span>Log out</span>
+              {isLoading ? <Loader /> : 'Log out'}
             </Button>
           </div>
         </div>
@@ -62,10 +49,7 @@ const FiledProfile = () => {
         {isSuccessEditUser && !isEditing ? (
           <>
             <ImageUpload />
-            <ProfileInfo
-              userData={userData}
-              onEditClick={handleEditClick}
-            />
+            <ProfileInfo userData={userData} onEditClick={handleEditClick} />
           </>
         ) : (
           <FormProfile
@@ -78,8 +62,11 @@ const FiledProfile = () => {
           <h3 className="mb-[16px] text-2xl font-medium text-primary">
             Password
           </h3>
-          <Link href="/">
-            <Button className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60">
+          <Link href="/resetpass">
+            <Button
+              id="change-btn"
+              className="flex items-center justify-center rounded-[47px] bg-secondary px-6 py-4 text-lg font-medium text-primary transition-opacity hover:opacity-60"
+            >
               <span>Change password</span>
             </Button>
           </Link>

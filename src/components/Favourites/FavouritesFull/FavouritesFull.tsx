@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/components/UI/Buttons/Button/Button'
+
 import Link from 'next/link'
 import FavElement from '../FavElement/FavElement'
 import Loader from '@/components/UI/Loader/Loader'
@@ -28,9 +28,9 @@ export default function FavouritesFull() {
       </div>
       <div className="flex w-full justify-center">
         <Link href={'/'}>
-          <Button className="my-6 h-14  text-lg font-medium sm:w-[211px]">
+          <div className="flex items-center justify-center rounded-[48px] bg-brand-solid px-[16px] text-inverted transition ease-in-out my-6 h-14 text-lg font-medium sm:w-[211px]">
             Go to checkout
-          </Button>
+          </div>
         </Link>
       </div>
     </div>

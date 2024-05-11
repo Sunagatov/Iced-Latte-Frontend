@@ -1,13 +1,23 @@
 import { IProductsList } from '@/types/Products'
 import { getAllProducts } from '@/services/apiService'
 import useSWRInfinite from 'swr/infinite'
+import { ISortParams } from '@/types/ISortParams'
+import { IOption } from '@/types/Dropdown'
 
-export function useProducts() {
+export function useProducts(
+  sortOption: IOption<ISortParams>,
+  brandOptions: string[],
+  sellerOptions: string[],
+) {
+  const { sortAttribute, sortDirection } = sortOption.value
+  const brandNames = brandOptions.join(',') || ''
+  const sellerNames = sellerOptions.join(',') || ''
+
   const getKey = (pageIndex: number, previousData: IProductsList) => {
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
 
-    return `products?page=${pageIndex}&size=6`
+    return `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${sellerNames && '&seller_names=' + sellerNames}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<

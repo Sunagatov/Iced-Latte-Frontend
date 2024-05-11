@@ -1,15 +1,73 @@
 'use client'
+import { useState } from 'react'
 import { useProducts } from '@/hooks/useProducts'
-import ProductCard from '../ProductCard/ProductCard'
+import { sortOptions } from '@/constants/productSortOptions'
+import ProductCard from '@/components/Product/ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
+import Dropdown from '@/components/UI/Dropdown/Dropdown'
+import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
+import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
+import { IProductFilterLabel } from '@/types/IProductFilterLabel'
+import { twMerge } from 'tailwind-merge'
+import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
+import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
+import Filters from '@/components/Product/FilterSidebar/Filters'
+import { useProductFiltersStore } from '@/store/productFiltersStore'
+import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
+import { ISortParams } from '@/types/ISortParams'
+import { IOption } from '@/types/Dropdown'
 
-export default function ProductList() {
+// @NOTE: need to delete when backend will be ready
+const _filterLabelsMock: IProductFilterLabel[] = [
+  { id: '1', name: 'name-1', label: 'Brand1' },
+  { id: '2', name: 'name-2', label: 'Seller1' },
+  { id: '3', name: 'name-3', label: 'Seller5' },
+]
+
+interface IProductList {
+  brands: string[]
+  sellers: string[]
+}
+
+export default function ProductList({
+  brands,
+  sellers,
+}: Readonly<IProductList>) {
+  const handleFilterByDefault = () => {
+    console.log(`Button 'By default' clicked`)
+  }
+
+  const handleFilterLabelClick = (name: string, id: string) => {
+    console.log(`Label: ${name} id: ${id}`)
+  }
+
+  const [selectedSortOption, setSelectedSortOption] = useState<
+    IOption<ISortParams>
+  >(() => getDefaultSortOption(sortOptions))
+
+  const { selectedBrandOptions, selectedSellerOptions } =
+    useProductFiltersStore()
+
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts()
+    useProducts(selectedSortOption, selectedBrandOptions, selectedSellerOptions)
+
+  function handleSelect(selectedOption: IOption<ISortParams>) {
+    setSelectedSortOption(selectedOption)
+  }
+
+  const handleFilterClick = () => {
+    setIsMobileFilterOpen((prev) => !prev)
+  }
+
+  const handleCloseMobileFilter = () => {
+    setIsMobileFilterOpen(false)
+  }
+
+  const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
 
   if (error) {
-
-
     return (
       <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
         Something went wrong!
@@ -26,7 +84,12 @@ export default function ProductList() {
   }
 
   return (
-    <section className={'mt-5 text-center min-[1124px]:mt-16  '}>
+    <section
+      className={twMerge(
+        'mt-5 text-center min-[1124px]:mt-16',
+        !isShowLoadMoreBtn ? 'mb-14' : '',
+      )}
+    >
       <div className={'inline-flex flex-col items-center text-left '}>
         <h1
           className={
@@ -35,27 +98,69 @@ export default function ProductList() {
         >
           All Coffee
         </h1>
-        <ul
+        <div className={'flex w-full justify-between'}>
+          <ProductsFilterLabels
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
+            className="min-[1100px]:hidden"
+          />
+        </div>
+        <div
           className={
-            'grid grid-cols-2 gap-x-2 sm:gap-x-8 gap-y-7 min-[1124px]:grid-cols-3 '
+            'mb-6 mt-1.5 flex w-full items-center justify-between gap-2'
           }
         >
-          {data.map((product) => (
-            <li key={product.id}>
-              <ProductCard
-                id={product.id}
-                name={product.name}
-                price={product.price}
-                description={product.description}
-                productFileUrl={product.productFileUrl}
-              />
-            </li>
-          ))}
-        </ul>
-        {hasNextPage && !isFetchingNextPage && (
+          <ProductsFilterLabels
+            filterLabels={_filterLabelsMock}
+            handleFilterLabelClick={handleFilterLabelClick}
+            handleFilterByDefault={handleFilterByDefault}
+            className="max-[1100px]:hidden"
+          />
+          <button
+            id="filter-btn"
+            onClick={handleFilterClick}
+            className="hidden cursor-pointer text-L font-medium text-brand max-[1100px]:block"
+          >
+            Filter
+          </button>
+          <Dropdown<ISortParams>
+            id="productDropdown"
+            className="ml-auto"
+            headerClassName="-mr-6"
+            options={sortOptions}
+            onChange={handleSelect}
+            selectedOption={selectedSortOption}
+          />
+        </div>
+        <div className="inline-flex w-full justify-center gap-x-8">
+          <FilterSidebar className="mr-auto hidden min-[1100px]:block">
+            <Filters brands={brands} sellers={sellers} />
+          </FilterSidebar>
+          {isMobileFilterOpen && (
+            <MobileFilterSidebar
+              onClose={handleCloseMobileFilter}
+              className="min-[1100px]:hidden"
+            >
+              <Filters brands={brands} sellers={sellers} />
+            </MobileFilterSidebar>
+          )}
+          <ul
+            className={
+              'grid grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3 '
+            }
+          >
+            {data.map((product) => (
+              <li key={product.id}>
+                <ProductCard product={product} />
+              </li>
+            ))}
+          </ul>
+        </div>
+        {isShowLoadMoreBtn && (
           <button
             className={
-              'mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
+              'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
             }
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
@@ -69,6 +174,7 @@ export default function ProductList() {
             <Loader />
           </div>
         )}
+        <ScrollUpBtn />
       </div>
     </section>
   )
