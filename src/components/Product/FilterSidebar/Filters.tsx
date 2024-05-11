@@ -16,7 +16,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
   } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
-    if (selectedBrandOptions.includes(value)) {
+    if (selectedSellerOptions.includes(value)) {
       removeBrandOption(value)
     } else {
       selectBrandOption(value)
