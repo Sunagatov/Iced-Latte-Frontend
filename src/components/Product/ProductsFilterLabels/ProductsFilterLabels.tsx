@@ -84,7 +84,10 @@ const ProductsFilterLabels = ({
             id={`filter-label-${value}`}
           >
             <div className="flex items-center gap-3 px-6 py-4">
-              <button onClick={handleDeleteFilter}>
+              <button
+                onClick={handleDeleteFilter}
+                id={`remove-filter-${value}`}
+              >
                 <Image
                   width={11}
                   height={11}

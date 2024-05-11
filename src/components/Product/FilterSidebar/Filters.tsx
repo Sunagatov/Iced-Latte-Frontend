@@ -1,4 +1,7 @@
-import { useProductFiltersStore } from '@/store/productFiltersStore'
+import {
+  defaultProductsFilters,
+  useProductFiltersStore,
+} from '@/store/productFiltersStore'
 import FilterCheckboxGroup from '@/components/Product/FilterSidebar/FilterCheckboxGroup'
 
 interface IFilters {
@@ -13,6 +16,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     selectSellerOption,
     selectedSellerOptions,
     removeSellerOption,
+    updateProductFiltersStore,
   } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
@@ -31,6 +35,18 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     }
   }
 
+  const resetSelectedBrandsHandler = () => {
+    updateProductFiltersStore({
+      selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
+    })
+  }
+
+  const resetSelectedSellerHandler = () => {
+    updateProductFiltersStore({
+      selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
+    })
+  }
+
   return (
     <div className={'flex flex-col gap-5'}>
       <FilterCheckboxGroup
@@ -38,6 +54,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
         items={brands}
         onFilterCheckboxClick={handleBrandCheckboxChange}
         title={'Brand'}
+        onReset={resetSelectedBrandsHandler}
       />
 
       <FilterCheckboxGroup
@@ -45,6 +62,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
         items={sellers}
         onFilterCheckboxClick={handleSellerCheckboxChange}
         title={'Seller'}
+        onReset={resetSelectedSellerHandler}
       />
     </div>
   )
