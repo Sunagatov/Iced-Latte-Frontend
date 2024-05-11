@@ -1,4 +1,8 @@
 import { create } from 'zustand'
+import { ISortParams } from '@/types/ISortParams'
+import { sortOptions } from '@/constants/productSortOptions'
+import { IOption } from '@/types/Dropdown'
+import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
 
 interface IProductFiltersStore {
   selectedBrandOptions: string[]
@@ -7,11 +11,27 @@ interface IProductFiltersStore {
   removeBrandOption: (value: string) => void
   selectSellerOption: (value: string) => void
   removeSellerOption: (value: string) => void
+  selectedSortOption: IOption<ISortParams>
+  sortingOptions: Array<IOption<ISortParams>>
+  updateProductFiltersStore: (slice: UpdateProductFiltersStoreSliceType) => void
+}
+
+type UpdateProductFiltersStoreSliceType = {
+  selectedBrandOptions?: IProductFiltersStore['selectedBrandOptions']
+  selectedSellerOptions?: IProductFiltersStore['selectedSellerOptions']
+  selectedSortOption?: IProductFiltersStore['selectedSortOption']
+}
+
+export const defaultProductsFilters = {
+  selectedBrandOptions: [],
+  selectedSellerOptions: [],
 }
 
 export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
-  selectedBrandOptions: [],
-  selectedSellerOptions: [],
+  selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
+  selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
+  sortingOptions: sortOptions,
+  selectedSortOption: getDefaultSortOption(sortOptions),
   selectBrandOption: (value: string) =>
     set((state) => ({
       ...state,
@@ -36,4 +56,12 @@ export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
         (option) => option !== value,
       ),
     })),
+  updateProductFiltersStore: (
+    updatedStateSlice: UpdateProductFiltersStoreSliceType,
+  ) => {
+    set((state) => ({
+      ...state,
+      ...updatedStateSlice,
+    }))
+  },
 }))

@@ -1,4 +1,7 @@
-import { useProductFiltersStore } from '@/store/productFiltersStore'
+import {
+  defaultProductsFilters,
+  useProductFiltersStore,
+} from '@/store/productFiltersStore'
 import FilterCheckboxGroup from '@/components/Product/FilterSidebar/FilterCheckboxGroup'
 
 interface IFilters {
@@ -13,10 +16,11 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     selectSellerOption,
     selectedSellerOptions,
     removeSellerOption,
+    updateProductFiltersStore,
   } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
-    if (selectedSellerOptions.includes(value)) {
+    if (selectedBrandOptions.includes(value)) {
       removeBrandOption(value)
     } else {
       selectBrandOption(value)
@@ -24,11 +28,23 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
   }
 
   const handleSellerCheckboxChange = (value: string) => {
-    if (selectedBrandOptions.includes(value)) {
+    if (selectedSellerOptions.includes(value)) {
       removeSellerOption(value)
     } else {
       selectSellerOption(value)
     }
+  }
+
+  const resetSelectedBrandsHandler = () => {
+    updateProductFiltersStore({
+      selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
+    })
+  }
+
+  const resetSelectedSellerHandler = () => {
+    updateProductFiltersStore({
+      selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
+    })
   }
 
   return (
@@ -38,6 +54,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
         items={brands}
         onFilterCheckboxClick={handleBrandCheckboxChange}
         title={'Brand'}
+        onReset={resetSelectedBrandsHandler}
       />
 
       <FilterCheckboxGroup
@@ -45,6 +62,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
         items={sellers}
         onFilterCheckboxClick={handleSellerCheckboxChange}
         title={'Seller'}
+        onReset={resetSelectedSellerHandler}
       />
     </div>
   )
