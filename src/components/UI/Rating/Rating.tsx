@@ -7,9 +7,5 @@ export default function Rating({ rating }: Readonly<IRatingProps>) {
     minimumFractionDigits: 1,
   }).format(rating ?? 0)
 
-  return (
-    <span>
-      <span>{formattedRating}</span>
-    </span>
-  )
+  return <span>{formattedRating}</span>
 }
