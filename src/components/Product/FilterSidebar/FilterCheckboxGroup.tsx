@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Image from 'next/image'
@@ -22,18 +22,14 @@ const FilterCheckboxGroup = ({
   const [isItemsToggled, setIsItemsToggled] = useState(true)
   const [displayedItems, setDisplayedItems] = useState(() => items.slice(0, 5))
 
-  useEffect(() => {
-    if (isItemsToggled) {
-      setDisplayedItems(items.slice(0, 5))
-
-      return
-    }
-
-    setDisplayedItems(items)
-  }, [isItemsToggled, items])
-
   const toggleItemsButtonClick = () => {
-    setIsItemsToggled((prev) => !prev)
+    if (isItemsToggled) {
+      setIsItemsToggled(false)
+      setDisplayedItems(items)
+    } else {
+      setIsItemsToggled(true)
+      setDisplayedItems(items.slice(0, 5))
+    }
   }
 
   return (
