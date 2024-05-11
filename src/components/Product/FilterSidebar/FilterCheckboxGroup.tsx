@@ -1,30 +1,36 @@
-import { useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Image from 'next/image'
+import FiltersGroupTitle from '@/components/Product/FilterSidebar/FiltersGroupTitle'
 
 interface IFilterCheckboxGroup {
   selectedItems: string[]
   items: string[]
   onFilterCheckboxClick: (item: string) => void
+  onReset: () => void
   title: string
 }
 
 const FilterCheckboxGroup = ({
   selectedItems,
   items,
-  onFilterCheckboxClick,
+  onFilterCheckboxClick = () => {},
+  onReset = () => {},
   title = '',
-}: IFilterCheckboxGroup) => {
+}: Readonly<IFilterCheckboxGroup>) => {
   const [isItemsToggled, setIsItemsToggled] = useState(true)
+  const [displayedItems, setDisplayedItems] = useState(() => items.slice(0, 5))
 
-  const displayedItems = useMemo(() => {
+  useEffect(() => {
     if (isItemsToggled) {
-      return items.slice(0, 5)
+      setDisplayedItems(items.slice(0, 5))
+
+      return
     }
 
-    return items
-  }, [items, isItemsToggled])
+    setDisplayedItems(items)
+  }, [isItemsToggled, items])
 
   const toggleItemsButtonClick = () => {
     setIsItemsToggled((prev) => !prev)
@@ -32,8 +38,8 @@ const FilterCheckboxGroup = ({
 
   return (
     <div>
-      <h3 className="mb-4 text-2XL font-medium text-primary">{title}</h3>
-      <div className="flex flex-col gap-2">
+      <FiltersGroupTitle title={title} />
+      <div className="flex flex-col items-start gap-2">
         {displayedItems.map((item) => (
           <Checkbox
             id={item}
@@ -73,6 +79,18 @@ const FilterCheckboxGroup = ({
                 />
               </div>
             )}
+          </Button>
+        )}
+
+        {selectedItems.length > 0 && (
+          <Button
+            onClick={onReset}
+            className={
+              'mt-1 h-[18px] bg-transparent p-0 text-L font-medium text-brand'
+            }
+            id={`${title}-reset-btn`}
+          >
+            Reset
           </Button>
         )}
       </div>
