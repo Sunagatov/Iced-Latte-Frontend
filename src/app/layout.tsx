@@ -29,7 +29,7 @@ export default function RootLayout({
 }: Readonly<RootLayoutProps>) {
   return (
     <html lang="en">
-      <body className={inter.className + ' flex min-h-screen flex-col'}>
+      <body className={inter.className + ' mx-4 flex min-h-screen flex-col'}>
         <ToastContainer />
         <InterceptorsForRefreshToken parallel={parallel}>
           <GlobalFavoritesAndCartInit parallel={parallel}>
