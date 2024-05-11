@@ -23,7 +23,6 @@ Built using Next.js, it's crafted for educational purposes, offering insights in
   - [Code of Conduct](#code-of-conduct)
   - [License](#license)
   - [Contact](#contact)
-  - [FAQ](#faq)
   - [Community and Support](#community-and-support)
 
 ## Tech Stack
