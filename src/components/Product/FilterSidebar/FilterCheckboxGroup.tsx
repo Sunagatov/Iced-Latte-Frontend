@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Image from 'next/image'
+import FiltersGroupTitle from '@/components/Product/FilterSidebar/FiltersGroupTitle'
 
 interface IFilterCheckboxGroup {
   selectedItems: string[]
@@ -37,7 +38,7 @@ const FilterCheckboxGroup = ({
 
   return (
     <div>
-      <h3 className="mb-4 text-2XL font-medium text-primary">{title}</h3>
+      <FiltersGroupTitle title={title} />
       <div className="flex flex-col items-start gap-2">
         {displayedItems.map((item) => (
           <Checkbox
