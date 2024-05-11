@@ -86,7 +86,7 @@ export default function ProductList({
   return (
     <section
       className={twMerge(
-        'mt-5 text-center min-[1124px]:mt-16',
+        'mx-4 mt-5 text-center min-[1124px]:mt-16',
         !isShowLoadMoreBtn ? 'mb-14' : '',
       )}
     >

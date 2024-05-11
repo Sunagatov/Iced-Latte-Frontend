@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import heart_icon from '../../../../public/heart_icon.svg'
-
 import { useFavouritesStore } from '@/store/favStore'
 
 export default function HeaderHeart() {
