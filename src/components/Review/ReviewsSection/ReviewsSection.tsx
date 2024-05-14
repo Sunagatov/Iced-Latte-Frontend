@@ -18,12 +18,16 @@ import {
 import { IOption } from '@/types/Dropdown'
 import { ISortParams } from '@/types/ISortParams'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
+import { IProduct } from '@/types/Products'
+import { twMerge } from 'tailwind-merge'
 
 interface ReviewComponentProps {
-  productId: string
+  product: IProduct
 }
 
-const ReviewsSection = ({ productId }: ReviewComponentProps) => {
+const ReviewsSection = ({ product }: ReviewComponentProps) => {
+  const { id: productId, reviewsCount } = product
+
   const { errorMessage, handleError } = useErrorHandler()
   const { token } = useAuthStore()
   const [userReview, setUserReview] = useState<Review | null>(null)
@@ -153,7 +157,12 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
   }
 
   return (
-    <div className="relative ml-auto mr-auto max-w-[1157px]">
+    <div
+      className={twMerge(
+        'relative ml-auto mr-auto max-w-[1157px]',
+        reviews.length > 0 ? '' : 'xl:mb-20',
+      )}
+    >
       <div className="flex flex-col-reverse xl:flex-row">
         <h2 className="xl:4XL order-[1] mb-7 text-4XL font-medium text-primary xl:absolute xl:left-0 xl:top-0 xl:order-[0] ">
           Rating and reviews
@@ -191,7 +200,7 @@ const ReviewsSection = ({ productId }: ReviewComponentProps) => {
         <div className="mr-auto">
           {' '}
           <div className="text-[18px] font-medium text-tertiary">
-            {reviews.length > 0 || userReview ? (
+            {reviewsCount > 0 ? (
               <ReviewRatingFilter
                 onChange={ratingFilterChangeHandler}
                 selectedOptions={selectedFilterRating}

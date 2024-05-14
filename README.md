@@ -26,7 +26,6 @@
   - [Code of Conduct](#code-of-conduct)
   - [License](#license)
   - [Contact](#contact)
-  - [FAQ](#faq)
   - [Community and Support](#community-and-support)
 
 ## Introduction
@@ -100,7 +99,6 @@ Three huge requests for everyone:
 - Please share new features you implement with us, so other folks can also benefit from them, and your own codebase minimally diverges from the original one (so you can sync updates and security fixes) .
 - Do not use our issues and other official channels as a support desk. Use [chats](https://t.me/lucky_1uck).
 
-
 ## 🙋‍♂️ How to report a bug?
 
 - 🆕 Open [a new issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new).
@@ -144,12 +142,12 @@ Here's our contribution guidelines — [CONTRIBUTING.md](CONTRIBUTING.md).
 
 #### 🟨 Discussion is needed
 
-- **new feature** —  completely new features. Usually they're too hard for newbies, leave them **for experienced contributors.**
+- **new feature** — completely new features. Usually they're too hard for newbies, leave them **for experienced contributors.**
 - **idea** — **discussion is needed**. Those tickets look adequate, but waiting for real proposals how they will be done. Don't implement them right away.
 
 #### 🟥 Questionable
 
-- [¯\\_(ツ)\_/¯](https://github.com/Sunagatov/Iced-Latte-Frontend/labels/%C2%AF%5C_%28%E3%83%84%29_%2F%C2%AF) - special label for **questionable issues**. (should be closed in 60 days of inactivity)
+- [¯\\\_(ツ)\_/¯](https://github.com/Sunagatov/Iced-Latte-Frontend/labels/%C2%AF%5C_%28%E3%83%84%29_%2F%C2%AF) - special label for **questionable issues**. (should be closed in 60 days of inactivity)
 - **[no label]** — ticket is new, unclear or still not reviewed. Feel free to comment it but **wait for our maintainers' decision** before starting to implement it.
 
 ## 👍 Our top contributors
@@ -161,14 +159,17 @@ Take some time to press F and give some respects to our [best contributors](http
 - [@Sunagatov](https://github.com/Sunagatov)
 
 #### 😇 Project manager
+
 - [@oonovikova](https://github.com/oonovikova)
 
 #### 🕵️‍♀️ QA engineers
+
 - [@TetianaPerinha](https://github.com/TetianaPerinha)
 - [@ilsinyakov](https://github.com/ilsinyakov)
 - [@Diana-Smolnikova](https://github.com/Diana-Smolnikova)
 
 #### ⚙️ Backend developers
+
 - [@annstriganova](https://github.com/annstriganova)
 - [@M437A](https://github.com/M437A)
 - [@Sunagatov](https://github.com/Sunagatov)
@@ -180,8 +181,9 @@ Take some time to press F and give some respects to our [best contributors](http
 - [@nnick44](https://github.com/nnick44)
 
 #### 🖥️ Frontend developers
+
 - [@iakivpekarskyi](https://github.com/iakivpekarskyi)
-- [@anksuunamun-govorov](https://github.com/anksuunamun)
+- [@anksuunamun](https://github.com/anksuunamun)
 - [@DmitriyUshkvarok](https://github.com/DmitriyUshkvarok)
 - [@Wdyffs](https://github.com/Wdyffs)
 - [@Gerasko-Vadim](https://github.com/Gerasko-Vadim)
@@ -189,11 +191,13 @@ Take some time to press F and give some respects to our [best contributors](http
 - [@freecree](https://github.com/freecree)
 
 #### 🎨 UX/UI designers
+
 - [@vilena1me](https://github.com/vilena1me)
 - [@monsoonsiren](https://github.com/monsoonsiren)
 - [@ilyasgaifullin](https://github.com/ilyasgaifullin)
 
 #### 📊 Business and system analysts
+
 - [@nemeziss](https://github.com/nemeziss)
 - [@anastasiiaerokhina](https://github.com/anastasiiaerokhina)
 - [@Umk_aa](https://github.com/Umk_aa)

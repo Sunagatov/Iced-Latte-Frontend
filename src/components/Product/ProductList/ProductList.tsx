@@ -7,22 +7,13 @@ import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
 import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
-import { IProductFilterLabel } from '@/types/IProductFilterLabel'
 import { twMerge } from 'tailwind-merge'
 import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
 import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
 import Filters from '@/components/Product/FilterSidebar/Filters'
 import { useProductFiltersStore } from '@/store/productFiltersStore'
-import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
 import { ISortParams } from '@/types/ISortParams'
 import { IOption } from '@/types/Dropdown'
-
-// @NOTE: need to delete when backend will be ready
-const _filterLabelsMock: IProductFilterLabel[] = [
-  { id: '1', name: 'name-1', label: 'Brand1' },
-  { id: '2', name: 'name-2', label: 'Seller1' },
-  { id: '3', name: 'name-3', label: 'Seller5' },
-]
 
 interface IProductList {
   brands: string[]
@@ -33,28 +24,22 @@ export default function ProductList({
   brands,
   sellers,
 }: Readonly<IProductList>) {
-  const handleFilterByDefault = () => {
-    console.log(`Button 'By default' clicked`)
-  }
-
-  const handleFilterLabelClick = (name: string, id: string) => {
-    console.log(`Label: ${name} id: ${id}`)
-  }
-
-  const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<ISortParams>
-  >(() => getDefaultSortOption(sortOptions))
-
-  const { selectedBrandOptions, selectedSellerOptions } =
-    useProductFiltersStore()
+  const {
+    selectedBrandOptions,
+    selectedSellerOptions,
+    selectedSortOption,
+    updateProductFiltersStore,
+  } = useProductFiltersStore()
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
     useProducts(selectedSortOption, selectedBrandOptions, selectedSellerOptions)
 
-  function handleSelect(selectedOption: IOption<ISortParams>) {
-    setSelectedSortOption(selectedOption)
+  function handleSelectSortOption(selectedOption: IOption<ISortParams>) {
+    updateProductFiltersStore({
+      selectedSortOption: selectedOption,
+    })
   }
 
   const handleFilterClick = () => {
@@ -86,7 +71,7 @@ export default function ProductList({
   return (
     <section
       className={twMerge(
-        'mt-5 text-center min-[1124px]:mt-16',
+        'mx-4 mt-5 text-center min-[1124px]:mt-16',
         !isShowLoadMoreBtn ? 'mb-14' : '',
       )}
     >
@@ -99,24 +84,14 @@ export default function ProductList({
           All Coffee
         </h1>
         <div className={'flex w-full justify-between'}>
-          <ProductsFilterLabels
-            filterLabels={_filterLabelsMock}
-            handleFilterLabelClick={handleFilterLabelClick}
-            handleFilterByDefault={handleFilterByDefault}
-            className="min-[1100px]:hidden"
-          />
+          <ProductsFilterLabels className="min-[1100px]:hidden" />
         </div>
         <div
           className={
             'mb-6 mt-1.5 flex w-full items-center justify-between gap-2'
           }
         >
-          <ProductsFilterLabels
-            filterLabels={_filterLabelsMock}
-            handleFilterLabelClick={handleFilterLabelClick}
-            handleFilterByDefault={handleFilterByDefault}
-            className="max-[1100px]:hidden"
-          />
+          <ProductsFilterLabels className="max-[1100px]:hidden" />
           <button
             id="filter-btn"
             onClick={handleFilterClick}
@@ -129,7 +104,7 @@ export default function ProductList({
             className="ml-auto"
             headerClassName="-mr-6"
             options={sortOptions}
-            onChange={handleSelect}
+            onChange={handleSelectSortOption}
             selectedOption={selectedSortOption}
           />
         </div>
