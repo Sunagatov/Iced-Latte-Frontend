@@ -36,7 +36,7 @@ export default function LoginIcon() {
           className="inline-flex"
           onClick={toggleModal}
         >
-          <div className=" mx-6 flex h-[54px] items-center justify-center rounded-[48px] bg-brand-solid px-6 text-lg text-inverted">
+          <div className="flex h-10 items-center justify-center rounded-[48px] bg-brand-solid px-6  text-lg text-inverted sm:h-12">
             Log in
           </div>
         </Link>

@@ -42,7 +42,8 @@ module.exports = {
         focus: '#682EFF',
       },
       boxShadow: {
-        'primary': '0px -1px 0px 0px #0000001A',
+        primary: '0px -1px 0px 0px #0000001A',
+        header: '0px 2px 2px 0px #682EFF14',
       },
       fontSize: {
         'XS': ['14px', '18px'],

@@ -10,23 +10,18 @@ export default function CartButton() {
 
   return (
     <Link href={'/cart'}>
-      <div className="relative flex items-center gap-2 rounded-full px-4 font-medium text-primary">
-        <div className="flex flex-col items-center ">
-          <Image
-            src={cart_icon}
-            width={24}
-            height={24}
-            alt="Cart"
-            priority
-            className="sm:mb-2"
-          />
-          <p className="hidden items-center text-primary text-opacity-50 sm:flex">
+      <div className="relative flex h-12 w-12 items-center justify-center gap-2 sm:pt-2 ">
+        <div className=" flex flex-col items-center justify-center ">
+          <Image src={cart_icon} alt="Cart" priority />
+          <p className="hidden font-medium text-primary text-opacity-50 sm:flex">
             cart
           </p>
         </div>
         {!!count && (
-          <div className="absolute right-[12px] top-[-5px] flex h-5 w-5 items-center justify-center rounded-full border bg-brand-solid p-1 sm:right-[15px] ">
-            <span className="text-[8px] text-white">{count}</span>
+          <div className=" absolute right-[8px] top-[8px] flex h-4 w-4 items-center justify-center rounded-full border bg-brand-solid  p-1 shadow-header sm:right-[4px] sm:top-[-2px] sm:h-5 sm:w-5 ">
+            <span className="text-[12px] font-bold text-white sm:text-[14px]">
+              {count}
+            </span>
           </div>
         )}
       </div>
