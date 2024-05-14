@@ -2,13 +2,9 @@
 import 'react-calendar/dist/Calendar.css'
 import { editUserProfile } from '@/services/userService'
 import { useState } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { isValid as isValidDate, format } from 'date-fns'
-import {
-  ValuePiece,
-  Value,
-  FormProfileProps,
-} from '../../../types/FormProfileTypes'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { format, isValid as isValidDate } from 'date-fns'
+import { FormProfileProps, Value, ValuePiece } from '@/types/FormProfileTypes'
 import { validationSchema } from '@/validation/userFormSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
