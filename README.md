@@ -1,17 +1,20 @@
-# Iced-Latte (Frontend)
+<div style="text-align: center;">
+  <br>
+  <img src="iced-latte-avatar.jpg" alt="">
+  <h1>Iced-Latte (Frontend)</h1>
 
 [![ci Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/dev-branch-pr-deployment-pipeline.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
-[![Known Vulnerabilities](https://snyk.io/test/github/Sunagatov/Iced-Latte-Frontend/badge.svg)](https://snyk.io/test/github/Sunagatov/Iced-Latte-Frontend)
-[![Docker Pulls](https://img.shields.io/docker/pulls/zufarexplainedit/Iced-Latte-Frontend.svg)](https://hub.docker.com/r/zufarexplainedit/Iced-Latte-Frontend/)
 [![GitHub issues](https://img.shields.io/github/issues/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)
-[![GitHub stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
 
-**Iced-Latte-Frontend (Frontend)** is a frontend that simulates the operations of an coffee online shop.
-Built using Next.js, it's crafted for educational purposes, offering insights into modern application development with Next.js.
+[![Docker Pulls](https://img.shields.io/docker/pulls/zufarexplainedit/Iced-Latte-Frontend.svg)](https://hub.docker.com/r/zufarexplainedit/Iced-Latte-Frontend/)
+[![GitHub contributors](https://img.shields.io/github/contributors/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/graphs/contributors)
+[![GitHub stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
+</div>
 
 ## Table of Contents
-
+- [Introduction](#introduction)
+- [Github-Stars](#Github-Stars)
 - [Iced-Latte (Frontend)](#iced-latte-frontend)
   - [Table of Contents](#table-of-contents)
   - [Tech Stack](#tech-stack)
@@ -24,6 +27,17 @@ Built using Next.js, it's crafted for educational purposes, offering insights in
   - [License](#license)
   - [Contact](#contact)
   - [Community and Support](#community-and-support)
+
+## Introduction
+
+**🟥 Iced-Latte (Frontend)** is a non-profit sandbox project where a team of IT enthusiasts are working on creating a modern marketplace (https://iced-latte.uk/) for selling coffee in order to pump up their soft and hard skills and have fun working on an interesting project.
+Built using Next.js, it's crafted for educational purposes, offering insights into modern application development with Next.js.
+
+🟥 It's crucial to note that we operate without financial support from any party, and we don't compensate anyone financially either. Our efforts are fuelled solely by passion and dedication.
+
+### 🔥 Github-Stars 🔥
+
+Please support Iced Latte project by Giving Stars 🌟 on Github repositories - your ratings mean a lot to us!🙂
 
 ## Tech Stack
 
@@ -85,7 +99,6 @@ Three huge requests for everyone:
 - Please share new features you implement with us, so other folks can also benefit from them, and your own codebase minimally diverges from the original one (so you can sync updates and security fixes) .
 - Do not use our issues and other official channels as a support desk. Use [chats](https://t.me/lucky_1uck).
 
-
 ## 🙋‍♂️ How to report a bug?
 
 - 🆕 Open [a new issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new).
@@ -129,12 +142,12 @@ Here's our contribution guidelines — [CONTRIBUTING.md](CONTRIBUTING.md).
 
 #### 🟨 Discussion is needed
 
-- **new feature** —  completely new features. Usually they're too hard for newbies, leave them **for experienced contributors.**
+- **new feature** — completely new features. Usually they're too hard for newbies, leave them **for experienced contributors.**
 - **idea** — **discussion is needed**. Those tickets look adequate, but waiting for real proposals how they will be done. Don't implement them right away.
 
 #### 🟥 Questionable
 
-- [¯\\_(ツ)\_/¯](https://github.com/Sunagatov/Iced-Latte-Frontend/labels/%C2%AF%5C_%28%E3%83%84%29_%2F%C2%AF) - special label for **questionable issues**. (should be closed in 60 days of inactivity)
+- [¯\\\_(ツ)\_/¯](https://github.com/Sunagatov/Iced-Latte-Frontend/labels/%C2%AF%5C_%28%E3%83%84%29_%2F%C2%AF) - special label for **questionable issues**. (should be closed in 60 days of inactivity)
 - **[no label]** — ticket is new, unclear or still not reviewed. Feel free to comment it but **wait for our maintainers' decision** before starting to implement it.
 
 ## 👍 Our top contributors
@@ -146,14 +159,17 @@ Take some time to press F and give some respects to our [best contributors](http
 - [@Sunagatov](https://github.com/Sunagatov)
 
 #### 😇 Project manager
+
 - [@oonovikova](https://github.com/oonovikova)
 
 #### 🕵️‍♀️ QA engineers
+
 - [@TetianaPerinha](https://github.com/TetianaPerinha)
 - [@ilsinyakov](https://github.com/ilsinyakov)
 - [@Diana-Smolnikova](https://github.com/Diana-Smolnikova)
 
 #### ⚙️ Backend developers
+
 - [@annstriganova](https://github.com/annstriganova)
 - [@M437A](https://github.com/M437A)
 - [@Sunagatov](https://github.com/Sunagatov)
@@ -165,8 +181,9 @@ Take some time to press F and give some respects to our [best contributors](http
 - [@nnick44](https://github.com/nnick44)
 
 #### 🖥️ Frontend developers
+
 - [@iakivpekarskyi](https://github.com/iakivpekarskyi)
-- [@anksuunamun-govorov](https://github.com/anksuunamun)
+- [@anksuunamun](https://github.com/anksuunamun)
 - [@DmitriyUshkvarok](https://github.com/DmitriyUshkvarok)
 - [@Wdyffs](https://github.com/Wdyffs)
 - [@Gerasko-Vadim](https://github.com/Gerasko-Vadim)
@@ -174,11 +191,13 @@ Take some time to press F and give some respects to our [best contributors](http
 - [@freecree](https://github.com/freecree)
 
 #### 🎨 UX/UI designers
+
 - [@vilena1me](https://github.com/vilena1me)
 - [@monsoonsiren](https://github.com/monsoonsiren)
 - [@ilyasgaifullin](https://github.com/ilyasgaifullin)
 
 #### 📊 Business and system analysts
+
 - [@nemeziss](https://github.com/nemeziss)
 - [@anastasiiaerokhina](https://github.com/anastasiiaerokhina)
 - [@Umk_aa](https://github.com/Umk_aa)
