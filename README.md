@@ -169,7 +169,7 @@ Take some time to press F and give some respects to our [best contributors](http
 #### 🖥️ Frontend developers
 
 - [@iakivpekarskyi](https://github.com/iakivpekarskyi)
-- [@anksuunamun-govorov](https://github.com/anksuunamun)
+- [@anksuunamun](https://github.com/anksuunamun)
 - [@DmitriyUshkvarok](https://github.com/DmitriyUshkvarok)
 - [@Wdyffs](https://github.com/Wdyffs)
 - [@Gerasko-Vadim](https://github.com/Gerasko-Vadim)

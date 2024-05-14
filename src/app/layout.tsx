@@ -29,12 +29,12 @@ export default function RootLayout({
 }: Readonly<RootLayoutProps>) {
   return (
     <html lang="en">
-      <body className={inter.className + 'flex min-h-screen flex-col'}>
+      <body className={inter.className + ' flex min-h-screen flex-col'}>
         <ToastContainer />
         <InterceptorsForRefreshToken parallel={parallel}>
           <GlobalFavoritesAndCartInit parallel={parallel}>
             <Header />
-            <main className="min-w-[360px] grow">{children}</main>
+            <main className={'min-w-[360px] grow'}>{children}</main>
             <Footer />
           </GlobalFavoritesAndCartInit>
         </InterceptorsForRefreshToken>

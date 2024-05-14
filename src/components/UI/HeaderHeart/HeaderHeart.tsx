@@ -18,7 +18,9 @@ export default function HeaderHeart() {
         </div>
         {!!favouriteIds.length && (
           <div className=" absolute right-[8px] top-[8px] flex h-4 w-4 items-center justify-center rounded-full border bg-brand-solid  p-1 shadow-header sm:right-[4px] sm:top-[-2px] sm:h-5 sm:w-5 ">
-            <span className="text-[8px] text-white">{favouriteIds.length}</span>
+            <span className="text-[12px] font-bold text-white sm:text-[14px]">
+              {favouriteIds.length}
+            </span>
           </div>
         )}
       </div>
