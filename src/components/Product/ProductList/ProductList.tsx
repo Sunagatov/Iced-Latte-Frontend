@@ -85,7 +85,7 @@ export default function ProductList({
         !isShowLoadMoreBtn ? 'mb-14' : '',
       )}
     >
-      <div className={'inline-flex flex-col items-center text-left '}>
+      <div className={'mx-4 flex flex-col items-start text-left'}>
         <h1
           className={
             'mb-8 mr-auto text-5XL min-[1124px]:mb-10 min-[1124px]:text-6XL'
@@ -118,7 +118,7 @@ export default function ProductList({
             selectedOption={selectedSortOption}
           />
         </div>
-        <div className="inline-flex w-full justify-center gap-x-8">
+        <div className="inline-flex justify-center gap-x-8">
           <FilterSidebar className="mr-auto hidden min-[1100px]:block">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
