@@ -97,6 +97,9 @@ const PriceFilter = () => {
           type="text"
           placeholder="Min"
           onChange={handleFromInputChange}
+          labelClassName="absolute top-1/2 -translate-y-2/4 left-4"
+          inputClassName="pl-[52px]"
+          className="relative"
         />
 
         <FormInput
@@ -107,6 +110,9 @@ const PriceFilter = () => {
           type="text"
           placeholder="Max"
           onChange={handleToInputChange}
+          labelClassName="absolute top-1/2 -translate-y-2/4 left-4"
+          inputClassName="pl-[34px]"
+          className="relative"
         />
       </form>
     </div>

@@ -11,4 +11,6 @@ export type InputProps<T extends FieldValues> = {
   error?: FieldError
   className?: string
   onChange?: React.ChangeEventHandler<HTMLInputElement>
+  labelClassName?: string
+  inputClassName?: string
 }
