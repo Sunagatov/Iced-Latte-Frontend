@@ -5,6 +5,8 @@ import { IOption } from '@/types/Dropdown'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
 
 interface IProductFiltersStore {
+  fromPriceFilter: string
+  toPriceFilter: string
   selectedBrandOptions: string[]
   selectedSellerOptions: string[]
   selectBrandOption: (value: string) => void
@@ -20,6 +22,8 @@ type UpdateProductFiltersStoreSliceType = {
   selectedBrandOptions?: IProductFiltersStore['selectedBrandOptions']
   selectedSellerOptions?: IProductFiltersStore['selectedSellerOptions']
   selectedSortOption?: IProductFiltersStore['selectedSortOption']
+  fromPriceFilter?: IProductFiltersStore['fromPriceFilter']
+  toPriceFilter?: IProductFiltersStore['toPriceFilter']
 }
 
 export const defaultProductsFilters = {
@@ -28,6 +32,8 @@ export const defaultProductsFilters = {
 }
 
 export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
+  toPriceFilter: '',
+  fromPriceFilter: '',
   selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
   selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
   sortingOptions: sortOptions,

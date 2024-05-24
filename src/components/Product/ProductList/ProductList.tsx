@@ -25,6 +25,8 @@ export default function ProductList({
   sellers,
 }: Readonly<IProductList>) {
   const {
+    toPriceFilter,
+    fromPriceFilter,
     selectedBrandOptions,
     selectedSellerOptions,
     selectedSortOption,
@@ -34,7 +36,13 @@ export default function ProductList({
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption, selectedBrandOptions, selectedSellerOptions)
+    useProducts(
+      selectedSortOption,
+      selectedBrandOptions,
+      selectedSellerOptions,
+      toPriceFilter,
+      fromPriceFilter,
+    )
 
   function handleSelectSortOption(selectedOption: IOption<ISortParams>) {
     updateProductFiltersStore({

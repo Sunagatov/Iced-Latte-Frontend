@@ -1,8 +1,11 @@
+'use client'
+
 import {
   defaultProductsFilters,
   useProductFiltersStore,
 } from '@/store/productFiltersStore'
 import FilterCheckboxGroup from '@/components/Product/FilterSidebar/FilterCheckboxGroup'
+import PriceFilter from '@/components/Product/FilterSidebar/PriceFilter'
 
 interface IFilters {
   brands: string[]
@@ -49,6 +52,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
 
   return (
     <div className={'flex flex-col gap-5'}>
+      <PriceFilter />
       <FilterCheckboxGroup
         selectedItems={selectedBrandOptions}
         items={brands}

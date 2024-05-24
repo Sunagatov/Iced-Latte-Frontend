@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from 'react'
+import React, { HTMLInputTypeAttribute } from 'react'
 import { FieldError, FieldValues, Path, UseFormRegister } from 'react-hook-form'
 
 export type InputProps<T extends FieldValues> = {
@@ -10,4 +10,5 @@ export type InputProps<T extends FieldValues> = {
   placeholder: string
   error?: FieldError
   className?: string
+  onChange?: React.ChangeEventHandler<HTMLInputElement>
 }
