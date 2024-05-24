@@ -30,6 +30,7 @@ export default function ProductList({
     selectedBrandOptions,
     selectedSellerOptions,
     selectedSortOption,
+    ratingFilter,
     updateProductFiltersStore,
   } = useProductFiltersStore()
 
@@ -42,6 +43,7 @@ export default function ProductList({
       selectedSellerOptions,
       toPriceFilter,
       fromPriceFilter,
+      ratingFilter,
     )
 
   function handleSelectSortOption(selectedOption: IOption<ISortParams>) {

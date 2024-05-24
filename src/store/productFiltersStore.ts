@@ -3,6 +3,7 @@ import { ISortParams } from '@/types/ISortParams'
 import { sortOptions } from '@/constants/productSortOptions'
 import { IOption } from '@/types/Dropdown'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
+import { StarsType } from '@/components/Product/ProductRatingFilter/ProductRatingFilter'
 
 interface IProductFiltersStore {
   fromPriceFilter: string
@@ -15,6 +16,7 @@ interface IProductFiltersStore {
   removeSellerOption: (value: string) => void
   selectedSortOption: IOption<ISortParams>
   sortingOptions: Array<IOption<ISortParams>>
+  ratingFilter: StarsType | null | 'any'
   updateProductFiltersStore: (slice: UpdateProductFiltersStoreSliceType) => void
 }
 
@@ -24,16 +26,21 @@ type UpdateProductFiltersStoreSliceType = {
   selectedSortOption?: IProductFiltersStore['selectedSortOption']
   fromPriceFilter?: IProductFiltersStore['fromPriceFilter']
   toPriceFilter?: IProductFiltersStore['toPriceFilter']
+  ratingFilter?: IProductFiltersStore['ratingFilter']
 }
 
 export const defaultProductsFilters = {
   selectedBrandOptions: [],
   selectedSellerOptions: [],
+  ratingFilter: null,
+  toPriceFilter: '',
+  fromPriceFilter: '',
 }
 
 export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
   toPriceFilter: '',
   fromPriceFilter: '',
+  ratingFilter: null,
   selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
   selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
   sortingOptions: sortOptions,

@@ -6,6 +6,9 @@ import {
 } from '@/store/productFiltersStore'
 import FilterCheckboxGroup from '@/components/Product/FilterSidebar/FilterCheckboxGroup'
 import PriceFilter from '@/components/Product/FilterSidebar/PriceFilter'
+import ProductRatingFilter, {
+  StarsType,
+} from '@/components/Product/ProductRatingFilter/ProductRatingFilter'
 
 interface IFilters {
   brands: string[]
@@ -18,6 +21,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     removeBrandOption,
     selectSellerOption,
     selectedSellerOptions,
+    ratingFilter,
     removeSellerOption,
     updateProductFiltersStore,
   } = useProductFiltersStore()
@@ -50,9 +54,21 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     })
   }
 
+  const ratingFilterChangeHandler = (value: null | 'any' | StarsType) => {
+    updateProductFiltersStore({
+      ratingFilter: value,
+    })
+  }
+
   return (
     <div className={'flex flex-col gap-5'}>
       <PriceFilter />
+
+      <ProductRatingFilter
+        onChange={ratingFilterChangeHandler}
+        selectedOption={ratingFilter}
+      />
+
       <FilterCheckboxGroup
         selectedItems={selectedBrandOptions}
         items={brands}
