@@ -3,11 +3,15 @@ import { getAllProducts } from '@/services/apiService'
 import useSWRInfinite from 'swr/infinite'
 import { ISortParams } from '@/types/ISortParams'
 import { IOption } from '@/types/Dropdown'
+import { StarsType } from '@/components/Product/ProductRatingFilter/ProductRatingFilter'
 
 export function useProducts(
   sortOption: IOption<ISortParams>,
   brandOptions: string[],
   sellerOptions: string[],
+  toPriceFilter: string,
+  fromPriceFilter: string,
+  ratingFilter: null | 'any' | StarsType,
 ) {
   const { sortAttribute, sortDirection } = sortOption.value
   const brandNames = brandOptions.join(',') || ''
@@ -17,7 +21,10 @@ export function useProducts(
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
 
-    return `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${sellerNames && '&seller_names=' + sellerNames}`
+    const ratingQuery =
+      ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
+
+    return `products?page=${pageIndex}&size=6&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${ratingQuery ? '&minimum_average_rating=' + ratingQuery : ''}${sellerNames && '&seller_names=' + sellerNames}${fromPriceFilter && '&min_price=' + fromPriceFilter}${toPriceFilter && '&max_price=' + toPriceFilter}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<

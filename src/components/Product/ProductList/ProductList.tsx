@@ -25,16 +25,26 @@ export default function ProductList({
   sellers,
 }: Readonly<IProductList>) {
   const {
+    toPriceFilter,
+    fromPriceFilter,
     selectedBrandOptions,
     selectedSellerOptions,
     selectedSortOption,
+    ratingFilter,
     updateProductFiltersStore,
   } = useProductFiltersStore()
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
   const { data, fetchNext, hasNextPage, isLoading, isFetchingNextPage, error } =
-    useProducts(selectedSortOption, selectedBrandOptions, selectedSellerOptions)
+    useProducts(
+      selectedSortOption,
+      selectedBrandOptions,
+      selectedSellerOptions,
+      toPriceFilter,
+      fromPriceFilter,
+      ratingFilter,
+    )
 
   function handleSelectSortOption(selectedOption: IOption<ISortParams>) {
     updateProductFiltersStore({
@@ -75,7 +85,7 @@ export default function ProductList({
         !isShowLoadMoreBtn ? 'mb-14' : '',
       )}
     >
-      <div className={'inline-flex flex-col items-center text-left '}>
+      <div className={'inline-flex flex-col items-center text-left'}>
         <h1
           className={
             'mb-8 mr-auto text-5XL min-[1124px]:mb-10 min-[1124px]:text-6XL'
