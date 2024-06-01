@@ -22,9 +22,6 @@ jobs:
       - name: Build a new docker image
         run: docker build -t ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest .
 
-      - name: Tag a new docker image
-        run: docker tag ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
-
       - name: Push a new docker image into Dockerhub
         run: docker push ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
 
