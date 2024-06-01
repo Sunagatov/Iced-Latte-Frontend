@@ -13,9 +13,6 @@ jobs:
       - name: Checkout the source code from the Github repository
         uses: actions/checkout@v4
 
-      - name: Set DOCKER_IMAGE_TAG
-        run: echo "DOCKER_IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
-
       - name: Login to Dockerhub
         uses: docker/login-action@v3
         with:
@@ -26,10 +23,10 @@ jobs:
         run: docker build -t ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest .
 
       - name: Tag a new docker image
-        run: docker tag ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+        run: docker tag ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
 
       - name: Push a new docker image into Dockerhub
-        run: docker push ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+        run: docker push ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
 
   deploy-app-to-server:
     name: Deploy application to remote server via SSH
@@ -37,7 +34,7 @@ jobs:
     needs: build-and-push-docker-image
     steps:
       - name: Set DOCKER_IMAGE_TAG
-        run: echo "DOCKER_IMAGE_TAG=$GITHUB_REF_NAME-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+        run: echo "DOCKER_IMAGE_TAG=latest" >> $GITHUB_ENV
 
       - name: Deploy image via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -48,13 +45,12 @@ jobs:
           password: ${{ secrets.DEV_SSH_PASSWORD }}
           script: |
             docker system prune --all --force
-            
             echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ vars.DOCKER_HUB_ACCOUNT_NAME }} --password-stdin
             docker stop ${{ vars.DOCKER_CONTAINER_NAME }} || true
             docker rm ${{ vars.DOCKER_CONTAINER_NAME }} || true
             docker rmi ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }} || true
-            docker pull ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+            docker pull ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
             docker run -d \
               --name ${{ vars.DOCKER_CONTAINER_NAME }} \
               --network=${{ vars.DOCKER_NETWORK }} \
-              ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
+              ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
