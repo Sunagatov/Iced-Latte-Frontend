@@ -57,24 +57,4 @@ jobs:
             docker run -d \
               --name ${{ vars.DOCKER_CONTAINER_NAME }} \
               --network=${{ vars.DOCKER_NETWORK }} \
-              -e APP_SERVER_PORT=${{ vars.APP_SERVER_PORT }} \
-              -e APP_JWT_SECRET=${{ secrets.APP_JWT_SECRET }} \
-              -e APP_JWT_REFRESH_SECRET=${{ secrets.APP_JWT_REFRESH_SECRET }} \
-              -e DATASOURCE_PORT=${{ vars.DATASOURCE_PORT }} \
-              -e DATASOURCE_NAME=${{ vars.DATASOURCE_NAME }} \
-              -e DATASOURCE_USERNAME=${{ vars.DATASOURCE_USERNAME }} \
-              -e DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} \
-              -e DATASOURCE_HOST=${{ vars.DATASOURCE_HOST }} \
-              -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
-              -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
-              -e AWS_REGION=${{ vars.AWS_REGION }} \
-              -e AWS_USER_BUCKET=${{ vars.AWS_USER_BUCKET }} \
-              -e AWS_PRODUCT_BUCKET=${{ vars.AWS_PRODUCT_BUCKET }} \
-              -e AWS_DEFAULT_PRODUCT_IMAGES_PATH=${{ vars.AWS_DEFAULT_PRODUCT_IMAGES_PATH }} \
-              -e GOOGLE_AUTH_CLIENT_ID=${{ vars.GOOGLE_AUTH_CLIENT_ID }} \
-              -e GOOGLE_AUTH_CLIENT_SECRET=${{ vars.GOOGLE_AUTH_CLIENT_SECRET }} \
-              -e GOOGLE_AUTH_REDIRECT_URI=${{ vars.GOOGLE_AUTH_REDIRECT_URI }} \
-              -e REDIS_PORT=${{ vars.REDIS_PORT }} \
-              -v ${{ vars.APP_DATA_PATH_ON_THE_REMOTE_SERVER }}:/usr/app/logs \
-              -v ${{ vars.APP_DATA_PATH_ON_THE_REMOTE_SERVER }}/products:/usr/app/products \
               ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_IMAGE_TAG }}
