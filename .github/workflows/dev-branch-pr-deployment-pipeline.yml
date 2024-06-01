@@ -45,7 +45,7 @@ jobs:
           host: ${{ secrets.DEV_SSH_HOST }}
           port: ${{ secrets.DEV_SSH_PORT }}
           username: ${{ secrets.DEV_SSH_USER }}
-          key: ${{ secrets.DEV_SSH_PRIV_KEY }}
+          password: ${{ secrets.DEV_SSH_PASSWORD }}
           script: |
             docker system prune --all --force
             
