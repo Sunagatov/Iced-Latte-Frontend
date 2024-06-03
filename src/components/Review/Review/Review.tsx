@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import { BiDislike, BiLike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
@@ -12,26 +12,23 @@ import { nanoid } from 'nanoid'
 interface IReview {
   isUserReview: boolean
   review: ReviewType
-  toggleReviewExpansion?: (id: string) => void
   deleteReview?: (id: string) => void
   rateReview?: (id: string, isLike: boolean) => void
-  isExpanded?: boolean
 }
 
 const Review: React.FC<Readonly<IReview>> = ({
   isUserReview = false,
   review,
-  toggleReviewExpansion = () => {},
-  deleteReview = () => {},
-  rateReview = () => {},
-  isExpanded,
+  deleteReview = () => { },
+  rateReview = () => { },
 }) => {
+  const [isSeeMoreExpanded, setIsSeeMoreExpanded] = useState(false)
   const isMediaQuery = useMediaQuery('(min-width: 768px)', {
     initializeWithValue: false,
   })
 
   const toggleReviewExpansionHandler = () => {
-    toggleReviewExpansion(review.productReviewId!)
+    setIsSeeMoreExpanded(true)
   }
 
   const deleteReviewHandler = () => {
@@ -95,7 +92,7 @@ const Review: React.FC<Readonly<IReview>> = ({
           <span>
             {review.text ? (
               <>
-                {review.text.length > 300 && !isExpanded ? (
+                {review.text.length > 300 && !isSeeMoreExpanded ? (
                   <span>
                     {review.text.slice(0, 300)}
                     <Button
