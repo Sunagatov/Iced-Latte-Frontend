@@ -22,13 +22,13 @@ const Review: React.FC<Readonly<IReview>> = ({
   deleteReview = () => { },
   rateReview = () => { },
 }) => {
-  const [isSeeMoreExpanded, setIsSeeMoreExpanded] = useState(false)
+  const [isReviewExpanded, SetIsReviewExpanded] = useState(false)
   const isMediaQuery = useMediaQuery('(min-width: 768px)', {
     initializeWithValue: false,
   })
 
-  const toggleReviewExpansionHandler = () => {
-    setIsSeeMoreExpanded(true)
+  const seeMoreButtonClickHandler = () => {
+    SetIsReviewExpanded(true)
   }
 
   const deleteReviewHandler = () => {
@@ -92,12 +92,12 @@ const Review: React.FC<Readonly<IReview>> = ({
           <span>
             {review.text ? (
               <>
-                {review.text.length > 300 && !isSeeMoreExpanded ? (
+                {review.text.length > 300 && !isReviewExpanded ? (
                   <span>
                     {review.text.slice(0, 300)}
                     <Button
                       id="see-more-btn"
-                      onClick={toggleReviewExpansionHandler}
+                      onClick={seeMoreButtonClickHandler}
                       className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
                     >
                       ...see more
