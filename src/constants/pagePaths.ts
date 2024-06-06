@@ -7,5 +7,6 @@ export const pagePaths: PagePaths = {
   '/profile': true,
   '/favourites': true,
   '/cart': true,
+  '/checkout': true
   // Add any other paths and their corresponding conditions here
 }

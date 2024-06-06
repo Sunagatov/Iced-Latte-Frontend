@@ -1,9 +1,9 @@
 import Button from '@/components/UI/Buttons/Button/Button'
 import CartElement from '../CartElement/CartElement'
-import { useCombinedStore } from '@/store/store'
-import Link from 'next/link'
-import { ICartItem } from '@/types/Cart'
-import { useAuthStore } from '@/store/authStore'
+import {useCombinedStore} from '@/store/store'
+import {ICartItem} from '@/types/Cart'
+import {useAuthStore} from '@/store/authStore'
+import Link from "next/link";
 
 export default function CartFull() {
   const { tempItems, totalPrice, removeFullProduct, remove, add } =
@@ -34,9 +34,10 @@ export default function CartFull() {
           id="go-checkout-btn"
           className="my-6 h-14 w-full text-lg font-medium sm:w-[211px]"
         >
-          <Link href={'/'}>Go to checkout</Link>
+          <Link href={"/checkout"}>Go to checkout</Link>
         </Button>
       </div>
     </div>
   )
 }
+
