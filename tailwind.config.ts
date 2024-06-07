@@ -34,12 +34,15 @@ module.exports = {
         'brand-second': '#F0EAFF',
         'brand-solid-hover': '#5425CC',
         'hover-heart': '#D9D9D9',
+        'input-default': '#FCFBFD',
+        'input-error': '#FFE8EA',
       },
       borderColor: {
         primary: '#242D3429',
         secondary: '#F4F5F6',
         error: '#EB5757',
         focus: '#682EFF',
+        'input-default': '#EDEAF2',
       },
       boxShadow: {
         primary: '0px -1px 0px 0px #0000001A',
