@@ -46,7 +46,4 @@ jobs:
             docker rm ${{ vars.DOCKER_CONTAINER_NAME }} || true
             docker rmi ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version || true
             docker pull ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version
-            docker run -d \
-              --name ${{ vars.DOCKER_CONTAINER_NAME }} \
-              --network=${{ vars.DOCKER_NETWORK }} \
-              ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version
+            docker run -d --name ${{ vars.DOCKER_CONTAINER_NAME }} --network=${{ vars.DOCKER_NETWORK }} ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version
