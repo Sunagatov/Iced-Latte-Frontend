@@ -26,7 +26,7 @@ interface ReviewComponentProps {
 }
 
 const ReviewsSection = ({ product }: ReviewComponentProps) => {
-  const { id: productId, reviewsCount } = product
+  const { id: productId } = product
 
   const { errorMessage, handleError } = useErrorHandler()
   const { token } = useAuthStore()
@@ -38,6 +38,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
     setShouldRevalidateReviews,
     shouldRevalidateUserReview,
     setShouldRevalidateUserReview,
+    reviewsStatistics,
   } = useProductReviewsStore()
 
   useEffect(() => {
@@ -200,7 +201,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
         <div className="mr-auto">
           {' '}
           <div className="text-[18px] font-medium text-tertiary">
-            {reviewsCount > 0 ? (
+            {reviewsStatistics && reviewsStatistics.reviewsCount > 0 ? (
               <ReviewRatingFilter
                 onChange={ratingFilterChangeHandler}
                 selectedOptions={selectedFilterRating}

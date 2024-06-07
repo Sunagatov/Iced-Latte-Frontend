@@ -39,11 +39,11 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
   return (
     <div
       className={
-        'relative flex h-full w-[177px] flex-col justify-between gap-y-4 md:w-[346px]'
+        'relative flex h-full flex-col justify-between gap-y-4 md:w-[346px]'
       }
     >
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
-        <div className=" relative h-[177px] w-full  md:h-[360px]">
+        <div className="relative aspect-square w-full md:h-[360px]">
           <Image
             src={getImgUrl(productFileUrl, productImg)}
             alt="card picture"
