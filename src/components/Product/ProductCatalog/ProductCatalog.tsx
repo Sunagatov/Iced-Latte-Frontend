@@ -92,7 +92,7 @@ export default function ProductCatalog({
         </div>
         <div
           className={
-            'mb-6 mt-1.5 flex w-full items-center justify-between gap-2'
+            ' sticky top-[80px] z-10 mb-6 mt-1.5 flex h-20 w-full items-center justify-between gap-2 bg-primary shadow-header'
           }
         >
           <ProductsFilterLabels className="hidden min-[1100px]:flex" />
