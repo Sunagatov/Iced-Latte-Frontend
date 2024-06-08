@@ -41,8 +41,7 @@ export function useProducts(
   const hasNextPage = size < totalPages
 
   const isFetchingNextPage =
-    (isLoading && !error) || // initial loading
-    (size > 0 && data && typeof data[size - 1] === 'undefined')
+    size > 0 && data && typeof data[size - 1] === 'undefined'
 
   return {
     data: flattenProducts,
