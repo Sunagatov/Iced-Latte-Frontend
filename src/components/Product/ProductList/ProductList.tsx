@@ -48,13 +48,11 @@ export default function ProductList({
   return (
     <ul
       className={
-        'grid h-max grow grid-cols-2 gap-x-2 gap-y-7 sm:gap-x-6 min-[1440px]:grid-cols-3'
+        'grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-[56px] min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4'
       }
     >
       {products.map((product) => (
-        <li key={product.id}>
-          <ProductCard product={product} />
-        </li>
+        <ProductCard key={product.id} product={product} />
       ))}
     </ul>
   )
