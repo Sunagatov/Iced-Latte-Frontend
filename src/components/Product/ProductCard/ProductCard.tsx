@@ -54,7 +54,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
   return (
     <li
       className={
-        'relative flex w-full max-w-[225px] flex-col justify-between justify-self-center rounded-lg border border-secondary transition-all hover:-translate-y-2 hover:shadow-[9px_9px_5px_0px_#D2D2D31A] sm:min-w-[178px]'
+        'relative flex w-full max-w-[225px] flex-col justify-self-center rounded-lg border border-secondary transition-all hover:-translate-y-2 hover:shadow-[9px_9px_5px_0px_#D2D2D31A] sm:min-w-[178px]'
       }
     >
       <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
