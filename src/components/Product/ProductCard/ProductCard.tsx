@@ -21,6 +21,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
     averageRating,
     reviewsCount,
     brandName,
+    sellerName,
   } = product
 
   const cartItems = useCombinedStore((state) => state.itemsIds)
@@ -80,7 +81,9 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
             <p className="text-[10px] text-primary sm:text-XS">
               by {brandName}
             </p>
-            <p className="text-[10px] text-secondary sm:text-XS">Iced latte</p>
+            <p className="text-[10px] text-secondary sm:text-XS">
+              {sellerName}
+            </p>
           </div>
         </div>
       </Link>
