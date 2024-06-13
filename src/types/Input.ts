@@ -1,8 +1,8 @@
 import React, { HTMLInputTypeAttribute } from 'react'
 import {
   FieldError,
-  FieldPath,
   FieldValues,
+  Path,
   UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
@@ -13,7 +13,7 @@ export type InputProps<T extends FieldValues> = {
   register: UseFormRegister<T>
   getValues: UseFormGetValues<T>
   setValue: UseFormSetValue<T>
-  name: FieldPath<T>
+  name: Path<T>
   label: string
   type: HTMLInputTypeAttribute
   error?: FieldError
@@ -21,6 +21,7 @@ export type InputProps<T extends FieldValues> = {
   onChange?: React.ChangeEventHandler<HTMLInputElement>
   labelClassName?: string
   inputClassName?: string
-  value: string
+  value?: string | null
   disabled?: boolean
+  isRequired?: boolean
 }

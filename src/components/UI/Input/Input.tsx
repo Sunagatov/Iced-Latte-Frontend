@@ -20,6 +20,7 @@ export default function Input<T extends FieldValues>({
   className,
   labelClassName,
   inputClassName,
+  isRequired,
   ...rest
 }: Readonly<InputProps<T>>) {
   const [isInputFocused, setIsInputFocused] = useState(false)
@@ -61,7 +62,7 @@ export default function Input<T extends FieldValues>({
   const inputLabelColor = error ? 'negative' : 'secondary'
 
   const iconType =
-    getValues(name).length > 0 ? 'cross' : error ? 'attention' : ''
+    getValues(name)?.length > 0 ? 'cross' : error ? 'attention' : ''
 
   const iconColor = error ? '#E12E3C' : isInputFocused ? '#682EFF' : '#EDEAF2'
 
@@ -73,15 +74,15 @@ export default function Input<T extends FieldValues>({
         <label
           htmlFor={id}
           className={twMerge(
-            'font-XS absolute left-2.5 top-1/2 block -translate-y-2/4 cursor-pointer text-sm font-medium duration-150',
-            (getValues(name).length > 0 || isInputFocused) &&
+            'font-XS absolute left-2.5 top-1/2 block -translate-y-2/4 cursor-pointer text-sm font-medium opacity-65 duration-150',
+            (getValues(name)?.length > 0 || isInputFocused) &&
               'top-2.5 translate-y-0',
             `text-${inputLabelColor}`,
             'disabled:opacity-40',
             labelClassName,
           )}
         >
-          {label}
+          {isRequired ? '*' + label : label}
         </label>
         <input
           className={twMerge(

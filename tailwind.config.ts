@@ -36,6 +36,7 @@ module.exports = {
         'hover-heart': '#D9D9D9',
         'input-default': '#FCFBFD',
         'input-error': '#FFE8EA',
+        'profile': '#F6F5FA',
       },
       borderColor: {
         primary: '#242D3429',
@@ -43,6 +44,7 @@ module.exports = {
         error: '#EB5757',
         focus: '#682EFF',
         'input-default': '#EDEAF2',
+        'white-button': '#04121B',
       },
       boxShadow: {
         primary: '0px -1px 0px 0px #0000001A',
