@@ -16,6 +16,8 @@ export interface IProduct {
   productFileUrl: string | null
   averageRating: number
   reviewsCount: number
+  brandName: string
+  sellerName: string
 }
 
 export interface IGetProductSellers {
