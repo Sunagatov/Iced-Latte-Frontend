@@ -90,11 +90,7 @@ export default function ProductCatalog({
         <div className={'flex w-full justify-between'}>
           <ProductsFilterLabels className="min-[1100px]:hidden" />
         </div>
-        <div
-          className={
-            ' sticky top-[80px] z-10 mb-6 mt-1.5 flex h-20 w-full items-center justify-between gap-2 bg-primary shadow-header'
-          }
-        >
+        <div className=" sticky top-[80px] z-10 mx-auto mb-6 mt-1.5 flex h-20 w-full items-center justify-between gap-2 bg-primary">
           <ProductsFilterLabels className="hidden min-[1100px]:flex" />
           <button
             id="filter-btn"
@@ -112,8 +108,8 @@ export default function ProductCatalog({
             selectedOption={selectedSortOption}
           />
         </div>
-        <div className="flex w-full justify-center gap-x-8">
-          <FilterSidebar className="hidden min-[1100px]:block">
+        <div className="flex w-full justify-center gap-x-8 ">
+          <FilterSidebar className=" sticky top-[170px] hidden max-h-[calc(100vh-80px)] overflow-y-auto min-[1100px]:block ">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (
