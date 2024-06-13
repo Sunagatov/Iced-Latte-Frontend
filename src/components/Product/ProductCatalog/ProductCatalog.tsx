@@ -109,7 +109,7 @@ export default function ProductCatalog({
           />
         </div>
         <div className="flex w-full justify-center gap-x-8 ">
-          <FilterSidebar className=" sticky top-[170px] hidden max-h-[calc(100vh-80px)] overflow-y-auto min-[1100px]:block ">
+          <FilterSidebar className=" sticky top-[170px] hidden max-h-[calc(100vh-400px)] overflow-y-auto min-[1100px]:block ">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (
