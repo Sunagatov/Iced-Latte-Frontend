@@ -19,7 +19,9 @@ export default function ProductRating({
           </span>
         </div>
       ) : (
-        <span className="text-[10px] text-tertiary sm:text-XS">No rating</span>
+        <span className="flex h-[23px] items-center text-[10px] text-tertiary sm:h-[30px] sm:text-XS">
+          No rating
+        </span>
       )}
     </>
   )

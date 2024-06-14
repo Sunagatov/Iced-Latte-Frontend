@@ -1,6 +1,5 @@
 'use client'
 import Image from 'next/image'
-import circle_btn from '../../../../../public/plus.svg'
 import { twMerge } from 'tailwind-merge'
 
 interface ICircleAddBtnProps {
@@ -23,7 +22,13 @@ const CircleAddBtn = ({
         className,
       )}
     >
-      <Image className={iconClassName} src={circle_btn} alt="add to cart" />
+      <Image
+        className={iconClassName}
+        src="/plus.svg"
+        width={16}
+        height={16}
+        alt="add to cart"
+      />
     </button>
   )
 }
