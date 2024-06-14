@@ -1,6 +1,4 @@
-import Image from 'next/image'
 import { IProductRatingProps } from '@/types/ProductRating'
-import Rating from '@/components/UI/Rating/Rating'
 
 export default function ProductRating({
   rating,
@@ -9,20 +7,19 @@ export default function ProductRating({
   return (
     <>
       {rating ? (
-        <>
-          <Image
-            src={'/star.png'}
-            alt="star"
-            className={'inline-block'}
-            height={15}
-            width={16}
-          />
-          <span>
-            <Rating rating={rating} /> <span>({reviewsCount})</span>
+        <div className="flex items-center gap-1">
+          <div className="flex items-center justify-center rounded bg-brand-second px-1.5 py-1 sm:px-2 sm:py-1.5">
+            <span className="text-[10px] font-semibold text-brand sm:text-XS">
+              {String(rating).length === 1 ? rating + '.0' : rating}
+            </span>
+          </div>
+          <span className="text-[10px] text-tertiary sm:text-XS">•</span>
+          <span className="text-[10px] text-tertiary underline sm:text-XS">
+            {reviewsCount} reviews
           </span>
-        </>
+        </div>
       ) : (
-        <span className={'text-L text-tertiary'}>No rating</span>
+        <span className="text-[10px] text-tertiary sm:text-XS">No rating</span>
       )}
     </>
   )

@@ -8,12 +8,17 @@ import { IProduct } from '@/types/Products'
 import AddToCartButton from '@/components/Product/AddToCart/AddToCart'
 import HeartWrapper from '@/components/Product/HeartWrapper/HeartWrapper'
 import Rating from '@/components/UI/Rating/Rating'
+import { useProductReviewsStore } from '@/store/reviewsStore'
 
 interface IProductOverview {
   product: IProduct
 }
 
 const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
+  const { reviewsStatistics } = useProductReviewsStore()
+
+  const averageRating = reviewsStatistics ? +reviewsStatistics.avgRating : null
+
   return (
     <>
       <Image
@@ -30,7 +35,7 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
         <div className={'flex flex-col gap-[18px] '}>
           <h2 className={'text-4XL'}>{product.name}</h2>
           <div className={'flex items-center gap-2 text-L font-medium'}>
-            {product.averageRating ? (
+            {averageRating ? (
               <>
                 <Image
                   src="/star.png"
@@ -39,8 +44,8 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
                   width={16}
                   height={15}
                 />
-                <Rating rating={product.averageRating} />
-                <span>&#x2022; Reviews: {product.reviewsCount}</span>
+                <Rating rating={averageRating} />
+                <span>&#x2022; Reviews: {reviewsStatistics?.reviewsCount}</span>
               </>
             ) : (
               <span className="text-tertiary">No rating</span>
