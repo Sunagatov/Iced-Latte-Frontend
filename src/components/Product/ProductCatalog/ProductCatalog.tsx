@@ -87,10 +87,14 @@ export default function ProductCatalog({
         >
           All Coffee
         </h1>
-        <div className={'flex w-full justify-between'}>
+        <div
+          className={
+            'sticky top-[80px] z-10 flex w-full justify-between bg-primary '
+          }
+        >
           <ProductsFilterLabels className="min-[1100px]:hidden" />
         </div>
-        <div className=" sticky top-[80px] z-10 mx-auto mb-6 mt-1.5 flex h-20 w-full items-center justify-between gap-2 bg-primary">
+        <div className=" sticky top-[130px] z-[9] mx-auto mb-6 mt-1.5 flex h-20 w-full items-center justify-between gap-2 bg-primary ">
           <ProductsFilterLabels className="hidden min-[1100px]:flex" />
           <button
             id="filter-btn"
@@ -115,7 +119,7 @@ export default function ProductCatalog({
           {isMobileFilterOpen && (
             <MobileFilterSidebar
               onClose={handleCloseMobileFilter}
-              className="min-[1100px]:hidden"
+              className="overflow-y-auto  min-[1100px]:hidden"
             >
               <Filters brands={brands} sellers={sellers} />
             </MobileFilterSidebar>
