@@ -87,33 +87,31 @@ export default function ProductCatalog({
         >
           All Coffee
         </h1>
-        <div
-          className={
-            'sticky top-[80px] z-10 flex w-full justify-between bg-primary '
-          }
-        >
-          <ProductsFilterLabels className="min-[1100px]:hidden" />
-        </div>
-        <div className=" sticky top-[130px] z-[9] mx-auto mb-6 mt-1.5 flex h-20 w-full items-center justify-between gap-2 bg-primary ">
-          <ProductsFilterLabels className="hidden min-[1100px]:flex" />
-          <button
-            id="filter-btn"
-            onClick={handleFilterClick}
-            className="block cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
-          >
-            Filter
-          </button>
-          <Dropdown<ISortParams>
-            id="productDropdown"
-            className="ml-auto"
-            headerClassName="-mr-6"
-            options={sortOptions}
-            onChange={handleSelectSortOption}
-            selectedOption={selectedSortOption}
-          />
+        <div className="sticky top-[80px] z-[9]  h-20  w-full items-center justify-between bg-primary">
+          <div className=" flex w-full justify-between bg-primary   ">
+            <ProductsFilterLabels className="min-[1100px]:hidden" />
+          </div>
+          <div className=" mx-auto mb-6  flex w-full items-center justify-between gap-2 bg-primary">
+            <ProductsFilterLabels className="hidden min-[1100px]:flex" />
+            <button
+              id="filter-btn"
+              onClick={handleFilterClick}
+              className="block cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
+            >
+              Filter
+            </button>
+            <Dropdown<ISortParams>
+              id="productDropdown"
+              className="ml-auto"
+              headerClassName="-mr-6"
+              options={sortOptions}
+              onChange={handleSelectSortOption}
+              selectedOption={selectedSortOption}
+            />
+          </div>
         </div>
         <div className="flex w-full justify-center gap-x-8 ">
-          <FilterSidebar className=" sticky top-[170px] hidden max-h-[calc(100vh-400px)] overflow-y-auto min-[1100px]:block ">
+          <FilterSidebar className=" sticky top-[180px] hidden max-h-[calc(100vh-400px)] overflow-y-auto min-[1100px]:block ">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (
