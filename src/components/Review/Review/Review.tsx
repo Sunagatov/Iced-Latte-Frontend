@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import { BiDislike, BiLike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
@@ -8,30 +8,28 @@ import { Review as ReviewType } from '@/types/ReviewType'
 import { formatReviewDate } from '@/components/Review/ReviewsList/formatReviewDate'
 import Button from '@/components/UI/Buttons/Button/Button'
 import { nanoid } from 'nanoid'
+import { twMerge } from 'tailwind-merge'
 
 interface IReview {
   isUserReview: boolean
   review: ReviewType
-  toggleReviewExpansion?: (id: string) => void
   deleteReview?: (id: string) => void
   rateReview?: (id: string, isLike: boolean) => void
-  isExpanded?: boolean
 }
 
 const Review: React.FC<Readonly<IReview>> = ({
   isUserReview = false,
   review,
-  toggleReviewExpansion = () => {},
   deleteReview = () => {},
   rateReview = () => {},
-  isExpanded,
 }) => {
+  const [isReviewExpanded, setIsReviewExpanded] = useState(false)
   const isMediaQuery = useMediaQuery('(min-width: 768px)', {
     initializeWithValue: false,
   })
 
-  const toggleReviewExpansionHandler = () => {
-    toggleReviewExpansion(review.productReviewId!)
+  const seeMoreButtonClickHandler = () => {
+    setIsReviewExpanded(true)
   }
 
   const deleteReviewHandler = () => {
@@ -84,38 +82,33 @@ const Review: React.FC<Readonly<IReview>> = ({
         </div>
       </div>
 
-      {isUserReview ? (
-        <p
-          className={'mb-6 rounded-[8px] bg-brand-second px-4 py-[17px] text-L'}
-        >
-          {review.text ?? 'No review'}
-        </p>
-      ) : (
-        <p className={'mb-6 rounded-[8px] bg-secondary px-4 py-[17px] text-L'}>
-          <span>
-            {review.text ? (
-              <>
-                {review.text.length > 300 && !isExpanded ? (
-                  <span>
-                    {review.text.slice(0, 300)}
-                    <Button
-                      id="see-more-btn"
-                      onClick={toggleReviewExpansionHandler}
-                      className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
-                    >
-                      ...see more
-                    </Button>
-                  </span>
-                ) : (
-                  review.text
-                )}
-              </>
+      <p
+        className={twMerge(
+          'mb-6 rounded-[8px] bg-brand-second px-4 py-[17px] text-L',
+          `${isUserReview ? 'bg-brand-second' : 'bg-secondary'}`,
+        )}
+      >
+        {review.text ? (
+          <>
+            {review.text.length > 300 && !isReviewExpanded ? (
+              <span>
+                {review.text.slice(0, 300)}
+                <Button
+                  id="see-more-btn"
+                  onClick={seeMoreButtonClickHandler}
+                  className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
+                >
+                  ...see more
+                </Button>
+              </span>
             ) : (
-              'No review'
+              review.text
             )}
-          </span>
-        </p>
-      )}
+          </>
+        ) : (
+          'No review'
+        )}
+      </p>
 
       <div className="flex items-center justify-between">
         {isUserReview && (
