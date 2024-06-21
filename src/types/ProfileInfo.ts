@@ -1,6 +1,6 @@
 import { UserData } from './services/UserServices'
 
 export type UserProfileInfoProps = {
-  userData: UserData | null
+  userData: Partial<UserData> | null
   onEditClick: () => void
 }

@@ -1,9 +1,7 @@
-import FiledProfile from '../../components/Profile/FilledProfile/FiledProfile'
+import ProfileView from '@/components/Profile/ProfileView/ProfileView'
 
 const ProfilePage = () => {
-  return (
-    <FiledProfile />
-  )
+  return <ProfileView />
 }
 
 export default ProfilePage

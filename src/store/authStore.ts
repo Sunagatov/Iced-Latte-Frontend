@@ -15,8 +15,8 @@ interface AuthStore {
   resetOpenModal: () => void
   setModalState: (isOpen: boolean) => void
   setRegistrationButtonDisabled: (disabled: boolean) => void
-  userData: UserData | null
-  setUserData: (userData: UserData | null) => void
+  userData: Partial<UserData> | null
+  setUserData: (userData: Partial<UserData> | null) => void
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthStore>()(
         }),
       setRegistrationButtonDisabled: (disabled: boolean) =>
         set({ isRegistrationButtonDisabled: disabled }),
-      setUserData: (userData: UserData | null) => set({ userData }),
+      setUserData: (userData: Partial<UserData> | null) => set({ userData }),
     }),
     {
       name: 'token',
