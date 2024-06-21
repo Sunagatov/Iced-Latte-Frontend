@@ -6,7 +6,6 @@ import getImgUrl from '@/utils/getImgUrl'
 import Counter from '@/components/UI/Counter/Counter'
 import Link from 'next/link'
 import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
-import { productSize } from '@/constants/product'
 import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 import { CartElementProps } from '@/types/CartElement'
@@ -54,9 +53,9 @@ export default function CartElement({
   }
 
   return (
-    <div className="flex items-center justify-between border-b p-4 pr-0">
+    <div className="flex h-[185px] items-center justify-between border-b p-4 pr-0">
       {/* Left side: Picture */}
-      <div className="flex justify-center">
+      <div className="flex shrink-0 justify-center">
         <Link href={`/product/${productInfo.id}`}>
           <Image
             src={getImgUrl(productInfo.productFileUrl, productImg)}
@@ -68,36 +67,49 @@ export default function CartElement({
       </div>
 
       {/* Right side: Data */}
-      <div className="relative ml-4 grow">
-        <p className="text-lg font-semibold">{productInfo.name}</p>
-        <p className={'font-medium text-placeholder'}>{` ${productSize} g.`}</p>
-        <p className="right-0 top-0 text-lg font-semibold sm:absolute">
-          {`$${totalProductPrice}`}
-        </p>
-        <div className="mt-[22px] flex items-center justify-start">
+      <div className="relative ml-4 flex h-full grow flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-1">
+            <p className="max-w-[40vw] truncate text-XL font-semibold min-[500px]:max-w-[45vw] sm:max-w-[50vw] md:max-w-[450px]">{`${productInfo.name}`}</p>
+            <p
+              className={'text-XS font-medium text-primary'}
+            >{`${productInfo.brandName}`}</p>
+            <p
+              className={'text-XS font-medium text-secondary'}
+            >{`by ${productInfo.sellerName}`}</p>
+          </div>
+          <div>
+            <p className="text-lg font-semibold">{`$${totalProductPrice}`}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <p
+              className={'text-L font-medium text-primary'}
+            >{`$${productInfo.price}`}</p>
+            <Button
+              id="remove-all-btn"
+              className=" bg-white"
+              onClick={() => {
+                removeAll()
+              }}
+            >
+              <Image src={trash} width={24} height={24} alt="Logo" priority />
+            </Button>
+            <ButtonHeart
+              active={token ? isInFavourites : isActive}
+              onClick={handleButtonClick}
+              className="m-0 h-9 w-9 p-2 sm:h-12 sm:w-12 sm:p-2"
+            />
+          </div>
           <Counter
             theme="light"
-            className={'h-[42px]'}
+            className={'w-[90px] text-M sm:w-[120px] sm:text-2XL'}
             count={productQuantity!}
             removeProduct={() => remove()}
             addProduct={() => addProduct()}
           />
-          <Button
-            id="remove-all-btn"
-            className=" bg-white"
-            onClick={() => {
-              removeAll()
-            }}
-          >
-            <Image src={trash} width={24} height={24} alt="Logo" priority />
-          </Button>
-          <div>
-            <ButtonHeart
-              active={token ? isInFavourites : isActive}
-              onClick={handleButtonClick}
-              className="ml-2"
-            />
-          </div>
         </div>
       </div>
     </div>
