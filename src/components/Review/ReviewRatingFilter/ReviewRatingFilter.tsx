@@ -2,6 +2,7 @@
 import { FaStar } from 'react-icons/fa'
 import Checkbox from '@/components/UI/Checkbox/Checkbox'
 import { useProductReviewsStore } from '@/store/reviewsStore'
+import Rating from '@/components/UI/Rating/Rating'
 
 interface ReviewRatingFilterProps {
   onChange: (value: number) => void
@@ -24,7 +25,7 @@ const ReviewRatingFilter = ({
     <div>
       <div className="mb-6 flex flex-col gap-4">
         <div className="text-4XL font-medium text-primary">
-          {reviewsStatistics?.avgRating ?? 0}
+          <Rating rating={reviewsStatistics?.avgRating} />
         </div>
         <div className="text-L font-medium text-tertiary">
           Based on {reviewsStatistics?.reviewsCount ?? 0} reviews

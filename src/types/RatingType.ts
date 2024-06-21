@@ -1,3 +1,3 @@
 export interface IRatingProps {
-  rating: number
+  rating?: string | number
 }
