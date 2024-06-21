@@ -79,11 +79,7 @@ export default function CartElement({
             theme="light"
             className={'h-[42px]'}
             count={productQuantity!}
-            removeProduct={() => {
-              if (productQuantity! > 1) {
-                remove()
-              }
-            }}
+            removeProduct={() => remove()}
             addProduct={() => addProduct()}
           />
           <Button

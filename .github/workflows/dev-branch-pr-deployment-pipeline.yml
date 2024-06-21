@@ -20,10 +20,10 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build a new docker image
-        run: docker build -t ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest .
+        run: docker build -t ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version .
 
       - name: Push a new docker image into Dockerhub
-        run: docker push ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+        run: docker push ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version
 
   deploy-app-to-server:
     name: Deploy application to remote server via SSH
@@ -41,13 +41,9 @@ jobs:
           username: ${{ secrets.DEV_SSH_USER }}
           password: ${{ secrets.DEV_SSH_PASSWORD }}
           script: |
-            docker system prune --all --force
             echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ vars.DOCKER_HUB_ACCOUNT_NAME }} --password-stdin
             docker stop ${{ vars.DOCKER_CONTAINER_NAME }} || true
             docker rm ${{ vars.DOCKER_CONTAINER_NAME }} || true
-            docker rmi ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }} || true
-            docker pull ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
-            docker run -d \
-              --name ${{ vars.DOCKER_CONTAINER_NAME }} \
-              --network=${{ vars.DOCKER_NETWORK }} \
-              ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+            docker rmi ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version || true
+            docker pull ${{ vars.DOCKER_HUB_ACCOUNT_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest-version 
+            docker run -d --name latte-frontend --network=iced-latte-network zufarexplainedit/iced-latte-frontend:latest-version
