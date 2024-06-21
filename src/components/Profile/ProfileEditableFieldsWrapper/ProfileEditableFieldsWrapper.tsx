@@ -26,8 +26,8 @@ const ProfileEditableFieldsWrapper = ({
   return (
     <div
       className={twMerge(
-        'flex w-full flex-col items-start justify-start gap-5 border-b-[1px] border-b-primary px-6 pb-10 pt-6',
-        isEditing && 'rounded-xl border-2 border-focus',
+        'mb-11 flex w-full flex-col items-start justify-start gap-5 border-b-[1px] border-b-primary pb-11',
+        isEditing && 'rounded-xl border-2 border-focus px-6 pt-6',
       )}
     >
       <h4 className="flex w-full flex-row items-center justify-between gap-5 text-XL font-medium text-primary">

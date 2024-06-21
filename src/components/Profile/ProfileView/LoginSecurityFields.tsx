@@ -74,8 +74,9 @@ const LoginSecurityFields = ({
           className="w-full"
           isRequired={true}
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.email}
+          labelClassName="opacity-100"
         />
         <Input
           id="password-input"
@@ -89,7 +90,8 @@ const LoginSecurityFields = ({
           setValue={setValue}
           className="w-full"
           disabled={true}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
+          labelClassName="opacity-100"
         />
       </form>
     </ProfileEditableFieldsWrapper>

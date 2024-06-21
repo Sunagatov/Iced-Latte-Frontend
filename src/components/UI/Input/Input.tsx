@@ -18,8 +18,8 @@ export default function Input<T extends FieldValues>({
   disabled,
   error,
   className,
-  labelClassName,
-  inputClassName,
+  labelClassName = '',
+  inputClassName = '',
   isRequired,
   ...rest
 }: Readonly<InputProps<T>>) {
@@ -54,10 +54,10 @@ export default function Input<T extends FieldValues>({
   }, [ref])
 
   const borderColor = error
-    ? 'error'
+    ? 'border-error'
     : isInputFocused
-      ? 'focus'
-      : 'input-default'
+      ? 'border-focus'
+      : 'border-input-default'
 
   const inputLabelColor = error ? 'negative' : 'secondary'
 
@@ -66,7 +66,7 @@ export default function Input<T extends FieldValues>({
 
   const iconColor = error ? '#E12E3C' : isInputFocused ? '#682EFF' : '#EDEAF2'
 
-  const backgroundColor = error ? 'input-error' : 'input-default'
+  const backgroundColor = error ? 'bg-input-error' : 'bg-input-default'
 
   return (
     <>
@@ -86,9 +86,9 @@ export default function Input<T extends FieldValues>({
         </label>
         <input
           className={twMerge(
-            `bg-${backgroundColor}`,
+            `${backgroundColor}`,
             'block h-[54px] w-full rounded-lg border-2 px-2.5 pb-2.5 pt-8 text-XS text-primary focus:outline-none disabled:opacity-40',
-            `border-${borderColor}`,
+            `${borderColor}`,
             inputClassName,
           )}
           id={id}

@@ -78,8 +78,9 @@ const PersonalDetailsFields = ({
           className="w-full"
           isRequired={true}
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.firstName}
+          labelClassName="opacity-100"
         />
 
         <Input
@@ -95,8 +96,9 @@ const PersonalDetailsFields = ({
           className="w-full"
           isRequired={true}
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.lastName}
+          labelClassName="opacity-100"
         />
 
         <Input
@@ -111,8 +113,9 @@ const PersonalDetailsFields = ({
           setValue={setValue}
           className="w-full"
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.birthDate}
+          labelClassName="opacity-100"
         />
 
         <Input
@@ -127,8 +130,9 @@ const PersonalDetailsFields = ({
           setValue={setValue}
           className="w-full"
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.phoneNumber}
+          labelClassName="opacity-100"
         />
       </form>
     </ProfileEditableFieldsWrapper>

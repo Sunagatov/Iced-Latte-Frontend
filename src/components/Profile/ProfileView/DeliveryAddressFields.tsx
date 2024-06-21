@@ -120,8 +120,9 @@ const DeliveryAddressFields = ({
           setValue={setValue}
           className="w-full"
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.address?.city}
+          labelClassName="opacity-100"
         />
 
         <Input
@@ -136,8 +137,9 @@ const DeliveryAddressFields = ({
           setValue={setValue}
           className="w-full"
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.address?.line}
+          labelClassName="opacity-100"
         />
 
         <Input
@@ -152,8 +154,9 @@ const DeliveryAddressFields = ({
           setValue={setValue}
           className="w-full"
           disabled={!isEditing}
-          inputClassName={`${!isEditing && 'bg-profile disabled:opacity-100'}`}
+          inputClassName={`${!isEditing && 'bg-input-profile disabled:opacity-100'}`}
           error={errors.address?.postcode}
+          labelClassName="opacity-100"
         />
       </form>
     </ProfileEditableFieldsWrapper>
