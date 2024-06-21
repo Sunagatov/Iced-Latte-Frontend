@@ -1,5 +1,5 @@
 import Hero from '../components/Hero/Hero'
-import ProductList from '../components/Product/ProductList/ProductList'
+import ProductCatalog from '../components/Product/ProductCatalog/ProductCatalog'
 import { getProductBrands, getProductSellers } from '@/services/apiService'
 
 const getBrands = async () => {
@@ -29,7 +29,7 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <ProductList brands={productBrands} sellers={productSellers} />
+      <ProductCatalog brands={productBrands} sellers={productSellers} />
     </>
   )
 }
