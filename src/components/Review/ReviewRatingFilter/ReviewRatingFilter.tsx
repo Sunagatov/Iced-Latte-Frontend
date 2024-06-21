@@ -25,8 +25,7 @@ const ReviewRatingFilter = ({
     <div>
       <div className="mb-6 flex flex-col gap-4">
         <div className="text-4XL font-medium text-primary">
-          {/* Convert avgRating to number, default to 0 if NaN */}
-          <Rating rating={parseFloat(reviewsStatistics?.avgRating ?? '') || 0} />
+          <Rating rating={reviewsStatistics?.avgRating} />
         </div>
         <div className="text-L font-medium text-tertiary">
           Based on {reviewsStatistics?.reviewsCount ?? 0} reviews
