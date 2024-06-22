@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 import CircleCloseButton from '../../UI/Buttons/CircleCloseButton/CircleCloseButton'
 import { ReactNode, useEffect, useRef } from 'react'
-import { useOnClickOutside, useMediaQuery } from 'usehooks-ts'
+import { useMediaQuery, useOnClickOutside } from 'usehooks-ts'
 
 interface IMobileFilterSidebar {
   className?: string
@@ -9,7 +9,11 @@ interface IMobileFilterSidebar {
   onClose: () => void
 }
 
-export default function MobileFilterSidebar({ onClose, className, children }: Readonly<IMobileFilterSidebar>) {
+export default function MobileFilterSidebar({
+  onClose,
+  className,
+  children,
+}: Readonly<IMobileFilterSidebar>) {
   const sidebarRef = useRef<HTMLElement>(null)
 
   useOnClickOutside(sidebarRef, onClose)
@@ -28,10 +32,16 @@ export default function MobileFilterSidebar({ onClose, className, children }: Re
   }, [isMobile])
 
   return (
-    <aside ref={sidebarRef} className={twMerge('max-[500px]:w-full w-[266px] fixed bg-primary top-14 p-4 h-full left-0 z-20 shadow-primary flex-col', className)}>
-      <div className='flex justify-between items-center mb-6'>
-        <h2 className='text-primary text-4XL font-medium'>Filters</h2>
-        <CircleCloseButton id='close-sidebar' onClick={onClose} />
+    <aside
+      ref={sidebarRef}
+      className={twMerge(
+        ' fixed left-0 top-20 z-20 h-full w-[266px] flex-col overflow-y-auto bg-primary p-4 shadow-primary max-[500px]:w-full',
+        className,
+      )}
+    >
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-4XL font-medium text-primary">Filters</h2>
+        <CircleCloseButton id="close-sidebar" onClick={onClose} />
       </div>
       {children}
     </aside>
