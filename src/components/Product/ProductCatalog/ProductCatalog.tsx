@@ -87,9 +87,9 @@ export default function ProductCatalog({
         >
           All Coffee
         </h1>
-        <div className="sticky top-[80px] z-[9]  mb-32  h-20 w-full items-center justify-between bg-primary">
+        <div className="sticky top-[80px] z-[9]  mb-3  h-20 w-full items-center justify-between bg-primary">
           <div className=" flex w-full justify-between bg-primary   ">
-            <ProductsFilterLabels className=" min-[1100px]:hidden" />
+            <ProductsFilterLabels className=" mb-auto min-[1100px]:hidden" />
           </div>
           <div className=" mx-auto mb-6  flex w-full items-center justify-between gap-2 bg-primary">
             <ProductsFilterLabels className="hidden min-[1100px]:flex" />
