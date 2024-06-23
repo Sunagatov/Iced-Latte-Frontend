@@ -51,15 +51,15 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col ">
       {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
       <FormInput
         id="email"
         register={register}
         name="email"
         type="text"
-        label="Enter your email address"
-        placeholder="Enter your email address"
+        label=""
+        placeholder="Email"
         error={errors.email}
       />
       <FormInput
@@ -67,9 +67,10 @@ export default function LoginForm() {
         register={register}
         type="password"
         name="password"
-        label="Password"
+        label=""
         placeholder="Password"
         error={errors.password}
+        className="mt-0"
       />
       <Button
         id="login-btn"

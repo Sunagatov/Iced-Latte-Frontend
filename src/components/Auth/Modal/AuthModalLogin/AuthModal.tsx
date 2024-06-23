@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
 import LoginForm from '../../Forms/LoginForm/LoginForm'
 import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
-import Button from '@/components/UI/Buttons/Button/Button'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
 import { useAuthStore } from '@/store/authStore'
 
@@ -60,9 +59,9 @@ function AuthModal() {
         onKeyDown={() => {}}
         tabIndex={0}
       ></button>
-      <div className="flex h-full w-full flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
-        <div className="px-4 sm:px-6">
-          <h2 className="text-4XL">Welcome back</h2>
+      <div className="flex h-full w-full  flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
+        <div className="items-center px-4  sm:px-6">
+          <h2 className=" text-2XL">Sign in for Iced Latte</h2>
         </div>
         <div className="relative flex-1 px-4 sm:px-6">
           {switchForm === SwitchType.Login ? (
@@ -81,27 +80,26 @@ function AuthModal() {
             <Link
               onClick={resetOpenModal}
               href={'/forgotpass'}
-              className="mt-[40px] flex items-center justify-center text-focus"
+              className="mt-[40px] flex items-center text-focus"
             >
-              Forgot password
+              Forgot password?
             </Link>
           )}
           <div className="mb-8 mt-6 h-[1px] w-full bg-brand-second" />
           {switchForm === SwitchType.Registration ? (
             <RegistrationForm />
           ) : (
-            <>
-              <h2 className="text-4XL">I’m new here</h2>
-              <Link href={'/auth/registration'}>
-                <Button
-                  id="register-btn"
-                  onClick={handleClickSwitchFrom}
-                  className="mt-6 w-full hover:bg-brand-solid-hover"
-                >
-                  Register
-                </Button>
+            <div className="flex justify-center">
+              <p className=" ">No account? </p>
+              <Link
+                href={'/auth/registration'}
+                id="register-btn"
+                onClick={handleClickSwitchFrom}
+                className="ml-1 text-brand"
+              >
+                Create one
               </Link>
-            </>
+            </div>
           )}
           {switchForm === SwitchType.Registration && (
             <p className="text-text-tertiary mt-4 text-xs font-medium">
