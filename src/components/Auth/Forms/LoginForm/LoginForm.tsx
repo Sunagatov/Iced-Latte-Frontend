@@ -12,10 +12,14 @@ import { loginSchema } from '@/validation/loginSchema'
 import { IFormValues } from '@/types/LoginForm'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { setCookie } from '@/utils/cookieUtils'
+import Link from 'next/link'
+import Image from 'next/image'
+import eye from '../../../../../public/eye-password-hide.svg'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { authenticate, setRefreshToken } = useAuthStore()
+  const [passwordVisible, setPasswordVisible] = useState(false)
   const { handleRedirectForAuth } = useAuthRedirect()
   const { errorMessage, handleError } = useErrorHandler()
   const {
@@ -30,6 +34,7 @@ export default function LoginForm() {
       password: '',
     },
   })
+  const { resetOpenModal } = useAuthStore()
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
@@ -51,8 +56,13 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col ">
-      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col font-bold text-disabled "
+    >
+      {errorMessage && (
+        <div className="mt-4  text-negative">{errorMessage}</div>
+      )}
       <FormInput
         id="email"
         register={register}
@@ -62,16 +72,36 @@ export default function LoginForm() {
         placeholder="Email"
         error={errors.email}
       />
-      <FormInput
-        id="password"
-        register={register}
-        type="password"
-        name="password"
-        label=""
-        placeholder="Password"
-        error={errors.password}
-        className="mt-0"
-      />
+      <div className="relative font-bold">
+        <FormInput
+          id="password"
+          register={register}
+          type={passwordVisible ? 'text' : 'password'}
+          name="password"
+          label=""
+          placeholder="Password"
+          error={errors.password}
+          className="mt-0"
+        />
+        <button
+          type="button"
+          onMouseDown={() => setPasswordVisible(true)}
+          onMouseUp={() => setPasswordVisible(false)}
+          onMouseLeave={() => setPasswordVisible(false)}
+          className="absolute inset-y-0 right-0 mt-5 flex items-center pr-3"
+        >
+          <div className="h-[18px] w-[18px] sm:h-[31px] sm:w-[28px]">
+            <Image src={eye} width={24} alt="Logo" priority />
+          </div>
+        </button>
+      </div>
+      <Link
+        onClick={resetOpenModal}
+        href={'/forgotpass'}
+        className="mt-2 flex items-center font-bold text-focus"
+      >
+        Forgot password?
+      </Link>
       <Button
         id="login-btn"
         type="submit"

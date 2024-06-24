@@ -1,12 +1,12 @@
 'use client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
 import LoginForm from '../../Forms/LoginForm/LoginForm'
 import RegistrationForm from '../../Forms/RegistrationForm/RegistrationForm'
 import Link from 'next/link'
 import useAuthRedirect from '@/hooks/useAuthRedirect'
-import { useAuthStore } from '@/store/authStore'
+import GoogleAuthButton from '@/components/UI/Buttons/GoogleButton'
 
 enum SwitchType {
   Login = 'LOGIN',
@@ -17,7 +17,6 @@ function AuthModal() {
   const [switchForm, setSwitchForm] = useState<SwitchType>(SwitchType.Login)
   const pathname = usePathname()
   const { handleRedirectForAuth } = useAuthRedirect()
-  const { resetOpenModal } = useAuthStore()
 
   useEffect(() => {
     if (pathname !== '/') {
@@ -60,8 +59,8 @@ function AuthModal() {
         tabIndex={0}
       ></button>
       <div className="flex h-full w-full  flex-col overflow-y-scroll bg-white py-6 shadow-xl min-[440px]:w-[500px]">
-        <div className="items-center px-4  sm:px-6">
-          <h2 className=" text-2XL">Sign in for Iced Latte</h2>
+        <div className="mr-6 flex items-center justify-center px-4 sm:px-6">
+          <h2 className="text-2xl">Sign in for Iced Latte</h2>
         </div>
         <div className="relative flex-1 px-4 sm:px-6">
           {switchForm === SwitchType.Login ? (
@@ -76,26 +75,36 @@ function AuthModal() {
               <span className="ml-[5px] text-primary underline">Sign In</span>
             </Link>
           )}
-          {switchForm === SwitchType.Login && (
-            <Link
-              onClick={resetOpenModal}
-              href={'/forgotpass'}
-              className="mt-[40px] flex items-center text-focus"
-            >
-              Forgot password?
-            </Link>
-          )}
-          <div className="mb-8 mt-6 h-[1px] w-full bg-brand-second" />
+
+          <div className=" my-6 flex items-center justify-center">
+            <div className=" h-[1px] w-full flex-grow bg-brand-second" />
+            <span className="mx-4 text-disabled">or</span>
+            <div className=" h-[1px] w-full flex-grow bg-brand-second" />
+          </div>
+          <div className="flex justify-center">
+            <GoogleAuthButton />
+          </div>
+          <div className="mb-6 mt-4 text-xs text-tertiary">
+            By signing in to this app, you agree to our{' '}
+            <a href="/terms" className="font-bold text-brand underline">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" className="font-bold text-brand underline">
+              Privacy Policy
+            </a>
+            .
+          </div>
           {switchForm === SwitchType.Registration ? (
             <RegistrationForm />
           ) : (
-            <div className="flex justify-center">
+            <div className="flex justify-center font-bold text-tertiary">
               <p className=" ">No account? </p>
               <Link
                 href={'/auth/registration'}
                 id="register-btn"
                 onClick={handleClickSwitchFrom}
-                className="ml-1 text-brand"
+                className="ml-1 font-bold text-brand"
               >
                 Create one
               </Link>
@@ -117,4 +126,5 @@ function AuthModal() {
     </div>
   )
 }
+
 export default AuthModal
