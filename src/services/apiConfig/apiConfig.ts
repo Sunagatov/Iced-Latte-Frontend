@@ -2,7 +2,7 @@ import axios from 'axios'
 import { setupCache } from 'axios-cache-interceptor'
 
 const baseConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_HOST_REMOTE,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

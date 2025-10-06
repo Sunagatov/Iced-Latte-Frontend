@@ -1,15 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 
 export const useStoreData = <T, F>(
-  store: (callback: (state: T) => unknown) => unknown,
+  store: any,
   callback: (state: T) => F,
 ) => {
-  const result = store(callback) as F
-  const [data, setData] = useState<F>()
-
-  useEffect(() => {
-    setData(result)
-  }, [result])
-
-  return data
+  const getSnapshot = () => callback(store.getState())
+  return useSyncExternalStore(
+    store.subscribe,
+    getSnapshot,
+    getSnapshot
+  )
 }

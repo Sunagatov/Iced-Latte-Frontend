@@ -1,35 +1,33 @@
 'use client'
+import { useCallback } from 'react'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Counter from '../../UI/Counter/Counter'
 import { useCombinedStore } from '@/store/store'
-import { useStoreData } from '@/hooks/useStoreData'
 import { useAuthStore } from '@/store/authStore'
 import { Props } from '@/types/AddToCard'
 
 export default function AddToCartButton({ product }: Readonly<Props>) {
-  const [add, remove, removeFullProduct] = useCombinedStore((state) => [
-    state.add,
-    state.remove,
-    state.removeFullProduct,
-  ])
+  const add = useCombinedStore((state) => state.add)
+  const remove = useCombinedStore((state) => state.remove)
+  const removeFullProduct = useCombinedStore((state) => state.removeFullProduct)
   const token = useAuthStore((state) => state.token)
-  const items = useStoreData(useCombinedStore, (state) => state.itemsIds)
+  const items = useCombinedStore((state) => state.itemsIds)
 
   const productQuantity = items?.find(
     (item) => item.productId === product.id,
   )?.productQuantity
 
-  const addProduct = () => {
+  const addProduct = useCallback(() => {
     add(product.id, token)
-  }
+  }, [add, product.id, token])
 
-  const removeProduct = () => {
+  const removeProduct = useCallback(() => {
     if (productQuantity === 1) {
       removeFullProduct(product.id, token)
     } else {
       remove(product.id, token)
     }
-  }
+  }, [productQuantity, removeFullProduct, remove, product.id, token])
 
   return (
     <>

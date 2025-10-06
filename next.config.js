@@ -1,6 +1,8 @@
 const nextConfig = {
-  experimental: {
-    serverActions: true,
+
+  compiler: {
+    // Suppress hydration warnings for browser extension attributes
+    suppressHydrationWarning: true,
   },
   images: {
     remotePatterns: [

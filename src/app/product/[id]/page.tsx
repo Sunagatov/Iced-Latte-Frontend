@@ -14,7 +14,8 @@ async function getProductById(id: string): Promise<IProduct> {
 }
 
 export default async function Page({ params }: Readonly<ProductProps>) {
-  const product = await getProductById(params.id)
+  const { id } = await params
+  const product = await getProductById(id)
 
   return (
     <ProductWithReviews product={product} />
