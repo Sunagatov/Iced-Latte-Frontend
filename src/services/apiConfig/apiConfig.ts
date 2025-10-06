@@ -2,7 +2,6 @@ import axios from 'axios'
 import { setupCache } from 'axios-cache-interceptor'
 
 const baseConfig = {
-  baseURL: '/api/proxy',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -17,10 +16,10 @@ instance.interceptors.request.use((config) => {
     const protocol = process.env.PROTOCOL || 'http'
     const host = process.env.HOST || 'localhost'
     const port = process.env.PORT || '3002'
-    config.baseURL = `${protocol}://${host}:${port}/api/proxy`
+    config.url = `${protocol}://${host}:${port}/api/proxy/${config.url}`
   } else {
     // Client-side: use relative URL
-    config.baseURL = '/api/proxy'
+    config.url = `/api/proxy/${config.url}`
   }
   return config
 })
