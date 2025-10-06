@@ -11,17 +11,19 @@ export async function setCookie(
   value: string,
   options: CookiesSetOptions = {},
 ) {
-  cookies().set(key, value, options)
+  const cookieStore = await cookies()
+  cookieStore.set(key, value, options)
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function removeCookie(key: string) {
-  cookies().set(key, '', { maxAge: 0 })
+  const cookieStore = await cookies()
+  cookieStore.set(key, '', { maxAge: 0 })
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function getCookie(): Promise<string | undefined> {
-  const cookie = cookies().get('token')
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('token')
 
   return cookie?.value
 }
