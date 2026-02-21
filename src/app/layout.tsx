@@ -26,7 +26,7 @@ export default function RootLayout({
 }: Readonly<RootLayoutProps>) {
   return (
     <html lang="en">
-      <body className={inter.className + ' flex min-h-screen flex-col'}>
+      <body suppressHydrationWarning className={inter.className + ' flex min-h-screen flex-col'}>
         <ToastContainer />
         <InterceptorsForRefreshToken>
           <GlobalFavoritesAndCartInit>

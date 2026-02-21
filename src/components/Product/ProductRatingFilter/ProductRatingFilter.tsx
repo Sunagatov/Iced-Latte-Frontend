@@ -28,7 +28,7 @@ const ProductRatingFilter = ({
         {stars.map((value) => {
           const stars = Array.from({ length: 5 }, (_, index) => (
             <FaStar
-              className="h-6 w-6"
+              className="h-5 w-5"
               key={index}
               color={index < value ? '#00A30E' : 'rgba(4, 18, 27, 0.24)'}
             />
@@ -37,7 +37,7 @@ const ProductRatingFilter = ({
           return (
             <label
               key={value}
-              className="relative flex cursor-pointer items-center gap-2"
+              className="relative flex cursor-pointer items-center gap-1.5 whitespace-nowrap"
             >
               <Checkbox
                 id={`checkbox-${value}`}
@@ -46,7 +46,7 @@ const ProductRatingFilter = ({
                 onChange={() => handleCheckboxChange(value)}
               />
               {stars}
-              <span className="text-[18px] font-medium text-primary">& Up</span>
+              <span className="text-sm font-medium text-primary">& Up</span>
             </label>
           )
         })}

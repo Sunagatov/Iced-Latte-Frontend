@@ -20,7 +20,7 @@ const Checkbox = ({
       <input
         type="checkbox"
         id={id}
-        className={`h-6 w-6 cursor-pointer appearance-none rounded-[4px] bg-secondary bg-center bg-no-repeat checked:bg-inverted checked:bg-[url(/checkbox_icon.svg)] checked:bg-[length:16px_16px] ${inputClassName}`}
+        className={`h-6 w-6 cursor-pointer appearance-none rounded-[4px] border-2 border-[#D1D5DB] bg-white bg-center bg-no-repeat checked:border-brand-solid checked:bg-brand-solid checked:bg-[url(/checkbox_icon.svg)] checked:bg-[length:14px_14px] ${inputClassName}`}
         checked={isChecked}
         aria-checked={isChecked}
         aria-label={ariaLabel}

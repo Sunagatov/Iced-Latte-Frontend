@@ -5,12 +5,11 @@ import { sortOptions } from '@/constants/productSortOptions'
 import Loader from '@/components/UI/Loader/Loader'
 import Dropdown from '@/components/UI/Dropdown/Dropdown'
 import ScrollUpBtn from '@/components/UI/Buttons/ScrollUpBtn/ScrollUpBtn'
-import ProductsFilterLabels from '@/components/Product/ProductsFilterLabels/ProductsFilterLabels'
 import { twMerge } from 'tailwind-merge'
 import FilterSidebar from '@/components/Product/FilterSidebar/FilterSidebar'
 import MobileFilterSidebar from '@/components/Product/FilterSidebar/MobileFilterSidebar'
 import Filters from '@/components/Product/FilterSidebar/Filters'
-import { useProductFiltersStore } from '@/store/productFiltersStore'
+import { defaultProductsFilters, useProductFiltersStore } from '@/store/productFiltersStore'
 import { ISortParams } from '@/types/ISortParams'
 import { IOption } from '@/types/Dropdown'
 import ProductList from '../ProductList/ProductList'
@@ -81,35 +80,28 @@ export default function ProductCatalog({
           'mx-auto flex max-w-[716px] flex-col items-center text-left min-[1100px]:max-w-[1014px] min-[1440px]:max-w-[1384px]'
         }
       >
-        <h1
-          className={
-            'mb-8 mr-auto text-5XL min-[1124px]:mb-10 min-[1124px]:text-6XL'
-          }
-        >
-          All Coffee
-        </h1>
-        <div className="sticky top-[80px] z-[9]  mb-3  h-20 w-full items-center justify-between bg-primary">
-          <div className=" flex w-full justify-between bg-primary   ">
-            <ProductsFilterLabels className=" mb-auto min-[1100px]:hidden" />
-          </div>
-          <div className=" mx-auto mb-6  flex w-full items-center justify-between gap-2 bg-primary">
-            <ProductsFilterLabels className="hidden min-[1100px]:flex" />
-            <button
-              id="filter-btn"
-              onClick={handleFilterClick}
-              className="block cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
-            >
-              Filter
-            </button>
-            <Dropdown<ISortParams>
-              id="productDropdown"
-              className="ml-auto"
-              headerClassName="-mr-6"
-              options={sortOptions}
-              onChange={handleSelectSortOption}
-              selectedOption={selectedSortOption}
-            />
-          </div>
+        <div className="mb-8 mr-auto min-[1124px]:mb-10">
+          <p className="mb-1 text-sm font-medium text-brand">Our Collection</p>
+          <h1 className="text-4XL font-bold tracking-tight text-primary min-[1124px]:text-5XL">
+            All Coffee
+          </h1>
+        </div>
+        <div className="sticky top-[64px] z-[9] mb-6 flex w-full items-center justify-between bg-white/80 py-3 backdrop-blur-md">
+          <button
+            id="filter-btn"
+            onClick={handleFilterClick}
+            className="block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
+          >
+            Filter
+          </button>
+          <Dropdown<ISortParams>
+            id="productDropdown"
+            className="ml-auto shrink-0"
+            headerClassName="-mr-6"
+            options={sortOptions}
+            onChange={handleSelectSortOption}
+            selectedOption={selectedSortOption}
+          />
         </div>
         <div className=" flex w-full justify-center gap-x-8 ">
           <FilterSidebar className=" sticky top-[180px] hidden max-h-[calc(100vh-150px)] overflow-y-auto min-[1100px]:block ">
@@ -127,13 +119,12 @@ export default function ProductCatalog({
             products={products}
             error={error}
             isLoading={isLoading}
+            onResetFilters={() => updateProductFiltersStore(defaultProductsFilters)}
           />
         </div>
         {isShowLoadMoreBtn && (
           <button
-            className={
-              'm-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] bg-secondary'
-            }
+            className={'m-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] border border-brand-solid text-L font-medium text-brand-solid transition hover:bg-brand-solid hover:text-white'}
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
             }}

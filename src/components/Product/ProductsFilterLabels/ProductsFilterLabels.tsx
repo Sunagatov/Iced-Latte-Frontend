@@ -59,11 +59,11 @@ const ProductsFilterLabels = ({
 
   return (
     <div
-      className={twMerge('justify-left flex flex-wrap gap-2 pt-1.5', className)}
+      className={twMerge('flex flex-nowrap gap-2 overflow-x-auto pb-1 pt-1.5 scrollbar-hide', className)}
     >
       <Button
         onClick={handleFilterByDefault}
-        className="rounded-[40px] bg-inverted px-6 py-4"
+        className="shrink-0 whitespace-nowrap rounded-[40px] border border-brand-solid bg-transparent px-6 py-4 text-L font-medium text-brand-solid transition hover:bg-brand-solid hover:text-white"
         id="default-filter-btn"
       >
         By default
@@ -80,7 +80,7 @@ const ProductsFilterLabels = ({
         return (
           <div
             key={value}
-            className="h-[54px] rounded-[48px] bg-inverted p-0 text-L text-inverted transition ease-in-out"
+            className="shrink-0 whitespace-nowrap rounded-[48px] border border-brand-solid p-0 text-L text-brand-solid transition ease-in-out"
             id={`filter-label-${value}`}
           >
             <div className="flex items-center gap-3 px-6 py-4">

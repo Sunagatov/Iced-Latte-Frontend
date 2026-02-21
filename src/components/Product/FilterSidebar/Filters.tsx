@@ -24,6 +24,8 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     ratingFilter,
     removeSellerOption,
     updateProductFiltersStore,
+    fromPriceFilter,
+    toPriceFilter,
   } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
@@ -60,8 +62,23 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     })
   }
 
+  const hasActiveFilters =
+    selectedBrandOptions.length > 0 ||
+    selectedSellerOptions.length > 0 ||
+    ratingFilter !== null ||
+    fromPriceFilter !== '' ||
+    toPriceFilter !== ''
+
   return (
     <div className={'flex flex-col gap-5'}>
+      {hasActiveFilters && (
+        <button
+          onClick={() => updateProductFiltersStore(defaultProductsFilters)}
+          className="self-start text-sm font-medium text-brand-solid underline underline-offset-2 hover:opacity-70"
+        >
+          Reset all filters
+        </button>
+      )}
       <PriceFilter />
 
       <ProductRatingFilter

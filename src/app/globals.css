@@ -66,6 +66,9 @@
   .border-focus    { border-color: #682EFF; }
 
   .outline-focus   { outline-color: #682EFF; }
+
+  .scrollbar-hide  { scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 
 /* custom calendar styles are applied only from the global css file */

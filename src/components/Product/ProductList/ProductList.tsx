@@ -6,22 +6,22 @@ interface IProductListProps {
   products: IProduct[]
   error: Error | undefined
   isLoading: boolean
+  onResetFilters?: () => void
 }
 
 export default function ProductList({
   products,
   error,
   isLoading,
+  onResetFilters,
 }: Readonly<IProductListProps>) {
   if (error) {
     return (
-      <h3
-        className={
-          'grid h-screen grow place-items-center text-center text-4xl text-black'
-        }
-      >
-        Something went wrong!
-      </h3>
+      <div className="flex grow flex-col items-center justify-center gap-4 py-24 text-center">
+        <span className="text-5xl">⚠️</span>
+        <h3 className="text-2xl font-semibold text-primary">Something went wrong</h3>
+        <p className="text-secondary">Please try refreshing the page.</p>
+      </div>
     )
   }
 
@@ -35,13 +35,19 @@ export default function ProductList({
 
   if (products.length === 0) {
     return (
-      <h3
-        className={
-          'grid h-screen grow place-items-center text-center text-4xl text-black'
-        }
-      >
-        No results found for the specified parameters.
-      </h3>
+      <div className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center">
+        <span className="text-6xl">☕</span>
+        <h3 className="text-2xl font-semibold text-primary">No coffees found</h3>
+        <p className="max-w-xs text-secondary">Try adjusting your filters or browse all our coffees.</p>
+        {onResetFilters && (
+          <button
+            onClick={onResetFilters}
+            className="mt-2 rounded-full bg-brand-solid px-6 py-3 text-base font-medium text-white transition hover:bg-brand-solid-hover"
+          >
+            Reset filters
+          </button>
+        )}
+      </div>
     )
   }
 

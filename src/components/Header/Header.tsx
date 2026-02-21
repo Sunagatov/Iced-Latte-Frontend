@@ -7,24 +7,22 @@ import HeaderHeart from '../UI/HeaderHeart/HeaderHeart'
 
 export default function Header() {
   return (
-    <header
-      className="sticky left-0 top-0 z-10 mx-auto flex h-16 w-full items-center justify-between border-b border-black/5 bg-white/80 px-4 backdrop-blur-md sm:px-20"
-    >
-      <Link href="/">
-        <div className=" flex items-center gap-4">
-          <div className="h-[21px] w-[19px] sm:h-[31px] sm:w-[28px]">
-            <Image src={logo} width={28} alt="Logo" priority />
-          </div>
-          <span className="hidden items-center text-L sm:flex">Iced Latte</span>
-          <span className="flex items-center text-L font-medium text-primary sm:hidden">
-            IL
-          </span>
+    <header className="sticky left-0 top-0 z-10 flex h-16 w-full items-center justify-between border-b border-black/5 bg-white/90 px-4 backdrop-blur-md sm:px-20">
+      <Link href="/" className="flex items-center gap-3 group">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-solid shadow-sm transition group-hover:bg-brand-solid-hover">
+          <Image src={logo} width={18} alt="Iced Latte" priority className="invert" />
         </div>
+        <span className="hidden text-base font-semibold tracking-tight text-primary sm:block">
+          Iced Latte
+        </span>
       </Link>
-      <div className="flex h-12 items-center gap-4 sm:gap-5 ">
+
+      <div className="flex items-center gap-1">
         <HeaderHeart />
         <CartButton />
-        <LoginIcon />
+        <div className="ml-2">
+          <LoginIcon />
+        </div>
       </div>
     </header>
   )
