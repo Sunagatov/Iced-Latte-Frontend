@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tailwindcss/theme" layer(theme);
 
 @theme {
   --color-focus: #682EFF;
