@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/authStore'
 
 export default function FavouritesEmpty() {
   const router = useRouter()
-  const { setModalState } = useAuthStore()
+
 
   return (
     <div className="w-{800px} 1px h-{513px} mx-auto sm:w-[500px]">
@@ -37,8 +37,7 @@ export default function FavouritesEmpty() {
           <Button
             id="login-btn"
             onClick={() => {
-              router.push('/auth/login')
-              setModalState(true)
+              router.push('/signin')
             }}
             className="h-14 w-[211px] text-lg font-medium"
           >

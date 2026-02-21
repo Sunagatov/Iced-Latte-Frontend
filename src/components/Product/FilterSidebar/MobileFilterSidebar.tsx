@@ -16,7 +16,7 @@ export default function MobileFilterSidebar({
 }: Readonly<IMobileFilterSidebar>) {
   const sidebarRef = useRef<HTMLElement>(null)
 
-  useOnClickOutside(sidebarRef, onClose)
+  useOnClickOutside(sidebarRef as any, onClose)
   const isMobile = useMediaQuery('(max-width: 500px)')
 
   useEffect(() => {

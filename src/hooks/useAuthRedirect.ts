@@ -10,12 +10,12 @@ interface RegistrationRedirectHook {
 const useAuthRedirect = (): RegistrationRedirectHook => {
   const router = useRouter()
   const { previousRouteForAuth } = useLocalSessionStore()
-  const { resetOpenModal } = useAuthStore()
+
 
   const handleRedirectForAuth = () => {
     if (previousRouteForAuth) {
       router.push(previousRouteForAuth)
-      resetOpenModal()
+
     } else {
       router.push('/')
     }

@@ -31,7 +31,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
     setShouldRevalidateUserReview,
     setShouldRevalidateReviews,
   } = useProductReviewsStore()
-  const { token, setModalState } = useAuthStore()
+  const { token } = useAuthStore()
   const ismediaQuery = useMediaQuery('(max-width: 768px)', {
     initializeWithValue: false,
   })
@@ -101,8 +101,7 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
       setIsRaitingFormVisible(true)
       setIsReviewButtonVisible(false)
     } else {
-      router.push('/auth/login')
-      setModalState(true)
+      router.push('/signin')
     }
   }
 

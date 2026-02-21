@@ -4,9 +4,9 @@ import ProductWithReviews from '@/components/Product/ProductWithReviews/ProductW
 
 
 type ProductProps = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 async function getProductById(id: string): Promise<IProduct> {

@@ -4,11 +4,11 @@ import { useLocalSessionStore } from '@/store/useLocalSessionStore'
 import { usePathname } from 'next/navigation'
 import { RootLayoutProps } from '@/app/layout'
 
-const GlobalRouteTracker = ({ children }: RootLayoutProps) => {
+const GlobalRouteTracker = ({ children }: { children: React.ReactNode }) => {
   const { addPreviousRouteForAuth, setRoutingRelatedAuthCompleted } = useLocalSessionStore()
   const pathname = usePathname()
   const isFirstRender = useRef(true)
-  const authPaths = useMemo(() => ['/auth/registration', '/auth/login', '/confirm_registration'], [])
+  const authPaths = useMemo(() => ['/signin', '/signup', '/confirm_registration'], [])
 
   useEffect(() => {
     setRoutingRelatedAuthCompleted(authPaths.includes(pathname))

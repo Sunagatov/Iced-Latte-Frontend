@@ -11,7 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 import { CartElementProps } from '@/types/CartElement'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
 import { useCombinedStore } from '@/store/store'
-import { useStoreData } from '@/hooks/useStoreData'
+
 
 export default function CartElement({
   product,
@@ -21,7 +21,7 @@ export default function CartElement({
 }: Readonly<CartElementProps>) {
   const { productInfo } = product
 
-  const items = useStoreData(useCombinedStore, (state) => state.itemsIds)
+  const items = useCombinedStore((state) => state.itemsIds)
 
   const productQuantity = items?.find(
     (item) => item.productId === productInfo.id,

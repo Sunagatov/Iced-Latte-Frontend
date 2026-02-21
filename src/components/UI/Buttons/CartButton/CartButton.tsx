@@ -2,11 +2,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import cart_icon from '../../../../../public/cart_icon.svg'
-import { useStoreData } from '@/hooks/useStoreData'
 import { useCombinedStore } from '@/store/store'
 
 export default function CartButton() {
-  const count = useStoreData(useCombinedStore, (state) => state.count)
+  const count = useCombinedStore((state) => state.count)
 
   return (
     <Link href={'/cart'}>

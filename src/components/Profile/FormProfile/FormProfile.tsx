@@ -32,7 +32,7 @@ const FormProfile = ({
     setValue,
     formState: { errors },
   } = useForm<UserData>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema) as any,
     defaultValues: initialUserData,
   })
 

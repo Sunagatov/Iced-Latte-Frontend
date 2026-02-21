@@ -35,10 +35,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
+    
     const data = await response.json()
+    
+    if (!response.ok) {
+      return createCorsResponse(data, response.status)
+    }
+    
     return createCorsResponse(data)
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)

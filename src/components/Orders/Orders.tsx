@@ -9,7 +9,6 @@ import Image from 'next/image'
 import order from '../../../public/orders_stub.png'
 import Button from '@/components/UI/Buttons/Button/Button'
 import Link from 'next/link'
-import { useStoreData } from '@/hooks/useStoreData'
 import { useSearchParams } from 'next/navigation'
 import { CacheAxiosResponse } from 'axios-cache-interceptor'
 import Loader from '@/components/UI/Loader/Loader'
@@ -22,10 +21,7 @@ interface PaymentSessionStatus {
 export default function OrdersForm() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [loading, setLoading] = useState(true)
-  const token: string | null | undefined = useStoreData(
-    useAuthStore,
-    (state) => state.token,
-  )
+  const token = useAuthStore((state) => state.token)
   const resetCart = useCombinedStore((state) => state.resetCart)
   const urlParams: ReadonlyURLSearchParams = useSearchParams()
 

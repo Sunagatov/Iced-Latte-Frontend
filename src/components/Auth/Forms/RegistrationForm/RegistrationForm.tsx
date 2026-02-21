@@ -15,7 +15,7 @@ import { useAuthStore } from '@/store/authStore'
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const { resetOpenModal } = useAuthStore()
+
 
   const {
     register,
@@ -40,7 +40,7 @@ export default function RegistrationForm() {
 
       if (data) {
         router.push('/confirm_registration')
-        resetOpenModal()
+
       }
     } catch (error) {
       handleError(error)

@@ -9,11 +9,7 @@ interface AuthStore {
   authenticate: (token: string | null) => void
   setRefreshToken: (refreshToken: string) => void
   reset: () => void
-  openModal: boolean
   isRegistrationButtonDisabled: boolean
-  toggleModal: () => void
-  resetOpenModal: () => void
-  setModalState: (isOpen: boolean) => void
   setRegistrationButtonDisabled: (disabled: boolean) => void
   userData: UserData | null
   setUserData: (userData: UserData | null) => void
@@ -22,15 +18,11 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      openModal: false,
       token: null,
       refreshToken: null,
       isLoggedIn: false,
       isRegistrationButtonDisabled: false,
       userData: null,
-      toggleModal: () => set((state) => ({ openModal: !state.openModal })),
-      setModalState: (isOpen: boolean) => set({ openModal: isOpen }),
-      resetOpenModal: () => set({ openModal: false }),
       authenticate: (token: string | null) =>
         set({ token: token, isLoggedIn: true }),
       setRefreshToken: (refreshToken: string | null) =>

@@ -32,7 +32,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
   isFetchingNextPage,
   userReview,
 }) => {
-  const { token, setModalState } = useAuthStore()
+  const { token } = useAuthStore()
   const router = useRouter()
 
   const {
@@ -71,8 +71,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
   const handleRateReview = async (productReviewId: string, isLike: boolean) => {
     try {
       if (!token) {
-        router.push('/auth/login')
-        setModalState(true)
+        router.push('/signin')
 
         return
       }

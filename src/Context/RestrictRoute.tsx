@@ -2,7 +2,7 @@ import { RootLayoutProps } from '@/app/layout'
 import { redirect } from 'next/navigation'
 import { getCookie } from '@/utils/cookieUtils'
 
-const RestrictRoute = async ({ children }: RootLayoutProps) => {
+const RestrictRoute = async ({ children }: { children: React.ReactNode }) => {
   const token = await getCookie()
 
   if (token) {

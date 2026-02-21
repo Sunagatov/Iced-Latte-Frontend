@@ -14,5 +14,12 @@ export const loginSchema = yup.object().shape({
       },
     )
     .required(),
-  password: yup.string().required('Password is a required field'),
+  password: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
+      'Password must contain at least one letter, one number, and be 8+ characters'
+    )
+    .required('Password is a required field'),
 })

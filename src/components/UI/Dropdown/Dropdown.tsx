@@ -24,7 +24,7 @@ const Dropdown = <T,>({
 
   const ref = useRef<HTMLDivElement>(null)
 
-  useOnClickOutside(ref, handleClose)
+  useOnClickOutside(ref as any, handleClose)
 
   function handleClose() {
     setIsOpen(false)

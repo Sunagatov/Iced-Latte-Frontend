@@ -16,7 +16,7 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
-  const { token, setModalState } = useAuthStore()
+  const { token } = useAuthStore()
   const router = useRouter()
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
@@ -34,8 +34,7 @@ const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
       if (token) {
         setRating(productId, index + 1)
       } else {
-        router.push('/auth/login')
-        setModalState(true)
+        router.push('/signin')
       }
     } catch (error) {
       handleError(error)

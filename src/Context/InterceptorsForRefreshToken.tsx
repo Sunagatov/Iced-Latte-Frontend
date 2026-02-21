@@ -11,7 +11,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean;
 }
 
-const InterceptorsForRefreshToken = ({ children }: RootLayoutProps) => {
+const InterceptorsForRefreshToken = ({ children }: { children: React.ReactNode }) => {
   const { token, refreshToken, authenticate } = useAuthStore()
   const { logout } = useLogout()
 
