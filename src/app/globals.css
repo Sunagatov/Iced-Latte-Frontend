@@ -2,22 +2,31 @@
 @import "tailwindcss/theme" layer(theme);
 
 @theme {
+  /* Brand / state colors */
   --color-focus: #682EFF;
   --color-error: #EB5757;
-  --color-primary: #04121B;
-  --color-secondary: #04121BA3;
-  --color-tertiary: #04121B7A;
-  --color-placeholder: #04121B5C;
-  --color-disabled: #04121B3D;
   --color-brand: #682EFF;
   --color-positive: #00A30E;
   --color-negative: #E12E3C;
-  --color-inverted: #FFFFFF;
   --color-brand-solid: #682EFF;
   --color-brand-second: #F0EAFF;
   --color-brand-solid-hover: #5425CC;
   --color-hover-heart: #D9D9D9;
   --color-fullpage-tint: #00000059;
+
+  /*
+   * In Tailwind v3, bg-* and text-* had separate color maps.
+   * bg-primary = #FFFFFF, text-primary = #04121B
+   * bg-secondary = #F4F5F6, text-secondary = #04121BA3
+   * In v4 there is one flat namespace, so we use the background values
+   * for the shared tokens and override text/border via @utility below.
+   */
+  --color-primary: #FFFFFF;
+  --color-secondary: #F4F5F6;
+  --color-tertiary: #E9ECED;
+  --color-inverted: #000000;
+  --color-placeholder: #04121B5C;
+  --color-disabled: #04121B3D;
 
   --shadow-primary: 0px -1px 0px 0px #0000001A;
   --shadow-header: 0px 2px 2px 0px #682EFF14;
@@ -33,6 +42,26 @@
   --text-6XL: 64px;
 
   --width-list: 71.5rem;
+}
+
+/* Override text-* and border-* to use the correct dark/semi-transparent values */
+@layer utilities {
+  .text-primary    { color: #04121B; }
+  .text-secondary  { color: #04121BA3; }
+  .text-tertiary   { color: #04121B7A; }
+  .text-placeholder { color: #04121B5C; }
+  .text-disabled   { color: #04121B3D; }
+  .text-inverted   { color: #FFFFFF; }
+  .text-brand      { color: #682EFF; }
+  .text-positive   { color: #00A30E; }
+  .text-negative   { color: #E12E3C; }
+
+  .border-primary  { border-color: #242D3429; }
+  .border-secondary { border-color: #F4F5F6; }
+  .border-error    { border-color: #EB5757; }
+  .border-focus    { border-color: #682EFF; }
+
+  .outline-focus   { outline-color: #682EFF; }
 }
 
 /* custom calendar styles are applied only from the global css file */
