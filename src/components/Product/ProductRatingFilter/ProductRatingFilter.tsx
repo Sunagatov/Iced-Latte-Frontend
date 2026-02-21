@@ -1,7 +1,6 @@
 'use client'
 
 import { FaStar } from 'react-icons/fa'
-import Checkbox from '@/components/UI/Checkbox/Checkbox'
 import FiltersGroupTitle from '@/components/Product/FilterSidebar/FiltersGroupTitle'
 
 export const stars = [4, 3, 2, 1]
@@ -18,47 +17,41 @@ const ProductRatingFilter = ({
   selectedOption = null,
 }: Readonly<IRatingFilter>) => {
   const handleCheckboxChange = (value: number | 'any') => {
-    onChange(value)
+    onChange(value === selectedOption ? null : value)
   }
 
   return (
     <div>
-      <FiltersGroupTitle title="Product rating" />
-      <div className="flex flex-col gap-3">
-        {stars.map((value) => {
-          const stars = Array.from({ length: 5 }, (_, index) => (
-            <FaStar
-              className="h-5 w-5"
-              key={index}
-              color={index < value ? '#00A30E' : 'rgba(4, 18, 27, 0.24)'}
-            />
-          ))
-
-          return (
-            <label
-              key={value}
-              className="relative flex cursor-pointer items-center gap-1.5 whitespace-nowrap"
-            >
-              <Checkbox
-                id={`checkbox-${value}`}
-                ariaLabel={`Filter by ${value} stars`}
-                isChecked={value === selectedOption}
-                onChange={() => handleCheckboxChange(value)}
-              />
-              {stars}
-              <span className="text-sm font-medium text-primary">& Up</span>
-            </label>
-          )
-        })}
-        <label className="relative flex cursor-pointer items-center gap-2">
-          <Checkbox
-            id={`checkbox-any`}
-            ariaLabel={`Filter by any number of stars`}
-            isChecked={selectedOption === 'any'}
-            onChange={() => handleCheckboxChange('any')}
-          />
-          <span className="text-[18px] font-medium text-primary">Any</span>
-        </label>
+      <FiltersGroupTitle title="Rating" />
+      <div className="flex flex-wrap gap-2">
+        {stars.map((value) => (
+          <button
+            key={value}
+            id={`checkbox-${value}`}
+            aria-label={`Filter by ${value} stars`}
+            onClick={() => handleCheckboxChange(value)}
+            className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+              value === selectedOption
+                ? 'border-brand-solid bg-brand-solid text-white'
+                : 'border-black/10 bg-white text-primary hover:border-brand-solid hover:text-brand-solid'
+            }`}
+          >
+            <FaStar className="h-3.5 w-3.5" color={value === selectedOption ? 'white' : '#00A30E'} />
+            {value}+
+          </button>
+        ))}
+        <button
+          id="checkbox-any"
+          aria-label="Filter by any number of stars"
+          onClick={() => handleCheckboxChange('any')}
+          className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+            selectedOption === 'any'
+              ? 'border-brand-solid bg-brand-solid text-white'
+              : 'border-black/10 bg-white text-primary hover:border-brand-solid hover:text-brand-solid'
+          }`}
+        >
+          Any
+        </button>
       </div>
     </div>
   )

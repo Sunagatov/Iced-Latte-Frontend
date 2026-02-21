@@ -21,18 +21,23 @@ export default function FavouritesFull() {
   }
 
   return (
-    <div className="mx-auto flex min-w-[328px] flex-col px-4 md:max-w-[800px]">
-      <h2 className="mx-4 my-6 text-left text-4xl">Favourite Products</h2>
-      <div>
+    <div className="mx-auto w-full max-w-[720px] px-4 pt-10 pb-16">
+      <div className="mb-8 flex items-baseline gap-3">
+        <h1 className="text-3xl font-bold tracking-tight text-primary">Favourites</h1>
+        <span className="text-sm font-medium text-tertiary">{favourites.length} items</span>
+      </div>
+      <div className="flex flex-col gap-3">
         {renderContent()}
       </div>
-      <div className="flex w-full justify-center">
-        <Link href={'/'}>
-          <div className="flex items-center justify-center rounded-[48px] bg-brand-solid px-[16px] text-inverted transition ease-in-out my-6 h-14 text-lg font-medium sm:w-[211px]">
-            Go to checkout
-          </div>
-        </Link>
-      </div>
+      {!loading && favourites.length > 0 && (
+        <div className="mt-10 flex justify-center">
+          <Link href={'/'}>
+            <div className="flex h-[54px] w-[240px] items-center justify-center rounded-[48px] bg-brand-solid font-semibold text-inverted shadow-md transition-all duration-200 hover:brightness-110 hover:shadow-lg active:scale-95">
+              Go to checkout
+            </div>
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

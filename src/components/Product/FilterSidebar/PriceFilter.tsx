@@ -7,7 +7,6 @@ import { filterProductsByPriceSchema } from '@/validation/filterProductsByPriceS
 import { useProductFiltersStore } from '@/store/productFiltersStore'
 import { IProductPriceFilter } from '@/types/IProductPriceFilter'
 import FiltersGroupTitle from '@/components/Product/FilterSidebar/FiltersGroupTitle'
-import FormInput from '@/components/UI/FormInput/FormInput'
 
 const getDecimalFromString = (input: string) => {
   const cleanedValue = input.replace(/[^\d.]/g, '')
@@ -88,32 +87,29 @@ const PriceFilter = () => {
   return (
     <div>
       <FiltersGroupTitle title="Price, $" />
-      <form>
-        <FormInput
-          id="from-price-input"
-          register={register}
-          name="fromPriceInput"
-          label="from"
-          type="text"
-          placeholder="Min"
-          onChange={handleFromInputChange}
-          labelClassName="absolute top-1/2 -translate-y-2/4 left-4"
-          inputClassName="pl-[52px]"
-          className="relative"
-        />
-
-        <FormInput
-          id="to-price-input"
-          register={register}
-          name="toPriceInput"
-          label="to"
-          type="text"
-          placeholder="Max"
-          onChange={handleToInputChange}
-          labelClassName="absolute top-1/2 -translate-y-2/4 left-4"
-          inputClassName="pl-[34px]"
-          className="relative"
-        />
+      <form className="flex gap-2">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/40">from</span>
+          <input
+            id="from-price-input"
+            {...register('fromPriceInput')}
+            type="text"
+            placeholder="Min"
+            onChange={handleFromInputChange}
+            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-10 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
+          />
+        </div>
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/40">to</span>
+          <input
+            id="to-price-input"
+            {...register('toPriceInput')}
+            type="text"
+            placeholder="Max"
+            onChange={handleToInputChange}
+            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-7 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
+          />
+        </div>
       </form>
     </div>
   )

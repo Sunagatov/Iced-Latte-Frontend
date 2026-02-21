@@ -19,13 +19,16 @@ const ReviewsSorter: React.FC<IReviewsSorter> = ({
   userReview,
 }) => {
   return (
-    <Dropdown
-      id="reviewsDropdown"
-      onChange={selectOption}
-      options={reviewsSortOptions}
-      selectedOption={selectedOption}
-      className={twMerge('mb-10 mt-10', userReview ? 'xl:mt-20' : '')}
-    />
+    <div className={twMerge('flex items-center gap-3 border-b border-primary/40 pb-4 mb-6 mt-8', userReview ? 'xl:mt-10' : '')}>
+      <span className="text-sm font-medium text-tertiary">Sort by</span>
+      <Dropdown
+        id="reviewsDropdown"
+        onChange={selectOption}
+        options={reviewsSortOptions}
+        selectedOption={selectedOption}
+        hidePrefix
+      />
+    </div>
   )
 }
 

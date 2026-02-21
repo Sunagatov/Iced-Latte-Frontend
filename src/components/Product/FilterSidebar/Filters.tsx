@@ -70,37 +70,39 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     toPriceFilter !== ''
 
   return (
-    <div className={'flex flex-col gap-5'}>
+    <div className={'flex flex-col divide-y divide-black/6'}>
       {hasActiveFilters && (
-        <button
-          onClick={() => updateProductFiltersStore(defaultProductsFilters)}
-          className="self-start text-sm font-medium text-brand-solid underline underline-offset-2 hover:opacity-70"
-        >
-          Reset all filters
-        </button>
+        <div className="pb-3">
+          <button
+            onClick={() => updateProductFiltersStore(defaultProductsFilters)}
+            className="text-xs font-medium text-brand-solid hover:opacity-70"
+          >
+            ✕ Reset all filters
+          </button>
+        </div>
       )}
-      <PriceFilter />
-
-      <ProductRatingFilter
-        onChange={ratingFilterChangeHandler}
-        selectedOption={ratingFilter}
-      />
-
-      <FilterCheckboxGroup
-        selectedItems={selectedBrandOptions}
-        items={brands}
-        onFilterCheckboxClick={handleBrandCheckboxChange}
-        title={'Brand'}
-        onReset={resetSelectedBrandsHandler}
-      />
-
-      <FilterCheckboxGroup
-        selectedItems={selectedSellerOptions}
-        items={sellers}
-        onFilterCheckboxClick={handleSellerCheckboxChange}
-        title={'Seller'}
-        onReset={resetSelectedSellerHandler}
-      />
+      <div className="py-4"><PriceFilter /></div>
+      <div className="py-4">
+        <ProductRatingFilter onChange={ratingFilterChangeHandler} selectedOption={ratingFilter} />
+      </div>
+      <div className="py-4">
+        <FilterCheckboxGroup
+          selectedItems={selectedBrandOptions}
+          items={brands}
+          onFilterCheckboxClick={handleBrandCheckboxChange}
+          title={'Brand'}
+          onReset={resetSelectedBrandsHandler}
+        />
+      </div>
+      <div className="py-4">
+        <FilterCheckboxGroup
+          selectedItems={selectedSellerOptions}
+          items={sellers}
+          onFilterCheckboxClick={handleSellerCheckboxChange}
+          title={'Seller'}
+          onReset={resetSelectedSellerHandler}
+        />
+      </div>
     </div>
   )
 }

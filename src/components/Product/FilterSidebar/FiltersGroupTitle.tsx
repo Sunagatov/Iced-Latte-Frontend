@@ -5,7 +5,7 @@ type FiltersGroupTitleType = {
 }
 
 const FiltersGroupTitle = ({ title }: Readonly<FiltersGroupTitleType>) => {
-  return <h3 className="mb-4 text-2XL font-medium text-primary">{title}</h3>
+  return <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-black/40">{title}</h3>
 }
 
 export default FiltersGroupTitle

@@ -158,58 +158,47 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   }
 
   return (
-    <div
-      className={twMerge(
-        'relative ml-auto mr-auto max-w-[1157px]',
-        reviews.length > 0 ? '' : 'xl:mb-20',
-      )}
-    >
-      <div className="flex flex-col-reverse xl:flex-row">
-        <h2 className="xl:4XL order-[1] mb-7 text-4XL font-medium text-primary xl:absolute xl:left-0 xl:top-0 xl:order-[0] ">
-          Rating and reviews
-        </h2>
+    <div className={twMerge('mx-auto max-w-[1157px]', reviews.length > 0 ? '' : 'xl:mb-20')}>
+      <h2 className="mb-8 text-3xl font-bold tracking-tight text-primary">Rating and reviews</h2>
 
-        <div className="flex-1">
-          {' '}
-          {/* Left div */}
-          <div>
-            <div className="xl:max-w-[800px]">
-              <ReviewForm productId={productId} />
-              {(reviews.length > 0 || userReview) && (
-                <>
-                  <ReviewsSorter
-                    selectedOption={selectedSortOption}
-                    selectOption={selectSortOptionHandler}
-                    userReview={userReview}
-                  />
-                  <ReviewsList
-                    productId={productId}
-                    reviews={reviews}
-                    showMoreReviews={showMoreReviews}
-                    isFetchingNextPage={isFetchingNextPage}
-                    hasNextPage={hasNextPage}
-                    userReview={userReview}
-                  />
-                </>
-              )}
-              {errorMessage && (
-                <div className="mt-4 text-negative">{errorMessage}</div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="mr-auto">
-          {' '}
-          <div className="text-[18px] font-medium text-tertiary">
-            {reviewsStatistics && reviewsStatistics.reviewsCount > 0 ? (
-              <ReviewRatingFilter
-                onChange={ratingFilterChangeHandler}
-                selectedOptions={selectedFilterRating}
-              />
-            ) : (
-              <div className="text-end">No customer reviews</div>
+      <div className="flex flex-col gap-10 xl:flex-row xl:items-start">
+        <div className="min-w-0 flex-1">
+          <div className="xl:max-w-[720px]">
+            <ReviewForm productId={productId} />
+            {(reviews.length > 0 || userReview) && (
+              <>
+                <ReviewsSorter
+                  selectedOption={selectedSortOption}
+                  selectOption={selectSortOptionHandler}
+                  userReview={userReview}
+                />
+                <ReviewsList
+                  productId={productId}
+                  reviews={reviews}
+                  showMoreReviews={showMoreReviews}
+                  isFetchingNextPage={isFetchingNextPage}
+                  hasNextPage={hasNextPage}
+                  userReview={userReview}
+                />
+              </>
+            )}
+            {errorMessage && (
+              <div className="mt-4 text-negative">{errorMessage}</div>
             )}
           </div>
+        </div>
+
+        <div className="w-full xl:w-[280px] xl:shrink-0">
+          {reviewsStatistics && reviewsStatistics.reviewsCount > 0 ? (
+            <ReviewRatingFilter
+              onChange={ratingFilterChangeHandler}
+              selectedOptions={selectedFilterRating}
+            />
+          ) : (
+            <div className="rounded-2xl border border-primary/60 bg-white p-6 text-center text-sm text-tertiary shadow-sm">
+              No customer reviews yet
+            </div>
+          )}
         </div>
       </div>
     </div>

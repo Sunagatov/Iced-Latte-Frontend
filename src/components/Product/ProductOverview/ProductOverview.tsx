@@ -21,45 +21,43 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
 
   return (
     <>
-      <Image
-        src={getImgUrl(product.productFileUrl, 'coffee.png')}
-        width={500}
-        height={500}
-        alt="product_image"
-        className={
-          'max-w-full md:h-[500px] md:w-full md:object-cover xl:w-[500px] xl:object-contain'
-        }
-      />
+      <div className="overflow-hidden rounded-3xl bg-secondary shadow-sm">
+        <Image
+          src={getImgUrl(product.productFileUrl, 'coffee.png')}
+          width={500}
+          height={500}
+          alt="product_image"
+          className="max-w-full md:h-[500px] md:w-full md:object-cover xl:w-[500px] xl:object-contain"
+        />
+      </div>
 
-      <div className={'flex flex-col justify-center gap-6 pb-4 lg:self-start'}>
-        <div className={'flex flex-col gap-[18px] '}>
-          <h2 className={'text-4XL'}>{product.name}</h2>
-          <div className={'flex items-center gap-2 text-L font-medium'}>
+      <div className="flex flex-col justify-center gap-6 pb-4 lg:self-start">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl font-bold tracking-tight text-primary">{product.name}</h1>
+          <div className="flex flex-wrap items-center gap-1.5 text-sm text-tertiary">
             {averageRating ? (
               <>
-                <Image
-                  src="/star.png"
-                  alt="star"
-                  className={'inline-block'}
-                  width={16}
-                  height={15}
-                />
-                <Rating rating={averageRating} />
-                <span>&#x2022; Reviews: {reviewsStatistics?.reviewsCount}</span>
+                <Image src="/star.png" alt="star" className="inline-block" width={13} height={12} />
+                <span className="font-semibold text-primary"><Rating rating={averageRating} /></span>
+                <span>·</span>
+                <span>{reviewsStatistics?.reviewsCount} reviews</span>
               </>
             ) : (
-              <span className="text-tertiary">No rating</span>
+              <span>No rating yet</span>
             )}
-            <span className={'text-tertiary'}>
-              &#x2022; Size: {productSize} g.
-            </span>
+            <span>·</span>
+            <span>{productSize} g.</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-3">
           <AddToCartButton product={product} />
-          <HeartWrapper id={product.id} className="ml-2" />
+          <HeartWrapper id={product.id} className="ml-1" />
         </div>
-        <p className={'text-XL font-medium md:mt-4'}>{product.description}</p>
+
+        <p className="max-w-[420px] text-base leading-relaxed text-secondary-foreground">
+          {product.description || <span className="text-tertiary italic">No description available</span>}
+        </p>
       </div>
     </>
   )

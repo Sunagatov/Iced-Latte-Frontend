@@ -22,40 +22,44 @@ const ReviewRatingFilter = ({
   }
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col gap-4">
-        <div className="text-4XL font-medium text-primary">
+    <div className="rounded-2xl border border-primary/60 bg-white p-6 shadow-sm">
+      <div className="mb-5 flex flex-col gap-1">
+        <div className="text-5xl font-bold tracking-tight text-primary">
           <Rating rating={reviewsStatistics?.avgRating} />
         </div>
-        <div className="text-L font-medium text-tertiary">
+        <div className="text-sm text-tertiary">
           Based on {reviewsStatistics?.reviewsCount ?? 0} reviews
         </div>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {stars.map((value) => {
-          const stars = Array.from({ length: 5 }, (_, index) => (
-            <FaStar
-              className="h-6 w-6"
-              key={index}
-              color={index < value ? '#00A30E' : 'rgba(4, 18, 27, 0.24)'}
-            />
-          ))
+          const count = reviewsStatistics?.ratingMap[`star${value}`] ?? 0
+          const total = reviewsStatistics?.reviewsCount ?? 0
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0
+          const isChecked = selectedOptions.includes(value)
 
           return (
             <label
               key={value}
-              className="relative flex cursor-pointer items-center gap-2"
+              className={`flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 transition-colors ${
+                isChecked ? 'bg-brand-second' : 'hover:bg-secondary'
+              }`}
             >
               <Checkbox
                 id={`checkbox-${value}`}
                 ariaLabel={`Filter by ${value} stars`}
-                isChecked={selectedOptions.includes(value)}
+                isChecked={isChecked}
                 onChange={() => handleCheckboxChange(value)}
               />
-              {stars}
-              <span className="text-[18px] font-medium text-primary">
-                {reviewsStatistics?.ratingMap[`star${value}`]} reviews
-              </span>
+              <span className="w-3 text-right text-sm font-semibold text-primary">{value}</span>
+              <FaStar className="h-4 w-4 text-positive" />
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full bg-positive transition-all duration-300"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <span className="w-6 text-right text-xs text-tertiary">{count}</span>
             </label>
           )
         })}

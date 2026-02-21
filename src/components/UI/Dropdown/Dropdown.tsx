@@ -6,11 +6,11 @@ import { twMerge } from 'tailwind-merge'
 import Image from 'next/image'
 
 const headerStyles =
-  'py-4 px-6 bg-secondary rounded-[40px] cursor-pointer flex gap-x-3 items-center font-medium text-primary hover:bg-tertiary'
+  'py-3 px-5 rounded-[40px] cursor-pointer flex gap-x-2 items-center font-medium text-primary border-2 border-transparent transition-all duration-200 hover:bg-tertiary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'
 const listStyles =
-  'border-primary border rounded-md py-1 absolute w-full right-0 top-full bg-primary z-[5]'
+  'border border-primary rounded-xl py-1.5 absolute w-max min-w-full right-0 top-[calc(100%+8px)] bg-primary shadow-xl z-[5]'
 const optionBtnStyles =
-  'font-medium leading-5 rounded-md flex items-center justify-between w-full px-6 py-1.5 hover:bg-tertiary'
+  'font-medium leading-5 rounded-lg flex items-center justify-between w-full px-5 py-2.5 transition-colors duration-150 hover:bg-tertiary'
 
 const Dropdown = <T,>({
   className,
@@ -19,7 +19,8 @@ const Dropdown = <T,>({
   onChange = () => {},
   selectedOption,
   id,
-}: Readonly<PropsDropdown<T>>) => {
+  hidePrefix,
+}: Readonly<PropsDropdown<T> & { hidePrefix?: boolean }>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -54,18 +55,18 @@ const Dropdown = <T,>({
       <button
         className={twMerge(
           headerStyles,
-          headerClassName,
-          !isOpen && 'bg-transparent',
+          isOpen ? 'border-brand-solid bg-secondary' : 'bg-secondary',
         )}
         onClick={handleClick}
         tabIndex={0}
       >
-        <span>Sort by: {selectedOption.label}</span>
+        <span>{hidePrefix ? selectedOption.label : `Sort by: ${selectedOption.label}`}</span>
         <Image
           src={'/open_select.svg'}
           alt="open select icon"
           width={17}
           height={10}
+          className={twMerge('transition-transform duration-200', isOpen && 'rotate-180')}
         />
       </button>
       {isOpen && (
@@ -76,7 +77,7 @@ const Dropdown = <T,>({
                 className={twMerge(
                   optionBtnStyles,
                   isSelected(selectedOption, option) &&
-                    'bg-secondary font-bold',
+                    'bg-secondary font-bold text-brand-solid',
                 )}
                 onClick={handleChange(option)}
               >

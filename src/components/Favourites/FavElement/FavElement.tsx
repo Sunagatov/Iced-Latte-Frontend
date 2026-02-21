@@ -4,11 +4,9 @@ import productImg from '../../../../public/coffee.png'
 import star from '../../../../public/star.png'
 import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
 import Link from 'next/link'
-import Button from '@/components/UI/Buttons/Button/Button'
+import AddToCartButton from '@/components/Product/AddToCart/AddToCart'
 import getImgUrl from '@/utils/getImgUrl'
-import { productRating } from '@/constants/product'
 import { useAuthStore } from '@/store/authStore'
-import { useCombinedStore } from '@/store/store'
 import { useFavouritesStore } from '@/store/favStore'
 import { FavElementProps } from '@/types/FavElement'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
@@ -16,57 +14,56 @@ import { handleFavouriteButtonClick } from '@/utils/favUtils'
 export default function FavElement({ product }: Readonly<FavElementProps>) {
   const { addFavourite, removeFavourite, favourites, favouriteIds } =
     useFavouritesStore()
-  const { add } = useCombinedStore()
   const { token } = useAuthStore()
 
   const isFavourited = token ? favourites.some((fav) => fav.id === product.id) : favouriteIds.includes(product.id)
-
-  const addToCart = () => add(product.id)
 
   const handleButtonClick = async () => {
     await handleFavouriteButtonClick(product.id, token, isFavourited, addFavourite, removeFavourite)
   }
 
   return (
-    <div className="flex items-center justify-between border-b p-4 pr-0">
-      <Link href={`/product/${product.id}`} className="flex justify-center">
-        <Image
-          src={getImgUrl(product.productFileUrl, productImg)}
-          alt={product.name}
-          width={200}
-          height={200}
-          className=" object-cover"
-        />
+    <div className="flex items-start gap-4 rounded-2xl border border-primary/60 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+      <Link href={`/product/${product.id}`} className="shrink-0">
+        <div className="overflow-hidden rounded-xl bg-secondary">
+          <Image
+            src={getImgUrl(product.productFileUrl, productImg)}
+            alt={product.name}
+            width={112}
+            height={112}
+            className="h-[112px] w-[112px] object-contain"
+          />
+        </div>
       </Link>
 
-      <div className="relative ml-4 grow">
-        <p className="text-lg font-semibold">{product.name}</p>
-        <p
-          className={'mb-4 font-medium text-placeholder'}
-        >{` ${product.quantity} g.`}</p>
-
-        <p className="right-0 top-0 mb-2 text-lg font-semibold sm:absolute">{`$${product?.price?.toFixed(
-          2,
-        )}`}</p>
-        <div className="mb-3">
-          <Image src={star} alt="star" className={'inline-block'} />
-
-          <span>{productRating}</span>
-        </div>
-        <div className="flex items-center">
-          <Button
-            id="add-cart-btn"
-            onClick={addToCart}
-            className={'mr-2 flex items-center justify-center'}
-          >
-            Add to cart
-          </Button>
-          <div>
-            <ButtonHeart
-              active={isFavourited}
-              onClick={handleButtonClick}
-            />
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            {product.brandName && (
+              <p className="mb-0.5 text-xs font-medium uppercase tracking-wider text-tertiary">{product.brandName}</p>
+            )}
+            <Link href={`/product/${product.id}`}>
+              <p className="truncate text-base font-semibold text-primary transition-colors hover:text-brand-solid">{product.name}</p>
+            </Link>
           </div>
+          <p className="shrink-0 text-base font-bold text-primary">${product?.price?.toFixed(2)}</p>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-sm">
+          <Image src={star} alt="star" className="inline-block h-3.5 w-3.5" />
+          <span className="font-semibold text-primary">{product.averageRating?.toFixed(1) ?? '—'}</span>
+          <span className="text-tertiary">({product.reviewsCount ?? 0})</span>
+          <span className="text-tertiary">·</span>
+          <span className="text-tertiary">{product.quantity} g.</span>
+        </div>
+
+        {product.description && (
+          <p className="line-clamp-1 text-sm text-tertiary">{product.description}</p>
+        )}
+
+        <div className="mt-2 flex items-center gap-2 scale-[0.82] origin-left">
+          <AddToCartButton product={product} />
+          <ButtonHeart active={isFavourited} onClick={handleButtonClick} />
         </div>
       </div>
     </div>

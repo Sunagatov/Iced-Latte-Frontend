@@ -3,7 +3,7 @@ import { PropsBtn } from '@/types/Button'
 import { twMerge } from 'tailwind-merge'
 
 const defaultStyles =
-  'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted transition ease-in-out'
+  'h-[54px] rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted transition-all duration-200 ease-in-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'
 
 export default function Button({
   onClick,

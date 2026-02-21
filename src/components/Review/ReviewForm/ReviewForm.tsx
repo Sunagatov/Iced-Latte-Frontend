@@ -125,21 +125,21 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
         <Button
           id="add-review-btn"
           onClick={handleClickReview}
-          className="mb-10 mt-20 flex w-full items-center justify-center rounded-[47px] bg-focus text-[18px] font-medium text-inverted sm:w-[278px]"
+          className="mb-8 mt-10 flex w-full items-center justify-center rounded-2xl bg-brand-solid text-base font-semibold text-inverted shadow-md hover:brightness-110 hover:shadow-lg sm:w-[240px]"
         >
-          Add a review
+          + Add a review
         </Button>
       )}
 
       {isReviewFormVisible && (
         <>
           <div className="relative">
-            <h3 className="mb-6 text-2XL font-medium text-primary ">
+            <h3 className="mb-4 text-xl font-semibold text-primary">
               What do you think of this product?
             </h3>
             <textarea
               id="review-textarea"
-              className={`w-full rounded-lg bg-secondary py-[17px] pl-[16px] pr-[46px] text-[18px] outline-focus ${reviewText ? 'h-[196px]' : 'h-[56px]'} ${reviewText ? 'pb-[39px]' : ''} placeholder:text-sm placeholder:font-medium `}
+              className={`w-full rounded-2xl border border-primary/40 bg-secondary px-4 py-3 text-base outline-none transition-all focus:border-brand-solid focus:ring-2 focus:ring-brand-solid/20 ${reviewText ? 'h-[160px]' : 'h-[52px]'} ${reviewText ? 'pb-8' : ''} placeholder:text-sm placeholder:text-tertiary`}
               value={reviewText}
               onChange={handleTextChange}
               placeholder={
@@ -148,17 +148,17 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
                   : 'Share your impressions with other customers'
               }
               maxLength={1500}
-            ></textarea>
+            />
             {reviewText && (
               <>
-                <div className="absolute bottom-2 right-4 text-tertiary">
+                <div className="absolute bottom-2 right-4 text-xs text-tertiary">
                   {charCount}/1500
                 </div>
                 <button
-                  className="absolute right-4 top-4 text-tertiary"
+                  className="absolute right-4 top-3 text-tertiary hover:text-primary"
                   onClick={handleClearText}
                 >
-                  <IoIosClose size={22} />
+                  <IoIosClose size={20} />
                 </button>
               </>
             )}
@@ -167,20 +167,20 @@ const ReviewForm = ({ productId }: ReviewFormProps) => {
           {errorMessage && (
             <div className="mt-4 text-negative">{errorMessage}</div>
           )}
-          <div className="mt-6 flex gap-2 ">
+          <div className="mt-4 flex gap-2">
             <Button
               id="submit-review-btn"
               onClick={handleAddReview}
-              disabled={!isRatingSelected || isReviewTextEmpty} // Disable the button if either rating or review text is not provided
-              className={`${!isRatingSelected || isReviewTextEmpty ? 'opacity-20' : ''} mb-12 flex w-[334px] items-center justify-center xl:w-[278px]`}
+              disabled={!isRatingSelected || isReviewTextEmpty}
+              className={`${!isRatingSelected || isReviewTextEmpty ? 'opacity-30' : ''} mb-10 flex w-full items-center justify-center rounded-2xl font-semibold sm:w-[240px]`}
             >
-              {loading ? <Loader /> : 'Add a review'}
+              {loading ? <Loader /> : 'Submit review'}
             </Button>
             {(reviewText || isRatingSelected) && (
               <Button
                 id="submit-cancel-btn"
                 onClick={handleCancel}
-                className="ml-2 w-[108px] bg-secondary text-[18px] font-medium text-primary"
+                className="w-[100px] rounded-2xl bg-secondary text-base font-medium text-primary hover:bg-tertiary"
               >
                 Cancel
               </Button>

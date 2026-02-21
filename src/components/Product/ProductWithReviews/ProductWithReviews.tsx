@@ -52,16 +52,12 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
   }, [setShouldRevalidateStatistics])
 
   return (
-    <section>
-      <div
-        className={
-          'mx-5 flex flex-col items-center gap-[21px] sm:justify-center lg:flex-row xl:gap-12'
-        }
-      >
+    <section className="mx-auto max-w-[1280px] px-5 pt-10 xl:pt-14">
+      <div className="flex flex-col items-center gap-8 sm:justify-center lg:flex-row lg:items-start xl:gap-16">
         <ProductOverview product={product} />
       </div>
 
-      <div className="mx-5 mt-12 xl:mt-20">
+      <div className="mt-14 xl:mt-24">
         <ReviewsSection product={product} />
       </div>
     </section>

@@ -32,26 +32,24 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
   return (
     <>
       {!productQuantity && (
-        <div>
-          <Button
-            id="add-btn"
-            className="w-full md:w-[278px] "
-            onClick={addProduct}
-          >
-            Add to cart &#x2022; ${product.price}
-          </Button>
-        </div>
+        <Button
+          id="add-btn"
+          className="h-[54px] w-full font-semibold shadow-md hover:brightness-110 hover:shadow-lg md:w-[280px]"
+          onClick={addProduct}
+        >
+          Add to cart · ${product.price}
+        </Button>
       )}
       {productQuantity && (
-        <div className="flex cursor-pointer items-center gap-2 md:mx-0">
+        <div className="flex items-center gap-2">
           <Counter
             theme="dark"
             count={productQuantity}
             addProduct={addProduct}
             removeProduct={removeProduct}
           />
-          <div className="flex h-[54px] w-[123px] cursor-default items-center justify-center rounded-[48px] bg-brand-solid px-[16px] text-L text-inverted">
-            <span className="pointer-events-none ">${product.price}</span>
+          <div className="flex h-[54px] w-[110px] cursor-default items-center justify-center rounded-[48px] bg-brand-solid font-semibold text-inverted shadow-md">
+            ${product.price}
           </div>
         </div>
       )}

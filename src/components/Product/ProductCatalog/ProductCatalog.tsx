@@ -124,7 +124,7 @@ export default function ProductCatalog({
         </div>
         {isShowLoadMoreBtn && (
           <button
-            className={'m-3 mt-[24px] h-[54px] w-[145px] rounded-[46px] border border-brand-solid text-L font-medium text-brand-solid transition hover:bg-brand-solid hover:text-white'}
+            className={'m-3 mt-[24px] h-[54px] w-[160px] rounded-[46px] border-2 border-brand-solid text-L font-semibold text-brand-solid shadow-sm transition-all duration-200 hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'}
             onClick={() => {
               fetchNext().catch((e) => console.log(e))
             }}

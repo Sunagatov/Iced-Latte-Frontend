@@ -87,7 +87,8 @@ const ReviewsList: React.FC<IReviewsList> = ({
   return (
     <>
       {userReview && (
-        <div className="mt-10">
+        <div className="mt-8 rounded-2xl border border-brand-solid/30 bg-brand-second/30 p-5">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-solid">Your review</div>
           <Review
             isUserReview
             review={userReview}
@@ -97,9 +98,12 @@ const ReviewsList: React.FC<IReviewsList> = ({
         </div>
       )}
 
-      <ul className="mt-10 flex flex-col gap-10 ">
+      <ul className="mt-6 flex flex-col gap-3">
         {reviews.map((review) => (
-          <li className={`pb-6 xl:pb-10`} key={review.productReviewId}>
+          <li
+            className="rounded-2xl border border-primary/60 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            key={review.productReviewId}
+          >
             <Review
               isUserReview={false}
               review={review}
@@ -114,7 +118,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
         <Button
           id="showmore-btn"
           onClick={showMoreReviews}
-          className="mb-[94px] ml-auto mr-auto mt-[24px] flex w-[334px] items-center justify-center rounded-[47px] bg-secondary text-[18px] font-medium text-primary"
+          className="mb-[94px] ml-auto mr-auto mt-6 flex w-[200px] items-center justify-center rounded-[47px] border-2 border-brand-solid bg-transparent text-[18px] font-semibold text-brand-solid shadow-sm hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95"
         >
           Show more
         </Button>

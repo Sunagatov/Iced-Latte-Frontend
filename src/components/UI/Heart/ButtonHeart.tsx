@@ -15,7 +15,7 @@ export default function ButtonHeart({
     <button
       onClick={onClick}
       className={twMerge(
-        'flex h-[54px] w-[54px] transform cursor-pointer items-center justify-center rounded-full bg-secondary transition ease-in-out hover:scale-105 duration-500 hover:bg-hover-heart m-2 outline-none focus:outline-none',
+        'flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full bg-secondary transition-all duration-200 hover:bg-hover-heart hover:scale-110 active:scale-90 outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2',
         className,
       )}
     >

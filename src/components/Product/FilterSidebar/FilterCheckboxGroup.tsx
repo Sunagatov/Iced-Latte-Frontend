@@ -1,8 +1,4 @@
 import React, { useState } from 'react'
-import Checkbox from '@/components/UI/Checkbox/Checkbox'
-import Button from '@/components/UI/Buttons/Button/Button'
-import Image from 'next/image'
-import FiltersGroupTitle from '@/components/Product/FilterSidebar/FiltersGroupTitle'
 
 interface IFilterCheckboxGroup {
   selectedItems: string[]
@@ -34,60 +30,35 @@ const FilterCheckboxGroup = ({
 
   return (
     <div data-testid={`filter-group-${title.toLowerCase()}`}>
-      <FiltersGroupTitle title={title} />
-      <div className="flex flex-col items-start gap-2">
-        {displayedItems.map((item) => (
-          <Checkbox
-            id={item}
-            key={item}
-            isChecked={selectedItems.includes(item)}
-            onChange={() => onFilterCheckboxClick(item)}
-            label={item}
-          />
-        ))}
-
-        {items.length > 5 && (
-          <Button
-            className={
-              'mt-1 h-[18px] bg-transparent p-0 text-L font-medium text-primary'
-            }
-            onClick={toggleItemsButtonClick}
-            id={`${title}-filter-btn`}
-          >
-            {isItemsToggled ? (
-              <div className={'flex gap-3 text-brand'}>
-                Show more
-                <Image
-                  src={'/triangleArrowDown.svg'}
-                  alt={'arrow up'}
-                  width={16}
-                  height={20}
-                />
-              </div>
-            ) : (
-              <div className={'flex gap-3 text-brand'}>
-                Show less
-                <Image
-                  src={'/triangleArrowUp.svg'}
-                  alt={'arrow up'}
-                  width={16}
-                  height={20}
-                />
-              </div>
-            )}
-          </Button>
-        )}
-
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-black/40">{title}</h3>
         {selectedItems.length > 0 && (
-          <Button
-            onClick={onReset}
-            className={
-              'mt-1 h-[18px] bg-transparent p-0 text-L font-medium text-brand'
-            }
-            id={`${title}-reset-btn`}
+          <button onClick={onReset} id={`${title}-reset-btn`} className="text-xs text-brand-solid hover:opacity-70">
+            Clear ({selectedItems.length})
+          </button>
+        )}
+      </div>
+      <div className="flex flex-col gap-1.5">
+        {displayedItems.map((item) => (
+          <label key={item} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-black/4">
+            <input
+              type="checkbox"
+              id={item}
+              checked={selectedItems.includes(item)}
+              onChange={() => onFilterCheckboxClick(item)}
+              className="h-4 w-4 cursor-pointer appearance-none rounded border-2 border-[#D1D5DB] bg-white checked:border-brand-solid checked:bg-brand-solid"
+            />
+            <span className="text-sm text-primary">{item}</span>
+          </label>
+        ))}
+        {items.length > 5 && (
+          <button
+            id={`${title}-filter-btn`}
+            onClick={toggleItemsButtonClick}
+            className="mt-1 flex items-center gap-1 px-2 text-xs font-medium text-brand-solid hover:opacity-70"
           >
-            Reset
-          </Button>
+            {isItemsToggled ? `Show ${items.length - 5} more ↓` : 'Show less ↑'}
+          </button>
         )}
       </div>
     </div>

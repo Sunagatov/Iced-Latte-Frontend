@@ -51,41 +51,37 @@ const Review: React.FC<Readonly<IReview>> = ({
   if (!review) return <></>
 
   return (
-    <>
-      <div className="mb-2 text-XL font-medium text-primary xl:text-2XL">
-        <span>
-          {review.userName} {review.userLastName}
-        </span>
-      </div>
-      <div className="mb-6 flex items-center text-[18px] font-medium text-primary">
-        <div className="flex items-center gap-1">
-          {[...Array(5)].map((_, starValue) => (
-            <FaStar
-              className={`h-[18px] w-[18px] ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'} xl:h-6 xl:w-6`}
-              key={nanoid()}
-            />
-          ))}
-          <span className="ml-2 text-L font-medium text-primary">
-            {review.productRating ?? 0}
-          </span>
+    <article className="group">
+      <div className="mb-3 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-solid text-sm font-bold text-inverted">
+          {review.userName?.[0]?.toUpperCase() ?? '?'}
         </div>
-        <div className="inline-flex text-L font-medium text-tertiary">
-          <div className="relative ml-3 inline-flex">
-            <span className="ml-[10px] text-L">
-              {formatReviewDate(review.createdAt).date}
-            </span>
-            <div className="absolute left-0 top-1/2 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-gray-400 text-tertiary"></div>
+        <div>
+          <div className="text-base font-semibold text-primary">
+            {review.userName} {review.userLastName}
           </div>
-          <span className="ml-2">
-            {formatReviewDate(review.createdAt).time}
-          </span>
+          <div className="flex items-center gap-1.5 text-sm text-tertiary">
+            <span>{formatReviewDate(review.createdAt).date}</span>
+            <span>·</span>
+            <span>{formatReviewDate(review.createdAt).time}</span>
+          </div>
         </div>
       </div>
 
-      <p
+      <div className="mb-3 flex items-center gap-1">
+        {[...Array(5)].map((_, starValue) => (
+          <FaStar
+            className={`h-4 w-4 ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'}`}
+            key={nanoid()}
+          />
+        ))}
+        <span className="ml-1 text-sm font-semibold text-primary">{review.productRating ?? 0}</span>
+      </div>
+
+      <div
         className={twMerge(
-          'mb-6 rounded-[8px] bg-brand-second px-4 py-[17px] text-L',
-          `${isUserReview ? 'bg-brand-second' : 'bg-secondary'}`,
+          'mb-4 rounded-2xl px-5 py-4 text-base leading-relaxed text-primary',
+          isUserReview ? 'bg-brand-second ring-1 ring-brand-solid/20' : 'bg-secondary',
         )}
       >
         {review.text ? (
@@ -96,9 +92,9 @@ const Review: React.FC<Readonly<IReview>> = ({
                 <Button
                   id="see-more-btn"
                   onClick={seeMoreButtonClickHandler}
-                  className="inline-flex h-auto bg-transparent pl-0 text-L font-medium text-tertiary"
+                  className="inline-flex h-auto bg-transparent pl-1 text-sm font-medium text-brand-solid"
                 >
-                  ...see more
+                  see more
                 </Button>
               </span>
             ) : (
@@ -106,40 +102,38 @@ const Review: React.FC<Readonly<IReview>> = ({
             )}
           </>
         ) : (
-          'No review'
+          <span className="text-tertiary italic">No written review</span>
         )}
-      </p>
+      </div>
 
       <div className="flex items-center justify-between">
         {isUserReview && (
           <Button
             id="delete-review-btn"
             onClick={deleteReviewHandler}
-            className="mr-auto w-[126px] rounded-[47px] bg-secondary px-6 py-4 text-L font-medium text-primary hover:bg-tertiary md:w-[196px]"
+            className="mr-auto rounded-full bg-secondary px-5 py-2 text-sm font-medium text-primary hover:bg-red-50 hover:text-red-600 md:w-auto"
           >
-            {isMediaQuery ? 'Delete my review' : 'Delete'}
+            {isMediaQuery ? 'Delete' : 'Delete my review'}
           </Button>
         )}
         <div className="flex gap-2 xl:ml-auto">
-          <Button
-            id={`like-btn-${review.productReviewId}`}
+          <button
             onClick={likeReviewHandler}
-            className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary hover:bg-tertiary"
+            className="flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-tertiary transition-all duration-150 hover:bg-green-50 hover:text-green-700 active:scale-95"
           >
-            <BiLike />
+            <BiLike className="h-4 w-4" />
             <span>{review.likesCount}</span>
-          </Button>
-          <Button
-            id={`dislike-btn-${review.productReviewId}`}
+          </button>
+          <button
             onClick={dislikeReviewHandler}
-            className="flex w-[88px] items-center justify-center gap-2 rounded-[47px] bg-secondary font-medium text-tertiary hover:bg-tertiary"
+            className="flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-tertiary transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-95"
           >
-            <BiDislike />
+            <BiDislike className="h-4 w-4" />
             <span>{review.dislikesCount}</span>
-          </Button>
+          </button>
         </div>
       </div>
-    </>
+    </article>
   )
 }
 

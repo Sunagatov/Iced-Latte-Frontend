@@ -3,7 +3,6 @@ import Link from 'next/link'
 import productImg from '../../../../public/coffee.png'
 import CircleAddBtn from '../../UI/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/utils/getImgUrl'
-import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
 import { useCombinedStore } from '@/store/store'
 import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
@@ -46,42 +45,45 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
   return (
     <li
       data-testid="product-card"
-      className={
-        'relative flex w-full max-w-[225px] flex-col justify-self-center rounded-xl border border-black/8 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:min-w-[178px]'
-      }
+      className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl border border-black/6 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:min-w-[190px]"
     >
-      <Link href={`/product/${id}`} className={'flex flex-col gap-y-4'}>
-        <div className="relative aspect-[calc(225/188)] sm:h-[188px]">
+      {/* Image */}
+      <Link href={`/product/${id}`}>
+        <div className="relative h-[200px] w-full bg-[#F7F7F9] sm:h-[220px]">
           <Image
-            className="rounded-t-lg"
             src={getImgUrl(productFileUrl, productImg)}
-            alt="card picture"
-            style={{ objectFit: 'cover' }}
+            alt={name}
+            style={{ objectFit: 'contain', padding: '16px' }}
             fill={true}
-            sizes="(max-width: 768px) 100vw,
-         (max-width: 1200px) 50vw,
-         33vw"
+            sizes="(max-width: 768px) 50vw, 25vw"
             priority={true}
           />
+          {/* Heart button — frosted glass top-right */}
+          <button
+            onClick={(e) => { e.preventDefault(); handleButtonClick() }}
+            className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none ${
+              isFavourited
+                ? 'bg-red-500/90 text-white'
+                : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
+            }`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
         </div>
-        <div className="flex flex-col gap-3.5 px-2.5 pb-3.5">
+
+        {/* Info */}
+        <div className="flex flex-col gap-2 px-3 pb-3 pt-3">
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
-          <div className={'flex w-full flex-col gap-1'}>
-            <h2 className={'text-[12px] font-bold text-primary sm:text-L'}>
-              {name}
-            </h2>
-            <p className="text-[10px] text-primary sm:text-XS">
-              by {brandName}
-            </p>
-            <p className="text-[10px] text-secondary sm:text-XS">
-              {sellerName}
-            </p>
-          </div>
+          <h2 className="text-sm font-semibold leading-tight text-primary sm:text-base">{name}</h2>
+          <p className="text-xs text-secondary">by {brandName} · {sellerName}</p>
         </div>
       </Link>
-      <hr className="h-[1px] w-full bg-secondary" />
-      <div className={'flex items-center justify-between px-2.5 py-3.5'}>
-        <p data-testid="product-price" className={'text-M font-bold sm:text-L'}>${price}</p>
+
+      {/* Price row */}
+      <div className="flex items-center justify-between border-t border-black/5 px-3 py-2.5">
+        <p data-testid="product-price" className="text-base font-bold text-primary">${price}</p>
         {productCartQuantity ? (
           <Counter
             theme="light"
@@ -92,17 +94,12 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
           />
         ) : (
           <CircleAddBtn
-            className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-10 sm:w-10"
+            className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-9 sm:w-9"
             iconClassName="h-3 w-3 sm:h-4 sm:w-4"
             onClick={() => addToCart(id)}
           />
         )}
       </div>
-      <ButtonHeart
-        active={isFavourited}
-        onClick={handleButtonClick}
-        className="absolute right-1 top-1 m-0 h-6 w-6 border-none bg-transparent p-1 sm:h-12 sm:w-12 sm:p-2"
-      />
     </li>
   )
 }
