@@ -41,3 +41,4 @@ next-env.d.ts
 .amazonq
 playwright-report/
 test-results/
+UI-IMPROVEMENTS.md
