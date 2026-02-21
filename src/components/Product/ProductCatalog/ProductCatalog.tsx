@@ -70,6 +70,7 @@ export default function ProductCatalog({
 
   return (
     <section
+      id="catalog"
       className={twMerge(
         'mx-4 mt-5 text-center min-[1124px]:mt-16',
         !isShowLoadMoreBtn ? 'mb-14' : '',
