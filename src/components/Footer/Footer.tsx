@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#0a0a0a] text-white">
       <div className="mx-auto max-w-[1384px] px-6 py-16 sm:px-20">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-4">
 
           {/* Brand */}
           <div className="flex flex-col gap-4">
@@ -31,6 +31,17 @@ export default function Footer() {
               <a href="/favourites" className="transition hover:text-white">Favourites</a>
               <a href="/cart" className="transition hover:text-white">Cart</a>
               <a href="/orders" className="transition hover:text-white">Orders</a>
+            </nav>
+          </div>
+
+          {/* Community */}
+          <div className="flex flex-col gap-4">
+            <span className="text-xs font-semibold uppercase tracking-widest text-white/30">Community</span>
+            <nav className="flex flex-col gap-2 text-sm text-white/60">
+              <a href="https://github.com/Sunagatov/Iced-Latte" target="_blank" rel="noopener noreferrer" className="transition hover:text-white">GitHub</a>
+              <a href="https://github.com/Sunagatov/Iced-Latte/issues" target="_blank" rel="noopener noreferrer" className="transition hover:text-white">Contribute</a>
+              <a href="https://t.me/zufarexplained" target="_blank" rel="noopener noreferrer" className="transition hover:text-white">Telegram</a>
+              <a href="https://www.linkedin.com/in/zufar-sunagatov/" target="_blank" rel="noopener noreferrer" className="transition hover:text-white">LinkedIn</a>
             </nav>
           </div>
 
