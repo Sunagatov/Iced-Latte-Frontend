@@ -47,7 +47,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       headers: forwardHeaders(request),
       body: body ?? undefined,
     })
-    const data = await response.json()
+    const contentType = response.headers.get('content-type') ?? ''
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text()
     if (!response.ok) return createCorsResponse(data, response.status)
     return createCorsResponse(data)
   } catch {

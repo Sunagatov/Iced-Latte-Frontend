@@ -9,6 +9,7 @@ import GlobalRouteTracker from './GlobalRouteTracker'
 
 const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode }) => {
   const { syncBackendFav } = useFavouritesStore()
+  const resetAuth = useAuthStore((state) => state.reset)
 
   const itemsIds = useCombinedStore(useShallow((state) => state.itemsIds))
   const getCartItems = useCombinedStore((state) => state.getCartItems)
@@ -37,13 +38,15 @@ const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode })
     const fetchData = async (): Promise<void> => {
       try {
         if (token) await syncBackendFav()
-      } catch (error) {
-        console.error('Error in Fav useEffect:', error)
+      } catch (error: any) {
+        if (error?.response?.status === 401 || error?.status === 401) {
+          resetAuth()
+        }
       }
     }
 
     void fetchData()
-  }, [syncBackendFav, token])
+  }, [syncBackendFav, token, resetAuth])
 
   return <GlobalRouteTracker>{children}</GlobalRouteTracker>
 }

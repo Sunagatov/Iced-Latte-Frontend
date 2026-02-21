@@ -11,7 +11,9 @@ import { useFavouritesStore } from '@/store/favStore'
 import { FavElementProps } from '@/types/FavElement'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
 
-export default function FavElement({ product }: Readonly<FavElementProps>) {
+type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
+
+export default function FavElement({ product, view = 'list' }: Props) {
   const { addFavourite, removeFavourite, favourites, favouriteIds } =
     useFavouritesStore()
   const { token } = useAuthStore()
@@ -20,6 +22,41 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
 
   const handleButtonClick = async () => {
     await handleFavouriteButtonClick(product.id, token, isFavourited, addFavourite, removeFavourite)
+  }
+
+  if (view === 'grid') {
+    return (
+      <div className="flex flex-col rounded-2xl border border-primary/60 bg-white shadow-sm transition-shadow hover:shadow-md overflow-hidden">
+        <Link href={`/product/${product.id}`} className="block bg-secondary">
+          <Image
+            src={getImgUrl(product.productFileUrl, productImg)}
+            alt={product.name}
+            width={240}
+            height={200}
+            className="w-full h-[160px] object-contain p-3 transition-transform hover:scale-105"
+          />
+        </Link>
+        <div className="flex flex-col gap-1 p-3 flex-1">
+          {product.brandName && (
+            <p className="text-[10px] font-medium uppercase tracking-wider text-tertiary">{product.brandName}</p>
+          )}
+          <Link href={`/product/${product.id}`}>
+            <p className="text-sm font-semibold text-primary line-clamp-2 leading-snug hover:text-brand-solid transition-colors">{product.name}</p>
+          </Link>
+          <div className="flex items-center gap-1 text-xs text-tertiary mt-0.5">
+            <Image src={star} alt="star" className="h-3 w-3" />
+            <span className="font-semibold text-primary">{product.averageRating?.toFixed(1) ?? '—'}</span>
+            <span>({product.reviewsCount ?? 0})</span>
+            <span>· {product.quantity} g.</span>
+          </div>
+          <p className="text-base font-bold text-primary mt-1">${product?.price?.toFixed(2)}</p>
+          <div className="mt-2 flex items-center gap-2 scale-[0.82] origin-left">
+            <AddToCartButton product={product} />
+            <ButtonHeart active={isFavourited} onClick={handleButtonClick} />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

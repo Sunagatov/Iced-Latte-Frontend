@@ -79,20 +79,11 @@ export const useFavouritesStore = create<FavStoreState>()(
       },
 
       syncBackendFav: async () => {
-        try {
-          const { favouriteIds } = get()
-          const reqItems: IFavPushItems = { productIds: favouriteIds }
-
-          const response = await mergeFavs(reqItems)
-          const { products } = response
-
-          set((state) => ({
-            ...state,
-            favourites: products,
-          }))
-        } catch (e) {
-          throw new Error((e as Error).message)
-        }
+        const { favouriteIds } = get()
+        const reqItems: IFavPushItems = { productIds: favouriteIds }
+        const response = await mergeFavs(reqItems)
+        const { products } = response
+        set((state) => ({ ...state, favourites: products }))
       },
       resetFav: () => set({ favourites: [], favouriteIds: [], count: 0 }),
     }),

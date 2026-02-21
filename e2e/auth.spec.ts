@@ -1,20 +1,43 @@
 import { test, expect } from '@playwright/test'
+import { nanoid } from 'nanoid'
 
-const EMAIL = 'olivia@example.com'
-const PASSWORD = 'p@ss1logic11'
+const EXISTING_EMAIL = 'olivia@example.com'
+const EXISTING_PASSWORD = 'p@ss1logic11'
 
-test('login with valid credentials', async ({ page }) => {
-  const res = await page.request.post('http://localhost:8083/api/v1/auth/authenticate', {
-    data: { email: EMAIL, password: PASSWORD },
-  })
-  expect(res.status()).toBe(200)
-  const body = await res.json()
-  expect(body.token).toBeTruthy()
+test('sign in with valid credentials redirects away from /signin', async ({ page }) => {
+  await page.goto('/signin')
+  await page.fill('#email', EXISTING_EMAIL)
+  await page.fill('#password', EXISTING_PASSWORD)
+  await page.click('#login-btn')
+  await expect(page).not.toHaveURL(/\/signin/, { timeout: 8000 })
 })
 
-test('login with invalid credentials returns 401', async ({ page }) => {
-  const res = await page.request.post('http://localhost:8083/api/v1/auth/authenticate', {
-    data: { email: 'wrong@example.com', password: 'wrongpassword1A!' },
-  })
-  expect(res.status()).toBe(401)
+test('sign in with invalid credentials shows error', async ({ page }) => {
+  await page.goto('/signin')
+  await page.fill('#email', 'wrong@example.com')
+  await page.fill('#password', 'WrongPass1!')
+  await page.click('#login-btn')
+  await expect(page.locator('.text-negative')).toBeVisible({ timeout: 5000 })
+})
+
+test('sign up with new email redirects to /confirm_registration', async ({ page }) => {
+  const suffix = nanoid(6).replace(/[^a-zA-Z0-9]/g, 'x')
+  const email = `testuser${suffix}@example.com`
+  await page.goto('/signup')
+  await page.fill('#firstName', 'Tester')
+  await page.fill('#lastName', 'Usertest')
+  await page.fill('#email', email)
+  await page.fill('#password', 'ValidPass1@')
+  await page.click('#register-btn')
+  await expect(page).toHaveURL(/\/confirm_registration/, { timeout: 8000 })
+})
+
+test('sign up with existing email shows error', async ({ page }) => {
+  await page.goto('/signup')
+  await page.fill('#firstName', 'Test')
+  await page.fill('#lastName', 'User')
+  await page.fill('#email', EXISTING_EMAIL)
+  await page.fill('#password', 'ValidPass1@')
+  await page.click('#register-btn')
+  await expect(page.locator('.text-negative')).toBeVisible({ timeout: 5000 })
 })

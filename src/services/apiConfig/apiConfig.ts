@@ -16,10 +16,12 @@ instance.interceptors.request.use((config) => {
     const protocol = process.env.PROTOCOL || 'http'
     const host = process.env.HOST || 'localhost'
     const port = process.env.PORT || '3002'
-    config.url = `${protocol}://${host}:${port}/api/proxy/${config.url}`
+    const path = config.url!.replace(/^\//, '')
+    config.url = `${protocol}://${host}:${port}/api/proxy/${path}`
   } else {
     // Client-side: use relative URL
-    config.url = `/api/proxy/${config.url}`
+    const path = config.url!.replace(/^\//, '')
+    config.url = `/api/proxy/${path}`
   }
   return config
 })
