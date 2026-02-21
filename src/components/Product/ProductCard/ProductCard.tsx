@@ -37,19 +37,10 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
   const { addFavourite, removeFavourite, favourites, favouriteIds } =
     useFavouritesStore()
 
-  const isInFavourites = favourites?.some((fav) => fav.id === id)
-
-  const isActive = favouriteIds.includes(id)
+  const isFavourited = token ? favourites?.some((fav) => fav.id === id) : favouriteIds.includes(id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(
-      id,
-      token,
-      isInFavourites,
-      isActive,
-      addFavourite,
-      removeFavourite,
-    )
+    await handleFavouriteButtonClick(id, token, isFavourited, addFavourite, removeFavourite)
   }
 
   return (
@@ -95,21 +86,19 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
             theme="light"
             className={'h-8 w-[84px] gap-2 text-[12px] sm:text-M'}
             count={productCartQuantity}
-            removeProduct={() => removeFromCart(id, token)}
-            addProduct={() => addToCart(id, token)}
+            removeProduct={() => removeFromCart(id)}
+            addProduct={() => addToCart(id)}
           />
         ) : (
           <CircleAddBtn
             className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-10 sm:w-10"
             iconClassName="h-3 w-3 sm:h-4 sm:w-4"
-            onClick={() => {
-              addToCart(id, token)
-            }}
+            onClick={() => addToCart(id)}
           />
         )}
       </div>
       <ButtonHeart
-        active={token ? isInFavourites : isActive}
+        active={isFavourited}
         onClick={handleButtonClick}
         className="absolute right-1 top-1 m-0 h-6 w-6 border-none bg-transparent p-1 sm:h-12 sm:w-12 sm:p-2"
       />

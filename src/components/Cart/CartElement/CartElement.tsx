@@ -38,18 +38,10 @@ export default function CartElement({
   const { addFavourite, removeFavourite, favourites, favouriteIds } =
     useFavouritesStore()
 
-  const isInFavourites = favourites?.some((fav) => fav.id === productInfo.id)
-  const isActive = favouriteIds.includes(productInfo.id)
+  const isFavourited = token ? favourites?.some((fav) => fav.id === productInfo.id) : favouriteIds.includes(productInfo.id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(
-      productInfo.id,
-      token,
-      isInFavourites,
-      isActive,
-      addFavourite,
-      removeFavourite,
-    )
+    await handleFavouriteButtonClick(productInfo.id, token, isFavourited, addFavourite, removeFavourite)
   }
 
   return (
@@ -98,7 +90,7 @@ export default function CartElement({
               <Image src={trash} width={24} height={24} alt="Logo" priority />
             </Button>
             <ButtonHeart
-              active={token ? isInFavourites : isActive}
+              active={isFavourited}
               onClick={handleButtonClick}
               className="m-0 h-9 w-9 p-2 sm:h-12 sm:w-12 sm:p-2"
             />

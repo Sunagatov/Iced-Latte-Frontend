@@ -18,16 +18,16 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
   )?.productQuantity
 
   const addProduct = useCallback(() => {
-    add(product.id, token)
-  }, [add, product.id, token])
+    add(product.id)
+  }, [add, product.id])
 
   const removeProduct = useCallback(() => {
     if (productQuantity === 1) {
-      removeFullProduct(product.id, token)
+      removeFullProduct(product.id)
     } else {
-      remove(product.id, token)
+      remove(product.id)
     }
-  }, [productQuantity, removeFullProduct, remove, product.id, token])
+  }, [productQuantity, removeFullProduct, remove, product.id])
 
   return (
     <>

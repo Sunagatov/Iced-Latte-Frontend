@@ -12,6 +12,7 @@ import {
   removeCartItem,
 } from '@/services/cartApiService'
 import { StateCreator } from 'zustand'
+import { useAuthStore } from '@/store/authStore'
 
 export interface CartItem {
   id: string
@@ -29,11 +30,11 @@ interface CartSliceState {
 }
 
 interface CartSliceActions {
-  add: (id: string, token: string | null) => void
-  remove: (id: string, token: string | null) => void
+  add: (id: string) => void
+  remove: (id: string) => void
   getCartItems: () => Promise<void>
   syncBackendCart: (token: string) => Promise<void>
-  removeFullProduct: (id: string, token: string | null) => void
+  removeFullProduct: (id: string) => void
   resetCart: () => void
 
   // helper functions to update state
@@ -62,8 +63,9 @@ export const createCartSlice: StateCreator<
   CartSliceStore
 > = (set, get) => ({
   ...initialState,
-  add: (id: string, token: string | null) => {
+  add: (id: string) => {
     const { itemsIds, tempItems, updateCartItem, createCart } = get()
+    const token = useAuthStore?.getState?.()?.token ?? null
     const cartItem = itemsIds.find((item) => item.productId === id)
 
     if (token) {
@@ -152,8 +154,9 @@ export const createCartSlice: StateCreator<
       throw new Error((e as Error).message)
     }
   },
-  remove: (id: string, token: string | null) => {
+  remove: (id: string) => {
     const { tempItems, itemsIds, updateCartItem } = get()
+    const token = useAuthStore?.getState?.()?.token ?? null
 
     if (token) {
       const productCartSlotId = getProductCartSlotId(id, tempItems)
@@ -186,7 +189,8 @@ export const createCartSlice: StateCreator<
       }))
     }
   },
-  removeFullProduct: (id: string, token: string | null) => {
+  removeFullProduct: (id: string) => {
+    const token = useAuthStore?.getState?.()?.token ?? null
     if (token) {
       const { tempItems } = get()
       const productCartSlotId = getProductCartSlotId(id, tempItems)

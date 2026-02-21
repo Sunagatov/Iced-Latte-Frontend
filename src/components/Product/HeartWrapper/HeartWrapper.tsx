@@ -9,15 +9,12 @@ export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProp
   const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
   const { token } = useAuthStore()
 
-  const isInFavourites = favourites?.some((fav) => fav.id === id)
-  const isActive = favouriteIds.includes(id)
-
-
+  const isFavourited = token ? favourites?.some((fav) => fav.id === id) : favouriteIds.includes(id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(id, token, isInFavourites, isActive, addFavourite, removeFavourite)
+    await handleFavouriteButtonClick(id, token, isFavourited, addFavourite, removeFavourite)
   }
 
-  return <ButtonHeart onClick={handleButtonClick} active={token ? isInFavourites : isActive} className={className} />
+  return <ButtonHeart onClick={handleButtonClick} active={isFavourited} className={className} />
 
 }

@@ -19,22 +19,12 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
   const { add } = useCombinedStore()
   const { token } = useAuthStore()
 
-  const isInFavourites = favourites.some((fav) => fav.id === product.id)
-  const isActive = favouriteIds.includes(product.id)
+  const isFavourited = token ? favourites.some((fav) => fav.id === product.id) : favouriteIds.includes(product.id)
 
-  const addToCart = () => {
-    add(product.id, token)
-  }
+  const addToCart = () => add(product.id)
 
   const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(
-      product.id,
-      token,
-      isInFavourites,
-      isActive,
-      addFavourite,
-      removeFavourite,
-    )
+    await handleFavouriteButtonClick(product.id, token, isFavourited, addFavourite, removeFavourite)
   }
 
   return (
@@ -73,7 +63,7 @@ export default function FavElement({ product }: Readonly<FavElementProps>) {
           </Button>
           <div>
             <ButtonHeart
-              active={token ? isInFavourites : isActive}
+              active={isFavourited}
               onClick={handleButtonClick}
             />
           </div>

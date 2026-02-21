@@ -34,9 +34,9 @@ export default function CartFull() {
           <CartElement
             key={item.id}
             product={item}
-            remove={() => remove(item.productInfo.id, token)}
-            removeAll={() => removeFullProduct(item.productInfo.id, token)}
-            add={() => add(item.productInfo.id, token)}
+            remove={() => remove(item.productInfo.id)}
+            removeAll={() => removeFullProduct(item.productInfo.id)}
+            add={() => add(item.productInfo.id)}
           />
         ))}
       </div>

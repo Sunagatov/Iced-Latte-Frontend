@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { Review } from '@/types/ReviewType'
 import { IProductReviewsStatistics } from '@/types/IProductReviewsStatistics'
 
@@ -30,8 +29,7 @@ export const checkIfUserReviewExists = (review: Review | null): boolean => {
 }
 
 export const useProductReviewsStore = create<ReviewsStoreState>()(
-  persist(
-    (set) => ({
+  (set) => ({
       currentPage: 0,
       totalElements: 0,
       totalPages: 0,
@@ -42,7 +40,7 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
       shouldRevalidateUserReview: true,
 
       isReviewFormVisible: false,
-      isReviewButtonVisible: true, // ? false
+      isReviewButtonVisible: true,
       isReviewRatingFormVisible: false,
 
       setIsReviewFormVisible: (isVisible: boolean) =>
@@ -51,12 +49,6 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
         set({ isReviewButtonVisible: isVisible }),
       setIsRaitingFormVisible: (isVisible: boolean) =>
         set({ isReviewRatingFormVisible: isVisible }),
-      setwasRend: () => {
-        set((state) => ({
-          ...state,
-          wasRend: true,
-        }))
-      },
       setTotalReviewsCount: (value: number) => {
         set((state) => ({
           ...state,
@@ -93,9 +85,5 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
           shouldRevalidateUserReview: value,
         }))
       },
-    }),
-    {
-      name: 'productReviews',
-    },
-  ),
+  }),
 )
