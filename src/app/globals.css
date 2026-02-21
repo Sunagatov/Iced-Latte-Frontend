@@ -1,6 +1,38 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-focus: #682EFF;
+  --color-error: #EB5757;
+  --color-primary: #04121B;
+  --color-secondary: #04121BA3;
+  --color-tertiary: #04121B7A;
+  --color-placeholder: #04121B5C;
+  --color-disabled: #04121B3D;
+  --color-brand: #682EFF;
+  --color-positive: #00A30E;
+  --color-negative: #E12E3C;
+  --color-inverted: #FFFFFF;
+  --color-brand-solid: #682EFF;
+  --color-brand-second: #F0EAFF;
+  --color-brand-solid-hover: #5425CC;
+  --color-hover-heart: #D9D9D9;
+  --color-fullpage-tint: #00000059;
+
+  --shadow-primary: 0px -1px 0px 0px #0000001A;
+  --shadow-header: 0px 2px 2px 0px #682EFF14;
+
+  --text-XS: 14px;
+  --text-M: 16px;
+  --text-L: 18px;
+  --text-XL: 20px;
+  --text-2XL: 24px;
+  --text-3XL: 30px;
+  --text-4XL: 36px;
+  --text-5XL: 48px;
+  --text-6XL: 64px;
+
+  --width-list: 71.5rem;
+}
 
 /* custom calendar styles are applied only from the global css file */
 
