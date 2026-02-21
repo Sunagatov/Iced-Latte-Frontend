@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tailwindcss/theme" layer(theme);
 
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; }
+}
 @theme {
   /* Brand / state colors */
   --color-focus: #682EFF;

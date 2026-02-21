@@ -1,27 +1,17 @@
 export default function Footer() {
   return (
-    <footer className="flex h-28 w-full items-center justify-start bg-black text-inverted">
-      <div className="ml-6 flex flex-col text-base sm:ml-16 sm:flex-row sm:items-center sm:text-lg md:ml-36 md:gap-14 lg:gap-28">
-        <div className="mb-3 flex flex-col gap-x-3 sm:order-2 sm:justify-center">
-          <div>
-            <a href="tel:(555) 123-45675" rel="noopener noreferrer">
-              Phone Number: (555) 123-4567
-            </a>
-          </div>
-          <div>
-            Email:
-            <span className="ml-1 underline sm:no-underline">
-              <a
-                target="_blank"
-                href="mailto:info@coffeetimecafe.com"
-                rel="noopener noreferrer"
-              >
-                info@coffeetimecafe.com
-              </a>
-            </span>
-          </div>
+    <footer className="border-t border-black/8 bg-[#0d0d0d] px-6 py-12 text-white sm:px-20">
+      <div className="mx-auto flex max-w-[1384px] flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3">
+          <span className="text-xl font-bold tracking-tight">Iced Latte ☕</span>
+          <p className="max-w-xs text-sm text-white/50">A community-built open-source coffee marketplace. Specialty beans, delivered.</p>
         </div>
-        <div className="flex w-52 sm:order-1 sm:mb-0">© 2024 Iced Latte</div>
+        <div className="flex flex-col gap-2 text-sm text-white/60">
+          <span className="mb-1 font-semibold text-white">Contact</span>
+          <a href="tel:(555) 123-4567" className="transition hover:text-white">📞 (555) 123-4567</a>
+          <a href="mailto:info@coffeetimecafe.com" className="transition hover:text-white">✉️ info@coffeetimecafe.com</a>
+        </div>
+        <div className="text-sm text-white/40">© 2024 Iced Latte. MIT License.</div>
       </div>
     </footer>
   )

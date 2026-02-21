@@ -9,7 +9,9 @@ interface IFilterSidebar {
 export default function FilterSidebar({ className, children }: Readonly<IFilterSidebar>) {
   return (
     <aside className={twMerge('w-[266px] flex-col', className)}>
-      {children}
+      <div className="rounded-xl bg-[#F9F9FB] p-4">
+        {children}
+      </div>
     </aside>
   )
 }

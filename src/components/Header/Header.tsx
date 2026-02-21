@@ -8,8 +8,7 @@ import HeaderHeart from '../UI/HeaderHeart/HeaderHeart'
 export default function Header() {
   return (
     <header
-      className=" sticky left-0 top-0 z-10 mx-auto mt-2 flex h-20 w-full items-center justify-between bg-primary px-4
-shadow-header sm:px-20"
+      className="sticky left-0 top-0 z-10 mx-auto flex h-16 w-full items-center justify-between border-b border-black/5 bg-white/80 px-4 backdrop-blur-md sm:px-20"
     >
       <Link href="/">
         <div className=" flex items-center gap-4">
