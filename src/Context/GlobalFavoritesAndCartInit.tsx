@@ -8,7 +8,7 @@ import { useShallow } from 'zustand/react/shallow'
 import GlobalRouteTracker from './GlobalRouteTracker'
 
 const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode }) => {
-  const { getFavouriteProducts, syncBackendFav } = useFavouritesStore()
+  const { syncBackendFav } = useFavouritesStore()
 
   const itemsIds = useCombinedStore(useShallow((state) => state.itemsIds))
   const getCartItems = useCombinedStore((state) => state.getCartItems)
@@ -36,17 +36,14 @@ const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        if (token) {
-          await syncBackendFav()
-          await getFavouriteProducts(token)
-        }
+        if (token) await syncBackendFav()
       } catch (error) {
         console.error('Error in Fav useEffect:', error)
       }
     }
 
     void fetchData()
-  }, [getFavouriteProducts, syncBackendFav, token])
+  }, [syncBackendFav, token])
 
   return <GlobalRouteTracker>{children}</GlobalRouteTracker>
 }

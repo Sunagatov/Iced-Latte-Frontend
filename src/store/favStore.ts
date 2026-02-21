@@ -38,39 +38,17 @@ export const useFavouritesStore = create<FavStoreState>()(
       setLoading: (loading) => set({ loading }),
 
       addFavourite: async (id: string, token: string | null): Promise<void> => {
-        const { favouriteIds } = get()
-
-        if (token) {
-          set({
-            favouriteIds: [...favouriteIds, id],
-          })
-          await get().syncBackendFav()
-        } else {
-          set({
-            favouriteIds: [...favouriteIds, id],
-          })
-        }
+        set((state) => ({ favouriteIds: [...state.favouriteIds, id] }))
+        if (token) await get().syncBackendFav()
       },
 
-      removeFavourite: async (
-        id: string,
-        token: string | null,
-      ): Promise<void> => {
+      removeFavourite: async (id: string, token: string | null): Promise<void> => {
         try {
-          if (token) {
-            set((state) => ({
-              ...state,
-              favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
-              favourites: state.favourites.filter((fav) => fav.id !== id),
-            }))
-            await removeFavItem(id)
-          } else {
-            set((state) => ({
-              ...state,
-              favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
-              favourites: state.favourites.filter((fav) => fav.id !== id),
-            }))
-          }
+          set((state) => ({
+            favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
+            favourites: state.favourites.filter((fav) => fav.id !== id),
+          }))
+          if (token) await removeFavItem(id)
         } catch (error) {
           throw new Error((error as Error).message)
         }
