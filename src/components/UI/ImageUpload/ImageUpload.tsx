@@ -1,6 +1,5 @@
 'use client'
 import Image from 'next/image'
-import getImgUrl from '@/utils/getImgUrl'
 import { useState } from 'react'
 import { uploadImage } from '@/services/userService'
 import { useErrorHandler } from '@/services/apiError/apiError'
@@ -31,7 +30,7 @@ const ImageUpload = () => {
     }
   }
 
-  const src = preview ?? getImgUrl(userData?.avatarLink, null)
+  const src = preview ?? (userData?.avatarLink && userData.avatarLink !== 'default file' ? userData.avatarLink : undefined)
   const hasAvatar = src && userData?.avatarLink && userData.avatarLink !== 'default file'
 
   return (
