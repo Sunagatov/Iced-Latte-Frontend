@@ -33,7 +33,7 @@ const FilterCheckboxGroup = ({
   }
 
   return (
-    <div>
+    <div data-testid={`filter-group-${title.toLowerCase()}`}>
       <FiltersGroupTitle title={title} />
       <div className="flex flex-col items-start gap-2">
         {displayedItems.map((item) => (

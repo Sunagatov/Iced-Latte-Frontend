@@ -10,7 +10,7 @@ import FiltersGroupTitle from '@/components/Product/FilterSidebar/FiltersGroupTi
 import FormInput from '@/components/UI/FormInput/FormInput'
 
 const getDecimalFromString = (input: string) => {
-  const cleanedValue = input.replace(/[^\d.]/, '')
+  const cleanedValue = input.replace(/[^\d.]/g, '')
 
   const firstDotIndex = cleanedValue.indexOf('.')
 

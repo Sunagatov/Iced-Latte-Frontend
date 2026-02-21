@@ -45,6 +45,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
 
   return (
     <li
+      data-testid="product-card"
       className={
         'relative flex w-full max-w-[225px] flex-col justify-self-center rounded-lg border border-secondary transition-all hover:-translate-y-2 hover:shadow-[9px_9px_5px_0px_#D2D2D31A] sm:min-w-[178px]'
       }
@@ -80,7 +81,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
       </Link>
       <hr className="h-[1px] w-full bg-secondary" />
       <div className={'flex items-center justify-between px-2.5 py-3.5'}>
-        <p className={'text-M font-bold sm:text-L'}>${price}</p>
+        <p data-testid="product-price" className={'text-M font-bold sm:text-L'}>${price}</p>
         {productCartQuantity ? (
           <Counter
             theme="light"
