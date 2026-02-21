@@ -49,41 +49,11 @@ export const useProductReviewsStore = create<ReviewsStoreState>()(
         set({ isReviewButtonVisible: isVisible }),
       setIsRaitingFormVisible: (isVisible: boolean) =>
         set({ isReviewRatingFormVisible: isVisible }),
-      setTotalReviewsCount: (value: number) => {
-        set((state) => ({
-          ...state,
-          totalElements: value,
-        }))
-      },
-      setShouldRevalidateStatistics: (value: boolean) => {
-        set((state) => ({
-          ...state,
-          shouldRevalidateStatistics: value,
-        }))
-      },
-      setReviewsStatistics: (value: IProductReviewsStatistics | null) => {
-        set((state) => ({
-          ...state,
-          reviewsStatistics: value,
-        }))
-      },
-      setReviewFormRating: (value: number) => {
-        set((state) => ({
-          ...state,
-          reviewFormRating: value,
-        }))
-      },
-      setShouldRevalidateReviews: (value: boolean) => {
-        set((state) => ({
-          ...state,
-          shouldRevalidateReviews: value,
-        }))
-      },
-      setShouldRevalidateUserReview: (value: boolean) => {
-        set((state) => ({
-          ...state,
-          shouldRevalidateUserReview: value,
-        }))
-      },
+      setTotalReviewsCount: (value: number) => set({ totalElements: value }),
+      setShouldRevalidateStatistics: (value: boolean) => set({ shouldRevalidateStatistics: value }),
+      setReviewsStatistics: (value: IProductReviewsStatistics | null) => set({ reviewsStatistics: value }),
+      setReviewFormRating: (value: number) => set({ reviewFormRating: value }),
+      setShouldRevalidateReviews: (value: boolean) => set({ shouldRevalidateReviews: value }),
+      setShouldRevalidateUserReview: (value: boolean) => set({ shouldRevalidateUserReview: value }),
   }),
 )
