@@ -43,8 +43,8 @@ const InterceptorsForRefreshToken = ({ children }: { children: React.ReactNode }
 
             // If the update is successful, repeat the original request
             if (response) {
-              authenticate(response.data.refreshToken)
-              originalRequest.headers['Authorization'] = `Bearer ${response.data.refreshToken}`
+              authenticate(response.data.token)
+              originalRequest.headers['Authorization'] = `Bearer ${response.data.token}`
             }
 
             // Let's repeat the original query
