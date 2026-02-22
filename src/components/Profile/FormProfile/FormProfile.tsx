@@ -1,18 +1,13 @@
 'use client'
-import 'react-calendar/dist/Calendar.css'
 import { editUserProfile } from '@/services/userService'
-import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { format, isValid as isValidDate } from 'date-fns'
-import { FormProfileProps, Value, ValuePiece } from '@/types/FormProfileTypes'
+import { FormProfileProps } from '@/types/FormProfileTypes'
 import { validationSchema } from '@/validation/userFormSchema'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { UserData } from '@/types/services/UserServices'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import Image from 'next/image'
 import Button from '@/components/UI/Buttons/Button/Button'
-import CalendarComponent from '@/components/UI/Calendar/Calendar'
 import FormInput from '@/components/UI/FormInput/FormInput'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
 import countries from '@/constants/countryData'
@@ -22,56 +17,17 @@ const FormProfile = ({
   updateUserData,
   initialUserData,
 }: Readonly<FormProfileProps>) => {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
-  const [date, setDate] = useState<Date | null>(new Date())
   const { errorMessage, handleError } = useErrorHandler()
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<UserData>({
     resolver: yupResolver(validationSchema) as any,
     defaultValues: initialUserData,
+    mode: 'onChange',
   })
-
-  useEscapeKey(() => {
-    setIsCalendarOpen(false)
-  })
-
-  // function to convert the date for the server
-  const handleCalendarChange = (newDate: Value) => {
-    if (newDate === null) {
-      return
-    }
-
-    const selectedDate = Array.isArray(newDate)
-      ? newDate[0]
-      : (newDate as ValuePiece)
-
-    if (isValidDate(selectedDate)) {
-      const formattedDate =
-        selectedDate instanceof Date ? format(selectedDate, 'yyyy-MM-dd') : ''
-
-      setDate(selectedDate)
-      setValue('birthDate', formattedDate)
-    }
-  }
-
-  // function for opening and closing the calendar
-  const handleCalendarToggle = () => {
-    setIsCalendarOpen(!isCalendarOpen)
-  }
-
-  // function for closing the calendar by clicking anywhere in the viewport
-  const clickBackdrop = (
-    e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent,
-  ) => {
-    if (e.currentTarget === e.target) {
-      setIsCalendarOpen(false)
-    }
-  }
 
   const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
@@ -114,43 +70,18 @@ const FormProfile = ({
             />
           </div>
         </div>
-        <div className="relative">
-          <FormInput
+        <div>
+          <label className="font-XS mb-3 block text-sm font-medium text-primary" htmlFor="birthDate">
+            Date of birth
+          </label>
+          <input
             id="birthDate"
-            register={register}
-            label="Date of birth"
-            name="birthDate"
-            type="text"
-            placeholder="Select date of birth. Date format YYYY-MM-DD"
+            type="date"
+            max={new Date().toISOString().split('T')[0]}
+            {...register('birthDate')}
+            className="block h-[54px] w-full rounded-lg bg-secondary p-2.5 text-primary outline-focus"
           />
-          <Image
-            src="/open_select.svg"
-            alt="calendar open icon"
-            width={18}
-            height={18}
-            className={`absolute right-10 top-[60%] cursor-pointer transition-transform ${isCalendarOpen ? 'rotate-180' : ''}`}
-            onClick={handleCalendarToggle}
-          />
-          {isCalendarOpen && (
-            <div
-              className="fixed bottom-0 left-0 right-0 top-0 z-10"
-              onClick={clickBackdrop}
-              onKeyDown={clickBackdrop}
-              role="button"
-              tabIndex={0}
-            >
-              <div className="z-20">
-                {isCalendarOpen && (
-                  <CalendarComponent
-                    onChange={handleCalendarChange}
-                    isOpen={isCalendarOpen}
-                    onClickBackdrop={clickBackdrop}
-                    selectedDate={date}
-                  />
-                )}
-              </div>
-            </div>
-          )}
+          {errors.birthDate && <span className="text-sm text-negative">{errors.birthDate.message}</span>}
         </div>
         <div>
           <FormInput
@@ -161,17 +92,6 @@ const FormProfile = ({
             type="tel"
             placeholder="Enter phone number"
             error={errors.phoneNumber}
-          />
-        </div>
-        <div>
-          <FormInput
-            id="email"
-            register={register}
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter email"
-            error={errors.email}
           />
         </div>
         <h2 className="mb-[19px] mt-[32px] text-2xl font-medium text-primary">
@@ -186,9 +106,7 @@ const FormProfile = ({
           </label>
           <select
             id="country"
-            {...register('address.country', {
-              required: 'This field is required',
-            })}
+            {...register('address.country')}
             className="placeholder:text-placeholder' block h-[54px] w-full cursor-pointer appearance-none rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus"
           >
             <option value="" disabled>

@@ -35,9 +35,15 @@ export const authChangePassSchema = yup.object().shape({
     ),
   newPassword: yup
     .string()
-    .oneOf(
+    .required('New Password is a required field')
+    .min(8, 'New Password should have a length between 8 and 128 characters')
+    .max(128, 'New Password should have a length between 8 and 128 characters')
+    .matches(
+      /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
+      'New Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
+    )
+    .notOneOf(
       [yup.ref('oldPassword')],
       'New Password must not be the same as Old Password',
-    )
-    .required('New Password is a required field'),
+    ),
 })

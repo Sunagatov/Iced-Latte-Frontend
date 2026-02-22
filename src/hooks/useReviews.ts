@@ -1,4 +1,5 @@
 import useSWRInfinite from 'swr/infinite'
+import { useCallback } from 'react'
 import { apiGetAllReviews, IReviews } from '@/services/reviewService'
 import { Review } from '@/types/ReviewType'
 import { IOption } from '@/types/Dropdown'
@@ -60,7 +61,45 @@ export function useReviews({
     (isLoading && !error) || // initial loading
     (size > 0 && data && typeof data[size - 1] === 'undefined')
 
-  const refreshReviews = () => mutate()
+  const refreshReviews = useCallback(() => mutate(), [mutate])
+
+  const removeReviewFromCache = useCallback((productReviewId: string) => {
+    mutate(
+      (pages) => pages?.map((page) => ({
+        ...page,
+        reviewsWithRatings: page.reviewsWithRatings.filter(
+          (r) => r.productReviewId !== productReviewId
+        ),
+      })),
+      { revalidate: false }
+    )
+  }, [mutate])
+
+  const addReviewToCache = useCallback((review: Review) => {
+    mutate(
+      (pages) => {
+        if (!pages) return pages
+        const first = pages[0]
+        return [
+          { ...first, reviewsWithRatings: [review, ...first.reviewsWithRatings] },
+          ...pages.slice(1),
+        ]
+      },
+      { revalidate: true }
+    )
+  }, [mutate])
+
+  const updateReviewInCache = useCallback((updated: Review) => {
+    mutate(
+      (pages) => pages?.map((page) => ({
+        ...page,
+        reviewsWithRatings: page.reviewsWithRatings.map(
+          (r) => r.productReviewId === updated.productReviewId ? updated : r
+        ),
+      })),
+      { revalidate: false }
+    )
+  }, [mutate])
 
   return {
     data: filteredReviews,
@@ -70,5 +109,8 @@ export function useReviews({
     isFetchingNextPage,
     error,
     refreshReviews,
+    removeReviewFromCache,
+    addReviewToCache,
+    updateReviewInCache,
   }
 }

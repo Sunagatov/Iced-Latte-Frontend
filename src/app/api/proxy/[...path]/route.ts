@@ -23,11 +23,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   try {
     const response = await fetch(apiUrl, { headers: forwardHeaders(request) })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const data = await response.json()
+    const contentType = response.headers.get('content-type') ?? ''
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text()
+    if (!response.ok) return createCorsResponse(data, response.status)
     return createCorsResponse(data)
   } catch {
-    return createCorsResponse({ products: [], totalPages: 0, page: 0, size: 0 })
+    return createCorsResponse({ error: 'API unavailable' }, 503)
   }
 }
 
@@ -69,8 +72,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       headers: forwardHeaders(request),
       body,
     })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const data = await response.json()
+    const contentType = response.headers.get('content-type') ?? ''
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text()
+    if (!response.ok) return createCorsResponse(data, response.status)
     return createCorsResponse(data)
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)
@@ -88,8 +94,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       headers: forwardHeaders(request),
       body,
     })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const data = await response.json()
+    const contentType = response.headers.get('content-type') ?? ''
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text()
+    if (!response.ok) return createCorsResponse(data, response.status)
     return createCorsResponse(data)
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)
@@ -112,8 +121,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       headers: forwardHeaders(request),
       body,
     })
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const data = await response.json()
+    if (!response.ok) {
+      const contentType = response.headers.get('content-type') ?? ''
+      const data = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text()
+      return createCorsResponse(data, response.status)
+    }
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : {}
     return createCorsResponse(data)
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)

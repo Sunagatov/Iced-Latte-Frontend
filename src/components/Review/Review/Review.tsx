@@ -1,12 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useMediaQuery } from 'usehooks-ts'
 import { BiDislike, BiLike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
 import { Review as ReviewType } from '@/types/ReviewType'
 import { formatReviewDate } from '@/components/Review/ReviewsList/formatReviewDate'
-import Button from '@/components/UI/Buttons/Button/Button'
 import { nanoid } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
 
@@ -24,9 +22,6 @@ const Review: React.FC<Readonly<IReview>> = ({
   rateReview = () => {},
 }) => {
   const [isReviewExpanded, setIsReviewExpanded] = useState(false)
-  const isMediaQuery = useMediaQuery('(min-width: 768px)', {
-    initializeWithValue: false,
-  })
 
   const seeMoreButtonClickHandler = () => {
     setIsReviewExpanded(true)
@@ -71,64 +66,55 @@ const Review: React.FC<Readonly<IReview>> = ({
       <div className="mb-3 flex items-center gap-1">
         {[...Array(5)].map((_, starValue) => (
           <FaStar
-            className={`h-4 w-4 ${review.productRating && starValue < review.productRating ? 'text-positive' : 'text-disabled'}`}
+            className={`h-4 w-4 ${review.productRating && starValue < review.productRating ? 'text-brand' : 'text-disabled'}`}
             key={nanoid()}
           />
         ))}
-        <span className="ml-1 text-sm font-semibold text-primary">{review.productRating ?? 0}</span>
       </div>
 
-      <div
+      <p
         className={twMerge(
-          'mb-4 rounded-2xl px-5 py-4 text-base leading-relaxed text-primary',
-          isUserReview ? 'bg-brand-second ring-1 ring-brand-solid/20' : 'bg-secondary',
+          'mb-4 text-sm leading-relaxed text-primary',
+          !review.text && 'italic text-tertiary',
         )}
       >
         {review.text ? (
-          <>
-            {review.text.length > 300 && !isReviewExpanded ? (
-              <span>
-                {review.text.slice(0, 300)}
-                <Button
-                  id="see-more-btn"
-                  onClick={seeMoreButtonClickHandler}
-                  className="inline-flex h-auto bg-transparent pl-1 text-sm font-medium text-brand-solid"
-                >
-                  see more
-                </Button>
-              </span>
-            ) : (
-              review.text
-            )}
-          </>
-        ) : (
-          <span className="text-tertiary italic">No written review</span>
-        )}
-      </div>
+          review.text.length > 300 && !isReviewExpanded ? (
+            <span>
+              {review.text.slice(0, 300)}
+              <button
+                onClick={seeMoreButtonClickHandler}
+                className="ml-1 text-sm font-medium text-brand hover:underline"
+              >
+                see more
+              </button>
+            </span>
+          ) : review.text
+        ) : 'No written review'}
+      </p>
 
       <div className="flex items-center justify-between">
         {isUserReview && (
-          <Button
-            id="delete-review-btn"
+          <button
             onClick={deleteReviewHandler}
-            className="mr-auto rounded-full bg-secondary px-5 py-2 text-sm font-medium text-primary hover:bg-red-50 hover:text-red-600 md:w-auto"
+            className="text-xs font-medium text-tertiary transition hover:text-negative"
           >
-            {isMediaQuery ? 'Delete' : 'Delete my review'}
-          </Button>
+            Delete review
+          </button>
         )}
         <div className="flex gap-2 xl:ml-auto">
           <button
             onClick={likeReviewHandler}
-            className="flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-tertiary transition-all duration-150 hover:bg-green-50 hover:text-green-700 active:scale-95"
+            className="flex items-center gap-1 text-xs text-tertiary transition hover:text-positive"
           >
-            <BiLike className="h-4 w-4" />
+            <BiLike className="h-3.5 w-3.5" />
             <span>{review.likesCount}</span>
           </button>
           <button
             onClick={dislikeReviewHandler}
-            className="flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-tertiary transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-95"
+            className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative"
           >
-            <BiDislike className="h-4 w-4" />
+            <BiDislike className="h-3.5 w-3.5" />
             <span>{review.dislikesCount}</span>
           </button>
         </div>

@@ -13,6 +13,5 @@ export const handleFavouriteButtonClick = async (
     }
   } catch (error) {
     console.error('Error in handleFavouriteButtonClick:', error)
-    throw error
   }
 }

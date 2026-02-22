@@ -2,78 +2,73 @@
 import { FaStar } from 'react-icons/fa'
 import { useState } from 'react'
 import { useProductRatingStore } from '@/store/ratingStore'
-import { useErrorHandler } from '@/services/apiError/apiError'
 import { useAuthStore } from '@/store/authStore'
 import { useRouter } from 'next/navigation'
 
 interface StarRatingProps {
   productId: string
   count: number
-  activeColor: string
+  activeColor?: string
+  size?: 'sm' | 'md' | 'lg'
 }
 
-const StarRating = ({ productId, count, activeColor }: StarRatingProps) => {
+const labels: Record<number, string> = {
+  1: 'Poor',
+  2: 'Fair',
+  3: 'Good',
+  4: 'Great',
+  5: 'Excellent',
+}
+
+const StarRating = ({ productId, count, activeColor = '#682EFF', size = 'lg' }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
-  const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
   const { token } = useAuthStore()
   const router = useRouter()
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
   const { rating: currentRating } = productRatingData
+  const displayRating = hoverItem >= 0 ? hoverItem + 1 : currentRating
 
-  const stars = Array(count).fill(0)
+  const sizeClass = size === 'lg' ? 'h-9 w-9' : size === 'md' ? 'h-6 w-6' : 'h-4 w-4'
 
   const handleRatingClick = (index: number) => {
-    // const rating = index + 1
-
-    try {
-      // await apiAddProductRating(productId, rating)
-
-      // setRating(productId, rating)
-      if (token) {
-        setRating(productId, index + 1)
-      } else {
-        router.push('/signin')
-      }
-    } catch (error) {
-      handleError(error)
+    if (token) {
+      setRating(productId, index + 1)
+    } else {
+      router.push('/signin')
     }
   }
 
-  const handleMouseOver = (index: number) => {
-    setHoverItem(index)
-  }
-
-  const handleMouseOut = () => {
-    setHoverItem(-1)
-  }
-
   return (
-    <>
-      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
-      <div className="mr-3 flex cursor-pointer items-center gap-1">
-        {stars.map((_, index) => {
-          const isActive = index < currentRating
-          const isHover = index <= hoverItem
-
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-1.5">
+        {Array(count).fill(0).map((_, index) => {
+          const isActive = index < displayRating
           return (
-            <div
+            <button
               key={index}
+              type="button"
               onClick={() => handleRatingClick(index)}
-              onMouseEnter={() => handleMouseOver(index)}
-              onMouseLeave={handleMouseOut}
-              style={{
-                color:
-                  isActive || isHover ? activeColor : 'rgba(4, 18, 27, 0.24)',
-              }}
+              onMouseEnter={() => setHoverItem(index)}
+              onMouseLeave={() => setHoverItem(-1)}
+              className="transition-transform hover:scale-110 active:scale-95"
+              aria-label={`Rate ${index + 1} stars`}
             >
-              <FaStar className="h-10 w-10" />
-            </div>
+              <FaStar
+                className={sizeClass}
+                style={{ color: isActive ? activeColor : 'rgba(4,18,27,0.15)' }}
+              />
+            </button>
           )
         })}
+        {displayRating > 0 && (
+          <span className="ml-2 text-sm font-medium text-secondary">
+            {labels[displayRating]}
+          </span>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 

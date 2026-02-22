@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useFavouritesStore } from '@/store/favStore'
 import { useAuthStore } from '@/store/authStore'
 import { useCombinedStore } from '@/store/store'
+import { fetchCart } from '@/services/cartApiService'
 import { useShallow } from 'zustand/react/shallow'
 import GlobalRouteTracker from './GlobalRouteTracker'
 
@@ -16,6 +17,7 @@ const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode })
   const syncBackendCart = useCombinedStore((state) => state.syncBackendCart)
   const isSync = useCombinedStore((state) => state.isSync)
   const reset = useCombinedStore((state) => state.resetCart)
+  const setTempItems = useCombinedStore((state) => state.setTempItems)
 
   const token = useAuthStore((state) => state.token)
 
@@ -30,8 +32,13 @@ const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode })
       }
     } else if (!isSync) {
       syncBackendCart(token).catch((e) => console.log(e))
+    } else {
+      // Already synced but refresh tempItems to get latest productFileUrl
+      fetchCart()
+        .then((cart) => setTempItems(cart.items))
+        .catch((e) => console.log(e))
     }
-  }, [getCartItems, isSync, itemsIds.length, reset, syncBackendCart, token])
+  }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initialization of registered and unregistered user's favorite products
   useEffect(() => {

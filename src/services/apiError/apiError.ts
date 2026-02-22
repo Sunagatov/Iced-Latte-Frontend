@@ -8,7 +8,10 @@ export const handleAxiosError = (error: unknown): string => {
     const axiosError = error as AxiosError<ErrorResponse>
 
     if (axiosError.response) {
-      return `Server Error: ${axiosError.response.data.message || axiosError.response.data.error}`
+      if (axiosError.response.status === 401) {
+        return 'Incorrect email or password'
+      }
+      return axiosError.response.data.message || axiosError.response.data.error || 'An unknown error occurred'
     }
   }
 

@@ -1,7 +1,7 @@
 'use client'
 import ReviewRatingFilter from '@/components/Review/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from '@/services/apiError/apiError'
 import { Review } from '@/types/ReviewType'
 import { useAuthStore } from '@/store/authStore'
@@ -11,10 +11,8 @@ import Loader from '@/components/UI/Loader/Loader'
 import ReviewsList from '@/components/Review/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/components/Review/ReviewsSorter/ReviewsSorter'
 import { reviewsSortOptions } from '@/constants/reviewsSortOptions'
-import {
-  checkIfUserReviewExists,
-  useProductReviewsStore,
-} from '@/store/reviewsStore'
+import { checkIfUserReviewExists, useProductReviewsStore } from '@/store/reviewsStore'
+import { apiGetProductReviewsStatistics } from '@/services/reviewService'
 import { IOption } from '@/types/Dropdown'
 import { ISortParams } from '@/types/ISortParams'
 import { getDefaultSortOption } from '@/utils/getDefaultSortOption'
@@ -27,79 +25,36 @@ interface ReviewComponentProps {
 
 const ReviewsSection = ({ product }: ReviewComponentProps) => {
   const { id: productId } = product
-
   const { errorMessage, handleError } = useErrorHandler()
   const { token } = useAuthStore()
+
   const [userReview, setUserReview] = useState<Review | null>(null)
-
-  const {
-    setIsReviewButtonVisible,
-    shouldRevalidateReviews,
-    setShouldRevalidateReviews,
-    shouldRevalidateUserReview,
-    setShouldRevalidateUserReview,
-    reviewsStatistics,
-  } = useProductReviewsStore()
-
-  useEffect(() => {
-    const getUserReview = async (productId: string) => {
-      try {
-        const userReview = await apiGetProductUserReview(productId)
-
-        setShouldRevalidateUserReview(false)
-
-        if (checkIfUserReviewExists(userReview)) {
-          setUserReview(userReview)
-          setIsReviewButtonVisible(false)
-        } else {
-          setUserReview(null)
-          setIsReviewButtonVisible(true)
-        }
-      } catch (error) {
-        handleError(error)
-        setShouldRevalidateReviews(true)
-        setUserReview(null)
-      }
-    }
-
-    if (token && shouldRevalidateUserReview) {
-      void getUserReview(productId)
-    }
-  }, [
-    handleError,
-    productId,
-    setIsReviewButtonVisible,
-    setShouldRevalidateReviews,
-    setShouldRevalidateUserReview,
-    shouldRevalidateUserReview,
-    token,
-  ])
-
-  useEffect(() => {
-    return () => setShouldRevalidateUserReview(true)
-  }, [setShouldRevalidateUserReview])
-
+  const [showForm, setShowForm] = useState(false)
   const [selectedFilterRating, setSelectedFilterRating] = useState<number[]>([])
+  const [selectedSortOption, setSelectedSortOption] = useState<IOption<ISortParams>>(
+    () => getDefaultSortOption(reviewsSortOptions)
+  )
 
-  const ratingFilterChangeHandler = (value: number) => {
-    setSelectedFilterRating((prevState) => {
-      const indexOfValue = prevState.indexOf(value)
+  const { reviewsStatistics, setReviewsStatistics } = useProductReviewsStore()
 
-      if (indexOfValue === -1) {
-        return prevState.toSpliced(prevState.length, 0, value)
-      }
+  const refreshStatistics = useCallback(async () => {
+    try {
+      const stats = await apiGetProductReviewsStatistics(productId)
+      setReviewsStatistics(stats)
+    } catch { /* ignore */ }
+  }, [productId, setReviewsStatistics])
 
-      return prevState.toSpliced(indexOfValue, 1)
-    })
-  }
-
-  const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<ISortParams>
-  >(() => getDefaultSortOption(reviewsSortOptions))
-
-  const selectSortOptionHandler = (option: IOption<ISortParams>) => {
-    setSelectedSortOption(option)
-  }
+  // Load user's existing review on mount
+  useEffect(() => {
+    if (!token) return
+    apiGetProductUserReview(productId)
+      .then((review) => {
+        if (checkIfUserReviewExists(review)) {
+          setUserReview(review)
+        }
+      })
+      .catch(() => {/* no review yet */})
+  }, [productId, token])
 
   const {
     data: reviews,
@@ -109,6 +64,8 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
     isFetchingNextPage,
     error,
     refreshReviews,
+    removeReviewFromCache,
+    updateReviewInCache,
   } = useReviews({
     productId,
     userReview,
@@ -116,45 +73,21 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
     ratingFilter: selectedFilterRating,
   })
 
-  useEffect(() => {
-    async function refreshProductReviews() {
-      try {
-        await refreshReviews()
-      } catch (error) {
-        handleError(error)
-      } finally {
-        setShouldRevalidateReviews(false)
-      }
-    }
-
-    if (shouldRevalidateReviews) {
-      void refreshProductReviews()
-    }
-  }, [
-    shouldRevalidateReviews,
-    setShouldRevalidateReviews,
-    handleError,
-    refreshReviews,
-  ])
-
-  const showMoreReviews = () => {
-    fetchNext().catch((e) => handleError(e))
+  const ratingFilterChangeHandler = (value: number) => {
+    setSelectedFilterRating((prev) => {
+      const idx = prev.indexOf(value)
+      return idx === -1 ? [...prev, value] : prev.toSpliced(idx, 1)
+    })
   }
 
+  const showMoreReviews = () => fetchNext().catch((e) => handleError(e))
+
   if (error) {
-    return (
-      <h1 className={'grid h-screen  place-items-center text-4xl text-black'}>
-        Something went wrong!
-      </h1>
-    )
+    return <h1 className="grid h-screen place-items-center text-4xl text-black">Something went wrong!</h1>
   }
 
   if (isLoading) {
-    return (
-      <div className={'mt-14 flex h-[54px] items-center justify-center'}>
-        <Loader />
-      </div>
-    )
+    return <div className="mt-14 flex h-[54px] items-center justify-center"><Loader /></div>
   }
 
   return (
@@ -164,12 +97,27 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
       <div className="flex flex-col gap-10 xl:flex-row xl:items-start">
         <div className="min-w-0 flex-1">
           <div className="xl:max-w-[720px]">
-            <ReviewForm productId={productId} />
+            {/* Show form only if user has no review yet */}
+            {!userReview && (
+              <ReviewForm
+                productId={productId}
+                hasReviews={reviews.length > 0}
+                showForm={showForm}
+                setShowForm={setShowForm}
+                onReviewSubmitted={(review) => {
+                  setUserReview(review)
+                  setShowForm(false)
+                  refreshReviews()
+                  void refreshStatistics()
+                }}
+              />
+            )}
+
             {(reviews.length > 0 || userReview) && (
               <>
                 <ReviewsSorter
                   selectedOption={selectedSortOption}
-                  selectOption={selectSortOptionHandler}
+                  selectOption={setSelectedSortOption}
                   userReview={userReview}
                 />
                 <ReviewsList
@@ -179,12 +127,16 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
                   isFetchingNextPage={isFetchingNextPage}
                   hasNextPage={hasNextPage}
                   userReview={userReview}
+                  onReviewDeleted={(id) => {
+                    setUserReview(null)
+                    removeReviewFromCache(id)
+                    void refreshStatistics()
+                  }}
+                  onReviewRated={(updated) => updateReviewInCache(updated)}
                 />
               </>
             )}
-            {errorMessage && (
-              <div className="mt-4 text-negative">{errorMessage}</div>
-            )}
+            {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
           </div>
         </div>
 
@@ -194,11 +146,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
               onChange={ratingFilterChangeHandler}
               selectedOptions={selectedFilterRating}
             />
-          ) : (
-            <div className="rounded-2xl border border-primary/60 bg-white p-6 text-center text-sm text-tertiary shadow-sm">
-              No customer reviews yet
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

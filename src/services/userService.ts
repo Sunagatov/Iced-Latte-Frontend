@@ -82,9 +82,10 @@ export async function apiAuthChangePassword(
 }
 
 // Function for user to intialize password change
-export async function apiAuthInitPasswordChange(): Promise<SuccessResponse> {
+export async function apiAuthInitPasswordChange(email: string): Promise<SuccessResponse> {
   const response: AxiosResponse<SuccessResponse> = await api.post(
     '/users/password/reset',
+    { email },
   )
 
   return response.data

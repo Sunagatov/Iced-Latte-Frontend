@@ -43,14 +43,16 @@ export const useFavouritesStore = create<FavStoreState>()(
       },
 
       removeFavourite: async (id: string, token: string | null): Promise<void> => {
-        try {
-          set((state) => ({
-            favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
-            favourites: state.favourites.filter((fav) => fav.id !== id),
-          }))
-          if (token) await removeFavItem(id)
-        } catch (error) {
-          throw new Error((error as Error).message)
+        set((state) => ({
+          favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
+          favourites: state.favourites.filter((fav) => fav.id !== id),
+        }))
+        if (token) {
+          try {
+            await removeFavItem(id)
+          } catch {
+            // best-effort: keep optimistic removal even if server fails
+          }
         }
       },
       getFavouriteProducts: async (token): Promise<void> => {

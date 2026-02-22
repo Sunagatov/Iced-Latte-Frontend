@@ -8,7 +8,6 @@ import {
   apiRateProductReview,
 } from '@/services/reviewService'
 import { useErrorHandler } from '@/services/apiError/apiError'
-import { useProductReviewsStore } from '@/store/reviewsStore'
 import { Review as ReviewType } from '@/types/ReviewType'
 import Loader from '@/components/UI/Loader/Loader'
 import Review from '@/components/Review/Review/Review'
@@ -22,6 +21,8 @@ interface IReviewsList {
   showMoreReviews: () => void
   isFetchingNextPage: boolean | undefined
   userReview: ReviewType | null
+  onReviewDeleted?: (id: string) => void
+  onReviewRated?: (updated: ReviewType) => void
 }
 
 const ReviewsList: React.FC<IReviewsList> = ({
@@ -31,38 +32,17 @@ const ReviewsList: React.FC<IReviewsList> = ({
   showMoreReviews,
   isFetchingNextPage,
   userReview,
+  onReviewDeleted,
+  onReviewRated,
 }) => {
   const { token } = useAuthStore()
   const router = useRouter()
+  const { handleError } = useErrorHandler()
 
-  const {
-    setIsReviewFormVisible,
-    setIsReviewButtonVisible,
-    setIsRaitingFormVisible,
-    setShouldRevalidateStatistics,
-    setShouldRevalidateUserReview,
-    setShouldRevalidateReviews,
-  } = useProductReviewsStore()
-
-  const {
-    handleError,
-    // errorMessage
-  } = useErrorHandler()
-
-  const deleteReviewHandler = async (
-    productReviewId: string,
-  ): Promise<void> => {
+  const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
     try {
-      productReviewId &&
-        (await apiDeleteProductReview(productReviewId, productId))
-
-      setShouldRevalidateStatistics(true)
-      setShouldRevalidateReviews(true)
-      setShouldRevalidateUserReview(true)
-
-      setIsReviewFormVisible(false)
-      setIsReviewButtonVisible(true)
-      setIsRaitingFormVisible(false)
+      productReviewId && (await apiDeleteProductReview(productReviewId, productId))
+      onReviewDeleted?.(productReviewId)
     } catch (error) {
       handleError(error)
     }
@@ -72,13 +52,10 @@ const ReviewsList: React.FC<IReviewsList> = ({
     try {
       if (!token) {
         router.push('/signin')
-
         return
       }
-      await apiRateProductReview(productId, productReviewId, isLike)
-
-      setShouldRevalidateReviews(true)
-      setShouldRevalidateUserReview(true)
+      const updated = await apiRateProductReview(productId, productReviewId, isLike)
+      onReviewRated?.(updated)
     } catch (error) {
       handleError(error)
     }

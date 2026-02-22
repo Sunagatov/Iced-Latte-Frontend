@@ -2,57 +2,111 @@
 import Image from 'next/image'
 import productImg from '../../../../public/coffee.png'
 import star from '../../../../public/star.png'
-import ButtonHeart from '@/components/UI/Heart/ButtonHeart'
 import Link from 'next/link'
-import AddToCartButton from '@/components/Product/AddToCart/AddToCart'
 import getImgUrl from '@/utils/getImgUrl'
 import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
+import { useCombinedStore } from '@/store/store'
 import { FavElementProps } from '@/types/FavElement'
 import { handleFavouriteButtonClick } from '@/utils/favUtils'
+import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } from 'react-icons/ri'
 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
-  const { addFavourite, removeFavourite, favourites, favouriteIds } =
-    useFavouritesStore()
+  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
   const { token } = useAuthStore()
+  const add = useCombinedStore((s) => s.add)
+  const remove = useCombinedStore((s) => s.remove)
+  const removeFullProduct = useCombinedStore((s) => s.removeFullProduct)
+  const items = useCombinedStore((s) => s.itemsIds)
 
-  const isFavourited = token ? favourites.some((fav) => fav.id === product.id) : favouriteIds.includes(product.id)
+  const qty = items?.find((i) => i.productId === product.id)?.productQuantity ?? 0
+  const isFavourited = token ? favourites.some((f) => f.id === product.id) : favouriteIds.includes(product.id)
 
-  const handleButtonClick = async () => {
+  const handleHeart = async () => {
     await handleFavouriteButtonClick(product.id, token, isFavourited, addFavourite, removeFavourite)
   }
 
+  const HeartBtn = () => (
+    <button
+      onClick={handleHeart}
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-red-50"
+      aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
+    >
+      {isFavourited
+        ? <RiHeartFill className="h-5 w-5 text-negative" />
+        : <RiHeartLine className="h-5 w-5 text-secondary" />}
+    </button>
+  )
+
+  const Stepper = () => (
+    <div className="flex h-9 items-center">
+      {qty > 0 ? (
+        <div className="inline-flex items-center gap-1 rounded-full bg-inverted px-1 py-1">
+          <button
+            onClick={() => qty === 1 ? removeFullProduct(product.id) : remove(product.id)}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-inverted hover:bg-white/20"
+          >
+            {qty === 1
+              ? <RiDeleteBinLine className="h-3.5 w-3.5" />
+              : <RiSubtractLine className="h-3.5 w-3.5" />}
+          </button>
+          <span className="w-5 text-center text-sm font-semibold text-inverted">{qty}</span>
+          <button
+            onClick={() => add(product.id)}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-solid text-inverted hover:bg-brand-solid-hover"
+          >
+            <RiAddLine className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => add(product.id)}
+          className="h-9 rounded-full bg-brand-solid px-4 text-xs font-semibold text-inverted transition hover:bg-brand-solid-hover"
+        >
+          Add to cart
+        </button>
+      )}
+    </div>
+  )
+
   if (view === 'grid') {
     return (
-      <div className="flex flex-col rounded-2xl border border-primary/60 bg-white shadow-sm transition-shadow hover:shadow-md overflow-hidden">
-        <Link href={`/product/${product.id}`} className="block bg-secondary">
+      <div className="flex flex-col rounded-2xl border border-black/8 bg-white shadow-sm overflow-hidden">
+        <Link href={`/product/${product.id}`} className="relative block bg-secondary">
           <Image
             src={getImgUrl(product.productFileUrl, productImg)}
             alt={product.name}
             width={240}
-            height={200}
-            className="w-full h-[160px] object-contain p-3 transition-transform hover:scale-105"
+            height={160}
+            className="w-full h-[140px] object-contain p-3"
           />
+          <button
+            onClick={handleHeart}
+            className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm"
+            aria-label="Toggle favourite"
+          >
+            {isFavourited
+              ? <RiHeartFill className="h-4 w-4 text-negative" />
+              : <RiHeartLine className="h-4 w-4 text-secondary" />}
+          </button>
         </Link>
-        <div className="flex flex-col gap-1 p-3 flex-1">
+        <div className="flex flex-1 flex-col p-3">
           {product.brandName && (
-            <p className="text-[10px] font-medium uppercase tracking-wider text-tertiary">{product.brandName}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-tertiary truncate">{product.brandName}</p>
           )}
           <Link href={`/product/${product.id}`}>
-            <p className="text-sm font-semibold text-primary line-clamp-2 leading-snug hover:text-brand-solid transition-colors">{product.name}</p>
+            <p className="mt-0.5 text-sm font-semibold text-primary line-clamp-2 leading-snug hover:text-brand">{product.name}</p>
           </Link>
-          <div className="flex items-center gap-1 text-xs text-tertiary mt-0.5">
-            <Image src={star} alt="star" className="h-3 w-3" />
+          <div className="mt-1 flex items-center gap-1 text-xs text-tertiary">
+            <Image src={star} alt="star" className="h-3 w-3 shrink-0" />
             <span className="font-semibold text-primary">{product.averageRating?.toFixed(1) ?? '—'}</span>
             <span>({product.reviewsCount ?? 0})</span>
-            <span>· {product.quantity} g.</span>
           </div>
-          <p className="text-base font-bold text-primary mt-1">${product?.price?.toFixed(2)}</p>
-          <div className="mt-2 flex items-center gap-2 scale-[0.82] origin-left">
-            <AddToCartButton product={product} />
-            <ButtonHeart active={isFavourited} onClick={handleButtonClick} />
+          <p className="mt-1.5 text-base font-bold text-primary">${product?.price?.toFixed(2)}</p>
+          <div className="mt-2">
+            <Stepper />
           </div>
         </div>
       </div>
@@ -60,47 +114,43 @@ export default function FavElement({ product, view = 'list' }: Props) {
   }
 
   return (
-    <div className="flex items-start gap-4 rounded-2xl border border-primary/60 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+    <div className="flex overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm">
       <Link href={`/product/${product.id}`} className="shrink-0">
-        <div className="overflow-hidden rounded-xl bg-secondary">
-          <Image
-            src={getImgUrl(product.productFileUrl, productImg)}
-            alt={product.name}
-            width={112}
-            height={112}
-            className="h-[112px] w-[112px] object-contain"
-          />
-        </div>
+        <Image
+          src={getImgUrl(product.productFileUrl, productImg)}
+          alt={product.name}
+          width={100}
+          height={100}
+          className="h-full w-24 object-cover bg-secondary"
+        />
       </Link>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             {product.brandName && (
-              <p className="mb-0.5 text-xs font-medium uppercase tracking-wider text-tertiary">{product.brandName}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-tertiary">{product.brandName}</p>
             )}
             <Link href={`/product/${product.id}`}>
-              <p className="truncate text-base font-semibold text-primary transition-colors hover:text-brand-solid">{product.name}</p>
+              <p className="mt-0.5 text-[15px] font-bold text-primary hover:text-brand">{product.name}</p>
             </Link>
+            <div className="mt-1 flex items-center gap-1 text-xs">
+              <Image src={star} alt="star" className="h-3 w-3 shrink-0" />
+              <span className="font-semibold text-primary">{product.averageRating?.toFixed(1) ?? '—'}</span>
+              <span className="text-tertiary">({product.reviewsCount ?? 0})</span>
+              <span className="text-tertiary">· {product.quantity} g.</span>
+            </div>
+            {product.description && (
+              <p className="mt-1.5 line-clamp-1 text-xs italic text-tertiary">{product.description}</p>
+            )}
           </div>
-          <p className="shrink-0 text-base font-bold text-primary">${product?.price?.toFixed(2)}</p>
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            <p className="text-base font-bold text-primary">${product?.price?.toFixed(2)}</p>
+            <HeartBtn />
+          </div>
         </div>
-
-        <div className="flex items-center gap-1.5 text-sm">
-          <Image src={star} alt="star" className="inline-block h-3.5 w-3.5" />
-          <span className="font-semibold text-primary">{product.averageRating?.toFixed(1) ?? '—'}</span>
-          <span className="text-tertiary">({product.reviewsCount ?? 0})</span>
-          <span className="text-tertiary">·</span>
-          <span className="text-tertiary">{product.quantity} g.</span>
-        </div>
-
-        {product.description && (
-          <p className="line-clamp-1 text-sm text-tertiary">{product.description}</p>
-        )}
-
-        <div className="mt-2 flex items-center gap-2 scale-[0.82] origin-left">
-          <AddToCartButton product={product} />
-          <ButtonHeart active={isFavourited} onClick={handleButtonClick} />
+        <div className="mt-3">
+          <Stepper />
         </div>
       </div>
     </div>

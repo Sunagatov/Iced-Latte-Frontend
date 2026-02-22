@@ -1,55 +1,43 @@
 import * as yup from 'yup'
 
-export const validationSchema = yup.object().shape({
-  firstName: yup
+const nameRules = (field: string) =>
+  yup
     .string()
-    .required('Name is required')
-    .min(2, 'Name should be at least 2 characters')
-    .max(128, 'Name should not exceed 128 characters')
-    .matches(
-      /^[a-zA-Z-'.]+$/,
-      `Invalid name format. Use Latin letters and special characters (-'.)`,
-    ),
-  lastName: yup
-    .string()
-    .required('Last name is required')
-    .min(2, 'Last name should be at least 2 characters')
-    .max(128, 'Last name should not exceed 128 characters')
-    .matches(
-      /^[a-zA-Z-'.]+$/,
-      `Invalid last name format. Use Latin letters and special characters (-'.)`,
-    ),
+    .required(`${field} is required`)
+    .min(2, `${field} must be at least 2 characters`)
+    .max(64, `${field} must be at most 64 characters`)
+    .matches(/^[a-zA-ZÀ-ÖØ-öø-ÿ\s''-]+$/, `${field} can only contain letters, spaces, hyphens, and apostrophes`)
 
-  birthDate: yup.string().nullable(),
+export const validationSchema = yup.object().shape({
+  firstName: nameRules('First name'),
+  lastName: nameRules('Last name'),
+  birthDate: yup
+    .string()
+    .nullable()
+    .test('is-past', 'Date of birth must be in the past', (v) => {
+      if (!v) return true
+      return new Date(v).setHours(0,0,0,0) < new Date().setHours(0,0,0,0)
+    })
+    .test('min-age', 'You must be at least 13 years old', (v) => {
+      if (!v) return true
+      const min = new Date()
+      min.setFullYear(min.getFullYear() - 13)
+      return new Date(v) <= min
+    }),
   phoneNumber: yup
     .string()
     .nullable()
-    .matches(
-      /^[+0-9]{9,}$/,
-      'Invalid phone number format. Use only digits and + sign, with a minimum of 9 digits',
-    ),
-  email: yup
-    .string()
-    .email('Invalid email')
-    .max(64, 'Email should not exceed 64 characters')
-    .test(
-      'email-format',
-      'Invalid email format',
-      (value: string | undefined) => {
-        const emailRegex =
-          /^[-!#$%&'*+/=?^_`{|}~A-Za-z0-9]+(?:\.[-!#$%&'*+/=?^_`{|}~A-Za-z0-9]+)*@([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9]/
-
-        return emailRegex.test(value ?? '')
-      },
-    )
-    .required(),
+    .transform((v) => v === '' ? null : v)
+    .matches(/^\+[1-9]\d{6,14}$/, { message: 'Phone must be in international format, e.g. +12025550123', excludeEmptyString: true }),
   address: yup.object().shape({
     country: yup.string().nullable(),
-    city: yup.string().nullable(),
-    line: yup.string().nullable(),
+    city: yup.string().nullable().max(128, 'City must be at most 128 characters'),
+    line: yup.string().nullable().max(256, 'Address must be at most 256 characters'),
     postcode: yup
       .string()
       .nullable()
-      .matches(/^(\d+)?$/, 'Invalid postcode format. Use only digits'),
+      .transform((v) => v === '' ? null : v)
+      .max(16, 'Postcode must be at most 16 characters')
+      .matches(/^[A-Z0-9\s-]{2,16}$/i, { message: 'Enter a valid postcode', excludeEmptyString: true }),
   }),
 })

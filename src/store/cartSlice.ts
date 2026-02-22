@@ -36,6 +36,7 @@ interface CartSliceActions {
   syncBackendCart: (token: string) => Promise<void>
   removeFullProduct: (id: string) => void
   resetCart: () => void
+  setTempItems: (items: ICartItem[]) => void
 
   // helper functions to update state
   createCart: (token: string, reqItems: ICartPushItems) => Promise<void>
@@ -77,7 +78,7 @@ export const createCartSlice: StateCreator<
         }
 
         updateCartItem(token, itemChanges).catch((e) => {
-          throw new Error((e as Error).message)
+          console.error('Failed to update cart item:', (e as Error).message)
         })
       } else {
         const reqItems: ICartPushItems = {
@@ -85,7 +86,7 @@ export const createCartSlice: StateCreator<
         }
 
         createCart(token, reqItems).catch((e) => {
-          throw new Error((e as Error).message)
+          console.error('Failed to create cart:', (e as Error).message)
         })
       }
     } else {
@@ -166,7 +167,7 @@ export const createCartSlice: StateCreator<
       }
 
       updateCartItem(token, itemChanges).catch((e) => {
-        throw new Error((e as Error).message)
+        console.error('Failed to update cart item:', (e as Error).message)
       })
     } else {
       const updatedCart = removeItem(id, itemsIds)
@@ -239,6 +240,9 @@ export const createCartSlice: StateCreator<
       totalPrice: 0,
       isSync: false,
     } as CartSliceState)
+  },
+  setTempItems: (items) => {
+    set((state) => ({ ...state, tempItems: items }))
   },
 
   createCart: async (

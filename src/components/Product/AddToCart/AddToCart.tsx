@@ -34,7 +34,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
       {!productQuantity && (
         <Button
           id="add-btn"
-          className="h-[54px] w-full font-semibold shadow-md hover:brightness-110 hover:shadow-lg md:w-[280px]"
+          className="h-[42px] w-full px-4 font-semibold shadow-md hover:brightness-110 hover:shadow-lg md:h-[54px] md:w-[280px]"
           onClick={addProduct}
         >
           Add to cart · ${product.price}
@@ -48,7 +48,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
             addProduct={addProduct}
             removeProduct={removeProduct}
           />
-          <div className="flex h-[54px] w-[110px] cursor-default items-center justify-center rounded-[48px] bg-brand-solid font-semibold text-inverted shadow-md">
+          <div className="flex h-[42px] min-w-0 flex-1 cursor-default items-center justify-center rounded-[48px] bg-brand-solid font-semibold text-inverted shadow-md md:h-[54px] md:w-[110px] md:flex-none">
             ${product.price}
           </div>
         </div>

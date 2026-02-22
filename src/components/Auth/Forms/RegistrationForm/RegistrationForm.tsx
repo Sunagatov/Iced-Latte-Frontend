@@ -23,6 +23,7 @@ export default function RegistrationForm() {
     formState: { errors },
   } = useForm<IFormValues>({
     resolver: yupResolver(registrationSchema),
+    mode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',

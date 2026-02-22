@@ -22,18 +22,16 @@ const useLogout = () => {
     try {
       setIsLoading(true)
       await apiLogoutUser()
+    } catch (error) {
+      console.log(error)
+    } finally {
       await removeCookie('token')
       reset()
       resetFav()
       setIsReviewFormVisible(false)
       setIsRaitingFormVisible(false)
       setIsReviewButtonVisible(true)
-
-      router.push('/')
-      // add other features
-    } catch (error) {
-      console.log(error)
-    } finally {
+      router.push('/signin')
       setIsLoading(false)
     }
   }, [

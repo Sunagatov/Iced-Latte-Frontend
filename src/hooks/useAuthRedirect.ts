@@ -13,12 +13,7 @@ const useAuthRedirect = (): RegistrationRedirectHook => {
 
 
   const handleRedirectForAuth = () => {
-    if (previousRouteForAuth) {
-      router.push(previousRouteForAuth)
-
-    } else {
-      router.push('/')
-    }
+    router.push(previousRouteForAuth || '/profile')
   }
 
   return { handleRedirectForAuth }
