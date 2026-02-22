@@ -13,6 +13,7 @@ export function useProducts(
   toPriceFilter: string,
   fromPriceFilter: string,
   ratingFilter: null | 'any' | StarsType,
+  searchQuery: string,
 ) {
   const { sortAttribute, sortDirection } = sortOption.value
   const brandNames = brandOptions.join(',') || ''
@@ -29,7 +30,7 @@ export function useProducts(
     const ratingQuery =
       ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
 
-    return `products?page=${pageIndex}&size=${productSize}&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${ratingQuery ? '&minimum_average_rating=' + ratingQuery : ''}${sellerNames && '&seller_names=' + sellerNames}${fromPriceFilter && '&min_price=' + fromPriceFilter}${toPriceFilter && '&max_price=' + toPriceFilter}`
+    return `products?page=${pageIndex}&size=${productSize}&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${ratingQuery ? '&minimum_average_rating=' + ratingQuery : ''}${sellerNames && '&seller_names=' + sellerNames}${fromPriceFilter && '&min_price=' + fromPriceFilter}${toPriceFilter && '&max_price=' + toPriceFilter}${searchQuery ? '&keyword=' + encodeURIComponent(searchQuery) : ''}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<

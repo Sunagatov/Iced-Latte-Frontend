@@ -17,6 +17,7 @@ interface IProductFiltersStore {
   selectedSortOption: IOption<ISortParams>
   sortingOptions: Array<IOption<ISortParams>>
   ratingFilter: StarsType | null | 'any'
+  searchQuery: string
   updateProductFiltersStore: (slice: UpdateProductFiltersStoreSliceType) => void
 }
 
@@ -27,6 +28,7 @@ type UpdateProductFiltersStoreSliceType = {
   fromPriceFilter?: IProductFiltersStore['fromPriceFilter']
   toPriceFilter?: IProductFiltersStore['toPriceFilter']
   ratingFilter?: IProductFiltersStore['ratingFilter']
+  searchQuery?: IProductFiltersStore['searchQuery']
 }
 
 export const defaultProductsFilters = {
@@ -35,12 +37,14 @@ export const defaultProductsFilters = {
   ratingFilter: null,
   toPriceFilter: '',
   fromPriceFilter: '',
+  searchQuery: '',
 }
 
 export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
   toPriceFilter: '',
   fromPriceFilter: '',
   ratingFilter: null,
+  searchQuery: '',
   selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
   selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
   sortingOptions: sortOptions,

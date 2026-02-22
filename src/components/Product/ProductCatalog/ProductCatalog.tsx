@@ -30,6 +30,7 @@ export default function ProductCatalog({
     selectedSellerOptions,
     selectedSortOption,
     ratingFilter,
+    searchQuery,
     updateProductFiltersStore,
   } = useProductFiltersStore()
 
@@ -49,6 +50,7 @@ export default function ProductCatalog({
     toPriceFilter,
     fromPriceFilter,
     ratingFilter,
+    searchQuery,
   )
 
   function handleSelectSortOption(selectedOption: IOption<ISortParams>) {
