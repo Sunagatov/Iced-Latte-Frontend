@@ -41,19 +41,20 @@ test('keyboard navigation selects suggestion', async ({ page }) => {
   await page.goto('/')
   const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
   await input.fill('latte')
-  await page.waitForTimeout(500)
+  const dropdown = page.locator('.absolute').filter({ has: page.locator('ul') })
+  await expect(dropdown).toBeVisible({ timeout: 3000 })
+  const firstSuggestion = dropdown.locator('li').first().locator('button')
+  const suggestionText = (await firstSuggestion.innerText()).trim().split('\n')[0]
   await input.press('ArrowDown')
   await input.press('Enter')
-  await expect(input).not.toHaveValue('latte')
+  await expect(input).toHaveValue(suggestionText)
 })
 
 test('Escape closes dropdown', async ({ page }) => {
   const input = page.getByRole('textbox', { name: 'Search products' })
   await input.fill('cap')
-  await page.waitForTimeout(400)
-  // Dropdown is the div directly after the input wrapper
-  const dropdown = page.locator('header ~ * .absolute, header .absolute').filter({ has: page.locator('ul') })
-  await expect(dropdown).toBeVisible()
+  const dropdown = page.locator('.absolute').filter({ has: page.locator('ul') })
+  await expect(dropdown).toBeVisible({ timeout: 3000 })
   await input.press('Escape')
   await expect(dropdown).not.toBeVisible()
 })
