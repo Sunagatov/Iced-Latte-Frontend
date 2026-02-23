@@ -12,6 +12,9 @@ interface ApiCallMetric {
   durationMs: number
 }
 
+let reqInterceptorId: number | null = null
+let resInterceptorId: number | null = null
+
 export default function PerformanceTracker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const pageLoadStart = useRef(Date.now())
@@ -19,43 +22,43 @@ export default function PerformanceTracker({ children }: { children: React.React
 
   useEffect(() => {
     apiCalls.current = []
-
-    // Intercept API calls to measure duration
-    const reqInterceptor = api.interceptors.request.use((config) => {
-      (config as any)._t = Date.now()
-      return config
-    })
-
-    // Reset page load start after interceptors are installed so the first
-    // intercepted request timestamp is always >= pageLoadStart
     pageLoadStart.current = Date.now()
 
-    const resInterceptor = api.interceptors.response.use(
-      (response) => {
-        const start = (response.config as any)._t
-        if (start) {
-          apiCalls.current.push({
-            url: response.config.url?.replace(/\/api\/proxy\//, '') ?? '',
-            method: response.config.method?.toUpperCase() ?? 'GET',
-            status: response.status,
-            durationMs: Date.now() - start,
-          })
+    if (reqInterceptorId === null) {
+      reqInterceptorId = api.interceptors.request.use((config) => {
+        ;(config as any)._t = Date.now()
+        return config
+      })
+    }
+
+    if (resInterceptorId === null) {
+      resInterceptorId = api.interceptors.response.use(
+        (response) => {
+          const start = (response.config as any)._t
+          if (start) {
+            apiCalls.current.push({
+              url: response.config.url?.replace(/\/api\/proxy\//, '') ?? '',
+              method: response.config.method?.toUpperCase() ?? 'GET',
+              status: response.status,
+              durationMs: Date.now() - start,
+            })
+          }
+          return response
+        },
+        (error) => {
+          const start = (error.config as any)?._t
+          if (start && error.config) {
+            apiCalls.current.push({
+              url: error.config.url?.replace(/\/api\/proxy\//, '') ?? '',
+              method: error.config.method?.toUpperCase() ?? 'GET',
+              status: error.response?.status ?? 0,
+              durationMs: Date.now() - start,
+            })
+          }
+          return Promise.reject(error)
         }
-        return response
-      },
-      (error) => {
-        const start = (error.config as any)?._t
-        if (start && error.config) {
-          apiCalls.current.push({
-            url: error.config.url?.replace(/\/api\/proxy\//, '') ?? '',
-            method: error.config.method?.toUpperCase() ?? 'GET',
-            status: error.response?.status ?? 0,
-            durationMs: Date.now() - start,
-          })
-        }
-        return Promise.reject(error)
-      }
-    )
+      )
+    }
 
     const flush = () => {
       const pageLoadMs = Date.now() - pageLoadStart.current
@@ -67,22 +70,14 @@ export default function PerformanceTracker({ children }: { children: React.React
       const p95DurationMs = validDurations[Math.floor(validDurations.length * 0.95)] ?? validDurations[validDurations.length - 1] ?? 0
 
       const payload = { page: pathname, pageLoadMs, errorCount, p95DurationMs, apiCalls: calls }
-
-      // sendBeacon cannot send custom headers — embed sessionId in URL so backend can read it
       const sessionId = getSessionId()
       const url = `/api/proxy/telemetry/performance?sid=${encodeURIComponent(sessionId)}`
       const body = JSON.stringify(payload)
 
       if (navigator.sendBeacon) {
-        const blob = new Blob([body], { type: 'application/json' })
-        navigator.sendBeacon(url, blob)
+        navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }))
       } else {
-        fetch(url, {
-          method: 'POST',
-          body,
-          headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId },
-          keepalive: true,
-        }).catch(() => {})
+        fetch(url, { method: 'POST', body, headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId }, keepalive: true }).catch(() => {})
       }
     }
 
@@ -90,8 +85,6 @@ export default function PerformanceTracker({ children }: { children: React.React
     return () => {
       flush()
       window.removeEventListener('beforeunload', flush)
-      api.interceptors.request.eject(reqInterceptor)
-      api.interceptors.response.eject(resInterceptor)
     }
   }, [pathname])
 

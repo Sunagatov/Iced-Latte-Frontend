@@ -33,7 +33,7 @@ export interface ICartUpdatedItem {
 
 export interface CartElementProps {
   product: ICartItem
-  add: (id: string) => void
-  remove: (id: string) => void
-  removeAll: (id: string) => void
+  add: () => void
+  remove: () => void
+  removeAll: () => void
 }

@@ -1,4 +1,5 @@
 const nextConfig = {
+  compress: true,
   images: {
     remotePatterns: [
       {

@@ -12,7 +12,7 @@ export interface Review {
 }
 
 export interface IProductReviewsStatistics {
-  averageRating: number
-  totalReviewsCount: number
-  ratingsCount: Record<number, number>
+  avgRating: number
+  reviewsCount: number
+  ratingMap: Record<string, number>
 }

@@ -25,7 +25,7 @@ const ReviewRatingFilter = ({
     <div className="rounded-2xl border border-primary/60 bg-white p-6 shadow-sm">
       <div className="mb-5 flex flex-col gap-1">
         <div className="text-5xl font-bold tracking-tight text-primary">
-          <Rating rating={reviewsStatistics?.avgRating} />
+          <Rating rating={reviewsStatistics?.avgRating ?? null} />
         </div>
         <div className="text-sm text-tertiary">
           Based on {reviewsStatistics?.reviewsCount ?? 0} reviews

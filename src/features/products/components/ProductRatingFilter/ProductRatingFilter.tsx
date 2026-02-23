@@ -3,7 +3,7 @@
 import { FaStar } from 'react-icons/fa'
 import FiltersGroupTitle from '@/features/products/components/FilterSidebar/FiltersGroupTitle'
 
-export const stars = [4, 3, 2, 1]
+export const stars = [5, 4, 3, 2, 1] as const
 
 export type StarsType = (typeof stars)[number]
 
@@ -17,7 +17,7 @@ const ProductRatingFilter = ({
   selectedOption = null,
 }: Readonly<IRatingFilter>) => {
   const handleCheckboxChange = (value: number | 'any') => {
-    onChange(value === selectedOption ? null : value)
+    onChange(value === selectedOption ? null : value as StarsType | 'any')
   }
 
   return (

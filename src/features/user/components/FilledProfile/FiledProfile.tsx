@@ -283,7 +283,7 @@ const FiledProfile = () => {
                     <FormProfile
                       onSuccessEdit={() => setIsEditing(false)}
                       updateUserData={setUserData}
-                      initialUserData={userData ?? {}}
+                      initialUserData={userData ?? null}
                     />
                   </div>
                 ) : (
