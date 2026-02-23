@@ -2,22 +2,12 @@ import CartElement from '../CartElement/CartElement'
 import { useCombinedStore } from '@/store/store'
 import { ICartItem } from '@/types/Cart'
 import { useAuthStore } from '@/store/authStore'
-import { UserData } from '@/types/services/UserServices'
 import Link from 'next/link'
-
-const hasValidAddress = (userData: UserData | null): boolean =>
-  Boolean(userData?.address?.line && userData?.address?.city && userData?.address?.country)
-
-const getCheckoutHref = (token: string | null, userData: UserData | null): string => {
-  if (!token) return '/signin'
-  if (!hasValidAddress(userData)) return '/profile'
-  return '/checkout'
-}
 
 export default function CartFull() {
   const { tempItems, totalPrice, removeFullProduct, remove, add, resetCart } = useCombinedStore()
-  const { token, userData } = useAuthStore()
-  const checkoutHref = getCheckoutHref(token, userData)
+  const { token } = useAuthStore()
+  const checkoutHref = token ? '/checkout' : '/signin'
   const itemCount = tempItems.length
 
   return (

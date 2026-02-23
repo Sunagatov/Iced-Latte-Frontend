@@ -72,8 +72,9 @@ export const createCartSlice: StateCreator<
     if (token) {
       if (cartItem) {
         const productCartSlotId = getProductCartSlotId(id, tempItems)
+        if (!productCartSlotId) return
         const itemChanges: ICartUpdatedItem = {
-          shoppingCartItemId: productCartSlotId!,
+          shoppingCartItemId: productCartSlotId,
           productQuantityChange: 1,
         }
 
@@ -156,13 +157,21 @@ export const createCartSlice: StateCreator<
     }
   },
   remove: (id: string) => {
-    const { tempItems, itemsIds, updateCartItem } = get()
+    const { tempItems, itemsIds, updateCartItem, removeFullProduct } = get()
     const token = useAuthStore?.getState?.()?.token ?? null
 
     if (token) {
       const productCartSlotId = getProductCartSlotId(id, tempItems)
+      if (!productCartSlotId) return
+
+      const currentItem = tempItems.find((item) => item.productInfo.id === id)
+      if (currentItem && currentItem.productQuantity <= 1) {
+        removeFullProduct(id)
+        return
+      }
+
       const itemChanges: ICartUpdatedItem = {
-        shoppingCartItemId: productCartSlotId!,
+        shoppingCartItemId: productCartSlotId,
         productQuantityChange: -1,
       }
 

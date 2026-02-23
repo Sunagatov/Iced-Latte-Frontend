@@ -1,11 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useFavouritesStore } from '@/store/favStore'
 import { useCombinedStore } from '@/store/store'
 import FormProfile from '../FormProfile/FormProfile'
 import ImageUpload from '@/components/UI/ImageUpload/ImageUpload'
 import Link from 'next/link'
+import { api } from '@/services/apiConfig/apiConfig'
 import useLogout from '@/hooks/useLogout'
 import Loader from '@/components/UI/Loader/Loader'
 import {
@@ -33,6 +34,13 @@ const FiledProfile = () => {
   const { isLoading, logout } = useLogout()
   const favCount = useFavouritesStore((s) => s.count)
   const cartCount = useCombinedStore((s) => s.count)
+  const [orderCount, setOrderCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    api.get<{ id: string }[]>('/orders')
+      .then((res) => setOrderCount(res.data.length))
+      .catch(() => { /* non-critical */ })
+  }, [])
 
   const initials = userData
     ? `${userData.firstName?.[0] ?? ''}${userData.lastName?.[0] ?? ''}`.toUpperCase()
@@ -169,7 +177,7 @@ const FiledProfile = () => {
                   <StatCard
                     icon={<RiShoppingBagLine className="h-5 w-5 text-brand" />}
                     label="Orders"
-                    value="—"
+                    value={orderCount !== null ? String(orderCount) : '—'}
                     sub="All time"
                     href="/orders"
                   />
