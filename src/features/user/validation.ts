@@ -11,6 +11,7 @@ const nameRules = (field: string) =>
 export const validationSchema = yup.object().shape({
   firstName: nameRules('First name'),
   lastName: nameRules('Last name'),
+  email: yup.string().email('Invalid email').required('Email is required'),
   birthDate: yup
     .string()
     .nullable()

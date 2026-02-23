@@ -20,8 +20,8 @@ export function useLogout() {
     try {
       setIsLoading(true)
       await apiLogoutUser()
-    } catch (error) {
-      console.log(error)
+    } catch {
+      // ignore — logout clears state regardless
     } finally {
       await removeCookie('token')
       reset()

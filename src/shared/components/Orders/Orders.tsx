@@ -48,7 +48,7 @@ export default function OrdersForm() {
           resetCart()
           setLoading(false)
         })
-        .catch((err) => console.error(err))
+        .catch(() => setLoading(false))
     }
   }, [token, urlParams, resetCart])
 

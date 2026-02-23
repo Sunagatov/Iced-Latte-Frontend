@@ -23,13 +23,13 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!token) {
       if (isSync) reset()
-      if (itemsIds.length) getCartItems().catch((e) => console.log(e))
+      if (itemsIds.length) getCartItems().catch(() => {})
     } else if (!isSync) {
-      syncBackendCart(token).catch((e) => console.log(e))
+      syncBackendCart(token).catch(() => {})
     } else {
       fetchCart()
         .then((cart) => setTempItems(cart.items))
-        .catch((e) => console.log(e))
+        .catch(() => {})
     }
   }, [token, itemsIds]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -37,8 +37,8 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchData = async (): Promise<void> => {
       try {
         if (token) await syncBackendFav()
-      } catch (error: any) {
-        if (error?.response?.status === 401 || error?.status === 401) resetAuth()
+      } catch (error: unknown) {
+        if ((error as any)?.response?.status === 401 || (error as any)?.status === 401) resetAuth()
       }
     }
     void fetchData()

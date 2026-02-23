@@ -55,13 +55,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       if (cartItem) {
         const productCartSlotId = getProductCartSlotId(id, tempItems)
         if (!productCartSlotId) return
-        updateCartItem(token, { shoppingCartItemId: productCartSlotId, productQuantityChange: 1 }).catch(
-          (e) => console.error('Failed to update cart item:', (e as Error).message),
-        )
+        updateCartItem(token, { shoppingCartItemId: productCartSlotId, productQuantityChange: 1 }).catch(() => {})
       } else {
-        createCart(token, { items: [{ productId: id, productQuantity: 1 }] }).catch(
-          (e) => console.error('Failed to create cart:', (e as Error).message),
-        )
+        createCart(token, { items: [{ productId: id, productQuantity: 1 }] }).catch(() => {})
       }
     } else {
       const updatedCart = addToCart(id, itemsIds)
@@ -114,9 +110,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         removeFullProduct(id)
         return
       }
-      updateCartItem(token, { shoppingCartItemId: productCartSlotId, productQuantityChange: -1 }).catch(
-        (e) => console.error('Failed to update cart item:', (e as Error).message),
-      )
+      updateCartItem(token, { shoppingCartItemId: productCartSlotId, productQuantityChange: -1 }).catch(() => {})
     } else {
       const updatedCart = removeItem(id, itemsIds)
       const updatedTempItems = tempItems
@@ -152,7 +146,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
             totalPrice: itemsTotalPrice,
           }))
         })
-        .catch((e) => console.log(e))
+        .catch(() => {})
     } else {
       const { itemsIds, tempItems } = get()
       const updatedCart = itemsIds.filter((item) => item.productId !== id)

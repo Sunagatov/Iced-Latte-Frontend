@@ -1,35 +1,25 @@
-import { unstable_cache } from 'next/cache'
+import { cache } from 'react'
 import Hero from '@/shared/components/Hero/Hero'
 import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
 import { getProductBrands, getProductSellers } from '@/features/products/api'
 
-const getBrands = unstable_cache(
-  async () => {
-    try {
-      const response = await getProductBrands()
-      return response.brands
-    } catch (e) {
-      console.error(e)
-      return []
-    }
-  },
-  ['product-brands'],
-  { revalidate: 3600 }
-)
+const getBrands = cache(async () => {
+  try {
+    const response = await getProductBrands()
+    return response.brands
+  } catch {
+    return []
+  }
+})
 
-const getSellers = unstable_cache(
-  async () => {
-    try {
-      const response = await getProductSellers()
-      return response.sellers
-    } catch (e) {
-      console.error(e)
-      return []
-    }
-  },
-  ['product-sellers'],
-  { revalidate: 3600 }
-)
+const getSellers = cache(async () => {
+  try {
+    const response = await getProductSellers()
+    return response.sellers
+  } catch {
+    return []
+  }
+})
 
 export default async function Home() {
   const productBrands = await getBrands()

@@ -2,9 +2,12 @@
 import { editUserProfile } from '@/features/user/api'
 import { SubmitHandler, useForm } from 'react-hook-form'
 interface FormProfileProps { onSuccessEdit: () => void; updateUserData: (data: UserData) => void; initialUserData: UserData | null }
-import { validationSchema } from '@/features/user/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { UserData } from '@/features/user/types'
+import { validationSchema } from '@/features/user/validation'
+import * as yup from 'yup'
+
+type FormValues = yup.InferType<typeof validationSchema>
 import { useErrorHandler } from '@/shared/utils/apiError'
 import Image from 'next/image'
 import Button from '@/shared/components/Buttons/Button/Button'
@@ -23,17 +26,17 @@ const FormProfile = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserData>({
+  } = useForm<FormValues>({
     resolver: yupResolver(validationSchema) as any,
     defaultValues: initialUserData ?? undefined,
     mode: 'onChange',
   })
 
-  const onSubmit: SubmitHandler<UserData> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      await editUserProfile(data)
+      await editUserProfile(data as UserData)
       onSuccessEdit()
-      updateUserData(data)
+      updateUserData(data as UserData)
     } catch (error) {
       handleError(error)
     }

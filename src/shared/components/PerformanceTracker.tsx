@@ -12,6 +12,8 @@ interface ApiCallMetric {
   durationMs: number
 }
 
+interface TimedAxiosConfig { _t?: number }
+
 let reqInterceptorId: number | null = null
 let resInterceptorId: number | null = null
 
@@ -26,7 +28,7 @@ export default function PerformanceTracker({ children }: { children: React.React
 
     if (reqInterceptorId === null) {
       reqInterceptorId = api.interceptors.request.use((config) => {
-        ;(config as any)._t = Date.now()
+        ;(config as typeof config & TimedAxiosConfig)._t = Date.now()
         return config
       })
     }
@@ -34,7 +36,7 @@ export default function PerformanceTracker({ children }: { children: React.React
     if (resInterceptorId === null) {
       resInterceptorId = api.interceptors.response.use(
         (response) => {
-          const start = (response.config as any)._t
+          const start = (response.config as typeof response.config & TimedAxiosConfig)._t
           if (start) {
             apiCalls.current.push({
               url: response.config.url?.replace(/\/api\/proxy\//, '') ?? '',
@@ -46,7 +48,7 @@ export default function PerformanceTracker({ children }: { children: React.React
           return response
         },
         (error) => {
-          const start = (error.config as any)?._t
+          const start = (error.config as typeof error.config & TimedAxiosConfig)?._t
           if (start && error.config) {
             apiCalls.current.push({
               url: error.config.url?.replace(/\/api\/proxy\//, '') ?? '',

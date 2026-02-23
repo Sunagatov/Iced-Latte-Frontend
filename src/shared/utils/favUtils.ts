@@ -11,7 +11,7 @@ export const handleFavouriteButtonClick = async (
     } else {
       await addFavourite(id, token)
     }
-  } catch (error) {
-    console.error('Error in handleFavouriteButtonClick:', error)
+  } catch {
+    // caller handles UI feedback
   }
 }

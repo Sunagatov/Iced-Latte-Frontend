@@ -16,8 +16,8 @@ export default function SyncFav() {
         if (!token) {
           await getFavouriteProducts(token)
         }
-      } catch (error) {
-        console.error('Error in Fav useEffect:', error)
+      } catch {
+        // ignore fetch errors
       }
     }
 
