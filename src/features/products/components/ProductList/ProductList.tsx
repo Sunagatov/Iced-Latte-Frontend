@@ -86,8 +86,8 @@ export default function ProductList({
         'grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-[56px] min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4'
       }
     >
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {products.map((product, index) => (
+        <ProductCard key={product.id} product={product} priority={index < 6} />
       ))}
     </ul>
   )

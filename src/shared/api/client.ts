@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { setupCache } from 'axios-cache-interceptor'
 import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
+import { useAuthStore } from '@/features/auth/store'
 
 const instance = axios.create({ headers: { 'Content-Type': 'application/json' } })
 
@@ -14,7 +15,6 @@ instance.interceptors.request.use((config) => {
     config.url = `/api/proxy/${path}`
 
     try {
-      const { useAuthStore } = require('@/features/auth/store')
       const token = useAuthStore.getState().token
       if (token) config.headers['Authorization'] = `Bearer ${token}`
     } catch { /* store not yet initialized */ }

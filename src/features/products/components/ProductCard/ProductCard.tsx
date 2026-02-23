@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { memo } from 'react'
 import productImg from '@/../public/coffee.png'
 import CircleAddBtn from '@/shared/components/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/shared/utils/getImgUrl'
@@ -7,12 +8,12 @@ import { useCartStore } from '@/features/cart/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { IProduct } from '@/features/products/types'
-interface ICardProps { product: IProduct }
+interface ICardProps { product: IProduct; priority?: boolean }
 import { handleFavouriteButtonClick } from '@/shared/utils/favUtils'
 import ProductRating from '@/features/products/components/ProductRating/ProductRating'
 import Counter from '@/shared/components/Counter/Counter'
 
-export default function ProductCard({ product }: Readonly<ICardProps>) {
+export default memo(function ProductCard({ product, priority = false }: Readonly<ICardProps>) {
   const {
     id,
     name,
@@ -57,7 +58,7 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
             style={{ objectFit: 'contain', padding: '16px' }}
             fill={true}
             sizes="(max-width: 768px) 50vw, 25vw"
-            priority={true}
+            priority={priority}
           />
           {/* Heart button — frosted glass top-right */}
           <button
@@ -105,4 +106,4 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
       </div>
     </li>
   )
-}
+})
