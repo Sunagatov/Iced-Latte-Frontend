@@ -1,7 +1,5 @@
 'use client'
 import Link from 'next/link'
-import Image from 'next/image'
-import heart_icon from '../../../../public/heart_icon.svg'
 import { useFavouritesStore } from '@/store/favStore'
 
 export default function HeaderHeart() {
@@ -9,10 +7,12 @@ export default function HeaderHeart() {
 
   return (
     <Link href={'/favourites'}>
-      <div className="relative flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5">
-        <Image src={heart_icon} alt="Favourites" priority />
+      <div className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/5">
+        <svg className="h-5 w-5 text-primary" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
         {!!favouriteIds.length && (
-          <div className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-solid text-[10px] font-bold text-white">
+          <div className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-solid text-[10px] font-bold text-white">
             {favouriteIds.length}
           </div>
         )}

@@ -20,7 +20,8 @@ const Dropdown = <T,>({
   selectedOption,
   id,
   hidePrefix,
-}: Readonly<PropsDropdown<T> & { hidePrefix?: boolean }>) => {
+  compact,
+}: Readonly<PropsDropdown<T> & { hidePrefix?: boolean; compact?: boolean }>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -56,18 +57,19 @@ const Dropdown = <T,>({
         className={twMerge(
           headerStyles,
           isOpen ? 'border-brand-solid bg-secondary' : 'bg-secondary',
+          compact ? 'px-3' : '',
         )}
         onClick={handleClick}
         tabIndex={0}
       >
-        <span>{hidePrefix ? selectedOption.label : `Sort by: ${selectedOption.label}`}</span>
-        <Image
-          src={'/open_select.svg'}
-          alt="open select icon"
-          width={17}
-          height={10}
-          className={twMerge('transition-transform duration-200', isOpen && 'rotate-180')}
-        />
+        {compact ? (
+          <Image src={'/open_select.svg'} alt="sort" width={17} height={10} className={twMerge('transition-transform duration-200', isOpen && 'rotate-180')} />
+        ) : (
+          <>
+            <span>{hidePrefix ? selectedOption.label : `Sort by: ${selectedOption.label}`}</span>
+            <Image src={'/open_select.svg'} alt="open select icon" width={17} height={10} className={twMerge('transition-transform duration-200', isOpen && 'rotate-180')} />
+          </>
+        )}
       </button>
       {isOpen && (
         <ul className={listStyles}>

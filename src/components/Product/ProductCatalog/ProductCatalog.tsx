@@ -73,7 +73,7 @@ export default function ProductCatalog({
     <section
       id="catalog"
       className={twMerge(
-        'mx-4 mt-5 text-center min-[1124px]:mt-16',
+        'mx-4 mt-2 text-center min-[1124px]:mt-4',
         !isShowLoadMoreBtn ? 'mb-14' : '',
       )}
     >
@@ -82,28 +82,63 @@ export default function ProductCatalog({
           'mx-auto flex max-w-[716px] flex-col items-center text-left min-[1100px]:max-w-[1014px] min-[1440px]:max-w-[1384px]'
         }
       >
-        <div className="mb-8 mr-auto min-[1124px]:mb-10">
-          <p className="mb-1 text-sm font-medium text-brand">Our Collection</p>
-          <h1 className="text-4XL font-bold tracking-tight text-primary min-[1124px]:text-5XL">
-            All Coffee
-          </h1>
-        </div>
-        <div className="sticky top-[64px] z-[9] mb-6 flex w-full items-center justify-between bg-white/80 py-3 backdrop-blur-md">
-          <button
-            id="filter-btn"
-            onClick={handleFilterClick}
-            className="block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
-          >
-            Filter
-          </button>
-          <Dropdown<ISortParams>
-            id="productDropdown"
-            className="ml-auto shrink-0"
-            headerClassName="-mr-6"
-            options={sortOptions}
-            onChange={handleSelectSortOption}
-            selectedOption={selectedSortOption}
-          />
+        <div className="sticky top-[64px] z-[9] mb-6 w-full bg-white/80 py-3 backdrop-blur-md">
+          {/* Row 1: title + filter btn + sort */}
+          <div className="flex items-center gap-3">
+            <div className="flex shrink-0 flex-col">
+              <p className="text-xs font-medium text-brand">Our Collection</p>
+              <h1 className="text-2XL font-bold tracking-tight text-primary min-[1124px]:text-3XL">
+                {searchQuery ? `"${searchQuery}"` : 'All Coffee'}
+              </h1>
+            </div>
+            <button
+              id="filter-btn"
+              onClick={handleFilterClick}
+              className="ml-auto block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
+            >
+              Filter
+            </button>
+            {/* Mobile: compact icon-only sort */}
+            <Dropdown<ISortParams>
+              id="productDropdownMobile"
+              className="shrink-0 min-[1100px]:hidden"
+              options={sortOptions}
+              onChange={handleSelectSortOption}
+              selectedOption={selectedSortOption}
+              compact
+            />
+            {/* Desktop: full sort label */}
+            <Dropdown<ISortParams>
+              id="productDropdown"
+              className="hidden shrink-0 min-[1100px]:ml-auto min-[1100px]:block"
+              options={sortOptions}
+              onChange={handleSelectSortOption}
+              selectedOption={selectedSortOption}
+            />
+          </div>
+          {/* Row 2: active filter chips (only when present) */}
+          {(searchQuery || selectedBrandOptions.length > 0 || (ratingFilter && ratingFilter !== 'any')) && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {searchQuery && (
+                <span className="flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
+                  🔍 {searchQuery}
+                  <button onClick={() => updateProductFiltersStore({ searchQuery: '' })} className="ml-1 hover:opacity-70">✕</button>
+                </span>
+              )}
+              {selectedBrandOptions.map((b) => (
+                <span key={b} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                  {b}
+                  <button onClick={() => updateProductFiltersStore({ selectedBrandOptions: selectedBrandOptions.filter((x) => x !== b) })} className="hover:opacity-70">✕</button>
+                </span>
+              ))}
+              {ratingFilter && ratingFilter !== 'any' && (
+                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                  {'⭐'.repeat(Number(ratingFilter))}+
+                  <button onClick={() => updateProductFiltersStore({ ratingFilter: null })} className="hover:opacity-70">✕</button>
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <div className=" flex w-full justify-center gap-x-8 ">
           <FilterSidebar className=" sticky top-[180px] hidden max-h-[calc(100vh-150px)] overflow-y-auto min-[1100px]:block ">

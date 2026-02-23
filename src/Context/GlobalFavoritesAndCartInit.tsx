@@ -38,7 +38,7 @@ const GlobalFavoritesAndCartInit = ({ children }: { children: React.ReactNode })
         .then((cart) => setTempItems(cart.items))
         .catch((e) => console.log(e))
     }
-  }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, itemsIds]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initialization of registered and unregistered user's favorite products
   useEffect(() => {
