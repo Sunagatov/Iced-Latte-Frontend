@@ -18,7 +18,6 @@ export default function PerformanceTracker({ children }: { children: React.React
   const apiCalls = useRef<ApiCallMetric[]>([])
 
   useEffect(() => {
-    pageLoadStart.current = Date.now()
     apiCalls.current = []
 
     // Intercept API calls to measure duration
@@ -26,6 +25,10 @@ export default function PerformanceTracker({ children }: { children: React.React
       (config as any)._t = Date.now()
       return config
     })
+
+    // Reset page load start after interceptors are installed so the first
+    // intercepted request timestamp is always >= pageLoadStart
+    pageLoadStart.current = Date.now()
 
     const resInterceptor = api.interceptors.response.use(
       (response) => {
@@ -59,25 +62,27 @@ export default function PerformanceTracker({ children }: { children: React.React
       const calls = [...apiCalls.current]
       if (calls.length === 0) return
 
-      const errorCount = calls.filter(c => c.status >= 400).length
-      const sorted = [...calls].map(c => c.durationMs).sort((a, b) => a - b)
-      const p95DurationMs = sorted[Math.floor(sorted.length * 0.95)] ?? sorted[sorted.length - 1] ?? 0
+      const errorCount = calls.filter(c => c.status >= 400 && c.status !== 0).length
+      const validDurations = calls.filter(c => c.status !== 0).map(c => c.durationMs).sort((a, b) => a - b)
+      const p95DurationMs = validDurations[Math.floor(validDurations.length * 0.95)] ?? validDurations[validDurations.length - 1] ?? 0
 
       const payload = { page: pathname, pageLoadMs, errorCount, p95DurationMs, apiCalls: calls }
 
-      // Use sendBeacon for reliability on page unload, fetch otherwise
-      const url = `/api/proxy/telemetry/performance`
+      // sendBeacon cannot send custom headers — embed sessionId in URL so backend can read it
+      const sessionId = getSessionId()
+      const url = `/api/proxy/telemetry/performance?sid=${encodeURIComponent(sessionId)}`
       const body = JSON.stringify(payload)
-      const headers = {
-        'Content-Type': 'application/json',
-        'X-Session-ID': getSessionId(),
-      }
 
       if (navigator.sendBeacon) {
         const blob = new Blob([body], { type: 'application/json' })
         navigator.sendBeacon(url, blob)
       } else {
-        fetch(url, { method: 'POST', body, headers, keepalive: true }).catch(() => {})
+        fetch(url, {
+          method: 'POST',
+          body,
+          headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId },
+          keepalive: true,
+        }).catch(() => {})
       }
     }
 
