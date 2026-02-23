@@ -7,7 +7,7 @@ import getImgUrl from '@/shared/utils/getImgUrl'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
-import { FavElementProps } from '@/features/favorites/typesElement'
+import { FavElementProps } from '@/features/favorites/types'
 import { handleFavouriteButtonClick } from '@/shared/utils/favUtils'
 import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } from 'react-icons/ri'
 

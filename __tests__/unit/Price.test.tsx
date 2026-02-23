@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import Price from '../../src/components/UI/Price/Price'
+import Price from '../../src/shared/components/Price/Price'
 import '@testing-library/jest-dom'
 
 describe('Price', () => {

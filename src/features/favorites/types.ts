@@ -7,3 +7,7 @@ export interface FavResponse {
 export interface IFavPushItems {
   productIds: string[]
 }
+
+export interface FavElementProps {
+  product: IProduct
+}

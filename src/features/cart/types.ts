@@ -30,3 +30,10 @@ export interface ICartUpdatedItem {
   shoppingCartItemId: string
   productQuantityChange: number
 }
+
+export interface CartElementProps {
+  product: ICartItem
+  add: (id: string) => void
+  remove: (id: string) => void
+  removeAll: (id: string) => void
+}
