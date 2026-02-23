@@ -91,7 +91,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   }
 
   return (
-    <div className={twMerge('mx-auto max-w-[1157px]', reviews.length > 0 ? '' : 'xl:mb-20')}>
+    <div data-testid="reviews-section" className={twMerge('mx-auto max-w-[1157px]', reviews.length > 0 ? '' : 'xl:mb-20')}>
       <h2 className="mb-8 text-3xl font-bold tracking-tight text-primary">Rating and reviews</h2>
 
       <div className="flex flex-col gap-10 xl:flex-row xl:items-start">

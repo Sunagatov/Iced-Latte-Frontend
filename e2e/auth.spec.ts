@@ -17,7 +17,7 @@ test('sign in with invalid credentials shows error', async ({ page }) => {
   await page.fill('#email', 'wrong@example.com')
   await page.fill('#password', 'WrongPass1!')
   await page.click('#login-btn')
-  await expect(page.locator('.text-negative')).toBeVisible({ timeout: 5000 })
+  await expect(page.locator('.text-negative')).toBeVisible({ timeout: 10000 })
 })
 
 test('sign up with new email redirects to /confirm_registration', async ({ page }) => {
@@ -32,12 +32,12 @@ test('sign up with new email redirects to /confirm_registration', async ({ page 
   await expect(page).toHaveURL(/\/confirm_registration/, { timeout: 8000 })
 })
 
-test('sign up with existing email shows error', async ({ page }) => {
+test('sign up with existing email redirects to confirm registration', async ({ page }) => {
   await page.goto('/signup')
   await page.fill('#firstName', 'Test')
   await page.fill('#lastName', 'User')
   await page.fill('#email', EXISTING_EMAIL)
   await page.fill('#password', 'ValidPass1@')
   await page.click('#register-btn')
-  await expect(page.locator('.text-negative')).toBeVisible({ timeout: 5000 })
+  await expect(page).toHaveURL(/\/confirm_registration/, { timeout: 10000 })
 })

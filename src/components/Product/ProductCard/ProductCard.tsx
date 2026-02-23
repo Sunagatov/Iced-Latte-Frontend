@@ -61,6 +61,8 @@ export default function ProductCard({ product }: Readonly<ICardProps>) {
           {/* Heart button — frosted glass top-right */}
           <button
             onClick={(e) => { e.preventDefault(); handleButtonClick() }}
+            data-testid="favourite-btn"
+            data-active={isFavourited ? 'true' : 'false'}
             className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none ${
               isFavourited
                 ? 'bg-red-500/90 text-white'

@@ -41,7 +41,7 @@ export default function ProductList({
 
   if (products.length === 0) {
     return (
-      <div className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center">
+      <div data-testid="empty-state" className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center">
         <span className="text-5xl">🔍</span>
         {searchQuery ? (
           <>
@@ -53,6 +53,7 @@ export default function ProductList({
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
+                  data-testid="suggestion-pill"
                   onClick={() => onSuggestionClick?.(s)}
                   className="rounded-full border border-brand/30 px-4 py-1.5 text-sm font-medium text-brand transition hover:bg-brand/10"
                 >

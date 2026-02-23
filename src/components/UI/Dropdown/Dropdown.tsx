@@ -51,6 +51,7 @@ const Dropdown = <T,>({
     <div
       id={id}
       ref={ref}
+      data-testid="sort-dropdown"
       className={twMerge('relative w-max text-L text-primary', className)}
     >
       <button
@@ -76,6 +77,7 @@ const Dropdown = <T,>({
           {options.map((option) => (
             <li key={option.label}>
               <button
+                data-testid="sort-option"
                 className={twMerge(
                   optionBtnStyles,
                   isSelected(selectedOption, option) &&

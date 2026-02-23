@@ -53,7 +53,7 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
 
         {/* Title + rating */}
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-4xl font-bold tracking-tight text-primary">{product.name}</h1>
+          <h1 data-testid="product-name" className="text-4xl font-bold tracking-tight text-primary">{product.name}</h1>
           <div className="flex flex-wrap items-center gap-1.5 text-sm text-tertiary">
             {averageRating ? (
               <>
@@ -107,6 +107,9 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
           <AddToCartButton product={product} />
           <HeartWrapper id={product.id} className="ml-1" />
         </div>
+
+        {/* Price — visible for testid */}
+        <p data-testid="product-price" className="sr-only">${product.price}</p>
 
         {/* Description */}
         {product.description && (

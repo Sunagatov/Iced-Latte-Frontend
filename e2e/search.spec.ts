@@ -29,21 +29,21 @@ test('submitting search scrolls to catalog and filters products', async ({ page 
 })
 
 test('recent searches appear on focus after a search', async ({ page }) => {
-  const input = page.getByRole('textbox', { name: 'Search products' })
+  const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
   await input.fill('mocha')
   await input.press('Enter')
   await input.fill('')
   await input.focus()
-  await expect(page.getByText('mocha')).toBeVisible({ timeout: 1000 })
+  await expect(page.getByRole('button', { name: 'Remove mocha', exact: true })).toBeVisible({ timeout: 1000 })
 })
 
 test('keyboard navigation selects suggestion', async ({ page }) => {
-  const input = page.getByRole('textbox', { name: 'Search products' })
+  await page.goto('/')
+  const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
   await input.fill('latte')
-  await page.waitForTimeout(400)
+  await page.waitForTimeout(500)
   await input.press('ArrowDown')
   await input.press('Enter')
-  // After selecting, dropdown should close
   await expect(input).not.toHaveValue('latte')
 })
 

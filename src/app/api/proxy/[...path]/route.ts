@@ -3,12 +3,14 @@ import { createCorsResponse, handleOptions } from '@/utils/corsUtils'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!
 
+const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
+
 function forwardHeaders(request: NextRequest): HeadersInit {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  for (const name of FORWARDED_HEADERS) {
+    const value = request.headers.get(name)
+    if (value) headers[name] = value
   }
-  const auth = request.headers.get('Authorization')
-  if (auth) headers['Authorization'] = auth
   return headers
 }
 
@@ -36,7 +38,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  const apiUrl = `${API_BASE_URL}/${path.join('/')}`
+  const url = new URL(request.url)
+  const apiUrl = `${API_BASE_URL}/${path.join('/')}${url.search}`
 
   let body: string | null = null
   try {

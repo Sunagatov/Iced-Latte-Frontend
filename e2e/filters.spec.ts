@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('filter sidebar is visible with all sections', async ({ page }) => {
   await expect(page.getByText('Price, $')).toBeVisible()
-  await expect(page.getByText('Product rating')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Rating' })).toBeVisible()
   await expect(page.getByText('Brand')).toBeVisible()
   await expect(page.getByText('Seller')).toBeVisible()
 })
@@ -54,14 +54,13 @@ test('rating filter - selecting 4 stars filters products', async ({ page }) => {
   await page.locator('#checkbox-4').click()
   await page.waitForTimeout(500)
   await page.waitForSelector('[data-testid="product-card"]')
-  // Checkbox should be checked
-  await expect(page.locator('#checkbox-4')).toBeChecked()
+  await expect(page.locator('#checkbox-4')).toHaveClass(/bg-brand-solid/)
 })
 
 test('rating filter - selecting Any shows all products', async ({ page }) => {
   await page.locator('#checkbox-any').click()
   await page.waitForTimeout(500)
-  await expect(page.locator('#checkbox-any')).toBeChecked()
+  await expect(page.locator('#checkbox-any')).toHaveClass(/bg-brand-solid/)
 })
 
 test('rating filter - only one rating option can be selected at a time', async ({ page }) => {
@@ -70,8 +69,8 @@ test('rating filter - only one rating option can be selected at a time', async (
   await page.locator('#checkbox-3').click()
   await page.waitForTimeout(300)
 
-  await expect(page.locator('#checkbox-4')).not.toBeChecked()
-  await expect(page.locator('#checkbox-3')).toBeChecked()
+  await expect(page.locator('#checkbox-4')).not.toHaveClass(/bg-brand-solid/)
+  await expect(page.locator('#checkbox-3')).toHaveClass(/bg-brand-solid/)
 })
 
 test('brand filter - checkbox toggles on click', async ({ page }) => {
