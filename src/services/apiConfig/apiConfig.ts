@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { setupCache } from 'axios-cache-interceptor'
+import { getSessionId, generateTraceId } from '@/utils/sessionUtils'
 
 const baseConfig = {
   headers: {
@@ -29,6 +30,10 @@ instance.interceptors.request.use((config) => {
         config.headers['Authorization'] = `Bearer ${token}`
       }
     } catch { /* store not yet initialized */ }
+
+    // Attach anonymous session ID (persistent) and trace ID (per-request)
+    config.headers['X-Session-ID'] = getSessionId()
+    config.headers['X-Trace-ID'] = generateTraceId()
   }
 
   return config

@@ -7,6 +7,7 @@ import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import InterceptorsForRefreshToken from '@/Context/InterceptorsForRefreshToken'
 import GlobalFavoritesAndCartInit from '@/Context/GlobalFavoritesAndCartInit'
+import PerformanceTracker from '@/components/PerformanceTracker'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -30,9 +31,11 @@ export default function RootLayout({
         <ToastContainer />
         <InterceptorsForRefreshToken>
           <GlobalFavoritesAndCartInit>
-            <Header />
-            <main className={'min-w-[360px] grow'}>{children}</main>
-            <Footer />
+            <PerformanceTracker>
+              <Header />
+              <main className={'min-w-[360px] grow'}>{children}</main>
+              <Footer />
+            </PerformanceTracker>
           </GlobalFavoritesAndCartInit>
         </InterceptorsForRefreshToken>
       </body>
