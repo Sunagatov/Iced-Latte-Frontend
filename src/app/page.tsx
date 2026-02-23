@@ -1,7 +1,7 @@
 import { unstable_cache } from 'next/cache'
-import Hero from '../components/Hero/Hero'
-import ProductCatalog from '../components/Product/ProductCatalog/ProductCatalog'
-import { getProductBrands, getProductSellers } from '@/services/apiService'
+import Hero from '@/shared/components/Hero/Hero'
+import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
+import { getProductBrands, getProductSellers } from '@/features/products/api'
 
 const getBrands = unstable_cache(
   async () => {

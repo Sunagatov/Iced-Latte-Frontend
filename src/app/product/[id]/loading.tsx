@@ -1,4 +1,4 @@
-import Loader from '@/components/UI/Loader/Loader'
+import Loader from '@/shared/components/Loader/Loader'
 
 const ProductIdLoading = () => {
   return (

@@ -1,7 +1,7 @@
-import LoginForm from '@/components/Auth/Forms/LoginForm/LoginForm'
-import SocialAuthButtons from '@/components/Auth/SocialAuthButtons'
+import LoginForm from '@/features/auth/components/Forms/LoginForm/LoginForm'
+import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
 import Link from 'next/link'
-import RestrictRoute from '@/Context/RestrictRoute'
+import RestrictRoute from '@/shared/providers/RestrictRoute'
 
 export default function SignInPage() {
   return (

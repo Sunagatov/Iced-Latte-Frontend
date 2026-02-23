@@ -1,5 +1,5 @@
-import ConfirmPasswordComponent from '../../components/Auth/ConfirmPassword/ConfirmPasswordComponent'
-import RestrictRoute from '@/Context/RestrictRoute'
+import ConfirmPasswordComponent from '@/features/auth/components/ConfirmPassword/ConfirmPasswordComponent'
+import RestrictRoute from '@/shared/providers/RestrictRoute'
 
 const ConfirmPasswordPage = () => {
   return (

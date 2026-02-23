@@ -3,11 +3,11 @@ import 'react-toastify/dist/ReactToastify.css'
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
-import Header from '@/components/Header/Header'
-import Footer from '@/components/Footer/Footer'
-import InterceptorsForRefreshToken from '@/Context/InterceptorsForRefreshToken'
-import GlobalFavoritesAndCartInit from '@/Context/GlobalFavoritesAndCartInit'
-import PerformanceTracker from '@/components/PerformanceTracker'
+import Header from '@/shared/components/Header/Header'
+import Footer from '@/shared/components/Footer/Footer'
+import AuthInterceptor from '@/shared/providers/AuthInterceptor'
+import AppInitProvider from '@/shared/providers/AppInitProvider'
+import PerformanceTracker from '@/shared/components/PerformanceTracker'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -29,15 +29,15 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning className={inter.className + ' flex min-h-screen flex-col'}>
         <ToastContainer />
-        <InterceptorsForRefreshToken>
-          <GlobalFavoritesAndCartInit>
+        <AuthInterceptor>
+          <AppInitProvider>
             <PerformanceTracker>
               <Header />
               <main className={'min-w-[360px] grow'}>{children}</main>
               <Footer />
             </PerformanceTracker>
-          </GlobalFavoritesAndCartInit>
-        </InterceptorsForRefreshToken>
+          </AppInitProvider>
+        </AuthInterceptor>
       </body>
     </html>
   )

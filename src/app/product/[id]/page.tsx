@@ -1,6 +1,6 @@
-import { IProduct } from '@/types/Products'
-import { getProduct } from '@/services/apiService'
-import ProductWithReviews from '@/components/Product/ProductWithReviews/ProductWithReviews'
+import { IProduct } from '@/features/products/types'
+import { getProduct } from '@/features/products/api'
+import ProductWithReviews from '@/features/products/components/ProductWithReviews/ProductWithReviews'
 
 
 type ProductProps = {

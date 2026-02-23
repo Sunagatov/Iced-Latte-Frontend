@@ -8,7 +8,7 @@ async function loginViaApi(page: import('@playwright/test').Page) {
     data: { email: EMAIL, password: PASSWORD },
   })
   const { token, refreshToken } = await res.json()
-  await page.context().addCookies([{ name: 'token', value: token, url: 'http://localhost:3001' }])
+  await page.context().addCookies([{ name: 'token', value: token, url: 'http://localhost:3000' }])
   await page.goto('/')
   await page.evaluate(
     ({ t, rt }) => {

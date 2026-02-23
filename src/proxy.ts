@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { corsHeaders } from './utils/corsUtils'
+import { corsHeaders } from '@/shared/utils/corsUtils'
 
 export function proxy(request: NextRequest) {
   // Handle CORS preflight
