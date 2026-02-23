@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'react'
 export default function CartElement({ product, add, remove, removeAll }: Readonly<CartElementProps>) {
   const { productInfo } = product
   const items = useCombinedStore((state) => state.itemsIds)
-  const productQuantity = items?.find((item) => item.productId === productInfo.id)!.productQuantity
+  const productQuantity = items?.find((item) => item.productId === productInfo.id)?.productQuantity ?? 0
   const totalProductPrice = (productInfo.price * productQuantity!).toFixed(2)
 
   const [pulse, setPulse] = useState(false)

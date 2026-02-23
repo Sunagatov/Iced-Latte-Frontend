@@ -182,11 +182,13 @@ export const createCartSlice: StateCreator<
       const updatedCart = removeItem(id, itemsIds)
       const count = getProductsCount(updatedCart)
 
-      const updatedTempItems = tempItems.map((tempItem) =>
-        tempItem.productInfo.id === id
-          ? { ...tempItem, productQuantity: tempItem.productQuantity - 1 }
-          : tempItem,
-      )
+      const updatedTempItems = tempItems
+        .map((tempItem) =>
+          tempItem.productInfo.id === id
+            ? { ...tempItem, productQuantity: tempItem.productQuantity - 1 }
+            : tempItem,
+        )
+        .filter((tempItem) => tempItem.productQuantity > 0)
 
       const totalPrice = getTotalPrice(updatedTempItems)
 
@@ -283,13 +285,13 @@ export const createCartSlice: StateCreator<
       const data = await changeCartItemQuantity(updatedItem)
 
       const { itemsTotalPrice, productsQuantity, items } = data
-
-      const newItemsIds = createItemsIdsFromCart(items)
+      const filteredItems = items.filter((item) => item.productQuantity > 0)
+      const newItemsIds = createItemsIdsFromCart(filteredItems)
 
       set((state) => ({
         ...state,
         itemsIds: newItemsIds,
-        tempItems: items,
+        tempItems: filteredItems,
         count: productsQuantity,
         totalPrice: itemsTotalPrice,
       }))
