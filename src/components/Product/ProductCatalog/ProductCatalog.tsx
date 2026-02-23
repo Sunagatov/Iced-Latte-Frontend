@@ -156,7 +156,9 @@ export default function ProductCatalog({
             products={products}
             error={error}
             isLoading={isLoading}
+            searchQuery={searchQuery}
             onResetFilters={() => updateProductFiltersStore(defaultProductsFilters)}
+            onSuggestionClick={(q) => updateProductFiltersStore({ searchQuery: q })}
           />
         </div>
         {isShowLoadMoreBtn && (

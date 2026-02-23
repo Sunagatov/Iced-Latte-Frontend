@@ -23,6 +23,10 @@ function saveRecent(query: string) {
   localStorage.setItem(RECENT_KEY, JSON.stringify([query, ...prev].slice(0, MAX_RECENT)))
 }
 
+function deleteRecent(query: string) {
+  localStorage.setItem(RECENT_KEY, JSON.stringify(getRecent().filter((q) => q !== query)))
+}
+
 function highlight(text: string, query: string) {
   if (!query) return text
   const idx = text.toLowerCase().indexOf(query.toLowerCase())
@@ -202,7 +206,17 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
                       <svg className="h-3.5 w-3.5 shrink-0 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
                       </svg>
-                      <span className="text-primary">{q}</span>
+                      <span className="flex-1 text-primary">{q}</span>
+                      <span
+                        role="button"
+                        onMouseDown={(e) => { e.stopPropagation(); deleteRecent(q); setRecent(getRecent()) }}
+                        className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-secondary hover:bg-tertiary hover:text-primary"
+                        aria-label={`Remove ${q}`}
+                      >
+                        <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path d="M18 6 6 18M6 6l12 12" />
+                        </svg>
+                      </span>
                     </button>
                   </li>
                 ))}

@@ -2,18 +2,24 @@ import { IProduct } from '@/types/Products'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/components/UI/Loader/Loader'
 
+const SUGGESTIONS = ['Latte', 'Espresso', 'Mocha', 'Cold Brew', 'Cappuccino', 'Flat White']
+
 interface IProductListProps {
   products: IProduct[]
   error: Error | undefined
   isLoading: boolean
+  searchQuery?: string
   onResetFilters?: () => void
+  onSuggestionClick?: (query: string) => void
 }
 
 export default function ProductList({
   products,
   error,
   isLoading,
+  searchQuery,
   onResetFilters,
+  onSuggestionClick,
 }: Readonly<IProductListProps>) {
   if (error) {
     return (
@@ -36,15 +42,37 @@ export default function ProductList({
   if (products.length === 0) {
     return (
       <div className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center">
-        <span className="text-6xl">☕</span>
-        <h3 className="text-2xl font-semibold text-primary">No coffees found</h3>
-        <p className="max-w-xs text-secondary">Try adjusting your filters or browse all our coffees.</p>
+        <span className="text-5xl">🔍</span>
+        {searchQuery ? (
+          <>
+            <h3 className="text-xl font-semibold text-primary">
+              No results for <span className="text-brand">&ldquo;{searchQuery}&rdquo;</span>
+            </h3>
+            <p className="text-sm text-secondary">Check the spelling or try a different search.</p>
+            <div className="mt-1 flex flex-wrap justify-center gap-2">
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => onSuggestionClick?.(s)}
+                  className="rounded-full border border-brand/30 px-4 py-1.5 text-sm font-medium text-brand transition hover:bg-brand/10"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <h3 className="text-xl font-semibold text-primary">No products found</h3>
+            <p className="max-w-xs text-sm text-secondary">Try adjusting your filters.</p>
+          </>
+        )}
         {onResetFilters && (
           <button
             onClick={onResetFilters}
-            className="mt-2 rounded-full bg-brand-solid px-6 py-3 text-base font-medium text-white transition hover:bg-brand-solid-hover"
+            className="mt-2 rounded-full bg-brand-solid px-6 py-2.5 text-sm font-medium text-white transition hover:bg-brand-solid-hover"
           >
-            Reset filters
+            Reset all filters
           </button>
         )}
       </div>

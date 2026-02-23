@@ -8,12 +8,16 @@ import LoginIcon from '../UI/AuthIcon/LoginIcon'
 import HeaderHeart from '../UI/HeaderHeart/HeaderHeart'
 import SearchBar from './SearchBar'
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [heroVisible, setHeroVisible] = useState(true)
+  const pathname = usePathname()
+  const isHome = pathname === '/'
 
   useEffect(() => {
+    if (!isHome) return
     const hero = document.getElementById('hero')
     if (!hero) return
     const observer = new IntersectionObserver(
@@ -22,9 +26,9 @@ export default function Header() {
     )
     observer.observe(hero)
     return () => observer.disconnect()
-  }, [])
+  }, [isHome])
 
-  const showSearch = !heroVisible
+  const showSearch = isHome && !heroVisible
 
   return (
     <header className="sticky left-0 top-0 z-50 flex h-16 w-full items-center border-b border-black/5 bg-white/90 px-4 backdrop-blur-md sm:px-8 gap-3">
