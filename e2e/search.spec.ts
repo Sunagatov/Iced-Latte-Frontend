@@ -9,9 +9,16 @@ test('search bar is visible in header', async ({ page }) => {
 })
 
 test('typing shows autocomplete suggestions', async ({ page }) => {
-  const input = page.getByRole('textbox', { name: 'Search products' })
+  const product = { id: '1', name: 'Latte Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+  await page.route('**/api/proxy/products**keyword=latte**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 5, totalElements: 1, totalPages: 1 }) })
+  })
+  await page.goto('/')
+  const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
+  await input.click()
   await input.fill('latte')
-  await expect(page.locator('[role="listbox"], ul').first()).toBeVisible({ timeout: 2000 })
+  const dropdown = page.locator('.absolute').filter({ has: page.locator('ul') })
+  await expect(dropdown).toBeVisible({ timeout: 5000 })
 })
 
 test('clear button resets input', async ({ page }) => {
@@ -38,11 +45,16 @@ test('recent searches appear on focus after a search', async ({ page }) => {
 })
 
 test('keyboard navigation selects suggestion', async ({ page }) => {
+  const product = { id: '1', name: 'Latte Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+  await page.route('**/api/proxy/products**keyword=latte**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 5, totalElements: 1, totalPages: 1 }) })
+  })
   await page.goto('/')
   const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
+  await input.click()
   await input.fill('latte')
   const dropdown = page.locator('.absolute').filter({ has: page.locator('ul') })
-  await expect(dropdown).toBeVisible({ timeout: 3000 })
+  await expect(dropdown).toBeVisible({ timeout: 5000 })
   const firstSuggestion = dropdown.locator('li').first().locator('button')
   const suggestionText = (await firstSuggestion.innerText()).trim().split('\n')[0]
   await input.press('ArrowDown')
@@ -51,10 +63,16 @@ test('keyboard navigation selects suggestion', async ({ page }) => {
 })
 
 test('Escape closes dropdown', async ({ page }) => {
-  const input = page.getByRole('textbox', { name: 'Search products' })
-  await input.fill('cap')
+  const product = { id: '1', name: 'Latte Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+  await page.route('**/api/proxy/products**keyword=latte**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 5, totalElements: 1, totalPages: 1 }) })
+  })
+  await page.goto('/')
+  const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
+  await input.click()
+  await input.fill('latte')
   const dropdown = page.locator('.absolute').filter({ has: page.locator('ul') })
-  await expect(dropdown).toBeVisible({ timeout: 3000 })
+  await expect(dropdown).toBeVisible({ timeout: 5000 })
   await input.press('Escape')
   await expect(dropdown).not.toBeVisible()
 })

@@ -24,9 +24,9 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     if (!token) {
       if (isSync) reset()
       if (itemsIds.length) getCartItems().catch(() => {})
-    } else if (!isSync) {
+    } else if (!isSync && itemsIds.length) {
       syncBackendCart(token).catch(() => {})
-    } else {
+    } else if (token) {
       fetchCart()
         .then((cart) => setTempItems(cart.items))
         .catch(() => {})

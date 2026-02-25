@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function CartEmpty() {
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-[520px] flex-col items-center justify-center px-6 py-16 text-center">
+    <div data-testid="cart-empty" className="mx-auto flex min-h-[70vh] max-w-[520px] flex-col items-center justify-center px-6 py-16 text-center">
 
       {/* Illustration */}
       <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-8">

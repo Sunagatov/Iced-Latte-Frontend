@@ -161,7 +161,12 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     }
   },
   resetCart: () => set({ itemsIds: [], items: [], tempItems: [], count: 0, totalPrice: 0, isSync: false } as CartSliceState),
-  setTempItems: (items) => set((state) => ({ ...state, tempItems: items })),
+  setTempItems: (items) => set((state) => ({
+    ...state,
+    tempItems: items,
+    count: items.reduce((sum, i) => sum + i.productQuantity, 0),
+    totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
+  })),
   createCart: async (token: string, reqItems: ICartPushItems): Promise<void> => {
     const mergedCart = await mergeCarts(reqItems)
     const { itemsTotalPrice, productsQuantity, items } = mergedCart

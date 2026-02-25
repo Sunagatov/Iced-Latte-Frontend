@@ -114,7 +114,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
   }
 
   return (
-    <div className="flex overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm">
+    <div data-testid="fav-element" className="flex overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm">
       <Link href={`/product/${product.id}`} className="shrink-0">
         <Image
           src={getImgUrl(product.productFileUrl, productImg)}

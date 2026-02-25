@@ -42,7 +42,7 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
   }
 
   return (
-    <div className="rounded-2xl border border-[#242D3429] bg-primary px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
+    <div data-testid="cart-item" className="rounded-2xl border border-[#242D3429] bg-primary px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
 
       {/* Top row: image + name + price */}
       <div className="flex items-center gap-3">

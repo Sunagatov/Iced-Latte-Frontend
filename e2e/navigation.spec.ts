@@ -1,4 +1,20 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+function makeProduct(id: string) {
+  return { id, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+}
+
+async function mockProducts(page: Page) {
+  const productsList = { products: [makeProduct('00000000-0000-0000-0000-000000000001')], page: 0, size: 6, totalElements: 1, totalPages: 1 }
+  await page.route('**/api/proxy/**', async (route) => {
+    const url = route.request().url()
+    if (url.includes('/products') && !url.includes('/ids')) {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
+    } else {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    }
+  })
+}
 
 test('header is visible on home page', async ({ page }) => {
   await page.goto('/')
@@ -59,6 +75,7 @@ test('catalog section is visible on home page', async ({ page }) => {
 })
 
 test('product cards are visible on home page', async ({ page }) => {
+  await mockProducts(page)
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const count = await page.locator('[data-testid="product-card"]').count()

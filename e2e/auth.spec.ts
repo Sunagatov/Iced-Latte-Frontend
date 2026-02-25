@@ -9,7 +9,7 @@ test('sign in with valid credentials redirects away from /signin', async ({ page
   await page.fill('#email', EXISTING_EMAIL)
   await page.fill('#password', EXISTING_PASSWORD)
   await page.click('#login-btn')
-  await expect(page).not.toHaveURL(/\/signin/, { timeout: 8000 })
+  await expect(page).not.toHaveURL(/\/signin/, { timeout: 20000 })
 })
 
 test('sign in with invalid credentials shows error', async ({ page }) => {

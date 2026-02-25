@@ -11,7 +11,7 @@ export default function FavouritesEmpty() {
 
 
   return (
-    <div className="mx-auto flex max-w-[480px] flex-col items-center px-4 pt-10 pb-16 text-center">
+    <div data-testid="favourites-empty" className="mx-auto flex max-w-[480px] flex-col items-center px-4 pt-10 pb-16 text-center">
       <h1 className="mb-2 text-3xl font-bold tracking-tight text-primary">Favourites</h1>
       <p className="mb-10 text-sm text-tertiary">0 items</p>
       <Image src={search} width={160} height={137} alt="empty favourites" priority className="mb-8 opacity-60" />
