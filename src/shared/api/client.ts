@@ -3,7 +3,10 @@ import { setupCache } from 'axios-cache-interceptor'
 import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
 import { useAuthStore } from '@/features/auth/store'
 
-const instance = axios.create({ headers: { 'Content-Type': 'application/json' } })
+const instance = axios.create({
+  headers: { 'Content-Type': 'application/json' },
+  timeout: typeof window === 'undefined' ? 5000 : 0,
+})
 
 instance.interceptors.request.use((config) => {
   const path = config.url!.replace(/^\//, '')

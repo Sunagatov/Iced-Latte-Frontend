@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { cache } from 'react'
 import Hero from '@/shared/components/Hero/Hero'
 import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
