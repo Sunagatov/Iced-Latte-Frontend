@@ -39,7 +39,12 @@ export const useFavouritesStore = create<FavStoreState>()(
       setLoading: (loading) => set({ loading }),
       addFavourite: async (id, token) => {
         set((state) => ({ favouriteIds: [...state.favouriteIds, id] }))
-        if (token) await get().syncBackendFav()
+        if (token) {
+          await get().syncBackendFav()
+        } else {
+          const products = await getProductByIds([...get().favouriteIds])
+          set({ favourites: products })
+        }
       },
       removeFavourite: async (id, token) => {
         set((state) => ({

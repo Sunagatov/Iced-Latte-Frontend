@@ -49,6 +49,11 @@ export async function apiGetProductUserReview(productId: string): Promise<Review
   return response.data
 }
 
+export async function apiGetUserReviews(): Promise<Review[]> {
+  const response: AxiosResponse<Review[]> = await api.get('/users/reviews')
+  return response.data
+}
+
 export async function apiGetProductReviewsStatistics(productId: string) {
   const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
     `/products/${productId}/reviews/statistics`,

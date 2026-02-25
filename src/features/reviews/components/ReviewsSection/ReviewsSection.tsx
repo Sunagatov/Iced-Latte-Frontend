@@ -91,63 +91,58 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   }
 
   return (
-    <div data-testid="reviews-section" className={twMerge('mx-auto max-w-[1157px]', reviews.length > 0 ? '' : 'xl:mb-20')}>
+    <div data-testid="reviews-section" className={twMerge('mx-auto max-w-[1157px] pb-16', reviews.length > 0 ? '' : 'xl:mb-20')}>
       <h2 className="mb-8 text-3xl font-bold tracking-tight text-primary">Rating and reviews</h2>
 
-      <div className="flex flex-col gap-10 xl:flex-row xl:items-start">
-        <div className="min-w-0 flex-1">
-          <div className="xl:max-w-[720px]">
-            {/* Show form only if user has no review yet */}
-            {!userReview && (
-              <ReviewForm
-                productId={productId}
-                hasReviews={reviews.length > 0}
-                showForm={showForm}
-                setShowForm={setShowForm}
-                onReviewSubmitted={(review) => {
-                  setUserReview(review)
-                  setShowForm(false)
-                  refreshReviews()
-                  void refreshStatistics()
-                }}
-              />
-            )}
-
-            {(reviews.length > 0 || userReview) && (
-              <>
-                <ReviewsSorter
-                  selectedOption={selectedSortOption}
-                  selectOption={setSelectedSortOption}
-                  userReview={userReview}
-                />
-                <ReviewsList
-                  productId={productId}
-                  reviews={reviews}
-                  showMoreReviews={showMoreReviews}
-                  isFetchingNextPage={isFetchingNextPage}
-                  hasNextPage={hasNextPage}
-                  userReview={userReview}
-                  onReviewDeleted={(id) => {
-                    setUserReview(null)
-                    removeReviewFromCache(id)
-                    void refreshStatistics()
-                  }}
-                  onReviewRated={(updated) => updateReviewInCache(updated)}
-                />
-              </>
-            )}
-            {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
-          </div>
+      {reviewsStatistics && reviewsStatistics.reviewsCount > 0 && (
+        <div className="mb-8">
+          <ReviewRatingFilter
+            onChange={ratingFilterChangeHandler}
+            selectedOptions={selectedFilterRating}
+          />
         </div>
+      )}
 
-        <div className="w-full xl:w-[280px] xl:shrink-0">
-          {reviewsStatistics && reviewsStatistics.reviewsCount > 0 ? (
-            <ReviewRatingFilter
-              onChange={ratingFilterChangeHandler}
-              selectedOptions={selectedFilterRating}
+      <div className="xl:max-w-[720px]">
+        {!userReview && (
+          <ReviewForm
+            productId={productId}
+            hasReviews={reviews.length > 0}
+            showForm={showForm}
+            setShowForm={setShowForm}
+            onReviewSubmitted={(review) => {
+              setUserReview(review)
+              setShowForm(false)
+              refreshReviews()
+              void refreshStatistics()
+            }}
+          />
+        )}
+
+        {(reviews.length > 0 || userReview) && (
+          <>
+            <ReviewsSorter
+              selectedOption={selectedSortOption}
+              selectOption={setSelectedSortOption}
+              userReview={userReview}
             />
-          ) : null}
-        </div>
+            <ReviewsList
+              productId={productId}
+              reviews={reviews}
+              showMoreReviews={showMoreReviews}
+              isFetchingNextPage={isFetchingNextPage}
+              hasNextPage={hasNextPage}
+              userReview={userReview}
+              onReviewDeleted={(id) => {
+                setUserReview(null)
+                removeReviewFromCache(id)
+                void refreshStatistics()
+              }}
+              onReviewRated={(updated) => updateReviewInCache(updated)}
+            />
+          </>
+        )}
+        {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
       </div>
     </div>
   )

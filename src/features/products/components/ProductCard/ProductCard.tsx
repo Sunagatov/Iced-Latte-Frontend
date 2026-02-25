@@ -28,6 +28,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   const cartItems = useCartStore((state) => state.itemsIds)
   const addToCart = useCartStore((state) => state.add)
   const removeFromCart = useCartStore((state) => state.remove)
+  const removeFullProduct = useCartStore((state) => state.removeFullProduct)
 
   const productCartQuantity = cartItems?.find(
     (cartItem) => cartItem.productId === id,
@@ -50,7 +51,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
       className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl border border-black/6 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:min-w-[190px]"
     >
       {/* Image */}
-      <Link href={`/product/${id}`}>
+      <Link href={`/product/${id}`} className="flex flex-1 flex-col">
         <div className="relative h-[200px] w-full bg-[#F7F7F9] sm:h-[220px]">
           <Image
             src={getImgUrl(productFileUrl, productImg)}
@@ -78,10 +79,10 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         </div>
 
         {/* Info */}
-        <div className="flex flex-col gap-2 px-3 pb-3 pt-3">
+        <div className="flex flex-1 flex-col gap-2 px-3 pb-3 pt-3">
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
-          <h2 className="text-sm font-semibold leading-tight text-primary sm:text-base">{name}</h2>
-          <p className="text-xs text-secondary">by {brandName} · {sellerName}</p>
+          <h2 className="line-clamp-2 text-sm font-semibold leading-tight text-primary sm:text-base">{name}</h2>
+          <p className="text-xs text-secondary">{brandName} · {sellerName}</p>
         </div>
       </Link>
 
@@ -91,9 +92,9 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         {productCartQuantity ? (
           <Counter
             theme="light"
-            className={'h-8 w-[84px] gap-2 text-[12px] sm:text-M'}
+            className={'h-8 gap-1 px-1 text-[12px] sm:text-M'}
             count={productCartQuantity}
-            removeProduct={() => removeFromCart(id)}
+            removeProduct={() => productCartQuantity === 1 ? removeFullProduct(id) : removeFromCart(id)}
             addProduct={() => addToCart(id)}
           />
         ) : (

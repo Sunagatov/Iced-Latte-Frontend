@@ -7,12 +7,15 @@ import { useCartStore } from '@/features/cart/store'
 import { api } from '@/shared/api/client'
 import Link from 'next/link'
 import Loader from '@/shared/components/Loader/Loader'
+import AddressPicker from '@/features/addresses/components/AddressPicker'
+import { DeliveryAddress } from '@/features/addresses/types'
 
 export default function CheckoutForm() {
   const router = useRouter()
   const { userData } = useAuthStore()
   const { tempItems, totalPrice, resetCart } = useCartStore()
 
+  const [selectedAddress, setSelectedAddress] = useState<DeliveryAddress | null>(null)
   const [form, setForm] = useState({
     recipientName: userData?.firstName ?? '',
     recipientSurname: userData?.lastName ?? '',
@@ -28,6 +31,10 @@ export default function CheckoutForm() {
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  const address = selectedAddress
+    ? { country: selectedAddress.country, city: selectedAddress.city, line: selectedAddress.line, postcode: selectedAddress.postcode }
+    : { country: form.country, city: form.city, line: form.line, postcode: form.postcode }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -37,12 +44,7 @@ export default function CheckoutForm() {
         recipientName: form.recipientName,
         recipientSurname: form.recipientSurname,
         recipientPhone: form.recipientPhone || undefined,
-        address: {
-          country: form.country,
-          city: form.city,
-          line: form.line,
-          postcode: form.postcode,
-        },
+        address,
       })
       resetCart()
       router.push('/orders')
@@ -87,12 +89,20 @@ export default function CheckoutForm() {
         <Field label="Phone (for delivery updates)" value={form.recipientPhone} onChange={set('recipientPhone')} type="tel" />
 
         <p className="text-xs font-bold uppercase tracking-widest text-secondary">Delivery address</p>
-        <Field label="Address line" value={form.line} onChange={set('line')} required />
-        <div className="flex gap-3">
-          <Field label="City" value={form.city} onChange={set('city')} required />
-          <Field label="Postcode" value={form.postcode} onChange={set('postcode')} required />
-        </div>
-        <Field label="Country" value={form.country} onChange={set('country')} required />
+
+        <AddressPicker selected={selectedAddress} onSelect={setSelectedAddress} />
+
+        {/* Manual address fields — shown only when entering a new address */}
+        {!selectedAddress && (
+          <>
+            <Field label="Address line" value={form.line} onChange={set('line')} required />
+            <div className="flex gap-3">
+              <Field label="City" value={form.city} onChange={set('city')} required />
+              <Field label="Postcode" value={form.postcode} onChange={set('postcode')} required />
+            </div>
+            <Field label="Country" value={form.country} onChange={set('country')} required />
+          </>
+        )}
 
         {error && <p className="text-sm text-negative">{error}</p>}
 

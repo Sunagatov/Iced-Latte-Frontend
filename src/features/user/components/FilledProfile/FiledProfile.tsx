@@ -5,10 +5,12 @@ import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
 import FormProfile from '../FormProfile/FormProfile'
 import ImageUpload from '@/shared/components/ImageUpload/ImageUpload'
+import AddressManager from '@/features/addresses/components/AddressManager'
 import Link from 'next/link'
 import { api } from '@/shared/api/client'
 import { useLogout } from '@/features/auth/hooks'
 import Loader from '@/shared/components/Loader/Loader'
+import UserReviews from '@/features/reviews/components/UserReviews/UserReviews'
 import {
   RiLogoutBoxLine,
   RiLockPasswordLine,
@@ -24,7 +26,7 @@ import {
   RiNotification3Line,
 } from 'react-icons/ri'
 
-type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications'
+type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications' | 'reviews'
 
 const FiledProfile = () => {
   const [activeSection, setActiveSection] = useState<Section>('overview')
@@ -54,6 +56,7 @@ const FiledProfile = () => {
     { id: 'addresses', label: 'Addresses', icon: <RiMapPinLine className="h-5 w-5" /> },
     { id: 'security', label: 'Security', icon: <RiShieldLine className="h-5 w-5" /> },
     { id: 'notifications', label: 'Notifications', icon: <RiNotification3Line className="h-5 w-5" /> },
+    { id: 'reviews', label: 'My Reviews', icon: <RiStarLine className="h-5 w-5" /> },
   ]
 
   const handleNavClick = (id: Section) => {
@@ -299,39 +302,7 @@ const FiledProfile = () => {
             )}
 
             {/* ── ADDRESSES ── */}
-            {activeSection === 'addresses' && (
-              <div className="space-y-4">
-                <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
-                  <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <RiMapPinLine className="h-5 w-5 text-brand" />
-                      <h2 className="font-semibold text-primary">Default delivery address</h2>
-                    </div>
-                    <button
-                      onClick={() => { setActiveSection('profile'); setIsEditing(true) }}
-                      className="rounded-lg bg-brand px-4 py-1.5 text-sm font-medium text-white transition hover:bg-brand-solid-hover"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <div className="divide-y divide-black/5 px-5">
-                    <InfoRow label="Country" value={userData?.address?.country} />
-                    <InfoRow label="City" value={userData?.address?.city} />
-                    <InfoRow label="Address" value={userData?.address?.line} />
-                    <InfoRow label="Postcode" value={userData?.address?.postcode} />
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border-2 border-dashed border-black/10 bg-primary p-6 text-center">
-                  <RiMapPinLine className="mx-auto mb-2 h-8 w-8 text-disabled" />
-                  <p className="text-sm font-medium text-primary">Add another address</p>
-                  <p className="mt-1 text-xs text-secondary">Save multiple delivery addresses for faster checkout</p>
-                  <button className="mt-3 rounded-lg bg-brand-second px-4 py-2 text-sm font-medium text-brand transition hover:bg-brand hover:text-white">
-                    + Add address
-                  </button>
-                </div>
-              </div>
-            )}
+            {activeSection === 'addresses' && <AddressManager />}
 
             {/* ── SECURITY ── */}
             {activeSection === 'security' && (
@@ -374,6 +345,19 @@ const FiledProfile = () => {
                       Coming soon
                     </span>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── REVIEWS ── */}
+            {activeSection === 'reviews' && (
+              <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+                <div className="flex items-center gap-2 border-b border-black/5 px-5 py-4">
+                  <RiStarLine className="h-5 w-5 text-brand" />
+                  <h2 className="font-semibold text-primary">My Reviews</h2>
+                </div>
+                <div className="p-5">
+                  <UserReviews />
                 </div>
               </div>
             )}

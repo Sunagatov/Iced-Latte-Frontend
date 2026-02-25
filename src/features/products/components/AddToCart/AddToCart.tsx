@@ -44,14 +44,15 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
         </div>
       )}
       {productQuantity && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Counter
             theme="dark"
+            className="h-[42px] w-[110px] md:h-[48px] md:w-[120px]"
             count={productQuantity}
             addProduct={addProduct}
             removeProduct={removeProduct}
           />
-          <div className="flex h-[42px] min-w-0 flex-1 cursor-default items-center justify-center rounded-[48px] bg-brand-solid font-semibold text-inverted shadow-md md:h-[54px] md:w-[110px] md:flex-none">
+          <div className="flex h-[42px] w-auto min-w-[72px] cursor-default items-center justify-center rounded-[48px] bg-brand-solid px-4 font-semibold text-inverted shadow-md md:h-[54px] md:min-w-[110px]">
             ${product.price}
           </div>
         </div>

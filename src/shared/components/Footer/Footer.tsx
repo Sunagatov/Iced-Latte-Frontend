@@ -46,9 +46,9 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" suppressHydrationWarning>
             <span className="text-xs font-semibold uppercase tracking-widest text-white/30">Contact</span>
-            <div className="flex flex-col gap-2 text-sm text-white/60">
+            <div className="flex flex-col gap-2 text-sm text-white/60" suppressHydrationWarning>
               <a href="tel:(555) 123-4567" className="transition hover:text-white">📞 (555) 123-4567</a>
               <a href="mailto:info@coffeetimecafe.com" className="transition hover:text-white">✉️ info@coffeetimecafe.com</a>
               <a
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-6 sm:flex-row sm:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-6 sm:flex-row sm:items-center" suppressHydrationWarning>
           <span className="text-xs text-white/30">© 2024 Iced Latte. MIT License.</span>
           <span className="text-xs text-white/20">Built with ❤️ by open-source contributors</span>
         </div>

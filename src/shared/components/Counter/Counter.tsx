@@ -8,7 +8,7 @@ interface PropsCounter { theme: 'dark' | 'light'; className?: string; count: num
 import { debounce } from 'lodash'
 
 const defaultStyles =
-  'flex h-[48px] w-[120px] select-none items-center justify-center gap-[10px] rounded-[40px] px-2 text-2XL font-medium transition ease-in-out'
+  'flex select-none items-center justify-center rounded-[40px] px-2 text-2XL font-medium transition ease-in-out'
 
 const Counter = ({
   theme,
@@ -17,10 +17,11 @@ const Counter = ({
   addProduct,
   removeProduct,
 }: Readonly<PropsCounter>) => {
+  const sizeStyles = className ?? 'h-[48px] w-[120px] gap-[10px]'
   const computedStyles =
     defaultStyles +
     ' ' +
-    (className ?? '') +
+    sizeStyles +
     ' ' +
     (theme === 'dark'
       ? 'bg-inverted text-inverted'
@@ -41,11 +42,11 @@ const Counter = ({
 
   return (
     <div className={computedStyles}>
-      <button id="min-btn" onClick={onMinus}>
+      <button id="min-btn" onClick={onMinus} className="flex items-center justify-center p-1">
         <Image src={theme === 'dark' ? minus : minusDark} alt="minus" />
       </button>
       <span className={'block w-[31px] text-center'}>{count}</span>
-      <button id="plus-btn" onClick={onPlus}>
+      <button id="plus-btn" onClick={onPlus} className="flex items-center justify-center p-1">
         <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
       </button>
     </div>
