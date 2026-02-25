@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { setCookie } from '@/shared/utils/cookieUtils'
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { authenticate, setRefreshToken } = useAuthStore()
@@ -30,5 +30,13 @@ export default function GoogleCallbackPage() {
     <div className="flex min-h-screen items-center justify-center">
       <p className="text-sm text-[#64748B]">Signing you in…</p>
     </div>
+  )
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense>
+      <GoogleCallbackInner />
+    </Suspense>
   )
 }
