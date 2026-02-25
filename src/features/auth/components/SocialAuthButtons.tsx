@@ -1,9 +1,10 @@
 'use client'
 
-function SocialButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+function SocialButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick?: () => void }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white text-sm font-medium text-[#1A202C] transition hover:bg-[#F7F8FA] active:scale-[0.98]"
     >
       {icon}
@@ -36,9 +37,15 @@ const FacebookIcon = (
 
 export default function SocialAuthButtons({ mode }: { mode: 'signin' | 'signup' }) {
   const googleLabel = mode === 'signin' ? 'Continue with Google' : 'Sign up with Google'
+
+  const handleGoogleAuth = () => {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8083/api/v1'
+    window.location.href = `${apiBase}/auth/google`
+  }
+
   return (
     <div className="flex flex-col gap-3">
-      <SocialButton label={googleLabel} icon={GoogleIcon} />
+      <SocialButton label={googleLabel} icon={GoogleIcon} onClick={handleGoogleAuth} />
       <div className="flex gap-3">
         <SocialButton label="Apple" icon={AppleIcon} />
         <SocialButton label="Facebook" icon={FacebookIcon} />
