@@ -8,7 +8,7 @@ import { useAuthStore } from '@/features/auth/store'
 
 export default function FavouritesEmpty() {
   const router = useRouter()
-
+  const { token } = useAuthStore()
 
   return (
     <div data-testid="favourites-empty" className="mx-auto flex max-w-[480px] flex-col items-center px-4 pt-10 pb-16 text-center">
@@ -23,13 +23,15 @@ export default function FavouritesEmpty() {
             Browse Coffee
           </Button>
         </Link>
-        <Button
-          id="login-btn"
-          onClick={() => router.push('/signin')}
-          className="h-[54px] w-full border-2 border-brand-solid bg-transparent font-semibold text-brand-solid shadow-sm hover:bg-brand-solid hover:text-white"
-        >
-          Log in
-        </Button>
+        {!token && (
+          <Button
+            id="login-btn"
+            onClick={() => router.push('/signin')}
+            className="h-[54px] w-full border-2 border-brand-solid bg-transparent font-semibold text-brand-solid shadow-sm hover:bg-brand-solid hover:text-white"
+          >
+            Log in
+          </Button>
+        )}
       </div>
     </div>
   )
