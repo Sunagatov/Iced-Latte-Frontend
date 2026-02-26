@@ -1,6 +1,20 @@
 import { test, expect } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
+  await page.route('**/api/proxy/**', async (route) => {
+    const url = route.request().url()
+    if (url.includes('/products')) {
+      const hasKeyword = url.includes('keyword=')
+      const products = hasKeyword ? [] : Array.from({ length: 6 }, (_, i) => ({
+        id: `id-${i}`, name: `Coffee ${i}`, price: 9.99, productFileUrl: null,
+        brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1,
+        quantity: 250, description: 'desc', active: true,
+      }))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products, page: 0, size: 6, totalElements: products.length, totalPages: hasKeyword ? 0 : 1 }) })
+    } else {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    }
+  })
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
 })

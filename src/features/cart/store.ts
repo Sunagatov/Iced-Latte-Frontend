@@ -63,16 +63,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       const updatedCart = addToCart(id, itemsIds)
       const count = getProductsCount(updatedCart)
 
-      if (!cartItem) {
-        set((state) => ({ ...state, itemsIds: updatedCart, count }))
-        return
-      }
-
-      const updatedTempItems = tempItems.map((tempItem) =>
-        tempItem.productInfo.id === id
-          ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
-          : tempItem,
-      )
+      const updatedTempItems = cartItem
+        ? tempItems.map((tempItem) =>
+            tempItem.productInfo.id === id
+              ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
+              : tempItem,
+          )
+        : tempItems
 
       set((state) => ({
         ...state,
@@ -156,14 +153,16 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         items: get().items,
         tempItems: removedTempItems,
         count: getProductsCount(updatedCart),
-        totalPrice: getTotalPrice(tempItems),
+        totalPrice: getTotalPrice(removedTempItems),
       } as CartSliceState)
     }
   },
   resetCart: () => set({ itemsIds: [], items: [], tempItems: [], count: 0, totalPrice: 0, isSync: false } as CartSliceState),
   setTempItems: (items) => set((state) => ({
     ...state,
+    itemsIds: items.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })),
     tempItems: items,
+    isSync: true,
     count: items.reduce((sum, i) => sum + i.productQuantity, 0),
     totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
   })),

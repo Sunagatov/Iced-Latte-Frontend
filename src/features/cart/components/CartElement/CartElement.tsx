@@ -83,6 +83,7 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
           </span>
           <button
             onClick={removeAll}
+            data-testid="cart-trash-btn"
             className="flex h-7 w-7 items-center justify-center rounded-full text-secondary transition-all hover:bg-[#FFE5E5] hover:text-negative active:scale-90"
             aria-label="Remove item"
           >
@@ -105,6 +106,7 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
         <div className="flex items-center gap-1 rounded-full bg-inverted px-1 py-1">
           <button
             onClick={productQuantity === 1 ? removeAll : remove}
+            data-testid="cart-minus-btn"
             className="flex h-7 w-7 items-center justify-center rounded-full text-inverted transition-colors hover:bg-white/20 active:scale-90"
             aria-label={productQuantity === 1 ? 'Remove item' : 'Decrease quantity'}
           >
@@ -118,9 +120,10 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
               </svg>
             )}
           </button>
-          <span className="w-6 text-center text-sm font-semibold text-inverted">{productQuantity}</span>
+          <span className="w-6 text-center text-sm font-semibold text-inverted" data-testid="cart-item-qty">{productQuantity}</span>
           <button
             onClick={add}
+            data-testid="cart-plus-btn"
             className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-solid text-inverted transition-colors hover:bg-brand-solid-hover active:scale-90"
             aria-label="Increase quantity"
           >

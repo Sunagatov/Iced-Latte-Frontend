@@ -12,7 +12,7 @@ export async function mergeCarts(cartItemIds: ICartPushItems): Promise<ICart> {
 }
 
 export async function fetchCart(): Promise<ICart> {
-  const response: AxiosResponse<ICart> = await api.get('/cart')
+  const response: AxiosResponse<ICart> = await api.get('/cart', { cache: false })
   return response.data
 }
 

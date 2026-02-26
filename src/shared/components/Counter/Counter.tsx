@@ -42,11 +42,11 @@ const Counter = ({
 
   return (
     <div className={computedStyles}>
-      <button id="min-btn" onClick={onMinus} className="flex items-center justify-center p-1">
+      <button id="min-btn" data-testid="counter-minus-btn" onClick={onMinus} className="flex items-center justify-center p-1">
         <Image src={theme === 'dark' ? minus : minusDark} alt="minus" />
       </button>
       <span className={'block w-[31px] text-center'}>{count}</span>
-      <button id="plus-btn" onClick={onPlus} className="flex items-center justify-center p-1">
+      <button id="plus-btn" data-testid="counter-plus-btn" onClick={onPlus} className="flex items-center justify-center p-1">
         <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
       </button>
     </div>

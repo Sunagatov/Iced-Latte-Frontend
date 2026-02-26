@@ -4,14 +4,14 @@ import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
 import { fetchCart } from '@/features/cart/api'
-import { useShallow } from 'zustand/react/shallow'
 import RouteTracker from './RouteTracker'
 
 const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
+  const favouriteIdsCount = useFavouritesStore((state) => state.favouriteIds.length)
   const { syncBackendFav } = useFavouritesStore()
   const resetAuth = useAuthStore((state) => state.reset)
 
-  const itemsIds = useCartStore(useShallow((state) => state.itemsIds))
+  const itemsCount = useCartStore((state) => state.itemsIds.length)
   const getCartItems = useCartStore((state) => state.getCartItems)
   const syncBackendCart = useCartStore((state) => state.syncBackendCart)
   const isSync = useCartStore((state) => state.isSync)
@@ -23,26 +23,30 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!token) {
       if (isSync) reset()
-      if (itemsIds.length) getCartItems().catch(() => {})
-    } else if (!isSync && itemsIds.length) {
+      if (itemsCount) getCartItems().catch(() => {})
+    } else if (!isSync && itemsCount) {
       syncBackendCart(token).catch(() => {})
-    } else if (token) {
+    } else if (token && (isSync || !itemsCount)) {
       fetchCart()
         .then((cart) => setTempItems(cart.items))
         .catch(() => {})
     }
-  }, [token, itemsIds]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, itemsCount, isSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        if (token) await syncBackendFav()
+        if (token && favouriteIdsCount) await syncBackendFav()
+        else if (token) {
+          const { getFavouriteProducts } = useFavouritesStore.getState()
+          await getFavouriteProducts(token)
+        }
       } catch (error: unknown) {
         if ((error as any)?.response?.status === 401 || (error as any)?.status === 401) resetAuth()
       }
     }
     void fetchData()
-  }, [syncBackendFav, token, resetAuth])
+  }, [syncBackendFav, token, resetAuth]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <RouteTracker>{children}</RouteTracker>
 }

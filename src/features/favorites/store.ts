@@ -38,11 +38,19 @@ export const useFavouritesStore = create<FavStoreState>()(
       ...initialState,
       setLoading: (loading) => set({ loading }),
       addFavourite: async (id, token) => {
-        set((state) => ({ favouriteIds: [...state.favouriteIds, id] }))
+        const updatedIds = [...get().favouriteIds, id]
+        set({ favouriteIds: updatedIds })
         if (token) {
-          await get().syncBackendFav()
+          try {
+            const reqItems: IFavPushItems = { productIds: updatedIds }
+            const response = await mergeFavs(reqItems)
+            const ids = response.products.map((p) => p.id)
+            set({ favourites: response.products, favouriteIds: ids })
+          } catch {
+            set((state) => ({ favouriteIds: state.favouriteIds.filter((fid) => fid !== id) }))
+          }
         } else {
-          const products = await getProductByIds([...get().favouriteIds])
+          const products = await getProductByIds(updatedIds)
           set({ favourites: products })
         }
       },
@@ -76,7 +84,7 @@ export const useFavouritesStore = create<FavStoreState>()(
         const ids = response.products.map((p) => p.id)
         set((state) => ({ ...state, favourites: response.products, favouriteIds: ids }))
       },
-      resetFav: () => set({ favourites: [], favouriteIds: [], count: 0 }),
+      resetFav: () => set({ favourites: [], favouriteIds: [], count: 0, loading: false }),
     }),
     {
       name: 'fav-storage',
