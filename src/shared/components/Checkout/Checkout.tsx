@@ -83,10 +83,10 @@ export default function CheckoutForm() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <p className="text-xs font-bold uppercase tracking-widest text-secondary">Recipient</p>
         <div className="flex gap-3">
-          <Field label="First name" value={form.recipientName} onChange={set('recipientName')} required />
-          <Field label="Last name" value={form.recipientSurname} onChange={set('recipientSurname')} required />
+          <Field id="recipientName" label="First name" value={form.recipientName} onChange={set('recipientName')} required />
+          <Field id="recipientSurname" label="Last name" value={form.recipientSurname} onChange={set('recipientSurname')} required />
         </div>
-        <Field label="Phone (for delivery updates)" value={form.recipientPhone} onChange={set('recipientPhone')} type="tel" />
+        <Field id="recipientPhone" label="Phone (for delivery updates)" value={form.recipientPhone} onChange={set('recipientPhone')} type="tel" />
 
         <p className="text-xs font-bold uppercase tracking-widest text-secondary">Delivery address</p>
 
@@ -95,12 +95,12 @@ export default function CheckoutForm() {
         {/* Manual address fields — shown only when entering a new address */}
         {!selectedAddress && (
           <>
-            <Field label="Address line" value={form.line} onChange={set('line')} required />
+            <Field id="addressLine" label="Address line" value={form.line} onChange={set('line')} required />
             <div className="flex gap-3">
-              <Field label="City" value={form.city} onChange={set('city')} required />
-              <Field label="Postcode" value={form.postcode} onChange={set('postcode')} required />
+              <Field id="city" label="City" value={form.city} onChange={set('city')} required />
+              <Field id="postcode" label="Postcode" value={form.postcode} onChange={set('postcode')} required />
             </div>
-            <Field label="Country" value={form.country} onChange={set('country')} required />
+            <Field id="country" label="Country" value={form.country} onChange={set('country')} required />
           </>
         )}
 
@@ -123,8 +123,9 @@ export default function CheckoutForm() {
 }
 
 function Field({
-  label, value, onChange, required, type = 'text',
+  id, label, value, onChange, required, type = 'text',
 }: {
+  id: string
   label: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -133,8 +134,9 @@ function Field({
 }) {
   return (
     <div className="flex flex-1 flex-col gap-1">
-      <label className="text-xs font-medium text-secondary">{label}</label>
+      <label htmlFor={id} className="text-xs font-medium text-secondary">{label}</label>
       <input
+        id={id}
         type={type}
         value={value}
         onChange={onChange}

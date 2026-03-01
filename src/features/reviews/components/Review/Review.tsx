@@ -93,6 +93,12 @@ const Review: React.FC<Readonly<IReview>> = ({
         ) : 'No written review'}
       </p>
 
+      {review.aiSummary && review.aiSummary !== 'Summary unavailable.' && (
+        <p className="mb-4 rounded-lg bg-brand-second/40 px-3 py-2 text-xs text-tertiary">
+          <span className="font-semibold text-brand-solid">AI summary: </span>{review.aiSummary}
+        </p>
+      )}
+
       <div className="flex items-center justify-between">
         {isUserReview && (
           <button

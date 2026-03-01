@@ -46,6 +46,8 @@ const ReviewForm = ({ productId, hasReviews = false, showForm, setShowForm, onRe
         isCurrentUserComment: true,
       }
       onReviewSubmitted?.(newReview)
+      // Re-fetch after delay to reflect async moderation outcome
+      setTimeout(() => onReviewSubmitted?.(newReview), 5000)
     } catch (error) {
       handleError(error)
     } finally {
