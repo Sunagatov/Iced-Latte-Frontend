@@ -1,67 +1,69 @@
-# Getting Started with Iced Latte Frontend
+# 🚀 Getting Started with Iced Latte Frontend
 
-This guide walks you through running the Iced Latte frontend on your local machine.
-There are two ways to run it — pick the one that fits you:
+Pick the setup that fits you:
 
-- **Option A — IDE + Docker (recommended for development):** Run the frontend from your IDE, with the backend + PostgreSQL in Docker. Best for writing and debugging frontend code.
-- **Option B — Full Docker:** Run everything (frontend + backend + PostgreSQL) in Docker containers. Best for a quick smoke test without an IDE.
+| Option | What runs where | Best for |
+|--------|----------------|----------|
+| **A** | Frontend in IDE + Backend & Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker | Active development, debugging |
+| **B** | Frontend + Backend + Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker | Quick smoke test, no IDE needed |
 
 ---
 
-## Prerequisites
-
-Make sure you have all of the following installed before you start:
+## 📋 Prerequisites
 
 | Tool | Version | Download |
 |------|---------|----------|
-| Node.js | 20+ | https://nodejs.org/ |
-| npm | 10+ | bundled with Node.js |
+| Node.js | 20+ | https://nodejs.org/ (Option A only) |
 | Docker Desktop | latest | https://www.docker.com/products/docker-desktop/ |
 
-To verify your installations:
+Verify your setup:
 ```bash
-node -v       # should print: v20...
-npm -v        # should print: 10...
-docker --version  # should print: Docker version...
+node -v           # v20... or higher
+docker --version  # Docker version...
 ```
 
 ---
 
-## Option A — Run in IDE (recommended for development)
+## Option A — Frontend in IDE, Backend + Infrastructure in Docker
 
-### Step 1 — Clone the repository
+> Best for: active frontend development. You run the frontend locally with hot reload, and the backend + database run in Docker.
+
+### Step 1 — Clone both repositories
 
 ```bash
 git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git
-cd Iced-Latte-Frontend
+git clone https://github.com/Sunagatov/Iced-Latte.git
 ```
 
-### Step 2 — Start the backend + PostgreSQL with Docker
+✅ You should see two new folders: `Iced-Latte-Frontend/` and `Iced-Latte/`.
 
-The frontend needs the backend API and a database. Start them from the backend project:
+### Step 2 — Start the backend + infrastructure
 
 ```bash
-# Clone the backend (if you haven't already)
-git clone https://github.com/Sunagatov/Iced-Latte.git
 cd Iced-Latte
-
-# Start backend + PostgreSQL + Redis
-docker-compose -f docker-compose.local.yml up -d iced-latte-postgresdb iced-latte-redis iced-latte-backend
+docker compose --profile backend up -d postgres redis minio minio-init backend
 ```
 
-To verify they are running:
+This starts:
+- `iced-latte-postgresdb` — PostgreSQL database on port `5432`
+- `iced-latte-redis` — Redis cache on port `6379`
+- `iced-latte-minio` — MinIO file storage on port `9000`
+- `iced-latte-backend` — Spring Boot API on port `8083`
+
+Verify all containers are running:
 ```bash
 docker ps
 ```
-You should see `iced-latte-backend` on port `8083` and `iced-latte-postgresdb` on port `5432`.
+✅ You should see 4 containers with status `Up`: `iced-latte-postgresdb`, `iced-latte-redis`, `iced-latte-minio`, `iced-latte-backend`.
 
-### Step 3 — Set up environment
+### Step 3 — Configure environment
 
 ```bash
+cd ../Iced-Latte-Frontend
 cp .env.example .env.local
 ```
 
-Default `.env.local` points to `http://localhost:8083/api/v1` — no changes needed.
+✅ The default `.env.local` points to `http://localhost:8083/api/v1` — no changes needed for local development.
 
 ### Step 4 — Install dependencies
 
@@ -69,25 +71,37 @@ Default `.env.local` points to `http://localhost:8083/api/v1` — no changes nee
 npm ci
 ```
 
+✅ You should see packages installed with no errors. This may take a minute on first run.
+
 ### Step 5 — Start the dev server
 
 ```bash
 npm run dev
 ```
 
-🌐 App runs at `http://localhost:3000`
+✅ When you see `ready started server on 0.0.0.0:3000` in the terminal, the app is ready.
 
-### Step 6 — Verify it works
+### Step 6 — Verify the app is running
 
-Open `http://localhost:3000` in your browser. You should see the Iced Latte storefront with a list of coffee products.
+Open http://localhost:3000 in your browser.
 
-**Test login:** `olivia@example.com` / `p@ss1logic11`
+✅ You should see the Iced Latte shop with a list of coffee products.
+
+### Step 7 — Log in with a test user
+
+Use the login form at http://localhost:3000/signin:
+- Email: `olivia@example.com`
+- Password: `p@ss1logic11`
+
+✅ You should be redirected to the home page as a logged-in user.
+
+> All 15 seed users share the password `p@ss1logic11`.
 
 ---
 
-## Option B — Run everything in Docker
+## Option B — Everything in Docker (no IDE needed)
 
-Use this if you just want to run the full stack without setting up a dev server.
+> Best for: quick smoke test. Everything runs in Docker — no Node.js installation needed.
 
 ### Step 1 — Clone the repository
 
@@ -96,72 +110,100 @@ git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git
 cd Iced-Latte-Frontend
 ```
 
-### Step 2 — Set up environment
+✅ You should see a new `Iced-Latte-Frontend/` folder created locally.
+
+### Step 2 — Configure environment
 
 ```bash
 cp .env.example .env.local
 ```
 
+✅ The default `.env.local` works out of the box — no changes needed.
+
 ### Step 3 — Start everything
 
 ```bash
-docker-compose -f docker-compose.local.yml up -d --build
+docker compose -f docker-compose.local.yml up -d --build
 ```
 
-This starts all four containers:
+This builds and starts:
 - `iced-latte-frontend` — Next.js app on port `3000`
 - `iced-latte-backend` — Spring Boot API on port `8083`
-- `iced-latte-postgresdb` — PostgreSQL on port `5432`
-- `iced-latte-redis` — Redis on port `6379`
+- `iced-latte-postgresdb` — PostgreSQL database on port `5432`
+- `iced-latte-redis` — Redis cache on port `6379`
 
-🌐 App runs at `http://localhost:3000`
+> ⏳ The first build takes a few minutes. Subsequent builds are faster.
 
-### Useful Docker commands
+✅ When the build finishes, all 4 containers should be running. You can verify with `docker ps`.
+
+### Step 4 — Verify the app is running
+
+Open http://localhost:3000 in your browser.
+
+✅ You should see the Iced Latte shop with a list of coffee products.
+
+### 🛠️ Useful Docker commands
 
 ```bash
-# View live logs
-docker-compose -f docker-compose.local.yml logs iced-latte-frontend -f
+# Live logs
+docker compose -f docker-compose.local.yml logs -f frontend
+docker compose -f docker-compose.local.yml logs -f backend
 
-# Stop containers (keeps data)
-docker-compose -f docker-compose.local.yml down
+# Stop (keeps data)
+docker compose -f docker-compose.local.yml down
 
-# Stop and delete all data (fresh start)
-docker-compose -f docker-compose.local.yml down -v
+# Stop and wipe all data (fresh start)
+docker compose -f docker-compose.local.yml down -v
 
 # Rebuild after code changes
-docker-compose -f docker-compose.local.yml up -d --build
+docker compose -f docker-compose.local.yml up -d --build
 ```
 
 ---
 
-## Run Tests
+## 🧪 Running the tests
+
+### Unit tests
 
 ```bash
-# Unit & integration
-npm run test
+npm test
+```
 
-# E2E (requires dev server running on localhost:3000)
+✅ All tests should pass with no failures.
+
+### E2E tests (requires the app running on http://localhost:3000)
+
+```bash
 npm run test:e2e
+```
 
-# View E2E report
+✅ Playwright will open a browser and run through user flows automatically.
+
+### View E2E report
+
+```bash
 npm run test:e2e:report
 ```
 
+✅ A browser window opens with a detailed test report.
+
 ---
 
-## Lint & Types
+## 🔍 Lint & type check
 
 ```bash
 npm run lint -- --fix
 npm run tsc
 ```
 
+✅ No errors means your code is clean and type-safe.
+
 ---
 
-## Environment Variables
+## ⚙️ Environment variables
 
 | Variable | Description | Default |
-|---|---|---|
+|----------|-------------|---------|
 | `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:8083/api/v1` |
 | `PROTOCOL` | `http` or `https` | `http` |
 | `HOST` | Hostname | `localhost` |
@@ -169,24 +211,65 @@ npm run tsc
 
 ---
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-**No products on the home page**
+**❌ No products on the home page**
 → The backend is not running. Check `docker ps` and make sure `iced-latte-backend` is up on port `8083`.
 
-**`NEXT_PUBLIC_API_URL` not set**
+**❌ `NEXT_PUBLIC_API_URL` not set**
 → Make sure `.env.local` exists. Run `cp .env.example .env.local`.
 
-**Port 3000 already in use**
+**❌ Port 3000 already in use**
 → Change `PORT` in `.env.local` or stop the process using port 3000.
 
-**E2E tests fail**
+**❌ E2E tests fail**
 → Make sure the dev server is running on `http://localhost:3000` before running `npm run test:e2e`.
+
+**❌ `npm ci` fails**
+→ Make sure you are using Node.js 20 or higher. Run `node -v` to check.
 
 ---
 
-## Links
+## 📁 Project structure
 
-- 🌐 Live app: https://iced-latte.uk
-- 📡 Backend API (Swagger): https://iced-latte.uk/backend/api/docs/swagger-ui/index.html
-- 🔧 Backend repository: https://github.com/Sunagatov/Iced-Latte
+```
+src/
+├── app/                # Next.js App Router pages
+│   ├── api/            # API proxy route (avoids CORS)
+│   ├── cart/           # Cart page
+│   ├── checkout/       # Checkout page
+│   ├── favourites/     # Favourites page
+│   ├── orders/         # Orders page
+│   ├── product/        # Product detail page
+│   ├── profile/        # User profile page
+│   ├── signin/signup/  # Auth pages
+│   └── layout.tsx      # Root layout
+├── features/           # Feature-based modules
+│   ├── addresses/      # Delivery addresses
+│   ├── auth/           # Auth (login, register)
+│   ├── cart/           # Shopping cart
+│   ├── favorites/      # Favourites
+│   ├── products/       # Product catalog
+│   ├── reviews/        # Product reviews
+│   └── user/           # User profile
+└── shared/             # Cross-feature shared code
+    ├── api/            # Axios client
+    ├── components/     # Shared UI components
+    ├── hooks/          # Shared custom hooks
+    ├── providers/      # App-level providers
+    ├── types/          # Shared TypeScript types
+    └── utils/          # Utility functions
+```
+
+API docs:
+- 🖥️ Local: http://localhost:8083/api/docs/swagger-ui/index.html
+- 🌐 Production: https://iced-latte.uk/backend/api/docs/swagger-ui/index.html
+
+---
+
+## 📞 Contact
+
+- 💬 **Telegram community:** [Zufar Explained IT](https://t.me/zufarexplained)
+- 👤 **Personal Telegram:** [@lucky_1uck](https://web.telegram.org/k/#@lucky_1uck)
+- 📧 **Email:** [zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)
+- 🐛 **Issues:** [GitHub Issues](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)

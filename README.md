@@ -34,7 +34,7 @@
 
 ## 🚀 Quick Start
 
-**📋 Prerequisites:** Node.js 20+, npm, Docker Desktop
+**📋 Prerequisites:** Node.js 20+, Docker Desktop
 
 ```bash
 # 1. 📥 Clone
@@ -58,7 +58,7 @@ npm run dev
 
 **🧪 Run the tests:**
 ```bash
-npm run test
+npm test
 ```
 
 ---
@@ -66,8 +66,8 @@ npm run test
 ## 📸 Preview
 
 <div align="center">
-  <img src="Iced-Latte-Main-Page-Screenshot.png" alt="Iced Latte Main Page" width="800">
-  <p><em>Live application interface</em></p>
+  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="500">
+  <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
 </div>
 
 ---
@@ -105,7 +105,7 @@ Iced Latte has earned recognition from the broader tech community.
 
 | 📂 Category | 🔧 Technology |
 |---|---|
-| 💻 Core | Next.js 15 + TypeScript + React 19 |
+| 💻 Core | Next.js 15 + TypeScript 5 + React 19 |
 | 🗃️ State Manager | Zustand |
 | 🎨 CSS Framework | TailwindCSS 4 |
 | 📡 Data Fetching | Axios + SWR |
@@ -120,16 +120,17 @@ Iced Latte has earned recognition from the broader tech community.
 ```
 src/
 ├── 📁 app/                # Next.js App Router pages
-│   ├── 📁 api/proxy/      # API proxy route (avoids CORS)
+│   ├── 📁 api/            # API proxy route (avoids CORS)
 │   ├── 📁 cart/           # Cart page
 │   ├── 📁 checkout/       # Checkout page
 │   ├── 📁 favourites/     # Favourites page
 │   ├── 📁 orders/         # Orders page
-│   ├── 📁 product/[id]/   # Product detail page
+│   ├── 📁 product/        # Product detail page
 │   ├── 📁 profile/        # User profile page
 │   ├── 📁 signin/signup/  # Auth pages
 │   └── 📄 layout.tsx      # Root layout
 ├── 📁 features/           # Feature-based modules
+│   ├── 📁 addresses/      # Delivery addresses
 │   ├── 📁 auth/           # Auth (login, register)
 │   ├── 📁 cart/           # Shopping cart
 │   ├── 📁 favorites/      # Favourites
