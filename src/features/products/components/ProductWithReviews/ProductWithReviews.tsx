@@ -19,7 +19,6 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
     setReviewsStatistics,
   } = useProductReviewsStore()
   const {
-    // errorMessage,
     handleError,
   } = useErrorHandler()
 

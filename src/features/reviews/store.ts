@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { Review, IProductReviewsStatistics } from './types'
-import { apiGetProductRating } from './api'
 
 export const checkIfUserReviewExists = (review: Review | null): boolean => {
   return !!review && !Object.values(review).every((prop) => prop === null)
@@ -52,9 +51,8 @@ export const useProductReviewsStore = create<ReviewsStoreState>()((set) => ({
 }))
 
 interface ProductRatingStore {
-  ratings: Record<string, { id: string; rating: number; quantity: number }>
+  ratings: Record<string, { id: string; rating: number }>
   setRating: (productId: string, rating: number) => void
-  getProductRating: (productId: string) => Promise<void>
 }
 
 export const useProductRatingStore = create<ProductRatingStore>()(
@@ -63,24 +61,8 @@ export const useProductRatingStore = create<ProductRatingStore>()(
       ratings: {},
       setRating: (productId, rating) =>
         set((state) => ({
-          ratings: {
-            ...state.ratings,
-            [productId]: { id: productId, rating, quantity: state.ratings[productId]?.quantity || 0 },
-          },
+          ratings: { ...state.ratings, [productId]: { id: productId, rating } },
         })),
-      getProductRating: async (productId) => {
-        const ratings = await apiGetProductRating(productId)
-        set((state) => ({
-          ratings: {
-            ...state.ratings,
-            [productId]: {
-              id: productId,
-              rating: ratings.length > 0 ? ratings[0].mark : 0,
-              quantity: ratings.length > 0 ? ratings[0].quantity : 0,
-            },
-          },
-        }))
-      },
     }),
     { name: 'productRating' },
   ),

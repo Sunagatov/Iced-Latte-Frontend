@@ -10,7 +10,6 @@ import { registrationSchema } from '@/features/auth/validation'
 import { useRouter } from 'next/navigation'
 interface IFormValues { firstName: string; lastName: string; email: string; password: string }
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { useAuthStore } from '@/features/auth/store'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)

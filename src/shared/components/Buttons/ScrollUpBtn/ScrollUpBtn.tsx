@@ -6,13 +6,9 @@ export default function ScrollUpBtn() {
   const [showButton, setShowButton] = useState(false)
 
   useEffect(() => {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 1400) {
-        setShowButton(true)
-      } else {
-        setShowButton(false)
-      }
-    })
+    const onScroll = () => setShowButton(window.scrollY > 1400)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   const scrollToTop = () => {

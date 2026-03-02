@@ -3,7 +3,6 @@ import { useCallback } from 'react'
 import Button from '@/shared/components/Buttons/Button/Button'
 import Counter from '@/shared/components/Counter/Counter'
 import { useCartStore } from '@/features/cart/store'
-import { useAuthStore } from '@/features/auth/store'
 import { IProduct } from '@/features/products/types'
 interface Props { product: IProduct }
 
@@ -11,7 +10,6 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
   const add = useCartStore((state) => state.add)
   const remove = useCartStore((state) => state.remove)
   const removeFullProduct = useCartStore((state) => state.removeFullProduct)
-  const token = useAuthStore((state) => state.token)
   const items = useCartStore((state) => state.itemsIds)
 
   const productQuantity = items?.find(

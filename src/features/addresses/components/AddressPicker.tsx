@@ -15,9 +15,7 @@ export default function AddressPicker({ onSelect, selected }: Props) {
   const [mode, setMode] = useState<'saved' | 'new'>('saved')
 
   useEffect(() => {
-    fetch().then(() => {
-      // auto-select default on first load
-    })
+    fetch()
   }, [fetch])
 
   useEffect(() => {

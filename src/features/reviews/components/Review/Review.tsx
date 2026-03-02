@@ -5,7 +5,6 @@ import { BiDislike, BiLike } from 'react-icons/bi'
 import { FaStar } from 'react-icons/fa'
 import { Review as ReviewType } from '@/features/reviews/types'
 import { formatReviewDate } from '@/features/reviews/components/ReviewsList/formatReviewDate'
-import { nanoid } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
 
 interface IReview {
@@ -23,6 +22,10 @@ const Review: React.FC<Readonly<IReview>> = ({
 }) => {
   const [isReviewExpanded, setIsReviewExpanded] = useState(false)
 
+  if (!review) return <></>
+
+  const { date, time } = formatReviewDate(review.createdAt)
+
   const seeMoreButtonClickHandler = () => {
     setIsReviewExpanded(true)
   }
@@ -32,18 +35,12 @@ const Review: React.FC<Readonly<IReview>> = ({
   }
 
   const likeReviewHandler = () => {
-    const isLike = true
-
-    rateReview(review.productReviewId!, isLike)
+    rateReview(review.productReviewId!, true)
   }
 
   const dislikeReviewHandler = () => {
-    const isLike = false
-
-    rateReview(review.productReviewId!, isLike)
+    rateReview(review.productReviewId!, false)
   }
-
-  if (!review) return <></>
 
   return (
     <article className="group">
@@ -56,18 +53,18 @@ const Review: React.FC<Readonly<IReview>> = ({
             {review.userName} {review.userLastName}
           </div>
           <div className="flex items-center gap-1.5 text-sm text-tertiary">
-            <span>{formatReviewDate(review.createdAt).date}</span>
+            <span>{date}</span>
             <span>·</span>
-            <span>{formatReviewDate(review.createdAt).time}</span>
+            <span>{time}</span>
           </div>
         </div>
       </div>
 
       <div className="mb-3 flex items-center gap-1">
-        {[...Array(5)].map((_, starValue) => (
+        {[...Array(5)].map((_, i) => (
           <FaStar
-            className={`h-4 w-4 ${review.productRating && starValue < review.productRating ? 'text-brand' : 'text-disabled'}`}
-            key={nanoid()}
+            className={`h-4 w-4 ${review.productRating && i < review.productRating ? 'text-brand' : 'text-disabled'}`}
+            key={i}
           />
         ))}
       </div>
