@@ -1,10 +1,9 @@
 import { test, expect, type Page } from '@playwright/test'
 
 const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const PRODUCT_ID = 'fc88cd5d-5049-4b00-8d88-df1d9b4a3ce1'
 
-// Product detail page is server-rendered — navigate via catalog click so the
-// server fetches a real product. Only client-side calls (reviews, rating) are mocked.
-async function mockClientCalls(page: Page) {
+async function mockReviewCalls(page: Page) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
@@ -14,23 +13,24 @@ async function mockClientCalls(page: Page) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: [], totalElements: 0, totalPages: 0 }) })
     else if (url.includes('/rating'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
+    else if (url.includes('/auth/refresh'))
+      await route.fulfill({ status: 401, contentType: 'application/json', body: '{}' })
+    else if (url.includes('/auth/logout') || url.includes('/cart') || url.includes('/favourites') || url.includes('/wishlist') || url.includes('/users'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     else
       await route.fallback()
   })
 }
 
 async function gotoProductPage(page: Page) {
-  await page.goto('/')
-  await page.waitForSelector('[data-testid="product-card"]', { timeout: 15000 })
-  await page.locator('[data-testid="product-card"] a').first().click()
-  await expect(page).toHaveURL(/\/product\//, { timeout: 10000 })
+  await page.goto(`/product/${PRODUCT_ID}`)
+  await page.waitForLoadState('networkidle')
   if (await page.locator('text=Something went wrong').isVisible()) return false
   await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 10000 })
   return true
 }
 
 test('"Write a review" button redirects guest to /signin', async ({ page }) => {
-  await mockClientCalls(page)
   const ok = await gotoProductPage(page)
   if (!ok) return
   await page.locator('#add-review-btn').click()
@@ -38,8 +38,8 @@ test('"Write a review" button redirects guest to /signin', async ({ page }) => {
 })
 
 test('logged-in user sees review form after clicking "Write a review"', async ({ page }) => {
-  await mockClientCalls(page)
-  await page.goto('http://localhost:3000')
+  await mockReviewCalls(page)
+  await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
@@ -49,8 +49,8 @@ test('logged-in user sees review form after clicking "Write a review"', async ({
 })
 
 test('submit button disabled until rating + text both filled', async ({ page }) => {
-  await mockClientCalls(page)
-  await page.goto('http://localhost:3000')
+  await mockReviewCalls(page)
+  await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
@@ -63,8 +63,8 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
 })
 
 test('cancel button hides form and resets fields', async ({ page }) => {
-  await mockClientCalls(page)
-  await page.goto('http://localhost:3000')
+  await mockReviewCalls(page)
+  await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
@@ -78,8 +78,8 @@ test('cancel button hides form and resets fields', async ({ page }) => {
 })
 
 test('character counter updates as user types', async ({ page }) => {
-  await mockClientCalls(page)
-  await page.goto('http://localhost:3000')
+  await mockReviewCalls(page)
+  await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)

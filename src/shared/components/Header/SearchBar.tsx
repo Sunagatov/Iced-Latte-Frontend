@@ -192,7 +192,7 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
 
       {/* Dropdown */}
       {isDropdownOpen && (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-50 w-full overflow-hidden rounded-2xl border border-black/8 bg-white shadow-xl">
+        <div data-testid="search-dropdown" className="absolute left-0 top-[calc(100%+8px)] z-50 w-full overflow-hidden rounded-2xl border border-black/8 bg-white shadow-xl">
           {showRecent && (
             <>
               <p className="px-4 pt-3 pb-1 text-xs font-medium text-secondary">Recent searches</p>

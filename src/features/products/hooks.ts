@@ -36,7 +36,7 @@ export function useProducts(
   const totalPages = data?.[0]?.totalPages ?? 0
   const fetchNext = () => setSize((size) => size + 1)
   const flattenProducts = Array.from(
-    new Map((data?.flatMap((page) => page.products!) ?? []).map((p) => [p.id, p])).values(),
+    new Map((data?.flatMap((page) => page.products ?? []) ?? []).map((p) => [p.id, p])).values(),
   )
 
   return {
