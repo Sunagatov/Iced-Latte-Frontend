@@ -41,7 +41,7 @@ git clone https://github.com/Sunagatov/Iced-Latte.git
 
 ```bash
 cd Iced-Latte
-docker compose --profile backend up -d postgres redis minio minio-init backend
+docker compose --profile backend up -d --build
 ```
 
 This starts:
@@ -79,7 +79,7 @@ npm ci
 npm run dev
 ```
 
-✅ When you see `ready started server on 0.0.0.0:3000` in the terminal, the app is ready.
+✅ When you see `Local: http://localhost:3000` in the terminal, the app is ready.
 
 ### Step 6 — Verify the app is running
 
@@ -101,62 +101,38 @@ Use the login form at http://localhost:3000/signin:
 
 ## Option B — Everything in Docker (no IDE needed)
 
-> Best for: quick smoke test. Everything runs in Docker — no Node.js installation needed.
-
-### Step 1 — Clone the repository
+> Best for: quick smoke test. Everything — frontend, backend, and infrastructure — runs in Docker. No Node.js installation needed.
+>
+> This is driven from the **backend** repository, which has the unified `docker-compose.yml`. Follow **Option C** in the [backend START.md](https://github.com/Sunagatov/Iced-Latte/blob/development/START.md):
 
 ```bash
+git clone https://github.com/Sunagatov/Iced-Latte.git
 git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git
-cd Iced-Latte-Frontend
+cd Iced-Latte
+docker compose --profile backend --profile frontend up -d --build
 ```
 
-✅ You should see a new `Iced-Latte-Frontend/` folder created locally.
+✅ When the build finishes, all 5 containers should be running (`docker ps`).
 
-### Step 2 — Configure environment
-
-```bash
-cp .env.example .env.local
-```
-
-✅ The default `.env.local` works out of the box — no changes needed.
-
-### Step 3 — Start everything
-
-```bash
-docker compose -f docker-compose.local.yml up -d --build
-```
-
-This builds and starts:
-- `iced-latte-frontend` — Next.js app on port `3000`
-- `iced-latte-backend` — Spring Boot API on port `8083`
-- `iced-latte-postgresdb` — PostgreSQL database on port `5432`
-- `iced-latte-redis` — Redis cache on port `6379`
-
-> ⏳ The first build takes a few minutes. Subsequent builds are faster.
-
-✅ When the build finishes, all 4 containers should be running. You can verify with `docker ps`.
-
-### Step 4 — Verify the app is running
-
-Open http://localhost:3000 in your browser.
-
-✅ You should see the Iced Latte shop with a list of coffee products.
+- 🌐 Frontend: http://localhost:3000
+- 🔌 Backend API: http://localhost:8083
+- 🪣 MinIO console: http://localhost:9001 — login `minioadmin` / `minioadmin`
 
 ### 🛠️ Useful Docker commands
 
 ```bash
 # Live logs
-docker compose -f docker-compose.local.yml logs -f frontend
-docker compose -f docker-compose.local.yml logs -f backend
+docker compose --profile backend --profile frontend logs -f frontend
+docker compose --profile backend --profile frontend logs -f backend
 
 # Stop (keeps data)
-docker compose -f docker-compose.local.yml down
+docker compose --profile backend --profile frontend down
 
 # Stop and wipe all data (fresh start)
-docker compose -f docker-compose.local.yml down -v
+docker compose --profile backend --profile frontend down -v
 
 # Rebuild after code changes
-docker compose -f docker-compose.local.yml up -d --build
+docker compose --profile backend --profile frontend up -d --build
 ```
 
 ---
@@ -192,7 +168,7 @@ npm run test:e2e:report
 ## 🔍 Lint & type check
 
 ```bash
-npm run lint -- --fix
+npm run lint
 npm run tsc
 ```
 
@@ -255,7 +231,6 @@ src/
 └── shared/             # Cross-feature shared code
     ├── api/            # Axios client
     ├── components/     # Shared UI components
-    ├── hooks/          # Shared custom hooks
     ├── providers/      # App-level providers
     ├── types/          # Shared TypeScript types
     └── utils/          # Utility functions

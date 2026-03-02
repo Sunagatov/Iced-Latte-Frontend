@@ -52,6 +52,8 @@ npm run dev
 
 🌐 App runs at `http://localhost:3000`
 
+> ⚠️ The backend must be running for products and login to work. See [START.md](START.md) Option A to start it with one Docker command.
+
 **🔐 Test login:** `olivia@example.com` / `p@ss1logic11` (15 seed users, all share this password)
 
 > 💡 See [START.md](START.md) for Docker setup, E2E tests, and troubleshooting.
@@ -140,7 +142,6 @@ src/
 └── 📁 shared/             # Cross-feature shared code
     ├── 📁 api/            # Axios client
     ├── 📁 components/     # Shared UI components
-    ├── 📁 hooks/          # Shared custom hooks
     ├── 📁 providers/      # App-level providers
     ├── 📁 types/          # Shared TypeScript types
     └── 📁 utils/          # Utility functions
@@ -152,7 +153,7 @@ src/
 
 🚫 No Kubernetes, no cloud-managed services — the app ships as a Docker container directly via SSH.
 
-The full production setup is in [docker-compose.local.yml](docker-compose.local.yml). On every merge to `master`, [GitHub Actions](.github/workflows/dev-branch-pr-deployment-pipeline.yml) builds, tests, and deploys to production automatically. Only maintainers can merge to `master`.
+The full production setup is in the [backend docker-compose.yml](https://github.com/Sunagatov/Iced-Latte/blob/development/docker-compose.yml). On every merge to `master`, [GitHub Actions](.github/workflows/dev-branch-pr-deployment-pipeline.yml) builds, tests, and deploys to production automatically. Only maintainers can merge to `master`.
 
 🔍 Explore the [`.github/`](.github/workflows/) folder for the full CI/CD pipeline.
 
