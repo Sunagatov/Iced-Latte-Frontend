@@ -12,7 +12,7 @@ instance.interceptors.request.use((config) => {
   const path = config.url!.replace(/^\//, '')
 
   if (typeof window === 'undefined') {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8083/api/v1'
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL
     config.url = `${baseUrl}/${path}`
   } else {
     config.url = `/api/proxy/${path}`

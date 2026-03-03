@@ -39,7 +39,7 @@ export default function SocialAuthButtons({ mode }: { mode: 'signin' | 'signup' 
   const googleLabel = mode === 'signin' ? 'Continue with Google' : 'Sign up with Google'
 
   const handleGoogleAuth = () => {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8083/api/v1'
+    const apiBase = process.env.NEXT_PUBLIC_API_URL
     const redirectUrl = encodeURIComponent(window.location.origin)
     window.location.href = `${apiBase}/auth/google?redirectUrl=${redirectUrl}`
   }

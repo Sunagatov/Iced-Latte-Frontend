@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!
-const FETCH_TIMEOUT_MS = 8000
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+const FETCH_TIMEOUT_MS = 30000
+
+const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
+
+function sanitizePath(segments: string[]): string | null {
+  const joined = segments.join('/')
+  return ALLOWED_PATH_RE.test(joined) ? joined : null
+}
 
 function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
   const controller = new AbortController()
@@ -27,8 +34,10 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
+  const safePath = sanitizePath(path)
+  if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${path.join('/')}${url.search}`
+  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
 
   try {
     const response = await fetchWithTimeout(apiUrl, { headers: forwardHeaders(request) })
@@ -45,11 +54,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  if (path.join('/') === 'telemetry/performance') {
-    return createCorsResponse({}, 202)
+  const pathString = path.join('/')
+  
+  // Handle telemetry endpoints that don't exist in backend
+  if (pathString.includes('telemetry')) {
+    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
   }
+  const safePath = sanitizePath(path)
+  if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${path.join('/')}${url.search}`
+  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
 
   let body: string | null = null
   try {

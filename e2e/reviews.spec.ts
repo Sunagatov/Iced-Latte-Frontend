@@ -4,21 +4,34 @@ const FAKE_TOKEN = 'fake-token-for-mocked-test'
 const PRODUCT_ID = 'fc88cd5d-5049-4b00-8d88-df1d9b4a3ce1'
 
 async function mockReviewCalls(page: Page) {
+  const product = { id: PRODUCT_ID, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
     if (url.includes('/reviews') && method === 'POST')
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }) })
+    else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews'))
+      await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
+    else if (url.includes('/reviews/statistics'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, averageRating: 0, ratingsMap: {} }) })
     else if (url.includes('/reviews'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ content: [], totalElements: 0, totalPages: 0 }) })
-    else if (url.includes('/rating'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
+    else if (url.includes('/products/ids'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
+    else if (url.includes(`/products/${PRODUCT_ID}`))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) })
+    else if (url.includes('/products'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
     else if (url.includes('/auth/refresh'))
-      await route.fulfill({ status: 401, contentType: 'application/json', body: '{}' })
-    else if (url.includes('/auth/logout') || url.includes('/cart') || url.includes('/favourites') || url.includes('/wishlist') || url.includes('/users'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ token: FAKE_TOKEN }) })
+    else if (url.includes('/auth/logout') || url.includes('/users'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    else if (url.includes('/cart'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ items: [], totalPrice: 0 }) })
+    else if (url.includes('/wishlist') || url.includes('/favourites'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
     else
-      await route.fallback()
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
 }
 

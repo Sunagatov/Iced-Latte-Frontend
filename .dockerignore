@@ -1,61 +1,42 @@
-# Various IDEs
-.idea/
-.vscode/
-*.iml
-*.idea
-*.vs
+# dependencies
+node_modules/
+.yarn/
 
-# Git and version control
+# next.js build artifacts (rebuilt inside Docker)
+.next/
+out/
+
+# testing
+coverage/
+playwright-report/
+test-results/
+e2e/
+__tests__/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# git & ci
 .git/
+.github/
 .gitignore
 
-# Docker override files
-docker-compose.local.yml
-docker-compose.override.yaml
+# ide
+.idea/
+.vscode/
 
-# Environment files
-.env.local
-.env.local.dist
-.env.*
-
-# Dependency directories
-**/node_modules/
-**/bower_components/
-
-# Log files
-logs/
-*.log
-
-# Compiled output
-/dist
-/tmp
-/out
-/target
-/build
-
-# Others
-**/README.md
-**/LICENSE
-**/CODE_OF_CONDUCT.md
-**/SECURITY.md
-**/START.md
-*.md
-
-# Operating system files
+# os
 .DS_Store
 Thumbs.db
 
-# Test directories and libs
-__tests__/
-coverage/
-jest*
+# logs
+*.log
 
-# CI/CD
-.github/
-.gitlab-ci.yml
-.travis.yml
-.husky
-
-# Documentation
+# docs & misc
+*.md
+LICENSE
+.husky/
+.amazonq/
 docs/
-

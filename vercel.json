@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "src/app/api/proxy/[...path]/route.ts": {
+      "maxDuration": 35
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/proxy/:path*",
+      "destination": "/api/proxy/:path*"
+    }
+  ]
+}
