@@ -53,8 +53,4 @@ export interface ConfirmPasswordCredentials {
   }
 }
 
-export interface StoredData {
-  state: {
-    token: string
-  }
-}
+

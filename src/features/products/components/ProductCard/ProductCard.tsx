@@ -9,7 +9,6 @@ import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { IProduct } from '@/features/products/types'
 interface ICardProps { product: IProduct; priority?: boolean }
-import { handleFavouriteButtonClick } from '@/shared/utils/favUtils'
 import ProductRating from '@/features/products/components/ProductRating/ProductRating'
 import Counter from '@/shared/components/Counter/Counter'
 
@@ -41,8 +40,9 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
 
   const isFavourited = token ? favourites?.some((fav) => fav.id === id) : favouriteIds.includes(id)
 
-  const handleButtonClick = async () => {
-    await handleFavouriteButtonClick(id, token, isFavourited, addFavourite, removeFavourite)
+  const handleButtonClick = () => {
+    if (isFavourited) removeFavourite(id, token).catch(() => {})
+    else addFavourite(id, token).catch(() => {})
   }
 
   return (

@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 import { CartElementProps } from '@/features/cart/types'
-import { handleFavouriteButtonClick } from '@/shared/utils/favUtils'
 import { useCartStore } from '@/features/cart/store'
 import { useEffect, useRef, useState } from 'react'
 
@@ -33,12 +32,9 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
     ? favourites?.some((fav) => fav.id === productInfo.id)
     : favouriteIds.includes(productInfo.id)
 
-  const handleButtonClick = async () => {
-    try {
-      await handleFavouriteButtonClick(productInfo.id, token, isFavourited, addFavourite, removeFavourite)
-    } catch {
-      // state already rolled back in favStore
-    }
+  const handleButtonClick = () => {
+    if (isFavourited) removeFavourite(productInfo.id, token).catch(() => {})
+    else addFavourite(productInfo.id, token).catch(() => {})
   }
 
   return (

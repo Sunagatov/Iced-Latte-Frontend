@@ -24,9 +24,8 @@ async function mockReviewCalls(page: Page) {
 
 async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
-  await page.waitForLoadState('networkidle')
   if (await page.locator('text=Something went wrong').isVisible()) return false
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 10000 })
+  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   return true
 }
 

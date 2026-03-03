@@ -201,10 +201,3 @@ const countries = [
 
 export default countries
 
-export const pagePaths: Record<string, boolean> = {
-  '/': true,
-  '/profile': true,
-  '/favourites': true,
-  '/cart': true,
-  '/checkout': true,
-}

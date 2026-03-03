@@ -15,13 +15,6 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
   const { logout } = useLogout()
 
   useEffect(() => {
-    const requestInterceptor = api.interceptors.request.use((config) => {
-      if (!config.headers['Authorization']) {
-        config.headers['Authorization'] = `Bearer ${token}`
-      }
-      return config
-    })
-
     const responseInterceptor = api.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
@@ -56,7 +49,6 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
     )
 
     return () => {
-      api.interceptors.request.eject(requestInterceptor)
       api.interceptors.response.eject(responseInterceptor)
     }
   }, [authenticate, refreshToken, token, logout])

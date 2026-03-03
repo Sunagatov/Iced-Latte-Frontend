@@ -14,23 +14,8 @@ import { authChangePassSchema } from '@/features/auth/validation'
 interface IChangeAuthValues { oldPassword: string; newPassword: string }
 import { useLocalSessionStore } from '@/features/user/store'
 import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
-
-function getStrength(pw: string): { score: number; label: string; color: string } {
-  if (!pw) return { score: 0, label: '', color: '' }
-  let score = 0
-  if (pw.length >= 8) score++
-  if (/[A-Z]/.test(pw)) score++
-  if (/[0-9]/.test(pw)) score++
-  if (/[^A-Za-z0-9]/.test(pw)) score++
-  const map = [
-    { label: 'Weak', color: 'bg-negative' },
-    { label: 'Fair', color: 'bg-yellow-400' },
-    { label: 'Good', color: 'bg-yellow-400' },
-    { label: 'Strong', color: 'bg-positive' },
-    { label: 'Very strong', color: 'bg-positive' },
-  ]
-  return { score, ...map[score] }
-}
+import { getPasswordStrength } from '@/features/auth/passwordStrength'
+import PasswordStrengthBar from './PasswordStrengthBar'
 
 export default function AuthResetPassForm() {
   const [loading, setLoading] = useState(false)
@@ -59,7 +44,7 @@ export default function AuthResetPassForm() {
     }
   }
 
-  const strength = getStrength(newPw)
+  const strength = getPasswordStrength(newPw)
 
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-secondary px-4 py-12">
@@ -117,21 +102,7 @@ export default function AuthResetPassForm() {
                     error={errors.newPassword}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPw(e.target.value)}
                   />
-                  {newPw && (
-                    <div className="mt-2">
-                      <div className="flex gap-1">
-                        {[0, 1, 2, 3].map((i) => (
-                          <div
-                            key={i}
-                            className={`h-1 flex-1 rounded-full transition-colors ${i < strength.score ? strength.color : 'bg-tertiary'}`}
-                          />
-                        ))}
-                      </div>
-                      <p className={`mt-1 text-xs font-medium ${strength.score >= 3 ? 'text-positive' : strength.score >= 2 ? 'text-yellow-500' : 'text-negative'}`}>
-                        {strength.label}
-                      </p>
-                    </div>
-                  )}
+                  {newPw && <PasswordStrengthBar {...strength} />}
                 </div>
 
                 <Button

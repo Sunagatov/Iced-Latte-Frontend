@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
@@ -29,10 +30,16 @@ import {
 type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications' | 'reviews'
 
 const FiledProfile = () => {
+  const router = useRouter()
   const [activeSection, setActiveSection] = useState<Section>('overview')
   const [isEditing, setIsEditing] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { setUserData, userData } = useAuthStore()
+  const { setUserData, userData, isLoggedIn } = useAuthStore()
+
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => { setHydrated(true) }, [])
+  useEffect(() => {
+    if (hydrated && !isLoggedIn) router.replace('/signin')
+  }, [hydrated, isLoggedIn, router])
   const { isLoading, logout } = useLogout()
   const favCount = useFavouritesStore((s) => s.count)
   const cartCount = useCartStore((s) => s.count)
@@ -62,7 +69,6 @@ const FiledProfile = () => {
   const handleNavClick = (id: Section) => {
     setActiveSection(id)
     setIsEditing(false)
-    setIsMobileMenuOpen(false)
   }
 
   return (

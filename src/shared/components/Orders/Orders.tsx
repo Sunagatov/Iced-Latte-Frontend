@@ -53,7 +53,6 @@ export default function OrdersForm() {
   }, [token, urlParams, resetCart])
 
   if (loading) {
-    // Display a loading spinner while BE creates order
     return (
       <div className="flex min-h-[100vh] w-full items-center justify-center">
         <Loader />

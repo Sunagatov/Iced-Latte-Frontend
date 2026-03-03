@@ -18,13 +18,9 @@ export const metadata: Metadata = {
   description: 'Iced Latte',
 }
 
-export interface RootLayoutProps {
-  children: React.ReactNode
-}
-
 export default function RootLayout({
   children,
-}: Readonly<RootLayoutProps>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body suppressHydrationWarning className={inter.className + ' flex min-h-screen flex-col'}>

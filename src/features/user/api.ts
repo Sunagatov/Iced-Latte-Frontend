@@ -6,7 +6,6 @@ import {
   ForgotPasswordCredentials,
   GuestResetPasswordCredentials,
   AuthChangePasswordCredentials,
-  ConfirmPasswordCredentials,
 } from '@/features/auth/types'
 
 export const getUserData = async (): Promise<UserData> => {
@@ -26,11 +25,6 @@ export async function uploadImage(file: File): Promise<string> {
   return response.data
 }
 
-export async function getAvatar() {
-  const response: AxiosResponse<string> = await api.get('/users/avatar')
-  return response.data
-}
-
 export async function apiForgotPassword(email: ForgotPasswordCredentials): Promise<SuccessResponse> {
   const response: AxiosResponse<SuccessResponse> = await api.post('/auth/password/forgot', email)
   return response.data
@@ -43,15 +37,5 @@ export async function apiGuestResetPassword(credentials: GuestResetPasswordCrede
 
 export async function apiAuthChangePassword(credentials: AuthChangePasswordCredentials): Promise<SuccessResponse> {
   const response: AxiosResponse<SuccessResponse> = await api.patch('/users', credentials)
-  return response.data
-}
-
-export async function apiAuthInitPasswordChange(email: string): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post('/users/password/reset', { email })
-  return response.data
-}
-
-export async function apiAuthPasswordChangeConfirm(token: string | null): Promise<ConfirmPasswordCredentials> {
-  const response: AxiosResponse<ConfirmPasswordCredentials> = await api.post('/users/password/reset/confirm', { token })
   return response.data
 }

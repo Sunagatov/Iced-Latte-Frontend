@@ -8,7 +8,6 @@ import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
 import { FavElementProps } from '@/features/favorites/types'
-import { handleFavouriteButtonClick } from '@/shared/utils/favUtils'
 import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } from 'react-icons/ri'
 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
@@ -24,8 +23,9 @@ export default function FavElement({ product, view = 'list' }: Props) {
   const qty = items?.find((i) => i.productId === product.id)?.productQuantity ?? 0
   const isFavourited = token ? favourites.some((f) => f.id === product.id) : favouriteIds.includes(product.id)
 
-  const handleHeart = async () => {
-    await handleFavouriteButtonClick(product.id, token, isFavourited, addFavourite, removeFavourite)
+  const handleHeart = () => {
+    if (isFavourited) removeFavourite(product.id, token).catch(() => {})
+    else addFavourite(product.id, token).catch(() => {})
   }
 
   const HeartBtn = () => (

@@ -1,7 +1,3 @@
-export interface AuthData {
-  token: string
-}
-
 export interface UserData {
   firstName: string
   lastName: string

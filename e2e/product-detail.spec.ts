@@ -12,9 +12,9 @@ test('clicking product card navigates to product detail page', async ({ page }) 
 })
 
 test('product detail page shows product name and price', async ({ page }) => {
-  if (await page.locator('text=Something went wrong').isVisible()) return
-  await expect(page.locator('[data-testid="product-name"]')).toBeVisible({ timeout: 10000 })
-  await expect(page.locator('[data-testid="product-price"]').first()).toBeVisible({ timeout: 10000 })
+  await page.waitForSelector('[data-testid="product-name"]', { timeout: 15000 })
+  await expect(page.locator('[data-testid="product-name"]')).toBeVisible()
+  await expect(page.locator('[data-testid="product-price"]').first()).toBeVisible()
 })
 
 test('product detail page shows reviews section', async ({ page }) => {

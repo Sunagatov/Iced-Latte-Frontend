@@ -1,21 +1,13 @@
 import { create, StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { ICartItem, ICartPushItem, ICartPushItems, ICartUpdatedItem } from './types'
-import { IProduct } from '@/features/products/types'
 import { getProductByIds } from '@/features/products/api'
 import { mergeCarts, removeCartItem, changeCartItemQuantity } from './api'
 import { useAuthStore } from '@/features/auth/store'
 
-export interface CartItem {
-  id: string
-  info: Omit<IProduct, 'id'>
-  quantity: number
-}
-
 interface CartSliceState {
   itemsIds: ICartPushItem[]
   tempItems: ICartItem[]
-  items: CartItem[]
   count: number
   totalPrice: number
   isSync: boolean
@@ -29,15 +21,14 @@ interface CartSliceActions {
   removeFullProduct: (id: string) => void
   resetCart: () => void
   setTempItems: (items: ICartItem[]) => void
-  createCart: (token: string, reqItems: ICartPushItems) => Promise<void>
-  updateCartItem: (token: string, updatedItem: ICartUpdatedItem) => Promise<void>
+  createCart: (reqItems: ICartPushItems) => Promise<void>
+  updateCartItem: (updatedItem: ICartUpdatedItem) => Promise<void>
 }
 
 export type CartSliceStore = CartSliceState & CartSliceActions
 
 const initialState: CartSliceState = {
   itemsIds: [],
-  items: [],
   tempItems: [],
   count: 0,
   totalPrice: 0,
@@ -55,9 +46,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       if (cartItem) {
         const productCartSlotId = getProductCartSlotId(id, tempItems)
         if (!productCartSlotId) return
-        updateCartItem(token, { shoppingCartItemId: productCartSlotId, productQuantityChange: 1 }).catch(() => {})
+        updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: 1 }).catch(() => {})
       } else {
-        createCart(token, { items: [{ productId: id, productQuantity: 1 }] }).catch(() => {})
+        createCart({ items: [{ productId: id, productQuantity: 1 }] }).catch(() => {})
       }
     } else {
       const updatedCart = addToCart(id, itemsIds)
@@ -93,7 +84,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   },
   syncBackendCart: async (token: string) => {
     const { createCart, itemsIds } = get()
-    await createCart(token, { items: itemsIds })
+    await createCart({ items: itemsIds })
   },
   remove: (id: string) => {
     const { tempItems, itemsIds, updateCartItem, removeFullProduct } = get()
@@ -107,7 +98,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         removeFullProduct(id)
         return
       }
-      updateCartItem(token, { shoppingCartItemId: productCartSlotId, productQuantityChange: -1 }).catch(() => {})
+      updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: -1 }).catch(() => {})
     } else {
       const updatedCart = removeItem(id, itemsIds)
       const updatedTempItems = tempItems
@@ -150,14 +141,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       const removedTempItems = tempItems.filter((item) => item.productInfo.id !== id)
       set({
         itemsIds: updatedCart,
-        items: get().items,
         tempItems: removedTempItems,
         count: getProductsCount(updatedCart),
         totalPrice: getTotalPrice(removedTempItems),
       } as CartSliceState)
     }
   },
-  resetCart: () => set({ itemsIds: [], items: [], tempItems: [], count: 0, totalPrice: 0, isSync: false } as CartSliceState),
+  resetCart: () => set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false } as CartSliceState),
   setTempItems: (items) => set((state) => ({
     ...state,
     itemsIds: items.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })),
@@ -166,7 +156,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     count: items.reduce((sum, i) => sum + i.productQuantity, 0),
     totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
   })),
-  createCart: async (token: string, reqItems: ICartPushItems): Promise<void> => {
+  createCart: async (reqItems: ICartPushItems): Promise<void> => {
     const mergedCart = await mergeCarts(reqItems)
     const { itemsTotalPrice, productsQuantity, items } = mergedCart
     set((state) => ({
@@ -178,7 +168,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       isSync: true,
     }))
   },
-  updateCartItem: async (token: string, updatedItem: ICartUpdatedItem): Promise<void> => {
+  updateCartItem: async (updatedItem: ICartUpdatedItem): Promise<void> => {
     const data = await changeCartItemQuantity(updatedItem)
     const { itemsTotalPrice, productsQuantity, items } = data
     const filteredItems = items.filter((item) => item.productQuantity > 0)
