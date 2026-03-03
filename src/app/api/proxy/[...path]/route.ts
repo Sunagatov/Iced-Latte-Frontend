@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!
+const FETCH_TIMEOUT_MS = 8000
+
+function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer))
+}
 
 const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
 
@@ -24,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const apiUrl = `${API_BASE_URL}/${path.join('/')}${url.search}`
 
   try {
-    const response = await fetch(apiUrl, { headers: forwardHeaders(request) })
+    const response = await fetchWithTimeout(apiUrl, { headers: forwardHeaders(request) })
     const contentType = response.headers.get('content-type') ?? ''
     const data = contentType.includes('application/json')
       ? await response.json()
@@ -38,6 +45,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
+  if (path.join('/') === 'telemetry/performance') {
+    return createCorsResponse({}, 202)
+  }
   const url = new URL(request.url)
   const apiUrl = `${API_BASE_URL}/${path.join('/')}${url.search}`
 
@@ -48,7 +58,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   } catch { /* empty body */ }
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetchWithTimeout(apiUrl, {
       method: 'POST',
       headers: forwardHeaders(request),
       body: body ?? undefined,
@@ -70,7 +80,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   const apiUrl = `${API_BASE_URL}/${path.join('/')}`
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetchWithTimeout(apiUrl, {
       method: 'PUT',
       headers: forwardHeaders(request),
       body,
@@ -92,7 +102,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const apiUrl = `${API_BASE_URL}/${path.join('/')}`
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetchWithTimeout(apiUrl, {
       method: 'PATCH',
       headers: forwardHeaders(request),
       body,
@@ -119,7 +129,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   } catch { /* no body */ }
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetchWithTimeout(apiUrl, {
       method: 'DELETE',
       headers: forwardHeaders(request),
       body,

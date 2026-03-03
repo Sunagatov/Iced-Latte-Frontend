@@ -1,4 +1,5 @@
 const nextConfig = {
+  output: 'standalone',
   compress: true,
   images: {
     remotePatterns: [
@@ -9,6 +10,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.supabase.co',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
       },
     ],
   },

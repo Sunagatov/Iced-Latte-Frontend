@@ -1,50 +1,40 @@
 # =============================================================================
-# 📦 BUILD STAGE — install dependencies and compile the Next.js app
+# BUILD STAGE
 # =============================================================================
-FROM node:20.16.0-alpine3.20 AS build
+FROM node:22.17.0-alpine3.22 AS build
 
-# 🔧 Build argument — override at build time to point at a different backend
 ARG NEXT_PUBLIC_API_URL=https://iced-latte.uk/backend/api/v1
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-WORKDIR /usr/app
+WORKDIR /app
 
-# --- Dependency Layer (cached when package.json unchanged) ---
-COPY --chown=node package*.json ./
+COPY package*.json ./
 RUN npm ci
 
-# --- Source Code Layer ---
-COPY --chown=node ./ ./
-
-# --- Build Application & prune dev dependencies ---
-RUN npm run build && npm prune --omit=dev
+COPY . .
+RUN npm run build
 
 # =============================================================================
-# 🚀 RUNTIME STAGE — lean image with only what's needed to run
+# RUNTIME STAGE
 # =============================================================================
-FROM node:20.16.0-alpine3.20
+FROM node:22.17.0-alpine3.22
 
-# Metadata
 LABEL maintainer="Iced-Latte Team" \
       description="Iced-Latte Frontend Application"
 
-WORKDIR /usr/app
+WORKDIR /app
 
-# --- Install PM2 process manager ---
-RUN npm install --global pm2
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
 
-# --- Copy built artefacts from build stage ---
-COPY --chown=node --from=build /usr/app/.next ./.next
-COPY --chown=node --from=build /usr/app/public ./public
-COPY --chown=node --from=build /usr/app/node_modules ./node_modules
-COPY --chown=node --from=build /usr/app/package.json ./package.json
+# Standalone server — dependencies change rarely, app layer changes every build
+COPY --from=build /app/public ./public
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/.next/standalone ./
 
-# --- Runtime Configuration ---
-ENV NODE_ENV=production
 EXPOSE 3000
 
-# --- Run as non-root for security ---
 USER node
 
-# --- Application Startup ---
-CMD ["pm2-runtime", "start", "npm", "--", "run", "start"]
+ENTRYPOINT ["node", "server.js"]
