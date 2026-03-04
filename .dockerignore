@@ -17,6 +17,11 @@ __tests__/
 .env
 .env.local
 .env.*.local
+.env.*
+*.pem
+*.key
+*.cert
+secrets/
 
 # git & ci
 .git/
