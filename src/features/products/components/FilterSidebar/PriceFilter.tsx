@@ -1,11 +1,12 @@
 'use client'
 
 import { ChangeEvent, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Resolver, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { filterProductsByPriceSchema } from '@/features/products/validation'
 import { useProductFiltersStore } from '@/features/products/store'
-interface IProductPriceFilter { fromPriceInput: string; toPriceInput: string }
+import * as yup from 'yup'
+type IProductPriceFilter = yup.InferType<typeof filterProductsByPriceSchema>
 import FiltersGroupTitle from '@/features/products/components/FilterSidebar/FiltersGroupTitle'
 
 const getDecimalFromString = (input: string) => {
@@ -28,7 +29,7 @@ const getDecimalFromString = (input: string) => {
 
 const PriceFilter = () => {
   const { register, setValue } = useForm<IProductPriceFilter>({
-    resolver: yupResolver(filterProductsByPriceSchema),
+    resolver: yupResolver(filterProductsByPriceSchema) as unknown as Resolver<IProductPriceFilter>,
     defaultValues: {
       fromPriceInput: '',
       toPriceInput: '',

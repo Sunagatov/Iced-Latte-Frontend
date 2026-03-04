@@ -39,7 +39,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   )
   const filterRef = useRef<HTMLDivElement>(null)
 
-  useOnClickOutside(filterRef, () => setShowFilterDropdown(false))
+  useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () => setShowFilterDropdown(false))
 
   const refreshStatistics = useCallback(async () => {
     try {

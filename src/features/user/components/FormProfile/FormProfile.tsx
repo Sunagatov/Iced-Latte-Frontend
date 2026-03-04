@@ -1,6 +1,6 @@
 'use client'
 import { editUserProfile } from '@/features/user/api'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { Resolver, SubmitHandler, useForm } from 'react-hook-form'
 interface FormProfileProps { onSuccessEdit: () => void; updateUserData: (data: UserData) => void; initialUserData: UserData | null }
 import { yupResolver } from '@hookform/resolvers/yup'
 import { UserData } from '@/features/user/types'
@@ -27,7 +27,7 @@ const FormProfile = ({
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema) as unknown as Resolver<FormValues>,
     defaultValues: initialUserData ?? undefined,
     mode: 'onChange',
   })

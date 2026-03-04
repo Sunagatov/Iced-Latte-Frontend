@@ -39,6 +39,7 @@ async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
   await page.waitForLoadState('networkidle')
   if (await page.locator('text=Something went wrong!').isVisible()) return false
+  if (await page.locator('h1:has-text("404")').isVisible()) return false
   await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   return true
 }
