@@ -5,6 +5,7 @@ import { IOption } from '@/shared/types/Dropdown'
 import { ISortParams } from '@/shared/types/ISortParams'
 import { StarsType } from './store'
 import { useMediaQuery } from 'usehooks-ts'
+import { AxiosError } from 'axios'
 
 export function useProducts(
   sortOption: IOption<ISortParams>,
@@ -27,10 +28,18 @@ export function useProducts(
     return `products?page=${pageIndex}&size=${productSize}&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${ratingQuery ? '&minimum_average_rating=' + ratingQuery : ''}${sellerNames && '&seller_names=' + sellerNames}${fromPriceFilter && '&min_price=' + fromPriceFilter}${toPriceFilter && '&max_price=' + toPriceFilter}${searchQuery ? '&keyword=' + encodeURIComponent(searchQuery) : ''}`
   }
 
-  const { data, error, isLoading, size, setSize } = useSWRInfinite<IProductsList, Error>(
+  const { data, error, isLoading, size, setSize } = useSWRInfinite<IProductsList, AxiosError>(
     getKey,
     getAllProducts,
-    { initialSize: 1 },
+    {
+      initialSize: 1,
+      onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
+        const status = err?.response?.status
+        if (status && status >= 400) return
+        if (retryCount >= 3) return
+        setTimeout(() => revalidate({ retryCount }), 5000)
+      },
+    },
   )
 
   const totalPages = data?.[0]?.totalPages ?? 0
