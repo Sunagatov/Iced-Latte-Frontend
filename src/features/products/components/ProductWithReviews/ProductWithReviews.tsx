@@ -51,7 +51,7 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
   }, [setShouldRevalidateStatistics])
 
   return (
-    <section className="mx-auto max-w-[1280px] px-5 pt-10 xl:pt-14">
+    <section className="mx-auto max-w-[1280px] px-5 pt-10 xl:pt-14" suppressHydrationWarning>
       <div className="flex flex-col items-center gap-8 sm:justify-center lg:flex-row lg:items-start xl:gap-16">
         <ProductOverview product={product} />
       </div>

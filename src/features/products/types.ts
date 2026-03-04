@@ -14,6 +14,7 @@ export interface IProduct {
   quantity: number
   active: boolean
   productFileUrl: string | null
+  productImageUrls?: string[]
   averageRating: number
   reviewsCount: number
   brandName: string

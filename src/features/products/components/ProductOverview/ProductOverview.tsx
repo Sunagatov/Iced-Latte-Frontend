@@ -2,13 +2,13 @@
 
 import React from 'react'
 import Image from 'next/image'
-import getImgUrl from '@/shared/utils/getImgUrl'
 import { IProduct } from '@/features/products/types'
 import AddToCartButton from '@/features/products/components/AddToCart/AddToCart'
 import HeartWrapper from '@/features/products/components/HeartWrapper/HeartWrapper'
 import Rating from '@/shared/components/Rating/Rating'
 import { useProductReviewsStore } from '@/features/reviews/store'
 import { FiPackage, FiShield, FiRefreshCw, FiTruck } from 'react-icons/fi'
+import ProductImageGallery from '@/features/products/components/ProductImageGallery/ProductImageGallery'
 
 interface IProductOverview {
   product: IProduct
@@ -23,16 +23,12 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
 
   return (
     <>
-      {/* Image */}
-      <div className="overflow-hidden rounded-3xl bg-secondary shadow-sm">
-        <Image
-          src={getImgUrl(product.productFileUrl, 'coffee.png')}
-          width={500}
-          height={500}
-          alt="product_image"
-          className="max-w-full md:h-[500px] md:w-full md:object-cover xl:w-[500px] xl:object-contain"
-        />
-      </div>
+      {/* Image Gallery */}
+      <ProductImageGallery
+        productFileUrl={product.productFileUrl}
+        productImageUrls={product.productImageUrls}
+        productName={product.name}
+      />
 
       {/* Info panel */}
       <div className="flex flex-col gap-5 pb-4 lg:self-start lg:max-w-[480px]">
