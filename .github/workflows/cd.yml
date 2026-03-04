@@ -8,13 +8,12 @@ concurrency:
   group: cd-production
   cancel-in-progress: false
 
-permissions:
-  contents: read
-
 jobs:
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 25
 
     steps:
