@@ -87,7 +87,7 @@ export default function ProductList({
       }
     >
       {products.map((product, index) => (
-        <ProductCard key={product.id} product={product} priority={index < 6} />
+        <ProductCard key={product.id} product={product} priority={index < 2} />
       ))}
     </ul>
   )

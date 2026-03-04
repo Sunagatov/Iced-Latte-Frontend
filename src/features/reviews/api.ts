@@ -24,7 +24,7 @@ export async function apiGetProductReviews(productId: string, page = 0, size = 3
 }
 
 export async function apiGetAllReviews(url: string) {
-  const response: AxiosResponse<IReviews> = await api.get(url)
+  const response: AxiosResponse<IReviews> = await api.get(url, { cache: false })
   return response.data
 }
 
@@ -50,8 +50,8 @@ export async function apiGetProductUserReview(productId: string): Promise<Review
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
-  const response: AxiosResponse<Review[]> = await api.get('/users/reviews')
-  return response.data
+  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> = await api.get('/users/reviews', { cache: false })
+  return response.data.reviewsWithRatings
 }
 
 export async function apiGetProductReviewsStatistics(productId: string) {

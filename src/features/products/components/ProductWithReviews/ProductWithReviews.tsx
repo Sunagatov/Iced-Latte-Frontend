@@ -4,8 +4,13 @@ import React, { useEffect } from 'react'
 import { apiGetProductReviewsStatistics } from '@/features/reviews/api'
 import { useProductReviewsStore } from '@/features/reviews/store'
 import { IProduct } from '@/features/products/types'
-import ReviewsSection from '@/features/reviews/components/ReviewsSection/ReviewsSection'
+import dynamic from 'next/dynamic'
 import ProductOverview from '@/features/products/components/ProductOverview/ProductOverview'
+
+const ReviewsSection = dynamic(
+  () => import('@/features/reviews/components/ReviewsSection/ReviewsSection'),
+  { ssr: false },
+)
 import { useErrorHandler } from '@/shared/utils/apiError'
 
 interface IProductWithReviews {

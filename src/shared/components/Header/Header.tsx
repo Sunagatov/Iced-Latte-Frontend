@@ -43,7 +43,7 @@ export default function Header() {
         <>
           <Link href="/" className="flex shrink-0 items-center gap-3 group">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-solid shadow-sm transition group-hover:bg-brand-solid-hover">
-              <Image src={logo} width={18} alt="Iced Latte" priority className="invert" />
+              <Image src={logo} width={18} alt="Iced Latte" className="invert" />
             </div>
             <span className="hidden text-base font-semibold tracking-tight text-primary sm:block">
               Iced Latte

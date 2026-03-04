@@ -11,16 +11,17 @@ interface IReviewsSorter {
   selectedOption: IOption<ISortParams>
   selectOption: (option: IOption<ISortParams>) => void
   userReview: Review | null
+  children?: React.ReactNode
 }
 
-const ReviewsSorter: React.FC<IReviewsSorter> = ({
+const ReviewsSorter: React.FC<IReviewsSorter & { children?: React.ReactNode }> = ({
   selectedOption,
   selectOption = () => {},
   userReview,
+  children,
 }) => {
   return (
-    <div className={twMerge('flex items-center gap-3 border-b border-primary/40 pb-4 mb-6 mt-8', userReview ? 'xl:mt-10' : '')}>
-      <span className="text-sm font-medium text-tertiary">Sort by</span>
+    <div className={twMerge('flex items-center gap-2 border-b border-primary/40 pb-4 mb-6 mt-8', userReview ? 'xl:mt-10' : '')}>
       <Dropdown
         id="reviewsDropdown"
         onChange={selectOption}
@@ -28,6 +29,7 @@ const ReviewsSorter: React.FC<IReviewsSorter> = ({
         selectedOption={selectedOption}
         hidePrefix
       />
+      {children}
     </div>
   )
 }

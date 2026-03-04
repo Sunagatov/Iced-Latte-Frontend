@@ -19,6 +19,7 @@ export interface IProduct {
   reviewsCount: number
   brandName: string
   sellerName: string
+  aiSummary?: string | null
 }
 
 export interface IGetProductSellers {

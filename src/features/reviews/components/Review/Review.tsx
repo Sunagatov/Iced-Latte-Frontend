@@ -21,6 +21,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   rateReview = () => {},
 }) => {
   const [isReviewExpanded, setIsReviewExpanded] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   if (!review) return <></>
 
@@ -31,6 +32,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   }
 
   const deleteReviewHandler = () => {
+    if (!confirmDelete) { setConfirmDelete(true); return }
     deleteReview(review.productReviewId!)
   }
 
@@ -60,7 +62,7 @@ const Review: React.FC<Readonly<IReview>> = ({
         </div>
       </div>
 
-      <div className="mb-3 flex items-center gap-1">
+      <div className="mb-3 flex items-center gap-1" role="img" aria-label={`Rated ${review.productRating} out of 5 stars`}>
         {[...Array(5)].map((_, i) => (
           <FaStar
             className={`h-4 w-4 ${review.productRating && i < review.productRating ? 'text-brand' : 'text-disabled'}`}
@@ -100,14 +102,16 @@ const Review: React.FC<Readonly<IReview>> = ({
         {isUserReview && (
           <button
             onClick={deleteReviewHandler}
-            className="text-xs font-medium text-tertiary transition hover:text-negative"
+            onBlur={() => setConfirmDelete(false)}
+            className={`text-xs font-medium transition ${confirmDelete ? 'text-negative' : 'text-tertiary hover:text-negative'}`}
           >
-            Delete review
+            {confirmDelete ? 'Tap again to confirm' : 'Delete review'}
           </button>
         )}
         <div className="flex gap-2 xl:ml-auto">
           <button
             onClick={likeReviewHandler}
+            aria-label={`Mark review as helpful, ${review.likesCount} likes`}
             className="flex items-center gap-1 text-xs text-tertiary transition hover:text-positive"
           >
             <BiLike className="h-3.5 w-3.5" />
@@ -115,6 +119,7 @@ const Review: React.FC<Readonly<IReview>> = ({
           </button>
           <button
             onClick={dislikeReviewHandler}
+            aria-label={`Mark review as not helpful, ${review.dislikesCount} dislikes`}
             className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative"
           >
             <BiDislike className="h-3.5 w-3.5" />

@@ -67,26 +67,16 @@ const ReviewForm = ({ productId, hasReviews = false, showForm, setShowForm, onRe
 
   if (!showForm) {
     return (
-      <div className="mb-8 mt-2">
-        <div className="rounded-2xl border border-black/8 bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-brand-second">
-            <RiEditLine className="h-6 w-6 text-brand" />
-          </div>
-          <p className="mb-1 text-base font-semibold text-primary">
-            {hasReviews ? 'Share your thoughts' : 'Be the first to review'}
-          </p>
-          <p className="mb-5 text-sm text-tertiary">
-            {hasReviews ? 'What did you think of this product?' : 'Share your experience to help other coffee lovers'}
-          </p>
-          <button
-            id="add-review-btn"
-            onClick={handleClickReview}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-inverted transition hover:bg-brand-solid-hover"
-          >
-            <RiEditLine className="h-4 w-4" />
-            Write a review
-          </button>
-        </div>
+      <div className="mb-6 flex items-center justify-between rounded-2xl border border-black/6 bg-white px-5 py-4 shadow-sm">
+        <span className="text-sm font-medium text-slate-700">Share your thoughts</span>
+        <button
+          id="add-review-btn"
+          onClick={handleClickReview}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-inverted transition hover:bg-brand-solid-hover"
+        >
+          <RiEditLine className="h-3.5 w-3.5" />
+          Write a review
+        </button>
       </div>
     )
   }

@@ -17,22 +17,28 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
 
   const getKey = (pageIndex: number, previousData: IReviews) => {
     if (previousData && previousData.totalPages - 1 == previousData.page) return null
-    const productRatingQuery = ratingFilter.length > 0 ? `&product_ratings=${ratingFilter.join(',')}` : ''
-    return `/products/${productId}/reviews?page=${pageIndex}&size=3&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${productRatingQuery}`
+    const productRatingQuery = ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''
+    return `/products/${productId}/reviews?page=${pageIndex}&size=3&sortAttribute=${sortAttribute}&sortDirection=${sortDirection}${productRatingQuery}`
   }
 
   const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite<IReviews, Error>(
     getKey,
     apiGetAllReviews,
-    { initialSize: 1 },
+    { initialSize: 1, revalidateFirstPage: false },
   )
 
   const totalPages = data?.[0]?.totalPages ?? 0
   const fetchNext = () => setSize((size) => size + 1)
   const allLoadedReviews = data?.flatMap((page) => page.reviewsWithRatings) ?? []
+  const seen = new Set<string>()
+  const dedupedReviews = allLoadedReviews.filter((r) => {
+    if (!r.productReviewId || seen.has(r.productReviewId)) return false
+    seen.add(r.productReviewId)
+    return true
+  })
   const filteredReviews = userReview
-    ? allLoadedReviews.filter((review) => review.productReviewId !== userReview.productReviewId)
-    : allLoadedReviews
+    ? dedupedReviews.filter((review) => review.productReviewId !== userReview.productReviewId)
+    : dedupedReviews
 
   const refreshReviews = useCallback(() => mutate(), [mutate])
 

@@ -16,7 +16,8 @@ interface IProductOverview {
 
 const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
   const { reviewsStatistics } = useProductReviewsStore()
-  const averageRating = reviewsStatistics ? +reviewsStatistics.avgRating : null
+  const averageRating = reviewsStatistics ? +reviewsStatistics.avgRating : (product.averageRating || null)
+  const reviewsCount = reviewsStatistics?.reviewsCount ?? product.reviewsCount
 
   const inStock = product.quantity > 0
   const lowStock = product.quantity > 0 && product.quantity <= 5
@@ -56,7 +57,7 @@ const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
                 <Image src="/star.png" alt="star" className="inline-block" width={13} height={12} />
                 <span className="font-semibold text-primary"><Rating rating={averageRating} /></span>
                 <span>·</span>
-                <span>{reviewsStatistics?.reviewsCount} reviews</span>
+                <span>{reviewsCount} reviews</span>
               </>
             ) : (
               <span>No rating yet</span>

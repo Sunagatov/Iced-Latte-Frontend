@@ -1,7 +1,6 @@
 'use client'
-import ReviewRatingFilter from '@/features/reviews/components/ReviewRatingFilter/ReviewRatingFilter'
 import ReviewForm from '../ReviewForm/ReviewForm'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { Review } from '@/features/reviews/types'
 import { useAuthStore } from '@/features/auth/store'
@@ -17,7 +16,9 @@ import { IOption } from '@/shared/types/Dropdown'
 import { ISortParams } from '@/shared/types/ISortParams'
 import { getDefaultSortOption } from '@/shared/utils/getDefaultSortOption'
 import { IProduct } from '@/features/products/types'
-import { twMerge } from 'tailwind-merge'
+import AIReviewSummary from '@/features/reviews/components/AIReviewSummary/AIReviewSummary'
+import { useOnClickOutside } from 'usehooks-ts'
+import { FaStar } from 'react-icons/fa'
 
 interface ReviewComponentProps {
   product: IProduct
@@ -27,15 +28,17 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   const { id: productId } = product
   const { errorMessage, handleError } = useErrorHandler()
   const { token } = useAuthStore()
+  const { reviewsStatistics, setReviewsStatistics } = useProductReviewsStore()
 
   const [userReview, setUserReview] = useState<Review | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [selectedFilterRating, setSelectedFilterRating] = useState<number[]>([])
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
   const [selectedSortOption, setSelectedSortOption] = useState<IOption<ISortParams>>(
     () => getDefaultSortOption(reviewsSortOptions)
   )
-
-  const { reviewsStatistics, setReviewsStatistics } = useProductReviewsStore()
+  const filterRef = useRef<HTMLDivElement>(null)
+  useOnClickOutside(filterRef as any, () => setShowFilterDropdown(false))
 
   const refreshStatistics = useCallback(async () => {
     try {
@@ -91,41 +94,91 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   }
 
   return (
-    <div data-testid="reviews-section" className={twMerge('mx-auto max-w-[1157px] pb-16', reviews.length > 0 ? '' : 'xl:mb-20')}>
+    <div data-testid="reviews-section" className="mx-auto max-w-[1157px] pb-16">
       <h2 className="mb-8 text-3xl font-bold tracking-tight text-primary">Rating and reviews</h2>
 
-      {reviewsStatistics && reviewsStatistics.reviewsCount > 0 && (
-        <div className="mb-8">
-          <ReviewRatingFilter
-            onChange={ratingFilterChangeHandler}
-            selectedOptions={selectedFilterRating}
-          />
-        </div>
-      )}
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
 
-      <div className="xl:max-w-[720px]">
-        {!userReview && (
-          <ReviewForm
-            productId={productId}
-            hasReviews={reviews.length > 0}
-            showForm={showForm}
-            setShowForm={setShowForm}
-            onReviewSubmitted={(review) => {
-              setUserReview(review)
-              setShowForm(false)
-              refreshReviews()
-              void refreshStatistics()
-            }}
-          />
-        )}
+        {/* Left: AI summary + write review + reviews list */}
+        <div className="flex min-w-0 flex-1 flex-col">
 
-        {(reviews.length > 0 || userReview) && (
-          <>
+          {product.aiSummary && (
+            <div className="mb-6">
+              <AIReviewSummary summary={product.aiSummary} reviewsCount={reviewsStatistics?.reviewsCount ?? product.reviewsCount} />
+            </div>
+          )}
+
+          {!userReview && (
+            <ReviewForm
+              productId={productId}
+              hasReviews={reviews.length > 0}
+              showForm={showForm}
+              setShowForm={setShowForm}
+              onReviewSubmitted={(review) => {
+                setUserReview(review)
+                setShowForm(false)
+                refreshReviews()
+                void refreshStatistics()
+              }}
+            />
+          )}
+
+          {reviewsStatistics && reviewsStatistics.reviewsCount > 0 && (
             <ReviewsSorter
               selectedOption={selectedSortOption}
               selectOption={setSelectedSortOption}
               userReview={userReview}
-            />
+            >
+              <div ref={filterRef} className="relative">
+                <button
+                  onClick={() => setShowFilterDropdown(v => !v)}
+                  className={`flex items-center gap-1.5 rounded-[40px] border-2 px-5 py-3 text-base font-medium transition-all duration-200 active:scale-95 ${
+                    showFilterDropdown || selectedFilterRating.length > 0
+                      ? 'border-brand-solid bg-secondary text-primary'
+                      : 'border-transparent bg-secondary text-primary hover:bg-tertiary'
+                  }`}
+                >
+                  Filter
+                  {selectedFilterRating.length > 0 && (
+                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-brand-solid text-[10px] font-bold text-white">
+                      {selectedFilterRating.length}
+                    </span>
+                  )}
+                  <FaStar className="h-3 w-3 text-positive" />
+                </button>
+                {showFilterDropdown && (
+                  <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-56 rounded-xl border border-primary bg-primary shadow-xl">
+                    <div className="flex flex-col gap-0.5 p-2">
+                      {[5,4,3,2,1].map((value) => {
+                        const count = reviewsStatistics.ratingMap[`star${value}`] ?? 0
+                        const total = reviewsStatistics.reviewsCount ?? 0
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0
+                        const isChecked = selectedFilterRating.includes(value)
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => ratingFilterChangeHandler(value)}
+                            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                              isChecked ? 'bg-brand-second font-semibold' : 'hover:bg-tertiary'
+                            }`}
+                          >
+                            <span className="w-3 text-right font-semibold text-primary">{value}</span>
+                            <FaStar className="h-3.5 w-3.5 shrink-0 text-positive" />
+                            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+                              <div className="h-full rounded-full bg-positive transition-all duration-300" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="w-5 text-right text-xs text-tertiary">{count}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ReviewsSorter>
+          )}
+
+          {(reviews.length > 0 || userReview) && (
             <ReviewsList
               productId={productId}
               reviews={reviews}
@@ -140,9 +193,14 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
               }}
               onReviewRated={(updated) => updateReviewInCache(updated)}
             />
-          </>
-        )}
-        {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
+          )}
+
+          {reviews.length === 0 && selectedFilterRating.length > 0 && (
+            <p className="text-sm text-tertiary">No reviews match this filter.</p>
+          )}
+          {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
+        </div>
+
       </div>
     </div>
   )
