@@ -19,12 +19,15 @@ export default function Header() {
   useEffect(() => {
     if (!isHome) return
     const hero = document.getElementById('hero')
+
     if (!hero) return
     const observer = new IntersectionObserver(
       ([entry]) => setHeroVisible(entry.isIntersecting),
       { threshold: 0, rootMargin: '-64px 0px 0px 0px' }
     )
+
     observer.observe(hero)
+
     return () => observer.disconnect()
   }, [isHome])
 

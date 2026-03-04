@@ -15,6 +15,7 @@ function buildGallery(productFileUrl: string | null, productImageUrls?: string[]
     return productImageUrls.slice(0, 10)
   }
   const main = getImgUrl(productFileUrl, '/coffee.png')
+
   return [typeof main === 'string' ? main : '/coffee.png']
 }
 
@@ -27,8 +28,8 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const [activeIndex, setActiveIndex] = useState(0)
   const touchStartX = useRef<number | null>(null)
 
-  const prev = useCallback(() => setActiveIndex(i => (i - 1 + images.length) % images.length), [images.length])
-  const next = useCallback(() => setActiveIndex(i => (i + 1) % images.length), [images.length])
+  const prev = useCallback(() => setActiveIndex((i) => (i - 1 + images.length) % images.length), [images.length])
+  const next = useCallback(() => setActiveIndex((i) => (i + 1) % images.length), [images.length])
 
   useEffect(() => { setActiveIndex(0) }, [productFileUrl, productImageUrls])
 
@@ -37,7 +38,9 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       if (e.key === 'ArrowLeft') prev()
       if (e.key === 'ArrowRight') next()
     }
+
     window.addEventListener('keydown', onKey)
+
     return () => window.removeEventListener('keydown', onKey)
   }, [prev, next])
 
@@ -48,7 +51,10 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return
     const diff = touchStartX.current - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 40) diff > 0 ? next() : prev()
+
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) { next() } else { prev() }
+    }
     touchStartX.current = null
   }
 

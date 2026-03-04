@@ -1,6 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 import CircleCloseButton from '@/shared/components/Buttons/CircleCloseButton/CircleCloseButton'
 import { ReactNode, useEffect, useRef } from 'react'
+import React from 'react'
 import { useMediaQuery, useOnClickOutside } from 'usehooks-ts'
 
 interface IMobileFilterSidebar {
@@ -16,7 +17,7 @@ export default function MobileFilterSidebar({
 }: Readonly<IMobileFilterSidebar>) {
   const sidebarRef = useRef<HTMLElement>(null)
 
-  useOnClickOutside(sidebarRef as any, onClose)
+  useOnClickOutside(sidebarRef as React.RefObject<HTMLElement>, onClose)
   const isMobile = useMediaQuery('(max-width: 500px)')
 
   useEffect(() => {

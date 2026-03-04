@@ -45,6 +45,7 @@ const StarRating = ({ productId, count, activeColor = '#682EFF', size = 'lg' }: 
       <div className="flex items-center gap-1.5">
         {Array(count).fill(0).map((_, index) => {
           const isActive = index < displayRating
+
           return (
             <button
               key={index}

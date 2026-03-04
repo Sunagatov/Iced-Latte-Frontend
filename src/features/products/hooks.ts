@@ -25,19 +25,21 @@ export function useProducts(
   const getKey = (pageIndex: number, previousData: IProductsList) => {
     if (previousData && previousData.totalPages - 1 == previousData.page) return null
     const ratingQuery = ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
+
     return `products?page=${pageIndex}&size=${productSize}&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${ratingQuery ? '&minimum_average_rating=' + ratingQuery : ''}${sellerNames && '&seller_names=' + sellerNames}${fromPriceFilter && '&min_price=' + fromPriceFilter}${toPriceFilter && '&max_price=' + toPriceFilter}${searchQuery ? '&keyword=' + encodeURIComponent(searchQuery) : ''}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<IProductsList, AxiosError>(
     getKey,
-    getAllProducts,
+    (key: string) => getAllProducts(key) as Promise<IProductsList>,
     {
       initialSize: 1,
       onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
         const status = err?.response?.status
+
         if (status && status >= 400) return
         if (retryCount >= 3) return
-        setTimeout(() => revalidate({ retryCount }), 5000)
+        setTimeout(() => { void revalidate({ retryCount }) }, 5000)
       },
     },
   )

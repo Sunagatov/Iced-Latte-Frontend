@@ -8,6 +8,7 @@ import { getProductBrands, getProductSellers } from '@/features/products/api'
 const getBrands = cache(async () => {
   try {
     const response = await getProductBrands()
+
     return response.brands
   } catch {
     return []
@@ -17,6 +18,7 @@ const getBrands = cache(async () => {
 const getSellers = cache(async () => {
   try {
     const response = await getProductSellers()
+
     return response.sellers
   } catch {
     return []

@@ -18,6 +18,7 @@ function ListIcon({ active }: { active: boolean }) {
 
 function GridIcon({ active }: { active: boolean }) {
   const c = active ? '#6B21A8' : '#9CA3AF'
+
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <rect x="2" y="2" width="7" height="7" rx="1.5" fill={c} />
@@ -44,6 +45,7 @@ export default function FavouritesFull() {
         </div>
       )
     }
+
     return (
       <div className="flex flex-col gap-3">
         {uniqueFavourites.map((item: IProduct) => (

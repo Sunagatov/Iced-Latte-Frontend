@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
-import { useCartStore } from '@/features/cart/store'
 import FormProfile from '../FormProfile/FormProfile'
 import ImageUpload from '@/shared/components/ImageUpload/ImageUpload'
 import AddressManager from '@/features/addresses/components/AddressManager'
@@ -36,13 +35,13 @@ const FiledProfile = () => {
   const { setUserData, userData, isLoggedIn } = useAuthStore()
 
   const [hydrated, setHydrated] = useState(false)
+
   useEffect(() => { setHydrated(true) }, [])
   useEffect(() => {
     if (hydrated && !isLoggedIn) router.replace('/signin')
   }, [hydrated, isLoggedIn, router])
   const { isLoading, logout } = useLogout()
   const favCount = useFavouritesStore((s) => s.count)
-  const cartCount = useCartStore((s) => s.count)
   const [orderCount, setOrderCount] = useState<number | null>(null)
 
   useEffect(() => {
@@ -345,7 +344,7 @@ const FiledProfile = () => {
                   <div className="flex items-center justify-between py-4">
                     <div>
                       <p className="text-sm font-medium text-primary">Active sessions</p>
-                      <p className="text-xs text-secondary">Manage devices where you're logged in</p>
+                      <p className="text-xs text-secondary">Manage devices where you&apos;re logged in</p>
                     </div>
                     <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary">
                       Coming soon
@@ -426,6 +425,7 @@ const StatCard = ({
       <p className="text-xs text-secondary">{sub}</p>
     </div>
   )
+
   return href ? <Link href={href}>{inner}</Link> : <div>{inner}</div>
 }
 
@@ -453,6 +453,7 @@ const QuickAction = ({
       <RiArrowRightSLine className="h-5 w-5 shrink-0 text-disabled" />
     </div>
   )
+
   return href ? <Link href={href}>{inner}</Link> : <>{inner}</>
 }
 
@@ -464,6 +465,7 @@ const NotifRow = ({
   defaultOn?: boolean
 }) => {
   const [on, setOn] = useState(defaultOn)
+
   return (
     <div className="flex items-center justify-between py-4">
       <div>

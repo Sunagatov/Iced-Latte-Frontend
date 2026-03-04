@@ -32,6 +32,7 @@ export default function AuthResetPassForm() {
 
   const onSubmit = async (values: IChangeAuthValues) => {
     const data: AuthChangePasswordCredentials = { newPassword: values.newPassword, oldPassword: values.oldPassword }
+
     try {
       setLoading(true)
       await apiAuthChangePassword(data)

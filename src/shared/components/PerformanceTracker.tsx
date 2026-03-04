@@ -29,6 +29,7 @@ export default function PerformanceTracker({ children }: { children: React.React
     if (reqInterceptorId === null) {
       reqInterceptorId = api.interceptors.request.use((config) => {
         ;(config as typeof config & TimedAxiosConfig)._t = Date.now()
+
         return config
       })
     }
@@ -37,6 +38,7 @@ export default function PerformanceTracker({ children }: { children: React.React
       resInterceptorId = api.interceptors.response.use(
         (response) => {
           const start = (response.config as typeof response.config & TimedAxiosConfig)._t
+
           if (start) {
             apiCalls.current.push({
               url: response.config.url?.replace(/\/api\/proxy\//, '') ?? '',
@@ -45,10 +47,12 @@ export default function PerformanceTracker({ children }: { children: React.React
               durationMs: Date.now() - start,
             })
           }
+
           return response
         },
         (error) => {
           const start = (error.config as typeof error.config & TimedAxiosConfig)?._t
+
           if (start && error.config) {
             apiCalls.current.push({
               url: error.config.url?.replace(/\/api\/proxy\//, '') ?? '',
@@ -57,6 +61,7 @@ export default function PerformanceTracker({ children }: { children: React.React
               durationMs: Date.now() - start,
             })
           }
+
           return Promise.reject(error)
         }
       )
@@ -65,6 +70,7 @@ export default function PerformanceTracker({ children }: { children: React.React
     const flush = () => {
       const pageLoadMs = Date.now() - pageLoadStart.current
       const calls = [...apiCalls.current]
+
       if (calls.length === 0) return
 
       const errorCount = calls.filter(c => c.status >= 400 && c.status !== 0).length
@@ -84,6 +90,7 @@ export default function PerformanceTracker({ children }: { children: React.React
     }
 
     window.addEventListener('beforeunload', flush)
+
     return () => {
       flush()
       window.removeEventListener('beforeunload', flush)

@@ -17,6 +17,7 @@ function GoogleCallbackInner() {
 
     if (error || !token || !refreshToken) {
       router.replace('/signin?error=google_auth_failed')
+
       return
     }
 

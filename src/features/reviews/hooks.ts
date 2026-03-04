@@ -18,6 +18,7 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
   const getKey = (pageIndex: number, previousData: IReviews) => {
     if (previousData && previousData.totalPages - 1 == previousData.page) return null
     const productRatingQuery = ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''
+
     return `/products/${productId}/reviews?page=${pageIndex}&size=3&sortAttribute=${sortAttribute}&sortDirection=${sortDirection}${productRatingQuery}`
   }
 
@@ -34,6 +35,7 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
   const dedupedReviews = allLoadedReviews.filter((r) => {
     if (!r.productReviewId || seen.has(r.productReviewId)) return false
     seen.add(r.productReviewId)
+
     return true
   })
   const filteredReviews = userReview
@@ -62,6 +64,7 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
         (pages) => {
           if (!pages) return pages
           const first = pages[0]
+
           return [{ ...first, reviewsWithRatings: [review, ...first.reviewsWithRatings] }, ...pages.slice(1)]
         },
         { revalidate: true },

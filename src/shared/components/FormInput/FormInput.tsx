@@ -1,7 +1,7 @@
 import { UseFormRegister, FieldValues, Path, FieldError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
-interface InputProps<T extends FieldValues> { id: string; register: UseFormRegister<T>; label?: string; name: Path<T>; placeholder?: string; type?: string; error?: FieldError; className?: string; labelClassName?: string; inputClassName?: string; [key: string]: any }
+interface InputProps<T extends FieldValues> { id: string; register: UseFormRegister<T>; label?: string; name: Path<T>; placeholder?: string; type?: string; error?: FieldError; className?: string; labelClassName?: string; inputClassName?: string; [key: string]: unknown }
 
 export default function FormInput<T extends FieldValues>({
   id,

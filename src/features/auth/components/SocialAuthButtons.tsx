@@ -41,6 +41,7 @@ export default function SocialAuthButtons({ mode }: { mode: 'signin' | 'signup' 
   const handleGoogleAuth = () => {
     const apiBase = process.env.NEXT_PUBLIC_API_URL
     const redirectUrl = encodeURIComponent(window.location.origin)
+
     window.location.href = `${apiBase}/auth/google?redirectUrl=${redirectUrl}`
   }
 

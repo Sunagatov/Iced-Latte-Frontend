@@ -12,7 +12,7 @@ import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export const metadata: Metadata = {
   title: 'Iced Latte',
   description: 'Iced Latte',

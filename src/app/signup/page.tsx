@@ -54,7 +54,7 @@ export default function SignUpPage() {
 
             <p className="mt-3 text-center text-xs text-[#94A3B8]">
               By registering you agree to our{' '}
-              <a href="/" className="underline hover:text-[#64748B]">Terms of Use</a>
+              <Link href="/" className="underline hover:text-[#64748B]">Terms of Use</Link>
             </p>
           </div>
         </div>

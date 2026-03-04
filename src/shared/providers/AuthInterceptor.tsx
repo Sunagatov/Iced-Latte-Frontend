@@ -33,10 +33,12 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
               null,
               { headers: { Authorization: `Bearer ${refreshToken}` } },
             )
+
             if (response) {
               authenticate(response.data.token)
               originalRequest.headers['Authorization'] = `Bearer ${response.data.token}`
             }
+
             return api.request(originalRequest)
           } catch (refreshError) {
             if (refreshError) await logout()

@@ -34,6 +34,7 @@ export default function ForgotPassForm() {
 
   const onSubmit = async () => {
     const { email } = getValues() as { email: string }
+
     try {
       setLoading(true)
       await apiForgotPassword({ email })

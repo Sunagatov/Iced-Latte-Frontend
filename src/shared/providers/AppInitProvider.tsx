@@ -39,12 +39,14 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
         if (token && favouriteIdsCount) await syncBackendFav()
         else if (token) {
           const { getFavouriteProducts } = useFavouritesStore.getState()
+
           await getFavouriteProducts(token)
         }
       } catch (error: unknown) {
-        if ((error as any)?.response?.status === 401 || (error as any)?.status === 401) resetAuth()
+        if ((error as { response?: { status?: number } })?.response?.status === 401 || (error as { status?: number })?.status === 401) resetAuth()
       }
     }
+
     void fetchData()
   }, [syncBackendFav, token, resetAuth]) // eslint-disable-line react-hooks/exhaustive-deps
 

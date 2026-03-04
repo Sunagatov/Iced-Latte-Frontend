@@ -14,7 +14,6 @@ const optionBtnStyles =
 
 const Dropdown = <T,>({
   className,
-  headerClassName,
   options,
   onChange = () => {},
   selectedOption,
@@ -26,7 +25,7 @@ const Dropdown = <T,>({
 
   const ref = useRef<HTMLDivElement>(null)
 
-  useOnClickOutside(ref as any, handleClose)
+  useOnClickOutside(ref as React.RefObject<HTMLDivElement>, handleClose)
 
   function handleClose() {
     setIsOpen(false)

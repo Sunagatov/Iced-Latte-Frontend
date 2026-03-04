@@ -20,11 +20,13 @@ export async function apiGetProductReviews(productId: string, page = 0, size = 3
   const response: AxiosResponse<IReviews> = await api.get(
     `/products/${productId}/reviews?page=${page}${size ? '&size=' + size : ''}`,
   )
+
   return response.data
 }
 
 export async function apiGetAllReviews(url: string) {
   const response: AxiosResponse<IReviews> = await api.get(url, { cache: false })
+
   return response.data
 }
 
@@ -37,6 +39,7 @@ export async function apiAddProductReview(
     `/products/${productId}/reviews`,
     { text: reviewText, rating: currentRating },
   )
+
   return response.data
 }
 
@@ -46,11 +49,13 @@ export async function apiDeleteProductReview(productReviewId: string, productId:
 
 export async function apiGetProductUserReview(productId: string): Promise<Review> {
   const response: AxiosResponse<Review> = await api.get(`/products/${productId}/review`)
+
   return response.data
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
   const response: AxiosResponse<{ reviewsWithRatings: Review[] }> = await api.get('/users/reviews', { cache: false })
+
   return response.data.reviewsWithRatings
 }
 
@@ -58,6 +63,7 @@ export async function apiGetProductReviewsStatistics(productId: string) {
   const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
     `/products/${productId}/reviews/statistics`,
   )
+
   return response.data
 }
 
@@ -70,6 +76,7 @@ export async function apiRateProductReview(
     `/products/${productId}/reviews/${productReviewId}/likes`,
     { isLike },
   )
+
   return response.data
 }
 

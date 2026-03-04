@@ -13,7 +13,7 @@ export default function Hero() {
           Discover Your Perfect Cup
         </h1>
         <p className="max-w-md text-base text-white/70 sm:text-lg">
-          Curated specialty coffees from the world's best roasters, delivered to your door.
+          Curated specialty coffees from the world&apos;s best roasters, delivered to your door.
         </p>
         <div className="w-full max-w-xl">
           <SearchBar heroMode />

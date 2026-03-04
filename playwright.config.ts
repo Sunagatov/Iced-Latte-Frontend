@@ -1,7 +1,4 @@
 import { defineConfig } from '@playwright/test'
-import { config } from 'dotenv'
-
-config({ path: '.env.local' })
 
 export default defineConfig({
   testDir: './e2e',

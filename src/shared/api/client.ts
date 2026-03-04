@@ -13,12 +13,14 @@ instance.interceptors.request.use((config) => {
 
   if (typeof window === 'undefined') {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL
+
     config.url = `${baseUrl}/${path}`
   } else {
     config.url = `/api/proxy/${path}`
 
     try {
       const token = useAuthStore.getState().token
+
       if (token) config.headers['Authorization'] = `Bearer ${token}`
     } catch { /* store not yet initialized */ }
 

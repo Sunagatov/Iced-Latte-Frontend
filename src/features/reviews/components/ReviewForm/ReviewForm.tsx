@@ -18,7 +18,7 @@ interface ReviewFormProps {
   onReviewSubmitted?: (review: Review) => void
 }
 
-const ReviewForm = ({ productId, hasReviews = false, showForm, setShowForm, onReviewSubmitted }: ReviewFormProps) => {
+const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: ReviewFormProps) => {
   const [loading, setLoading] = useState(false)
   const [reviewText, setReviewText] = useState('')
   const { errorMessage, handleError } = useErrorHandler()
@@ -45,6 +45,7 @@ const ReviewForm = ({ productId, hasReviews = false, showForm, setShowForm, onRe
         dislikesCount: 0,
         isCurrentUserComment: true,
       }
+
       onReviewSubmitted?.(newReview)
       // Re-fetch after delay to reflect async moderation outcome
       setTimeout(() => onReviewSubmitted?.(newReview), 5000)

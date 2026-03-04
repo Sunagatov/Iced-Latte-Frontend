@@ -48,6 +48,7 @@ const STATUS_CONFIG: Record<Order['status'], { label: string; icon: React.ReactN
 
 function StatusBadge({ status }: { status: Order['status'] }) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.CREATED
+
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${cfg.color}`}>
       {cfg.icon}
@@ -145,6 +146,7 @@ export default function OrderHistory() {
     setLoading(true)
     setError(false)
     const url = filter ? `/orders?status=${filter}` : '/orders'
+
     api.get<Order[]>(url)
       .then((res) => setOrders(res.data))
       .catch(() => setError(true))

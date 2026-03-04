@@ -11,6 +11,7 @@ const ReviewsSection = dynamic(
   () => import('@/features/reviews/components/ReviewsSection/ReviewsSection'),
   { ssr: false },
 )
+
 import { useErrorHandler } from '@/shared/utils/apiError'
 
 interface IProductWithReviews {

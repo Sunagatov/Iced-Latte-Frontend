@@ -20,6 +20,7 @@ function getRecent(): string[] {
 
 function saveRecent(query: string) {
   const prev = getRecent().filter((q) => q !== query)
+
   localStorage.setItem(RECENT_KEY, JSON.stringify([query, ...prev].slice(0, MAX_RECENT)))
 }
 
@@ -30,7 +31,9 @@ function deleteRecent(query: string) {
 function highlight(text: string, query: string) {
   if (!query) return text
   const idx = text.toLowerCase().indexOf(query.toLowerCase())
+
   if (idx === -1) return text
+
   return (
     <>
       {text.slice(0, idx)}
@@ -61,6 +64,7 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
   useEffect(() => {
     if (!debouncedInput.trim()) {
       setSuggestions([])
+
       return
     }
     getAllProducts(
@@ -84,11 +88,13 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
       }
     }
     document.addEventListener('mousedown', onClickOutside)
+
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
 
   const commit = useCallback((query: string) => {
     const trimmed = query.trim()
+
     updateProductFiltersStore({ searchQuery: trimmed })
     setInputValue(trimmed)
     setOpen(false)
@@ -123,6 +129,7 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const items = inputValue.trim() ? suggestions : recent
+
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       setActiveIdx((i) => Math.min(i + 1, items.length - 1))

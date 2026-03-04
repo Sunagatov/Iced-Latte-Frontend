@@ -12,7 +12,7 @@ interface AddressStore {
   setDefault: (id: string) => Promise<void>
 }
 
-export const useAddressStore = create<AddressStore>((set, get) => ({
+export const useAddressStore = create<AddressStore>((set) => ({
   addresses: [],
   loading: false,
 
@@ -20,6 +20,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
     set({ loading: true })
     try {
       const addresses = await api.getAddresses()
+
       set({ addresses })
     } finally {
       set({ loading: false })
@@ -28,11 +29,13 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   add: async (data) => {
     const address = await api.createAddress(data)
+
     set((s) => ({ addresses: [...s.addresses, address] }))
   },
 
   update: async (id, data) => {
     const updated = await api.updateAddress(id, data)
+
     set((s) => ({
       addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
     }))

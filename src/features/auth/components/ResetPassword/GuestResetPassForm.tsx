@@ -36,6 +36,7 @@ export default function GuestResetPassForm() {
     const storedEmail = localStorage.getItem('emailForReset') ?? ''
     const { code, password } = values
     const data: GuestResetPasswordCredentials = { code, email: storedEmail, password }
+
     try {
       setLoading(true)
       await apiGuestResetPassword(data)

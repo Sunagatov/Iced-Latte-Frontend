@@ -1,10 +1,10 @@
 import { test, expect, type Page } from '@playwright/test'
 
 const FAKE_TOKEN = 'fake-token-for-mocked-test'
-const PRODUCT_ID = 'fc88cd5d-5049-4b00-8d88-df1d9b4a3ce1'
+const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
 
 async function mockReviewCalls(page: Page) {
-  const product = { id: PRODUCT_ID, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+  const product = { id: PRODUCT_ID, name: 'Turkish Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
@@ -37,12 +37,14 @@ async function mockReviewCalls(page: Page) {
 
 async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
-  if (await page.locator('text=Something went wrong').isVisible()) return false
+  await page.waitForLoadState('networkidle')
+  if (await page.locator('text=Something went wrong!').isVisible()) return false
   await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   return true
 }
 
 test('"Write a review" button redirects guest to /signin', async ({ page }) => {
+  await mockReviewCalls(page)
   const ok = await gotoProductPage(page)
   if (!ok) return
   await page.locator('#add-review-btn').click()

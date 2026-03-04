@@ -7,7 +7,7 @@ export const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 }
 
-export function createCorsResponse(data?: any, status = 200): NextResponse {
+export function createCorsResponse(data?: unknown, status = 200): NextResponse {
   return NextResponse.json(data || {}, { status, headers: corsHeaders })
 }
 

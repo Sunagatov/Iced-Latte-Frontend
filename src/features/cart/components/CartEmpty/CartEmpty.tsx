@@ -23,7 +23,7 @@ export default function CartEmpty() {
 
       <h1 className="mb-3 text-3xl font-bold text-primary">Your cart is empty</h1>
       <p className="mb-2 text-base text-secondary">
-        Looks like you haven't added anything yet.
+        Looks like you haven&apos;t added anything yet.
       </p>
       <p className="mb-10 text-base text-secondary">
         Explore our coffee selection and find your next favourite brew.

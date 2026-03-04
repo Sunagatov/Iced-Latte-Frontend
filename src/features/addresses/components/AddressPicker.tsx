@@ -22,10 +22,12 @@ export default function AddressPicker({ onSelect, selected }: Props) {
     if (addresses.length === 0) {
       setMode('new')
       onSelect(null)
+
       return
     }
     if (mode === 'saved' && !selected) {
       const def = addresses.find((a) => a.isDefault) ?? addresses[0]
+
       onSelect(def)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,7 +39,9 @@ export default function AddressPicker({ onSelect, selected }: Props) {
     <div className="mb-2">
       {/* Mode toggle */}
       <div className="mb-3 flex gap-2">
-        <ModeBtn active={mode === 'saved'} onClick={() => { setMode('saved'); const def = addresses.find((a) => a.isDefault) ?? addresses[0]; onSelect(def) }}>
+        <ModeBtn active={mode === 'saved'} onClick={() => { setMode('saved'); const def = addresses.find((a) => a.isDefault) ?? addresses[0]
+
+          onSelect(def) }}>
           Saved addresses
         </ModeBtn>
         <ModeBtn active={mode === 'new'} onClick={() => { setMode('new'); onSelect(null) }}>

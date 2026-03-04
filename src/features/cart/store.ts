@@ -45,6 +45,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     if (token) {
       if (cartItem) {
         const productCartSlotId = getProductCartSlotId(id, tempItems)
+
         if (!productCartSlotId) return
         updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: 1 }).catch(() => {})
       } else {
@@ -56,10 +57,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
       const updatedTempItems = cartItem
         ? tempItems.map((tempItem) =>
-            tempItem.productInfo.id === id
-              ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
-              : tempItem,
-          )
+          tempItem.productInfo.id === id
+            ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
+            : tempItem,
+        )
         : tempItems
 
       set((state) => ({
@@ -80,10 +81,12 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       productInfo: { ...item },
       productQuantity: itemsIds.find((i) => i.productId === item.id)!.productQuantity,
     }))
+
     set((state) => ({ ...state, tempItems: cartItems, totalPrice: getTotalPrice(cartItems) }))
   },
   syncBackendCart: async (token: string) => {
     const { createCart, itemsIds } = get()
+    void token
     await createCart({ items: itemsIds })
   },
   remove: (id: string) => {
@@ -92,10 +95,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
     if (token) {
       const productCartSlotId = getProductCartSlotId(id, tempItems)
+
       if (!productCartSlotId) return
       const currentItem = tempItems.find((item) => item.productInfo.id === id)
+
       if (currentItem && currentItem.productQuantity <= 1) {
         removeFullProduct(id)
+
         return
       }
       updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: -1 }).catch(() => {})
@@ -120,12 +126,15 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   },
   removeFullProduct: (id: string) => {
     const token = useAuthStore?.getState?.()?.token ?? null
+
     if (token) {
       const { tempItems } = get()
       const productCartSlotId = getProductCartSlotId(id, tempItems)
+
       removeCartItem([productCartSlotId!])
         .then((data) => {
           const { itemsTotalPrice, productsQuantity, items } = data
+
           set((state) => ({
             ...state,
             itemsIds: createItemsIdsFromCart(items),
@@ -139,6 +148,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       const { itemsIds, tempItems } = get()
       const updatedCart = itemsIds.filter((item) => item.productId !== id)
       const removedTempItems = tempItems.filter((item) => item.productInfo.id !== id)
+
       set({
         itemsIds: updatedCart,
         tempItems: removedTempItems,
@@ -159,6 +169,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   createCart: async (reqItems: ICartPushItems): Promise<void> => {
     const mergedCart = await mergeCarts(reqItems)
     const { itemsTotalPrice, productsQuantity, items } = mergedCart
+
     set((state) => ({
       ...state,
       itemsIds: createItemsIdsFromCart(items),
@@ -172,6 +183,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     const data = await changeCartItemQuantity(updatedItem)
     const { itemsTotalPrice, productsQuantity, items } = data
     const filteredItems = items.filter((item) => item.productQuantity > 0)
+
     set((state) => ({
       ...state,
       itemsIds: createItemsIdsFromCart(filteredItems),
@@ -184,7 +196,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
 function addToCart(id: string, cartList: ICartPushItem[]): ICartPushItem[] {
   const cartItem = cartList.find((item) => item.productId === id)
+
   if (!cartItem) return [...cartList, { productId: id, productQuantity: 1 }]
+
   return cartList.map((item) =>
     item.productId === id ? { ...item, productQuantity: item.productQuantity + 1 } : item,
   )

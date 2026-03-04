@@ -31,6 +31,7 @@ export const useLocalSessionStore = create<SessionStore>()(
       addPreviousRouteForAuth: (route) => {
         set((state) => {
           if (!state.routingRelatedAuthCompleted) return { previousRouteForAuth: route }
+
           return state
         })
       },

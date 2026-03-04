@@ -28,7 +28,7 @@ const getDecimalFromString = (input: string) => {
 
 const PriceFilter = () => {
   const { register, setValue } = useForm<IProductPriceFilter>({
-    resolver: yupResolver(filterProductsByPriceSchema) as any,
+    resolver: yupResolver(filterProductsByPriceSchema) as ReturnType<typeof yupResolver>,
     defaultValues: {
       fromPriceInput: '',
       toPriceInput: '',

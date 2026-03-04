@@ -19,7 +19,7 @@ export default function UserReviews() {
   if (!reviews?.length) return (
     <div className="flex flex-col items-center gap-3 py-12 text-center">
       <RiStarLine className="h-10 w-10 text-disabled" />
-      <p className="text-sm font-medium text-secondary">You haven't written any reviews yet.</p>
+      <p className="text-sm font-medium text-secondary">You haven&apos;t written any reviews yet.</p>
       <Link href="/" className="text-sm font-medium text-brand hover:underline">
         Browse products
       </Link>

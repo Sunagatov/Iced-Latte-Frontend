@@ -41,7 +41,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
 
   const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
     try {
-      productReviewId && (await apiDeleteProductReview(productReviewId, productId))
+      if (productReviewId) await apiDeleteProductReview(productReviewId, productId)
       onReviewDeleted?.(productReviewId)
     } catch (error) {
       handleError(error)
@@ -52,9 +52,11 @@ const ReviewsList: React.FC<IReviewsList> = ({
     try {
       if (!token) {
         router.push('/signin')
+
         return
       }
       const updated = await apiRateProductReview(productId, productReviewId, isLike)
+
       onReviewRated?.(updated)
     } catch (error) {
       handleError(error)

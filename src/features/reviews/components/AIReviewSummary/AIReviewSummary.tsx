@@ -28,7 +28,7 @@ const AIReviewSummary = ({ summary, reviewsCount }: AIReviewSummaryProps) => {
 
       {/* Quote */}
       <div className="relative pl-5">
-        <span className="absolute left-0 top-[-4px] text-3xl leading-none text-violet-300 select-none">"</span>
+        <span className="absolute left-0 top-[-4px] text-3xl leading-none text-violet-300 select-none">&ldquo;</span>
         <p className="text-sm leading-relaxed text-slate-700 sm:text-[15px]">
           {displayText}
           {isLong && (
@@ -40,7 +40,7 @@ const AIReviewSummary = ({ summary, reviewsCount }: AIReviewSummaryProps) => {
             </button>
           )}
         </p>
-        <span className="text-3xl leading-none text-violet-300 select-none">"</span>
+        <span className="text-3xl leading-none text-violet-300 select-none">&rdquo;</span>
       </div>
 
       <p className="mt-4 text-[11px] text-slate-400">

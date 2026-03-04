@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <footer className="bg-[#0a0a0a] text-white">
@@ -27,10 +29,10 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <span className="text-xs font-semibold uppercase tracking-widest text-white/30">Shop</span>
             <nav className="flex flex-col gap-2 text-sm text-white/60">
-              <a href="/" className="transition hover:text-white">All Coffee</a>
-              <a href="/favourites" className="transition hover:text-white">Favourites</a>
-              <a href="/cart" className="transition hover:text-white">Cart</a>
-              <a href="/orders" className="transition hover:text-white">Orders</a>
+              <Link href="/" className="transition hover:text-white">All Coffee</Link>
+              <Link href="/favourites" className="transition hover:text-white">Favourites</Link>
+              <Link href="/cart" className="transition hover:text-white">Cart</Link>
+              <Link href="/orders" className="transition hover:text-white">Orders</Link>
             </nav>
           </div>
 

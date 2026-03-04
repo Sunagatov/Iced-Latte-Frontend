@@ -38,11 +38,13 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
     () => getDefaultSortOption(reviewsSortOptions)
   )
   const filterRef = useRef<HTMLDivElement>(null)
-  useOnClickOutside(filterRef as any, () => setShowFilterDropdown(false))
+
+  useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () => setShowFilterDropdown(false))
 
   const refreshStatistics = useCallback(async () => {
     try {
       const stats = await apiGetProductReviewsStatistics(productId)
+
       setReviewsStatistics(stats)
     } catch { /* ignore */ }
   }, [productId, setReviewsStatistics])
@@ -79,6 +81,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   const ratingFilterChangeHandler = (value: number) => {
     setSelectedFilterRating((prev) => {
       const idx = prev.indexOf(value)
+
       return idx === -1 ? [...prev, value] : prev.toSpliced(idx, 1)
     })
   }
@@ -154,6 +157,7 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
                         const total = reviewsStatistics.reviewsCount ?? 0
                         const pct = total > 0 ? Math.round((count / total) * 100) : 0
                         const isChecked = selectedFilterRating.includes(value)
+
                         return (
                           <button
                             key={value}

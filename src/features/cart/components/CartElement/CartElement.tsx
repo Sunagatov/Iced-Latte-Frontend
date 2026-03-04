@@ -17,11 +17,14 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
 
   const [pulse, setPulse] = useState(false)
   const prevQty = useRef(productQuantity)
+
   useEffect(() => {
     if (prevQty.current !== productQuantity) {
       setPulse(true)
       const t = setTimeout(() => setPulse(false), 400)
+
       prevQty.current = productQuantity
+
       return () => clearTimeout(t)
     }
   }, [productQuantity])

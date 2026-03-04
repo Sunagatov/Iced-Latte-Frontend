@@ -1,5 +1,5 @@
 'use client'
-interface CheckboxPropsType { label?: string; id?: string; isChecked?: boolean; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; labelClassName?: string; inputClassName?: string; ariaLabel?: string; [key: string]: any }
+interface CheckboxPropsType { label?: string; id?: string; isChecked?: boolean; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; labelClassName?: string; inputClassName?: string; ariaLabel?: string; [key: string]: unknown }
 
 const Checkbox = ({
   label,

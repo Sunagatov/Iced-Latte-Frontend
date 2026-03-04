@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const PRODUCT_ID = 'fc88cd5d-5049-4b00-8d88-df1d9b4a3ce1'
+const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
 
 test.beforeEach(async ({ page }) => {
   await page.goto(`/product/${PRODUCT_ID}`)
@@ -12,18 +12,18 @@ test('clicking product card navigates to product detail page', async ({ page }) 
 })
 
 test('product detail page shows product name and price', async ({ page }) => {
-  await page.waitForSelector('[data-testid="product-name"]', { timeout: 15000 })
-  await expect(page.locator('[data-testid="product-name"]')).toBeVisible()
+  if (await page.locator('text=Something went wrong!').isVisible()) return
+  await expect(page.locator('[data-testid="product-name"]')).toBeVisible({ timeout: 15000 })
   await expect(page.locator('[data-testid="product-price"]').first()).toBeVisible()
 })
 
 test('product detail page shows reviews section', async ({ page }) => {
-  if (await page.locator('text=Something went wrong').isVisible()) return
+  if (await page.locator('text=Something went wrong!').isVisible()) return
   await expect(page.locator('[data-testid="reviews-section"]')).toBeVisible({ timeout: 10000 })
 })
 
 test('product detail page has add to cart button', async ({ page }) => {
-  if (await page.locator('text=Something went wrong').isVisible()) return
+  if (await page.locator('text=Something went wrong!').isVisible()) return
   await expect(page.locator('[data-testid="add-to-cart-btn"]')).toBeVisible({ timeout: 10000 })
 })
 

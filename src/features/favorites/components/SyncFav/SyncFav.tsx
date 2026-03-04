@@ -14,7 +14,9 @@ export default function SyncFav() {
   useEffect(() => {
     // Wait for Zustand persist hydration before reading token
     const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+
     if (useAuthStore.persist.hasHydrated()) setHydrated(true)
+
     return unsub
   }, [])
 

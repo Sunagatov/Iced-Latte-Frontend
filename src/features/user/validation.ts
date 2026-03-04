@@ -17,12 +17,15 @@ export const validationSchema = yup.object().shape({
     .nullable()
     .test('is-past', 'Date of birth must be in the past', (v) => {
       if (!v) return true
+
       return new Date(v).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
     })
     .test('min-age', 'You must be at least 13 years old', (v) => {
       if (!v) return true
       const min = new Date()
+
       min.setFullYear(min.getFullYear() - 13)
+
       return new Date(v) <= min
     }),
   phoneNumber: yup
