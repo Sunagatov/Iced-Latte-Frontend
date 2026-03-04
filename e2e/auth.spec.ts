@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { nanoid } from 'nanoid'
 
-const EXISTING_EMAIL = process.env.E2E_EXISTING_EMAIL ?? 'olivia@example.com'
-const EXISTING_PASSWORD = process.env.E2E_EXISTING_PASSWORD ?? 'p@ss1logic11'
+const EXISTING_EMAIL = process.env.E2E_EXISTING_EMAIL!
+const EXISTING_PASSWORD = process.env.E2E_EXISTING_PASSWORD!
 
 test('sign in with valid credentials redirects away from /signin', async ({ page }) => {
   await page.route('**/api/proxy/auth/authenticate', async (route) => {
