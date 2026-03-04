@@ -27,7 +27,7 @@ const FormProfile = ({
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: yupResolver(validationSchema) as ReturnType<typeof yupResolver>,
+    resolver: yupResolver(validationSchema),
     defaultValues: initialUserData ?? undefined,
     mode: 'onChange',
   })

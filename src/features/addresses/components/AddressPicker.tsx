@@ -39,9 +39,12 @@ export default function AddressPicker({ onSelect, selected }: Props) {
     <div className="mb-2">
       {/* Mode toggle */}
       <div className="mb-3 flex gap-2">
-        <ModeBtn active={mode === 'saved'} onClick={() => { setMode('saved'); const def = addresses.find((a) => a.isDefault) ?? addresses[0]
+        <ModeBtn active={mode === 'saved'} onClick={() => {
+          setMode('saved')
+          const def: DeliveryAddress = addresses.find((a) => a.isDefault) ?? addresses[0]
 
-          onSelect(def) }}>
+          onSelect(def)
+        }}>
           Saved addresses
         </ModeBtn>
         <ModeBtn active={mode === 'new'} onClick={() => { setMode('new'); onSelect(null) }}>

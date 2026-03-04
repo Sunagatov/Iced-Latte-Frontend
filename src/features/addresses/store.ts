@@ -12,7 +12,7 @@ interface AddressStore {
   setDefault: (id: string) => Promise<void>
 }
 
-export const useAddressStore = create<AddressStore>((set) => ({
+export const useAddressStore = create<AddressStore>()(set => ({
   addresses: [],
   loading: false,
 

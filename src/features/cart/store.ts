@@ -56,7 +56,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       const count = getProductsCount(updatedCart)
 
       const updatedTempItems = cartItem
-        ? tempItems.map((tempItem) =>
+        ? tempItems.map((tempItem: ICartItem) =>
           tempItem.productInfo.id === id
             ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
             : tempItem,

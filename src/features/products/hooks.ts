@@ -31,7 +31,7 @@ export function useProducts(
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<IProductsList, AxiosError>(
     getKey,
-    (key: string) => getAllProducts(key) as Promise<IProductsList>,
+    (key: string) => getAllProducts(key),
     {
       initialSize: 1,
       onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
