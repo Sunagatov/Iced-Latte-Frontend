@@ -184,7 +184,6 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
           className="w-full bg-transparent text-sm text-primary outline-none placeholder:text-placeholder"
           aria-label="Search products"
           aria-autocomplete="list"
-          aria-expanded={isDropdownOpen}
           autoFocus={autoFocus}
           onBlur={handleBlur}
         />

@@ -1,7 +1,7 @@
 'use client'
 
 import { ChangeEvent, useEffect, useState } from 'react'
-import { Resolver, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { filterProductsByPriceSchema } from '@/features/products/validation'
 import { useProductFiltersStore } from '@/features/products/store'
@@ -29,7 +29,7 @@ const getDecimalFromString = (input: string) => {
 
 const PriceFilter = () => {
   const { register, setValue } = useForm<IProductPriceFilter>({
-    resolver: yupResolver(filterProductsByPriceSchema) as unknown as Resolver<IProductPriceFilter>,
+    resolver: yupResolver(filterProductsByPriceSchema),
     defaultValues: {
       fromPriceInput: '',
       toPriceInput: '',

@@ -84,8 +84,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
     set((state) => ({ ...state, tempItems: cartItems, totalPrice: getTotalPrice(cartItems) }))
   },
+
   syncBackendCart: async (token: string) => {
     const { createCart, itemsIds } = get()
+
     void token
     await createCart({ items: itemsIds })
   },
