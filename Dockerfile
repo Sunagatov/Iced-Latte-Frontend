@@ -11,7 +11,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY . .
+COPY src/ ./src/
+COPY public/ ./public/
+COPY next.config.js tsconfig.json postcss.config.js next-env.d.ts ./
 RUN npm run build
 
 # =============================================================================
