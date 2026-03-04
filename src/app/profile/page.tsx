@@ -1,4 +1,4 @@
-import FiledProfile from '../../components/Profile/FilledProfile/FiledProfile'
+import FiledProfile from '@/features/user/components/FilledProfile/FiledProfile'
 
 const ProfilePage = () => {
   return (

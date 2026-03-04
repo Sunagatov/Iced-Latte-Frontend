@@ -1,34 +1,27 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.js
-
-# testing
-/coverage
+.yarn/
 
 # next.js
-/.next/
-/out/
-/.swc
+.next/
+out/
+.swc/
 
-# production
-/build
+# build
+build/
+dist/
 
-# misc
-.DS_Store
-*.pem
+# testing
+coverage/
+playwright-report/
+test-results/
 
-# debug
-npm-debug.log*
-package-lock.json
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
+# env
 .env
+.env.local
+.env.*.local
 
 # vercel
 .vercel
@@ -37,4 +30,25 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.idea
+# os
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# secrets
+*.pem
+*.key
+*.p12
+
+# ide
+.idea/
+.vscode/
+*.iml
+
+# misc
+.amazonq/

@@ -1,4 +1,4 @@
-import getImgUrl from '../../../src/utils/getImgUrl'
+import getImgUrl from '../../../src/shared/utils/getImgUrl'
 import productImg from '../../../../public/coffee.png'
 import '@testing-library/jest-dom'
 

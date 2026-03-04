@@ -1,20 +1,27 @@
-import { IProduct } from '@/types/Products'
-import { getProduct } from '@/services/apiService'
-import ProductWithReviews from '@/components/Product/ProductWithReviews/ProductWithReviews'
-
+import { notFound } from 'next/navigation'
+import { IProduct } from '@/features/products/types'
+import { getProduct } from '@/features/products/api'
+import ProductWithReviews from '@/features/products/components/ProductWithReviews/ProductWithReviews'
 
 type ProductProps = {
-  params: {
+  params: Promise<{
     id: string
+  }>
+}
+
+async function getProductById(id: string): Promise<IProduct | null> {
+  try {
+    return await getProduct(id)
+  } catch {
+    return null
   }
 }
 
-async function getProductById(id: string): Promise<IProduct> {
-  return await getProduct(id)
-}
-
 export default async function Page({ params }: Readonly<ProductProps>) {
-  const product = await getProductById(params.id)
+  const { id } = await params
+  const product = await getProductById(id)
+
+  if (!product) notFound()
 
   return (
     <ProductWithReviews product={product} />

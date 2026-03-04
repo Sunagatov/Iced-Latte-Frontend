@@ -1,4 +1,4 @@
-import SyncFav from '@/components/Favourites/SyncFav/SyncFav'
+import SyncFav from '@/features/favorites/components/SyncFav/SyncFav'
 
 const FavPage = () => {
   return (

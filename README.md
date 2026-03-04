@@ -1,221 +1,224 @@
-<div style="text-align: center;">
+<div align="center">
   <br>
-  <img src="iced-latte-avatar.jpg" alt="">
-  <h1>Iced-Latte (Frontend)</h1>
+  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="500">
+  <h1>Iced Latte Frontend</h1>
+  <p><strong>A modern React/Next.js coffee marketplace frontend — built in the open, for engineers who want real experience.</strong></p>
+  <p>
+    <a href="https://iced-latte.uk/">🌐 Live Demo</a> ·
+    <a href="https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22">🟢 Good First Issues</a> ·
+    <a href="https://t.me/zufarexplained">💬 Community</a>
+  </p>
 
-[![ci Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/dev-branch-pr-deployment-pipeline.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)
-[![Total Lines of Code](https://tokei.rs/b1/github/Sunagatov/Iced-Latte-Frontend?category=lines)](https://github.com/Sunagatov/Iced-Latte-Frontend)
+  [![CI Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/dev-branch-pr-deployment-pipeline.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
+  [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/blob/main/LICENSE)
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/zufarexplainedit/Iced-Latte-Frontend.svg)](https://hub.docker.com/r/zufarexplainedit/Iced-Latte-Frontend/)
-[![GitHub contributors](https://img.shields.io/github/contributors/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/graphs/contributors)
-[![GitHub stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
+  [![GitHub Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
+  [![GitHub Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-Frontend?style=social)](https://github.com/Sunagatov/Iced-Latte-Frontend/network/members)
+  [![Contributors](https://img.shields.io/github/contributors/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/graphs/contributors)
+  [![Docker Pulls](https://img.shields.io/docker/pulls/zufarexplainedit/iced-latte-frontend.svg)](https://hub.docker.com/r/zufarexplainedit/iced-latte-frontend/)
 </div>
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Github-Stars](#Github-Stars)
-- [Iced-Latte (Frontend)](#iced-latte-frontend)
-  - [Table of Contents](#table-of-contents)
-  - [Tech Stack](#tech-stack)
-  - [Quick Start](#quick-start)
-  - [Features](#features)
-  - [API Documentation](#api-documentation)
-  - [Project structure](#project-structure)
-  - [Contributing](#contributing)
-  - [Code of Conduct](#code-of-conduct)
-  - [License](#license)
-  - [Contact](#contact)
-  - [Community and Support](#community-and-support)
+---
 
-## Introduction
+**📊 Key stats across all three repositories:**
 
-**🟥 Iced-Latte (Frontend)** is a non-profit sandbox project where a team of IT enthusiasts are working on creating a modern marketplace (https://iced-latte.uk/) for selling coffee in order to pump up their soft and hard skills and have fun working on an interesting project.
-Built using Next.js, it's crafted for educational purposes, offering insights into modern application development with Next.js.
+| Repository | ⭐ Stars | 🍴 Forks |
+|---|---|---|
+| [🔧 Backend](https://github.com/Sunagatov/Iced-Latte) | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte?style=flat) | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte?style=flat) |
+| [🎨 Frontend](https://github.com/Sunagatov/Iced-Latte-Frontend) | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend?style=flat) | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-Frontend?style=flat) |
+| [🧪 QA](https://github.com/Sunagatov/Iced-Latte-QA) | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-QA?style=flat) | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-QA?style=flat) |
 
-🟥 It's crucial to note that we operate without financial support from any party, and we don't compensate anyone financially either. Our efforts are fuelled solely by passion and dedication.
+> ⭐ If this project helps you learn or inspires you, please give it a star — it means a lot to the community!
 
-### 🔥 Github-Stars 🔥
+---
 
-Please support Iced Latte project by Giving Stars 🌟 on Github repositories - your ratings mean a lot to us!🙂
+## 🚀 Quick Start
 
-## Tech Stack
+**📋 Prerequisites:** Node.js 20+, Docker Desktop
 
-- **Core:** Next.js + Typescript.
-- **State manager:** Zustand.
-- **Css framework:** TailwindCSS.
-- **Testing:** Jest, React-Testing-Library.
+```bash
+# 1. 📥 Clone
+git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git && cd Iced-Latte-Frontend
 
-## Quick Start
+# 2. 📝 Copy the example env file
+cp .env.example .env.local
 
-Follow the setup instructions in [START.MD](START.md) to get the project up and running.
+# 3. 📦 Install dependencies
+npm ci
 
-## API Documentation
+# 4. ▶️ Run
+npm run dev
+```
 
-The API is fully documented with Swagger. Access the documentation at `http://localhost:8083/api/docs/swagger-ui` once the server is running.
+🌐 App runs at `http://localhost:3000`
 
-## Project structure
+> ⚠️ The backend must be running for products and login to work. See [START.md](START.md) Option A to start it with one Docker command.
 
-<pre>
-  <b>- public/</b>  <i>(static files)</i>
-  <b>- src/</b>  <i>(sources directory)</i>
-    <b>- app/</b>
-      <b>- _components/</b>  (components used by current page)
-      <b>- someRouteFolder/</b>  <i>(some rote page)</i>
-        <b>- _components/</b>  <i>(someRoute page components)</i>
-        <i>page.tsx</i>  <i>(someRoute page)</i>
-      <i>globals.css</i>  <i>(global styles)</i>
-      <i>layout.tsx</i>  <i>(root layout)</i>
-      <i>page.tsx</i>  <i>(main page)</i>
-    <b>- components</b>  <i>(shared components across application)</i>
-      <b>- ui</b>  <i>(shared ui components (buttons, etc.))</i>
-    <b>- constants</b>  <i>(temporary hardcoded values)</i>
-    <b>- data</b>  <i>(temporary mocked data)</i>
-    <b>- hooks</b>  <i>(custom hooks)</i>
-    <b>- models</b>  <i>(typescript types)</i>
-    <b>- services</b>
-    <b>- utils</b>  <i>(utility functions)</i>
-    <i>tailwind.config.ts</i>  <i>(tailwind custom classes)</i>
-</pre>
+**🔐 Test login:** `olivia@example.com` / `p@ss1logic11` (15 seed users, all share this password)
+
+> 💡 See [START.md](START.md) for Docker setup, E2E tests, and troubleshooting.
+
+**🧪 Run the tests:**
+```bash
+npm test
+```
+
+---
+
+## 📸 Preview
+
+<div align="center">
+  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="500">
+  <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
+</div>
+
+---
+
+## 🤔 What is this?
+
+Iced Latte is a non-profit sandbox project started in 2022 as a private pet project, then opened to the community to give junior engineers, students, and mentees practical experience in a real tech project with processes similar to those in actual tech teams. The first participants were students, Telegram channel subscribers, and mentees from ADPList and Women In Tech. The project has since grown and earned recognition from both the open-source community and the wider tech community.
+
+> ⭐ If this project helps you learn or inspires you, please give it a star — it means a lot to the community!
+
+---
+
+## 🏆 Recognition
+
+Iced Latte has earned recognition from the broader tech community.
+
+**🔥 GitHub Trending 🔥 — May 22, 2024**
+
+  - The backend repository reached GitHub's Trending page — listed among resources *"the GitHub community is most excited about today"* — gaining **85 stars in a single day** with 27 active contributors. ([link to the archive](https://archive.ph/DRsD8))
+
+**🥉 KaiCode 2024 Finalist 🥉** 
+
+  - Iced Latte made it to the finals of [KaiCode](https://www.kaicode.org/2024.html#jury) — an annual open-source festival launched by Huawei, which positions itself as an incubator of open-source technologies and rewards the most promising projects. Iced Latte was selected among **412 applications** and placed in the third group of 26 finalist repositories considered for the prize. Jury members are not allowed to assess their own projects, so the selection was fully independent.
+
+**🛠️JetBrains Open Source License 🛠**
+
+  - Iced Latte was recognized by [JetBrains](https://www.jetbrains.com/community/opensource/) — a leading software company specializing in intelligent development tools. As an active participant in the open-source community, JetBrains supports recognized global open-source projects by providing complimentary licenses for non-commercial development. JetBrains granted Iced Latte **8 free All Products Pack licenses** (February 2024, License Reference No. D379769990).
+
+**👨💻 Recommended by Eddie Jaoude 👨**
+
+  - Iced Latte was [recommended by Eddie Jaoude](https://www.linkedin.com/feed/update/urn:li:activity:7195685359710617602/) — one of the most influential open-source experts, a [GitHub Star](https://stars.github.com/) with 174K followers on X and 17.6K on LinkedIn — who called it a great example of a Java open-source project. Many Iced Latte contributors shared their positive experience in the comments.
+---
+
+## 🛠️ Tech Stack
+
+| 📂 Category | 🔧 Technology |
+|---|---|
+| 💻 Core | Next.js 15 + TypeScript 5 + React 19 |
+| 🗃️ State Manager | Zustand |
+| 🎨 CSS Framework | TailwindCSS 4 |
+| 📡 Data Fetching | Axios + SWR |
+| 📝 Forms | React Hook Form + Yup |
+| 🧪 Testing | Jest, React Testing Library, Playwright |
+| 🚢 Deployment | Docker, GitHub Actions, Vercel |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── 📁 app/                # Next.js App Router pages
+│   ├── 📁 api/            # API proxy route (avoids CORS)
+│   ├── 📁 cart/           # Cart page
+│   ├── 📁 checkout/       # Checkout page
+│   ├── 📁 favourites/     # Favourites page
+│   ├── 📁 orders/         # Orders page
+│   ├── 📁 product/        # Product detail page
+│   ├── 📁 profile/        # User profile page
+│   ├── 📁 signin/signup/  # Auth pages
+│   └── 📄 layout.tsx      # Root layout
+├── 📁 features/           # Feature-based modules
+│   ├── 📁 addresses/      # Delivery addresses
+│   ├── 📁 auth/           # Auth (login, register)
+│   ├── 📁 cart/           # Shopping cart
+│   ├── 📁 favorites/      # Favourites
+│   ├── 📁 products/       # Product catalog
+│   ├── 📁 reviews/        # Product reviews
+│   └── 📁 user/           # User profile
+└── 📁 shared/             # Cross-feature shared code
+    ├── 📁 api/            # Axios client
+    ├── 📁 components/     # Shared UI components
+    ├── 📁 providers/      # App-level providers
+    ├── 📁 types/          # Shared TypeScript types
+    └── 📁 utils/          # Utility functions
+```
+
+---
 
 ## 🚢 Deployment
 
-No k8s, no AWS, we ship dockers directly via ssh and it's beautiful!
+🚫 No Kubernetes, no cloud-managed services — the app ships as a Docker container directly via SSH.
 
-The entire production configuration is described in the [docker-compose.local.yml](docker-compose.local.yml) file.
+The full production setup is in the [backend docker-compose.yml](https://github.com/Sunagatov/Iced-Latte/blob/development/docker-compose.yml). On every merge to `master`, [GitHub Actions](.github/workflows/dev-branch-pr-deployment-pipeline.yml) builds, tests, and deploys to production automatically. Only maintainers can merge to `master`.
 
-Then, [Github Actions](.github/workflows/dev-branch-pr-deployment-pipeline.yml) have to take all the dirty work. They build, test and deploy changes to production on every merge to master (only official maintainers can do it).
+🔍 Explore the [`.github/`](.github/workflows/) folder for the full CI/CD pipeline.
 
-Explore the whole [.github](.github) folder for more insights.
+---
 
-We're open for proposals on how to improve our deployments without overcomplicating it with modern devops bullshit.
+## 🤝 Contributing
 
-## 🛤 Forking and tweaking
+🎉 Contributions are welcome. Here's how to get involved:
 
-Forks are welcome.
+| 🎯 Situation | 🚀 Action |
+|---|---|
+| 🐛 Found a bug | [Open an issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new) with the `bug` label |
+| 💡 Want a feature | Start a [Discussion](https://github.com/Sunagatov/Iced-Latte-Frontend/discussions) first |
+| 👨💻 Ready to code | Pick a [`good first issue`](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22), comment "I'm on it" |
+| 🔧 Big change | Comment on the issue before writing code — many tickets have hidden constraints |
 
-Three huge requests for everyone:
+---
 
-- Please share new features you implement with us, so other folks can also benefit from them, and your own codebase minimally diverges from the original one (so you can sync updates and security fixes) .
-- Do not use our issues and other official channels as a support desk. Use [chats](https://t.me/lucky_1uck).
+### 🏷️ Issue labels
 
-## 🙋‍♂️ How to report a bug?
+| 🏷️ Label | 📝 Meaning |
+|---|---|
+| 🟢 `good first issue` | Simple, well-scoped — great for first-timers |
+| 🔴 `bug` | Something is broken |
+| 🔵 `high priority` | Do this first |
+| 🟡 `enhancement` | Accepted improvement to an existing module |
+| 🟠 `new feature` | New functionality — discuss before starting |
+| ⚪ `idea` | Needs design discussion — don't implement yet |
 
-- 🆕 Open [a new issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new).
-- 🔦 Please, **use a search**, to check, if there is already existed issue!
-- Explain your idea or proposal in all the details:
-  - Make sure you clearly describe "observed" and "expected" behaviour. It will dramatically save time for our contributors and maintainers.
-  - **For minor fixes** please just open a PR.
+---
 
-## 💎 Now to propose a new feature?
+### 🐛 Bug reports
 
-- Go to our [Discussions](https://github.com/Iced-Latte-Frontend/discussions)
-- Check to see if someone else has already come up with the idea before
-- Create a new discussion
-- 🖼 If it's **UI/UX** related: attach a screenshot or wireframe
+- 🔍 Search existing issues before opening a new one
+- 📝 Clearly describe **observed** vs **expected** behaviour
+- 🚀 For minor fixes, just open a PR directly
 
-## 😍 Contributions
+---
 
-Contributions are welcome.
+### 🔄 Pull requests
 
-The main point of interaction is the [Issues page](https://github.com/Sunagatov/Iced-Latte-Frontend/issues).
+- 🎯 Keep PRs focused — one concern per PR
+- ✅ Make sure `npm run test` passes locally before pushing
+- 🔗 Reference the issue number in your PR description
 
-Here's our contribution guidelines — [CONTRIBUTING.md](CONTRIBUTING.md).
+---
 
-> The official development language at the moment is English, because 100% of our users speak it. We don't want to introduce unnecessary barriers for them. But we are used to writing commits and comments in Russian and we won't mind communicating with you in it.
+### 🍴 Forking
 
-### 😎 I want to write some code
+🤝 Forks are welcome. Please share useful features back via PR so the community benefits and your fork stays easy to sync.
 
-- Open our [Issues page](https://github.com/Sunagatov/Iced-Latte-Frontend/issues) to see the most important tickets at top.
-- Pick one issue you like and **leave a comment** inside that you're getting it.
+---
 
-**For big changes** open an issues first or (if it's already opened) leave a comment with brief explanation what and why you're going to change. Many tickets hang open not because they cannot be done, but because they cause many logical contradictions that you may not know. It's better to clarify them in comments before sending a PR.
+## 📄 License
 
-### 🚦Pay attention to issue labels!
+📜 [CC BY-NC 4.0](LICENSE) — free for educational and personal use with author attribution. Commercial use requires explicit written permission from the author ([zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)).
 
-#### 🟩 Ready to implement
+---
 
-- **good first issue** — good tickets **for first-timers**. Usually these are simple and not critical things that allow you to quickly feel the code and start contributing to it.
-- **bug** — if **something is not working**, it needs to be fixed, obviously.
-- **high priority** — the **first priority** tickets.
-- **enhancement** — accepted improvements for an existing module. Like adding a sort parameter to the feed. If improvement requires UI, **be sure to provide a sketch before you start.**
+## 📞 Contact
 
-#### 🟨 Discussion is needed
-
-- **new feature** — completely new features. Usually they're too hard for newbies, leave them **for experienced contributors.**
-- **idea** — **discussion is needed**. Those tickets look adequate, but waiting for real proposals how they will be done. Don't implement them right away.
-
-#### 🟥 Questionable
-
-- [¯\\\_(ツ)\_/¯](https://github.com/Sunagatov/Iced-Latte-Frontend/labels/%C2%AF%5C_%28%E3%83%84%29_%2F%C2%AF) - special label for **questionable issues**. (should be closed in 60 days of inactivity)
-- **[no label]** — ticket is new, unclear or still not reviewed. Feel free to comment it but **wait for our maintainers' decision** before starting to implement it.
-
-## 👍 Our top contributors
-
-Take some time to press F and give some respects to our [best contributors](https://github.com/Sunagatov/Iced-Latte-Frontend/graphs/contributors), who spent their own time to make the club better.
-
-#### 😎 Iced Latte project creator / Product owner / Tech Lead
-
-- [@Sunagatov](https://github.com/Sunagatov)
-
-#### 😇 Project manager
-
-- [@oonovikova](https://github.com/oonovikova)
-
-#### 🕵️‍♀️ QA engineers
-
-- [@TetianaPerinha](https://github.com/TetianaPerinha)
-- [@ilsinyakov](https://github.com/ilsinyakov)
-- [@Diana-Smolnikova](https://github.com/Diana-Smolnikova)
-
-#### ⚙️ Backend developers
-
-- [@annstriganova](https://github.com/annstriganova)
-- [@M437A](https://github.com/M437A)
-- [@Sunagatov](https://github.com/Sunagatov)
-- [@vitaliibredun](https://github.com/vitaliibredun)
-- [@plakhov](https://github.com/plakhov)
-- [@shpali4](https://github.com/shpali4)
-- [@yevr19](https://github.com/yevr19)
-- [@andrew13pol](https://github.com/andrew13pol)
-- [@nnick44](https://github.com/nnick44)
-
-#### 🖥️ Frontend developers
-
-- [@iakivpekarskyi](https://github.com/iakivpekarskyi)
-- [@anksuunamun](https://github.com/anksuunamun)
-- [@DmitriyUshkvarok](https://github.com/DmitriyUshkvarok)
-- [@Wdyffs](https://github.com/Wdyffs)
-- [@Gerasko-Vadim](https://github.com/Gerasko-Vadim)
-- [@FMajesty](https://github.com/Lightness322)
-- [@freecree](https://github.com/freecree)
-
-#### 🎨 UX/UI designers
-
-- [@vilena1me](https://github.com/vilena1me)
-- [@monsoonsiren](https://github.com/monsoonsiren)
-- [@ilyasgaifullin](https://github.com/ilyasgaifullin)
-
-#### 📊 Business and system analysts
-
-- [@nemeziss](https://github.com/nemeziss)
-- [@anastasiiaerokhina](https://github.com/anastasiiaerokhina)
-- [@Umk_aa](https://github.com/Umk_aa)
-- [@dianarudometova](https://github.com/dianarudometova)
-
-Let's press F to pay respects to these awesome contributors!
-
-## 👩‍💼 License
-
-[MIT](LICENSE)
-
-In other words, you can use the code for private and commercial purposes with an author attribution (by including the original license file or mentioning the Club 🎩).
-
-## 📞 Contact (Community and Support)
-
-Join our IT community [Zufar Explained IT](https://t.me/zufarexplained) on Telegram.
-
-Feel free to contact us via email: [zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com).
+- 💬 **Telegram community:** [Zufar Explained IT](https://t.me/zufarexplained)
+- 👤 **Personal Telegram:** [@lucky_1uck](https://web.telegram.org/k/#@lucky_1uck)
+- 📱 **WhatsApp:** [Message me](https://wa.me/447405503609)
+- 📧 **Email:** [zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)
+- 🐛 **Issues:** [GitHub Issues](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)
 
 ❤️

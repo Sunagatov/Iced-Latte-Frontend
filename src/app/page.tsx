@@ -1,35 +1,38 @@
-import Hero from '../components/Hero/Hero'
-import ProductList from '../components/Product/ProductList/ProductList'
-import { getProductBrands, getProductSellers } from '@/services/apiService'
+export const dynamic = 'force-dynamic'
 
-const getBrands = async () => {
+import { cache } from 'react'
+import Hero from '@/shared/components/Hero/Hero'
+import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
+import { getProductBrands, getProductSellers } from '@/features/products/api'
+
+const getBrands = cache(async () => {
   try {
     const response = await getProductBrands()
 
     return response.brands
-  } catch (e) {
-    console.error(e)
+  } catch {
+    return []
   }
-}
+})
 
-const getSellers = async () => {
+const getSellers = cache(async () => {
   try {
     const response = await getProductSellers()
 
     return response.sellers
-  } catch (e) {
-    console.error(e)
+  } catch {
+    return []
   }
-}
+})
 
 export default async function Home() {
-  const productBrands = (await getBrands()) ?? []
-  const productSellers = (await getSellers()) ?? []
+  const productBrands = await getBrands()
+  const productSellers = await getSellers()
 
   return (
     <>
       <Hero />
-      <ProductList brands={productBrands} sellers={productSellers} />
+      <ProductCatalog brands={productBrands} sellers={productSellers} />
     </>
   )
 }
