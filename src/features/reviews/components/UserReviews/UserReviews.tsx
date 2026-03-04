@@ -33,8 +33,10 @@ export default function UserReviews() {
           key={review.productReviewId}
           className="rounded-2xl border border-primary/60 bg-white p-5 shadow-sm"
         >
-          <div className="mb-3 text-xs font-medium text-secondary">
-            Product ID: <Link href={`/product/${review.productId}`} className="text-brand hover:underline">{review.productId}</Link>
+          <div className="mb-3">
+            <Link href={`/product/${review.productId}`} className="text-xs font-medium text-brand hover:underline">
+              View product →
+            </Link>
           </div>
           <Review isUserReview={false} review={review} />
         </li>
