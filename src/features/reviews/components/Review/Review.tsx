@@ -53,7 +53,7 @@ const Review: React.FC<Readonly<IReview>> = ({
           {review.userName?.[0]?.toUpperCase() ?? '?'}
         </div>
         <div>
-          <div className="text-base font-semibold text-primary">
+          <div className="max-w-48 truncate text-base font-semibold text-primary" title={`${review.userName} ${review.userLastName}`}>
             {review.userName} {review.userLastName}
           </div>
           <div className="flex items-center gap-1.5 text-sm text-tertiary">
