@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { UserData } from '@/features/user/types'
 
-interface AuthStore {
+export interface AuthStore {
   token: string | null
   refreshToken: string | null
   isLoggedIn: boolean

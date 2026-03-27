@@ -1,9 +1,11 @@
 'use client'
+
 import { useEffect } from 'react'
-import { useFavouritesStore } from '@/features/favorites/store'
-import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
 import { fetchCart } from '@/features/cart/api'
+import type { AuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/store'
+import { useFavouritesStore } from '@/features/favorites/store'
 import RouteTracker from './RouteTracker'
 import {
   getTokenFromBrowserCookie,
@@ -15,9 +17,9 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   const favouriteIdsCount = useFavouritesStore((state) => state.favouriteIds.length)
   const { syncBackendFav } = useFavouritesStore()
 
-  const resetAuth = useAuthStore((state) => state.reset)
-  const authenticate = useAuthStore((state) => state.authenticate)
-  const token = useAuthStore((state) => state.token)
+  const resetAuth = useAuthStore((state: AuthStore) => state.reset)
+  const authenticate = useAuthStore((state: AuthStore) => state.authenticate)
+  const token = useAuthStore((state: AuthStore) => state.token)
 
   const itemsCount = useCartStore((state) => state.itemsIds.length)
   const getCartItems = useCartStore((state) => state.getCartItems)
@@ -34,13 +36,14 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     if (isTokenExpired(cookieToken)) {
       removeTokenFromBrowserCookie()
       resetAuth()
+
       return
     }
 
     if (!token) {
       authenticate(cookieToken)
     }
-  }, [authenticate, token, resetAuth])
+  }, [authenticate, resetAuth, token])
 
   useEffect(() => {
     if (!token) {
@@ -62,6 +65,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
           await syncBackendFav()
         } else if (token) {
           const { getFavouriteProducts } = useFavouritesStore.getState()
+
           await getFavouriteProducts(token)
         }
       } catch (error: unknown) {

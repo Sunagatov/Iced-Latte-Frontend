@@ -10,14 +10,16 @@ export function getTokenFromBrowserCookie(name = 'token'): string | null {
   return decodeURIComponent(match.slice(name.length + 1))
 }
 
-export function removeTokenFromBrowserCookie(name = 'token') {
+export function removeTokenFromBrowserCookie(name = 'token'): void {
   if (typeof document === 'undefined') return
+
   document.cookie = `${name}=; Max-Age=0; path=/`
 }
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const payload = token.split('.')[1]
+
     if (!payload) return null
 
     const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
@@ -31,7 +33,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
         ? Buffer.from(padded, 'base64').toString('utf-8')
         : atob(padded)
 
-    return JSON.parse(decoded)
+    return JSON.parse(decoded) as Record<string, unknown>
   } catch {
     return null
   }

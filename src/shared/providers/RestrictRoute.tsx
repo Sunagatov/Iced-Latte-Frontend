@@ -9,6 +9,7 @@ const RestrictRoute = async ({ children }: { children: React.ReactNode }) => {
 
   if (isTokenExpired(token)) {
     await removeCookie('token')
+
     return <>{children}</>
   }
 
