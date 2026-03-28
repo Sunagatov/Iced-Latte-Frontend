@@ -32,36 +32,48 @@ const initialState: FavSliceState = {
   isSync: false,
 }
 
+const getUniqueFavouriteIds = (productIds: string[]): string[] => Array.from(new Set(productIds))
+
 export const useFavouritesStore = create<FavStoreState>()(
   persist(
     (set, get) => ({
       ...initialState,
       setLoading: (loading) => set({ loading }),
       addFavourite: async (id, token) => {
-        const updatedIds = [...get().favouriteIds, id]
+        const updatedIds = getUniqueFavouriteIds([...get().favouriteIds, id])
 
-        set({ favouriteIds: updatedIds })
+        set({ favouriteIds: updatedIds, count: updatedIds.length })
         if (token) {
           try {
             const reqItems: IFavPushItems = { productIds: updatedIds }
             const response = await mergeFavs(reqItems)
             const ids = response.products.map((p) => p.id)
 
-            set({ favourites: response.products, favouriteIds: ids })
+            set({ favourites: response.products, favouriteIds: ids, count: ids.length })
           } catch {
-            set((state) => ({ favouriteIds: state.favouriteIds.filter((fid) => fid !== id) }))
+            set((state) => {
+              const fallbackIds = state.favouriteIds.filter((fid) => fid !== id)
+
+              return { favouriteIds: fallbackIds, count: fallbackIds.length }
+            })
           }
         } else {
           const products = await getProductByIds(updatedIds)
 
-          set({ favourites: products })
+          set({ favourites: products, count: updatedIds.length })
         }
       },
       removeFavourite: async (id, token) => {
-        set((state) => ({
-          favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
-          favourites: state.favourites.filter((fav) => fav.id !== id),
-        }))
+        set((state) => {
+          const favouriteIds = state.favouriteIds.filter((favId) => favId !== id)
+          const favourites = state.favourites.filter((fav) => fav.id !== id)
+
+          return {
+            favouriteIds,
+            favourites,
+            count: favouriteIds.length,
+          }
+        })
         if (token) {
           try {
             await removeFavItem(id)
@@ -84,11 +96,11 @@ export const useFavouritesStore = create<FavStoreState>()(
       },
       syncBackendFav: async () => {
         const { favouriteIds } = get()
-        const reqItems: IFavPushItems = { productIds: favouriteIds }
+        const reqItems: IFavPushItems = { productIds: getUniqueFavouriteIds(favouriteIds) }
         const response = await mergeFavs(reqItems)
         const ids = response.products.map((p) => p.id)
 
-        set((state) => ({ ...state, favourites: response.products, favouriteIds: ids }))
+        set((state) => ({ ...state, favourites: response.products, favouriteIds: ids, count: ids.length }))
       },
       resetFav: () => set({ favourites: [], favouriteIds: [], count: 0, loading: false }),
     }),
