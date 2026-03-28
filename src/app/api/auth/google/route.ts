@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const ALLOWED_REDIRECT_ORIGINS = (process.env.ALLOWED_REDIRECT_ORIGINS ?? '').split(',').filter(Boolean)
+const ALLOWED_REDIRECT_ORIGINS = (process.env.ALLOWED_REDIRECT_ORIGINS ?? '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
 
 export async function GET(request: NextRequest) {
   const redirectUrl = request.nextUrl.searchParams.get('redirectUrl') ?? ''
