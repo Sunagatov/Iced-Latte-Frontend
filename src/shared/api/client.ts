@@ -4,12 +4,13 @@ import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
 import { useAuthStore } from '@/features/auth/store'
 
 const instance = axios.create({
-  headers: { 'Content-Type': 'application/json' },
   timeout: typeof window === 'undefined' ? 5000 : 15000,
 })
 
 instance.interceptors.request.use((config) => {
   const path = config.url!.replace(/^\//, '')
+  const isFormData =
+    typeof FormData !== 'undefined' && config.data instanceof FormData
 
   if (typeof window === 'undefined') {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL
@@ -26,6 +27,12 @@ instance.interceptors.request.use((config) => {
 
     config.headers['X-Session-ID'] = getSessionId()
     config.headers['X-Trace-ID'] = generateTraceId()
+  }
+
+  if (isFormData) {
+    delete config.headers['Content-Type']
+  } else if (config.data != null && !config.headers['Content-Type']) {
+    config.headers['Content-Type'] = 'application/json'
   }
 
   return config

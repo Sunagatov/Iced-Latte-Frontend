@@ -20,13 +20,11 @@ export const editUserProfile = async (updatedUserData: Partial<UserData>): Promi
   return response.data
 }
 
-export async function uploadImage(file: File): Promise<string> {
+export async function uploadImage(file: File): Promise<void> {
   const formData = new FormData()
 
   formData.append('file', file)
-  const response: AxiosResponse<string> = await api.post('/users/avatar', formData)
-
-  return response.data
+  await api.post('/users/avatar', formData)
 }
 
 export async function apiForgotPassword(email: ForgotPasswordCredentials): Promise<SuccessResponse> {
