@@ -5,6 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
 
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
+const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
@@ -19,10 +20,11 @@ function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> 
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer))
 }
 
-const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
-
 function forwardHeaders(request: NextRequest): HeadersInit {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  const headers: Record<string, string> = {}
+  const contentType = request.headers.get('Content-Type')
+
+  if (contentType) headers['Content-Type'] = contentType
 
   for (const name of FORWARDED_HEADERS) {
     const value = request.headers.get(name)
@@ -33,154 +35,86 @@ function forwardHeaders(request: NextRequest): HeadersInit {
   return headers
 }
 
+async function readBody(request: NextRequest): Promise<BodyInit | undefined> {
+  try {
+    const arrayBuffer = await request.arrayBuffer()
+
+    return arrayBuffer.byteLength > 0 ? arrayBuffer : undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function handleProxy(
+  request: NextRequest,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  path: string[],
+) {
+  const pathString = path.join('/')
+
+  if (method === 'POST' && pathString.includes('telemetry')) {
+    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
+  }
+
+  const safePath = sanitizePath(path)
+
+  if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
+
+  const url = new URL(request.url)
+  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
+  const body = method === 'GET' ? undefined : await readBody(request)
+
+  try {
+    const response = await fetchWithTimeout(apiUrl, {
+      method,
+      headers: forwardHeaders(request),
+      body,
+    })
+    const contentType = response.headers.get('content-type') ?? ''
+    const rawBody = await response.text()
+
+    const data = contentType.includes('application/json') && rawBody
+      ? JSON.parse(rawBody)
+      : rawBody
+
+    if (!response.ok) return createCorsResponse(data, response.status)
+
+    return createCorsResponse(data)
+  } catch {
+    return createCorsResponse({ error: 'API unavailable' }, 503)
+  }
+}
+
 export async function OPTIONS() {
   return handleOptions()
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  const safePath = sanitizePath(path)
 
-  if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
-  const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
-
-  try {
-    const response = await fetchWithTimeout(apiUrl, { headers: forwardHeaders(request) })
-    const contentType = response.headers.get('content-type') ?? ''
-    const data = contentType.includes('application/json')
-      ? await response.json()
-      : await response.text()
-
-    if (!response.ok) return createCorsResponse(data, response.status)
-
-    return createCorsResponse(data)
-  } catch {
-    return createCorsResponse({ error: 'API unavailable' }, 503)
-  }
+  return handleProxy(request, 'GET', path)
 }
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  const pathString = path.join('/')
-  
-  // Handle telemetry endpoints that don't exist in backend
-  if (pathString.includes('telemetry')) {
-    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
-  }
-  const safePath = sanitizePath(path)
 
-  if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
-  const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
-
-  let body: string | null = null
-
-  try {
-    const text = await request.text()
-
-    body = text || null
-  } catch { /* empty body */ }
-
-  try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method: 'POST',
-      headers: forwardHeaders(request),
-      body: body ?? undefined,
-    })
-    const contentType = response.headers.get('content-type') ?? ''
-    const data = contentType.includes('application/json')
-      ? await response.json()
-      : await response.text()
-
-    if (!response.ok) return createCorsResponse(data, response.status)
-
-    return createCorsResponse(data)
-  } catch {
-    return createCorsResponse({ error: 'API unavailable' }, 503)
-  }
+  return handleProxy(request, 'POST', path)
 }
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  const body = await request.text()
-  const apiUrl = `${API_BASE_URL}/${path.join('/')}`
 
-  try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method: 'PUT',
-      headers: forwardHeaders(request),
-      body,
-    })
-    const contentType = response.headers.get('content-type') ?? ''
-    const data = contentType.includes('application/json')
-      ? await response.json()
-      : await response.text()
-
-    if (!response.ok) return createCorsResponse(data, response.status)
-
-    return createCorsResponse(data)
-  } catch {
-    return createCorsResponse({ error: 'API unavailable' }, 503)
-  }
+  return handleProxy(request, 'PUT', path)
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  const body = await request.text()
-  const apiUrl = `${API_BASE_URL}/${path.join('/')}`
 
-  try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method: 'PATCH',
-      headers: forwardHeaders(request),
-      body,
-    })
-    const contentType = response.headers.get('content-type') ?? ''
-    const data = contentType.includes('application/json')
-      ? await response.json()
-      : await response.text()
-
-    if (!response.ok) return createCorsResponse(data, response.status)
-
-    return createCorsResponse(data)
-  } catch {
-    return createCorsResponse({ error: 'API unavailable' }, 503)
-  }
+  return handleProxy(request, 'PATCH', path)
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params
-  const apiUrl = `${API_BASE_URL}/${path.join('/')}`
 
-  let body: string | undefined
-
-  try {
-    const text = await request.text()
-
-    if (text) body = text
-  } catch { /* no body */ }
-
-  try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method: 'DELETE',
-      headers: forwardHeaders(request),
-      body,
-    })
-
-    if (!response.ok) {
-      const contentType = response.headers.get('content-type') ?? ''
-      const data = contentType.includes('application/json')
-        ? await response.json()
-        : await response.text()
-
-      return createCorsResponse(data, response.status)
-    }
-    const text = await response.text()
-    const data = text ? JSON.parse(text) : {}
-
-    return createCorsResponse(data)
-  } catch {
-    return createCorsResponse({ error: 'API unavailable' }, 503)
-  }
+  return handleProxy(request, 'DELETE', path)
 }
