@@ -9,7 +9,12 @@ export default function ResetPassForm() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   const [hydrated, setHydrated] = useState(false)
 
-  useEffect(() => { setHydrated(true) }, [])
+  useEffect(() => {
+    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+    // If already hydrated by the time this effect runs, set immediately
+    if (useAuthStore.persist.hasHydrated()) setHydrated(true)
+    return unsub
+  }, [])
 
   if (!hydrated) return null
 

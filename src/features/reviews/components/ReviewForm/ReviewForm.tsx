@@ -59,11 +59,17 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
   }
 
   const handleClickReview = () => {
-    if (token) {
-      setShowForm(true)
-    } else {
+    if (!token) {
+      // If store hasn't hydrated yet, check persist directly
+      const storeToken = useAuthStore.getState().token
+      if (storeToken) {
+        setShowForm(true)
+        return
+      }
       router.push('/signin')
+      return
     }
+    setShowForm(true)
   }
 
   if (!showForm) {
