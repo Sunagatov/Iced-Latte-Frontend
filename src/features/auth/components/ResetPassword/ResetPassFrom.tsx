@@ -5,7 +5,7 @@ import GuestResetPassForm from './GuestResetPassForm'
 import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
 
-type PersistStore = { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
+interface PersistStore { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
 
 export default function ResetPassForm() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
