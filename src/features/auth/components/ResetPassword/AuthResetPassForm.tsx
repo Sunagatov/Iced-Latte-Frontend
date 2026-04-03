@@ -106,9 +106,9 @@ export default function AuthResetPassForm() {
                 </div>
 
                 <Button
+                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
                   id="reset-confirm-btn"
                   type="submit"
-                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
                 >
                   {loading ? <Loader /> : 'Change password'}
                 </Button>

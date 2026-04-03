@@ -5,32 +5,25 @@ import GuestResetPassForm from './GuestResetPassForm'
 import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
 
-interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (cb: () => void) => () => void } }
-const authPersist = (useAuthStore as unknown as PersistApi).persist
+type PersistStore = { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
 
 export default function ResetPassForm() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    if (authPersist.hasHydrated()) {
+    const persist = (useAuthStore as unknown as PersistStore).persist
+
+    if (persist.hasHydrated()) {
       setHydrated(true)
 
       return
     }
 
-    const unsub = authPersist.onFinishHydration(() => setHydrated(true))
-
-    return unsub
+    return persist.onFinishHydration(() => { setHydrated(true) })
   }, [])
 
-  const hydratedState = typeof window === 'undefined' ? false : (authPersist.hasHydrated() || hydrated)
+  if (!hydrated) return null
 
-  if (!hydratedState) return null
-
-  return (
-    <>
-      {isLoggedIn ? <AuthResetPassForm /> : <GuestResetPassForm />}
-    </>
-  )
+  return isLoggedIn ? <AuthResetPassForm /> : <GuestResetPassForm />
 }
