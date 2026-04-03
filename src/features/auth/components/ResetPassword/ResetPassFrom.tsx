@@ -7,9 +7,12 @@ import { useEffect, useState } from 'react'
 
 export default function ResetPassForm() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
-  const [hydrated, setHydrated] = useState(false)
+  const [hydrated, setHydrated] = useState(() => useAuthStore.persist.hasHydrated())
 
-  useEffect(() => { setHydrated(true) }, [])
+  useEffect(() => {
+    if (hydrated) return
+    return useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+  }, [hydrated])
 
   if (!hydrated) return null
 
