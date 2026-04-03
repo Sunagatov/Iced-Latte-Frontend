@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useProductRatingStore } from '@/features/reviews/store'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiAddProductReview } from '@/features/reviews/api'
-import { useAuthStore, AuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/store'
 import { useRouter } from 'next/navigation'
 import { RiEditLine } from 'react-icons/ri'
 import { Review } from '@/features/reviews/types'
@@ -61,7 +61,7 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
   const handleClickReview = () => {
     if (!token) {
       // If store hasn't hydrated yet, check persist directly
-      const storeToken = (useAuthStore as unknown as { getState: () => AuthStore }).getState().token
+      const storeToken = useAuthStore.getState().token
       if (storeToken) {
         setShowForm(true)
         return

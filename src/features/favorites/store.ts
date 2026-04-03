@@ -32,7 +32,7 @@ const initialState: FavSliceState = {
   isSync: false,
 }
 
-const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set, get) => ({
+const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
   ...initialState,
   setLoading: (loading) => set({ loading }),
   addFavourite: async (id, token) => {

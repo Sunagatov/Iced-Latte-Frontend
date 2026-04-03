@@ -11,10 +11,11 @@ import { AuthChangePasswordCredentials } from '@/features/auth/types'
 import { apiAuthChangePassword } from '@/features/user/api'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { authChangePassSchema } from '@/features/auth/validation'
-interface IChangeAuthValues { oldPassword: string; newPassword: string }
 import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
+
+interface IChangeAuthValues { oldPassword: string; newPassword: string }
 
 export default function AuthResetPassForm() {
   const [loading, setLoading] = useState(false)
@@ -106,8 +107,8 @@ export default function AuthResetPassForm() {
 
                 <Button
                   id="reset-confirm-btn"
-                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
                   type="submit"
+                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
                 >
                   {loading ? <Loader /> : 'Change password'}
                 </Button>

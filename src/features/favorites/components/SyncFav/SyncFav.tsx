@@ -1,25 +1,20 @@
 'use client'
 import FavouritesEmpty from '../FavouritesEmpty/FavouritesEmpty'
 import FavouritesFull from '../FavouritesFull/FavouritesFull'
-import { useFavouritesStore, FavStoreState } from '@/features/favorites/store'
-import { AuthStore, useAuthStore } from '@/features/auth/store'
+import { useFavouritesStore } from '@/features/favorites/store'
+import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
 
-interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
-
-type TypedFavStore = { <T>(selector: (s: FavStoreState) => T): T }
-type TypedAuthStore = { <T>(selector: (s: AuthStore) => T): T }
+interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (cb: () => void) => () => void } }
 
 const authPersist = (useAuthStore as unknown as PersistApi).persist
 const favPersist = (useFavouritesStore as unknown as PersistApi).persist
-const selectFav = useFavouritesStore as unknown as TypedFavStore
-const selectAuth = useAuthStore as unknown as TypedAuthStore
 
 export default function SyncFav() {
-  const favourites = selectFav((s) => s.favourites)
-  const favouriteIds = selectFav((s) => s.favouriteIds)
-  const getFavouriteProducts = selectFav((s) => s.getFavouriteProducts)
-  const token = selectAuth((s) => s.token)
+  const favourites = useFavouritesStore((s) => s.favourites)
+  const favouriteIds = useFavouritesStore((s) => s.favouriteIds)
+  const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
+  const token = useAuthStore((s) => s.token)
   const [hydrated, setHydrated] = useState(false)
   const [fetched, setFetched] = useState(false)
 

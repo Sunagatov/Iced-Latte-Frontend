@@ -5,7 +5,8 @@ import { useAuthStore } from '@/features/auth/store'
 import Link from 'next/link'
 
 export default function CartFull() {
-  const { tempItems, totalPrice, removeFullProduct, remove, add, clearCart } = useCartStore()
+  const { tempItems, totalPrice, removeFullProduct, remove, add } = useCartStore()
+  const clearCart = useCartStore((s) => s.clearCart)
   const { token } = useAuthStore()
   const checkoutHref = token ? '/checkout' : '/signin'
   const itemCount = tempItems.length

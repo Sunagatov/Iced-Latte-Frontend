@@ -8,10 +8,11 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
-interface IForgotValues { email: string }
 import { apiForgotPassword } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { forgotPassSchema } from '@/features/auth/validation'
+
+interface IForgotValues { email: string }
 
 export default function ForgotPassForm() {
   const [loading, setLoading] = useState(false)

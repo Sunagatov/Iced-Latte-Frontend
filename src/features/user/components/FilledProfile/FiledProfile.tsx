@@ -34,13 +34,15 @@ const FiledProfile = () => {
   const [isEditing, setIsEditing] = useState(false)
   const { setUserData, userData, isLoggedIn } = useAuthStore()
 
-  const [hydrated, setHydrated] = useState(false)
+  const [, forceUpdate] = useState(0)
 
   useEffect(() => {
-    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
-    if (useAuthStore.persist.hasHydrated()) setHydrated(true)
+    if ((useAuthStore as any).persist?.hasHydrated()) return
+    const unsub = (useAuthStore as any).persist?.onFinishHydration(() => forceUpdate((n: number) => n + 1))
     return unsub
   }, [])
+
+  const hydrated = typeof window === 'undefined' ? false : ((useAuthStore as any).persist?.hasHydrated() ?? true)
   useEffect(() => {
     if (hydrated && !isLoggedIn) router.replace('/signin')
   }, [hydrated, isLoggedIn, router])

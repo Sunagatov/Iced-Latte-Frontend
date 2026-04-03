@@ -7,7 +7,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
-interface IChangeValues { code: string; password: string; confirmPassword: string }
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiGuestResetPassword } from '@/features/user/api'
 import { useForm } from 'react-hook-form'
@@ -15,6 +14,8 @@ import { GuestResetPasswordCredentials } from '@/features/auth/types'
 import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
+
+interface IChangeValues { code: string; password: string; confirmPassword: string }
 
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
