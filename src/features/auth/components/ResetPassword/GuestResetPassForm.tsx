@@ -12,7 +12,6 @@ import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiGuestResetPassword } from '@/features/user/api'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { GuestResetPasswordCredentials } from '@/features/auth/types'
-import { useLocalSessionStore } from '@/features/user/store'
 import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
@@ -20,10 +19,8 @@ import PasswordStrengthBar from './PasswordStrengthBar'
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const [newPw, setNewPw] = useState('')
+  const [resetSuccessful, setResetSuccessful] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
-  const setStoredEmailSent = useLocalSessionStore((s) => s.setStoredEmailSent)
-  const resetSuccessful = useLocalSessionStore((s) => s.resetSuccessful)
-  const setResetSuccessful = useLocalSessionStore((s) => s.setResetSuccessful)
 
   const { handleSubmit, register, formState: { errors } } = useForm<IChangeValues>({
     resolver: yupResolver(changePassSchema),
@@ -33,9 +30,8 @@ export default function GuestResetPassForm() {
   const router = useRouter()
 
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
-    const storedEmail = localStorage.getItem('emailForReset') ?? ''
     const { code, password } = values
-    const data: GuestResetPasswordCredentials = { code, email: storedEmail, password }
+    const data: GuestResetPasswordCredentials = { code, password }
 
     try {
       setLoading(true)
@@ -45,14 +41,11 @@ export default function GuestResetPassForm() {
       handleError(error)
     } finally {
       setLoading(false)
-      localStorage.removeItem('emailForReset')
     }
   }
 
   const handleReturnHome = () => {
-    router.push('/')
-    setResetSuccessful(false)
-    setStoredEmailSent(false)
+    router.push('/signin')
   }
 
   const strength = getPasswordStrength(newPw)
@@ -69,7 +62,7 @@ export default function GuestResetPassForm() {
             <h2 className="mb-2 text-2xl font-bold text-primary">Password updated!</h2>
             <p className="mb-6 text-sm text-secondary">Your password has been changed successfully. You can now sign in with your new password.</p>
             <Button id="return-btn" onClick={handleReturnHome} className="w-full justify-center">
-              Back to home
+              Sign in
             </Button>
           </div>
         ) : (

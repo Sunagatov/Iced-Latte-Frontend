@@ -6,10 +6,6 @@ interface SessionStore {
   previousRouteForAuth: string | null
   routingRelatedAuthCompleted: boolean
   expandedComments: Record<string, boolean>
-  storedEmailSent: boolean
-  resetSuccessful: boolean
-  setResetSuccessful: (resetSuccessful: boolean) => void
-  setStoredEmailSent: (storedEmailSent: boolean) => void
   setSelectedRating: (rating: number | null) => void
   addPreviousRouteForAuth: (route: string) => void
   setRoutingRelatedAuthCompleted: (completed: boolean) => void
@@ -23,10 +19,6 @@ export const useLocalSessionStore = create<SessionStore>()(
       previousRouteForAuth: null,
       routingRelatedAuthCompleted: false,
       expandedComments: {},
-      storedEmailSent: false,
-      resetSuccessful: false,
-      setResetSuccessful: (resetSuccessful) => set({ resetSuccessful }),
-      setStoredEmailSent: (storedEmailSent) => set({ storedEmailSent }),
       setSelectedRating: (rating) => set({ selectedRating: rating }),
       addPreviousRouteForAuth: (route) => {
         set((state) => {

@@ -43,24 +43,26 @@ export const useFavouritesStore = create<FavStoreState>()(
         set({ favouriteIds: updatedIds })
         if (token) {
           try {
-            const reqItems: IFavPushItems = { productIds: updatedIds }
+            const reqItems: IFavPushItems = { productIds: [id] }
             const response = await mergeFavs(reqItems)
             const ids = response.products.map((p) => p.id)
 
-            set({ favourites: response.products, favouriteIds: ids })
+            set({ favourites: response.products, favouriteIds: ids, count: ids.length })
           } catch {
             set((state) => ({ favouriteIds: state.favouriteIds.filter((fid) => fid !== id) }))
           }
         } else {
           const products = await getProductByIds(updatedIds)
+          const safeProducts = Array.isArray(products) ? products : []
 
-          set({ favourites: products })
+          set({ favourites: safeProducts, count: updatedIds.length })
         }
       },
       removeFavourite: async (id, token) => {
         set((state) => ({
           favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
           favourites: state.favourites.filter((fav) => fav.id !== id),
+          count: Math.max(0, state.count - 1),
         }))
         if (token) {
           try {
@@ -88,7 +90,7 @@ export const useFavouritesStore = create<FavStoreState>()(
         const response = await mergeFavs(reqItems)
         const ids = response.products.map((p) => p.id)
 
-        set((state) => ({ ...state, favourites: response.products, favouriteIds: ids }))
+        set((state) => ({ ...state, favourites: response.products, favouriteIds: ids, count: ids.length }))
       },
       resetFav: () => set({ favourites: [], favouriteIds: [], count: 0, loading: false }),
     }),

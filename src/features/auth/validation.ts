@@ -49,8 +49,8 @@ export const registrationSchema = yup.object().shape({
 export const changePassSchema = yup.object().shape({
   code: yup
     .string()
-    .required('Code is a required field')
-    .matches(/^\d{9}$/, 'Invalid format. Please use this format #########. Enter exactly 9 digits without any separators.'),
+    .required('Code is required')
+    .matches(/^\d{9}$/, 'Code must be exactly 9 digits'),
   password: yup
     .string()
     .required('Password is a required field')
@@ -91,13 +91,13 @@ export const authChangePassSchema = yup.object().shape({
 export const forgotPassSchema = yup.object().shape({
   email: yup
     .string()
-    .email('Invalid email')
-    .test('email-format', 'Invalid email format', (value) => {
+    .required('Email is required')
+    .email('Enter a valid email address')
+    .test('email-format', 'Enter a valid email address', (value) => {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
       return emailRegex.test(value ?? '')
-    })
-    .required(),
+    }),
 })
 
 export const confirmPasswordSchema = yup.object().shape({

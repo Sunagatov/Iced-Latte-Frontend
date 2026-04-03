@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import Loader from '@/shared/components/Loader/Loader'
 
 export default function Cart() {
+  const tempItems = useCartStore((state) => state.tempItems)
   const count = useCartStore((state) => state.count)
   const [hydrated, setHydrated] = useState(false)
 
@@ -17,5 +18,5 @@ export default function Cart() {
     </div>
   )
 
-  return <>{count ? <CartFull /> : <CartEmpty />}</>
+  return <>{(tempItems.length > 0 || count > 0) ? <CartFull /> : <CartEmpty />}</>
 }

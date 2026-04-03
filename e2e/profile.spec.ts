@@ -15,12 +15,15 @@ async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } =
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
   await page.goto('http://localhost:3000')
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
+  await page.evaluate((t) => localStorage.setItem(
+    'token',
+    JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true, userData }, version: 0 }),
+  ), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   await page.goto('/profile')
   // Navigate to Personal details section
   await page.getByRole('button', { name: 'Personal details' }).first().click()
-  await page.waitForTimeout(300)
+  await page.waitForSelector('#edit-btn', { timeout: 8000 })
 }
 
 async function openEditForm(page: Page) {

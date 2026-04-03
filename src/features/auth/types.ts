@@ -43,14 +43,6 @@ export interface AuthChangePasswordCredentials {
 
 export interface GuestResetPasswordCredentials {
   code: string
-  email: string
   password: string
 }
-
-export interface ConfirmPasswordCredentials {
-  token: {
-    token: string
-  }
-}
-
 

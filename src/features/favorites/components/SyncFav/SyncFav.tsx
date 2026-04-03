@@ -6,18 +6,38 @@ import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
 
 export default function SyncFav() {
-  const { favourites, favouriteIds, getFavouriteProducts } = useFavouritesStore()
+  const favourites = useFavouritesStore((s) => s.favourites)
+  const favouriteIds = useFavouritesStore((s) => s.favouriteIds)
+  const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
   const { token } = useAuthStore()
   const [hydrated, setHydrated] = useState(false)
   const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
-    // Wait for Zustand persist hydration before reading token
-    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+    // Wait for both auth and fav stores to finish hydrating before reading token/favouriteIds.
+    // If only authStore is awaited, fav-storage may not be ready yet and getFavouriteProducts
+    // fires with token=null (guest path), missing the real persisted favouriteIds entirely.
+    let authDone = useAuthStore.persist.hasHydrated()
+    let favDone = useFavouritesStore.persist.hasHydrated()
 
-    if (useAuthStore.persist.hasHydrated()) setHydrated(true)
+    if (authDone && favDone) {
+      setHydrated(true)
+      return
+    }
 
-    return unsub
+    const unsubAuth = useAuthStore.persist.onFinishHydration(() => {
+      authDone = true
+      if (favDone) setHydrated(true)
+    })
+    const unsubFav = useFavouritesStore.persist.onFinishHydration(() => {
+      favDone = true
+      if (authDone) setHydrated(true)
+    })
+
+    return () => {
+      unsubAuth()
+      unsubFav()
+    }
   }, [])
 
   useEffect(() => {
