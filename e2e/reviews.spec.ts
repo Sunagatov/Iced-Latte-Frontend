@@ -57,7 +57,6 @@ test('logged-in user sees review form after clicking "Write a review"', async ({
   await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
   const ok = await gotoProductPage(page)
   if (!ok) return
   await page.locator('#add-review-btn').click()
@@ -69,7 +68,6 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
   await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
   const ok = await gotoProductPage(page)
   if (!ok) return
   await page.locator('#add-review-btn').click()
@@ -84,7 +82,6 @@ test('cancel button hides form and resets fields', async ({ page }) => {
   await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
   const ok = await gotoProductPage(page)
   if (!ok) return
   await page.locator('#add-review-btn').click()
@@ -100,7 +97,6 @@ test('character counter updates as user types', async ({ page }) => {
   await page.goto('/')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
   const ok = await gotoProductPage(page)
   if (!ok) return
   await page.locator('#add-review-btn').click()

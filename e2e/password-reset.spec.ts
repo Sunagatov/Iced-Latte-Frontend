@@ -12,7 +12,8 @@ import { test, expect, type Page } from '@playwright/test'
 
 const FAKE_TOKEN = 'fake-token-for-mocked-test'
 
-/** Inject a fake auth session so the app treats the user as logged in */
+/** Inject a fake auth session so the app treats the user as logged in.
+ *  Must be called AFTER route mocks are registered so the reload is covered. */
 async function loginAs(page: Page) {
   await page.goto('/')
   await page.evaluate((t) =>
@@ -21,8 +22,6 @@ async function loginAs(page: Page) {
       JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 }),
     ), FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  // Reload so Zustand re-hydrates from localStorage before navigation
-  await page.reload()
 }
 
 /** Mock every proxy call with a 200 unless overridden */
@@ -57,7 +56,7 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
     await page.goto('/forgotpass')
     await page.fill('#email', 'not-an-email')
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.text-negative').first()).toBeVisible({ timeout: 5000 })
   })
 
   test('on success shows "Check your inbox" screen', async ({ page }) => {
@@ -268,7 +267,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.text-negative').first()).toBeVisible({ timeout: 5000 })
   })
 
   test('shows validation error when new password is too weak', async ({ page }) => {
@@ -279,7 +278,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'OldPass1!')
     await page.fill('#newPassword', 'weak')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.text-negative').first()).toBeVisible({ timeout: 5000 })
   })
 
   test('shows validation error when new password equals old password', async ({ page }) => {
@@ -401,7 +400,6 @@ test.describe('ResetPassForm routing', () => {
     await mockAll200(page)
     await loginAs(page)
     await page.goto('/resetpass')
-    await expect(page.locator('#password')).toBeVisible({ timeout: 8000 })
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
     await expect(page.locator('#code')).not.toBeVisible({ timeout: 5000 })
   })

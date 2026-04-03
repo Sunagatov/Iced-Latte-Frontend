@@ -15,10 +15,10 @@ async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } =
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
   await page.goto('http://localhost:3000')
-  await page.evaluate((t) => localStorage.setItem(
+  await page.evaluate(([t, u]) => localStorage.setItem(
     'token',
-    JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true, userData }, version: 0 }),
-  ), FAKE_TOKEN)
+    JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true, userData: u }, version: 0 }),
+  ), [FAKE_TOKEN, userData] as [string, typeof userData])
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   await page.goto('/profile')
   // Navigate to Personal details section
