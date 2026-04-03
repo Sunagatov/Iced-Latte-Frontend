@@ -5,19 +5,32 @@ import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
 
+interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
+
 export default function SyncFav() {
-  const { favourites, favouriteIds, getFavouriteProducts } = useFavouritesStore()
-  const { token } = useAuthStore()
+  const favourites = useFavouritesStore((s) => s.favourites)
+  const favouriteIds = useFavouritesStore((s) => s.favouriteIds)
+  const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
+  const token = useAuthStore((s) => s.token)
   const [hydrated, setHydrated] = useState(false)
   const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
-    // Wait for Zustand persist hydration before reading token
-    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+    const authPersist = (useAuthStore as unknown as PersistApi).persist
+    const favPersist = (useFavouritesStore as unknown as PersistApi).persist
+    let authDone = authPersist.hasHydrated()
+    let favDone = favPersist.hasHydrated()
 
-    if (useAuthStore.persist.hasHydrated()) setHydrated(true)
+    if (authDone && favDone) {
+      setHydrated(true)
 
-    return unsub
+      return
+    }
+
+    const unsubAuth = authPersist.onFinishHydration(() => { authDone = true; if (favDone) setHydrated(true) })
+    const unsubFav = favPersist.onFinishHydration(() => { favDone = true; if (authDone) setHydrated(true) })
+
+    return () => { unsubAuth(); unsubFav() }
   }, [])
 
   useEffect(() => {
@@ -41,4 +54,3 @@ export default function SyncFav() {
     {favourites && favourites.length > 0 || favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
   </>
 }
-

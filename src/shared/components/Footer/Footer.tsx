@@ -1,6 +1,9 @@
 import Link from 'next/link'
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear()
+  const copyrightYears = currentYear === 2024 ? '2024' : `2024-${currentYear}`
+
   return (
     <footer className="bg-[#0a0a0a] text-white">
       <div className="mx-auto max-w-[1384px] px-6 py-16 sm:px-20">
@@ -67,7 +70,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-6 sm:flex-row sm:items-center" suppressHydrationWarning>
-          <span className="text-xs text-white/30">© 2024 Iced Latte. MIT License.</span>
+          <span className="text-xs text-white/30">© {copyrightYears} Iced Latte. MIT License.</span>
           <span className="text-xs text-white/20">Built with ❤️ by open-source contributors</span>
         </div>
       </div>

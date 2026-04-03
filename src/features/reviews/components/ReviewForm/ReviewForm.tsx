@@ -53,7 +53,9 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
       handleError(error)
     } finally {
       setLoading(false)
+
       setRating(productId, 0)
+
       setReviewText('')
     }
   }

@@ -14,6 +14,9 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/e2e/'],
   moduleDirectories: ['node_modules', '<rootDir>/'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
   testEnvironment: 'jest-environment-jsdom',
   reporters: ['default',  ['jest-sonar', { outputName: 'jest-sonar-coverage-report.xml'}]],
   preset: 'ts-jest',

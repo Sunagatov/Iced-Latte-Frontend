@@ -26,6 +26,8 @@ import {
   RiNotification3Line,
 } from 'react-icons/ri'
 
+interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
+
 type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications' | 'reviews'
 
 const FiledProfile = () => {
@@ -36,10 +38,22 @@ const FiledProfile = () => {
 
   const [hydrated, setHydrated] = useState(false)
 
-  useEffect(() => { setHydrated(true) }, [])
+  useEffect(() => {
+    const persist = (useAuthStore as unknown as PersistApi).persist
+
+    if (persist.hasHydrated()) {
+      setHydrated(true)
+
+      return
+    }
+
+    return persist.onFinishHydration(() => { setHydrated(true) })
+  }, [])
+
   useEffect(() => {
     if (hydrated && !isLoggedIn) router.replace('/signin')
   }, [hydrated, isLoggedIn, router])
+
   const { isLoading, logout } = useLogout()
   const favCount = useFavouritesStore((s) => s.count)
   const [orderCount, setOrderCount] = useState<number | null>(null)

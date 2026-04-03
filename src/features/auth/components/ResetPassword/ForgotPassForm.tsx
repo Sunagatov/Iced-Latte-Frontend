@@ -8,23 +8,21 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
-interface IForgotValues { email: string }
 import { apiForgotPassword } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { forgotPassSchema } from '@/features/auth/validation'
-import { useLocalSessionStore } from '@/features/user/store'
+
+interface IForgotValues { email: string }
 
 export default function ForgotPassForm() {
   const [loading, setLoading] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
-  const setStoredEmailSent = useLocalSessionStore((state) => state.setStoredEmailSent)
-  const storedEmailSent = useLocalSessionStore((state) => state.storedEmailSent)
 
   const {
     handleSubmit,
     register,
-    getValues,
     reset,
     formState: { errors },
   } = useForm<IForgotValues>({
@@ -32,14 +30,13 @@ export default function ForgotPassForm() {
     defaultValues: { email: '' },
   })
 
-  const onSubmit = async () => {
-    const { email } = getValues() as { email: string }
+  const onSubmit = async (data: IForgotValues): Promise<void> => {
+    const { email } = data
 
     try {
       setLoading(true)
       await apiForgotPassword({ email })
-      localStorage.setItem('emailForReset', email)
-      setStoredEmailSent(true)
+      setEmailSent(true)
       reset()
     } catch (error) {
       handleError(error)
@@ -48,12 +45,7 @@ export default function ForgotPassForm() {
     }
   }
 
-  const handleChangeClick = () => {
-    router.push('/resetpass')
-    setStoredEmailSent(false)
-  }
-
-  if (storedEmailSent) {
+  if (emailSent) {
     return (
       <div className="flex min-h-[calc(100vh-7rem-7rem)] items-center justify-center px-6">
         <div className="w-full max-w-[420px] rounded-2xl border border-[#E2E8F0] bg-white p-10 text-center shadow-sm">
@@ -71,7 +63,7 @@ export default function ForgotPassForm() {
           <Button
             id="reset-continue-btn"
             className="mt-8 flex w-full items-center justify-center hover:bg-brand-solid-hover"
-            onClick={handleChangeClick}
+            onClick={() => { router.push('/resetpass') }}
           >
             Continue to reset password
           </Button>
@@ -105,7 +97,7 @@ export default function ForgotPassForm() {
           No worries — enter your email and we&apos;ll send you reset instructions.
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+        <form className="mt-8" noValidate onSubmit={handleSubmit(onSubmit)}>
           {errorMessage && (
             <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{errorMessage}</div>
           )}

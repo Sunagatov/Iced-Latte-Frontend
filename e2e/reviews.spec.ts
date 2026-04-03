@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
 
 async function mockReviewCalls(page: Page) {
@@ -54,22 +54,24 @@ test('"Write a review" button redirects guest to /signin', async ({ page }) => {
 
 test('logged-in user sees review form after clicking "Write a review"', async ({ page }) => {
   await mockReviewCalls(page)
-  await page.goto('/')
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
+  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
+  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
 })
 
 test('submit button disabled until rating + text both filled', async ({ page }) => {
   await mockReviewCalls(page)
-  await page.goto('/')
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
+  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
+  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await expect(page.locator('#submit-review-btn')).toBeDisabled()
@@ -79,11 +81,12 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
 
 test('cancel button hides form and resets fields', async ({ page }) => {
   await mockReviewCalls(page)
-  await page.goto('/')
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
+  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
+  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Some text')
@@ -94,11 +97,12 @@ test('cancel button hides form and resets fields', async ({ page }) => {
 
 test('character counter updates as user types', async ({ page }) => {
   await mockReviewCalls(page)
-  await page.goto('/')
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
+  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
+  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Hello')

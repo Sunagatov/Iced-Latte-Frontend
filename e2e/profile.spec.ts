@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const userData = { id: 'u1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', phoneNumber: '+1234567890', birthDate: null, address: { country: 'GB', city: 'London', line: '123 Main St', postcode: 'SW1A 1AA' } }
 
 async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } = {}) {
@@ -11,16 +11,24 @@ async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } =
       await route.fulfill({ status: saveStatus, contentType: 'application/json', body: JSON.stringify(saveStatus === 200 ? userData : { message: 'error' }) })
     else if (url.includes('/users'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(userData) })
+    else if (url.includes('/orders'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' })
     else
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
   await page.goto('http://localhost:3000')
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
+  await page.evaluate(([t, u]) => {
+    localStorage.setItem(
+      'token',
+      JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true, userData: u }, version: 0 }),
+    )
+  }, [FAKE_TOKEN, userData] as [string, typeof userData])
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
   await page.goto('/profile')
   // Navigate to Personal details section
   await page.getByRole('button', { name: 'Personal details' }).first().click()
-  await page.waitForTimeout(300)
+  await page.waitForSelector('#edit-btn', { timeout: 8000 })
 }
 
 async function openEditForm(page: Page) {

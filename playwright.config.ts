@@ -11,7 +11,7 @@ export default defineConfig({
   },
   reporter: [['list'], ['html', { open: 'never' }]],
   webServer: {
-    command: 'npm run dev',
+    command: 'PORT=3000 npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

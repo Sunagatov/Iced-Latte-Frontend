@@ -5,7 +5,8 @@ import { useAuthStore } from '@/features/auth/store'
 import Link from 'next/link'
 
 export default function CartFull() {
-  const { tempItems, totalPrice, removeFullProduct, remove, add, resetCart } = useCartStore()
+  const { tempItems, totalPrice, removeFullProduct, remove, add } = useCartStore()
+  const clearCart = useCartStore((s) => s.clearCart)
   const { token } = useAuthStore()
   const checkoutHref = token ? '/checkout' : '/signin'
   const itemCount = tempItems.length
@@ -33,7 +34,7 @@ export default function CartFull() {
             />
           ))}
           <button
-            onClick={resetCart}
+            onClick={() => { clearCart().catch(() => { /* best-effort */ }) }}
             className="mt-1 self-start text-sm text-secondary underline-offset-2 transition-colors hover:text-negative hover:underline"
           >
             Clear all

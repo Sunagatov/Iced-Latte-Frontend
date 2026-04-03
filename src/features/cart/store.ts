@@ -20,6 +20,7 @@ interface CartSliceActions {
   syncBackendCart: (token: string) => Promise<void>
   removeFullProduct: (id: string) => void
   resetCart: () => void
+  clearCart: () => Promise<void>
   setTempItems: (items: ICartItem[]) => void
   createCart: (reqItems: ICartPushItems) => Promise<void>
   updateCartItem: (updatedItem: ICartUpdatedItem) => Promise<void>
@@ -61,7 +62,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
             ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
             : tempItem,
         )
-        : tempItems
+        : tempItems  // new product: tempItems has no entry yet — getCartItems() will hydrate it
 
       set((state) => ({
         ...state,
@@ -70,6 +71,11 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         count,
         totalPrice: getTotalPrice(updatedTempItems),
       }))
+      // If this is a brand-new product in the guest cart, fetch full product data so
+      // tempItems stays in sync with itemsIds and the cart page renders it immediately.
+      if (!cartItem) {
+        get().getCartItems().catch(() => {})
+      }
     }
   },
   getCartItems: async () => {
@@ -160,6 +166,19 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     }
   },
   resetCart: () => set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false } as CartSliceState),
+  clearCart: async () => {
+    const { tempItems, isSync } = get()
+    const token = useAuthStore?.getState?.()?.token ?? null
+
+    // Only delete from backend when synced — tempItems.id is a real cart slot UUID only after sync.
+    // For guest carts (isSync=false), tempItems.id is the product ID, not the cart item slot ID.
+    if (token && isSync && tempItems.length > 0) {
+      const ids = tempItems.map((item) => item.id)
+
+      await removeCartItem(ids)
+    }
+    set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: token ? true : false } as CartSliceState)
+  },
   setTempItems: (items) => set((state) => ({
     ...state,
     itemsIds: items.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })),
