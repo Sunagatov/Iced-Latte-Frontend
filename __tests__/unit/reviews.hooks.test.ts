@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useReviews } from '@/features/reviews/hooks'
+import type { Review } from '@/features/reviews/types'
 import * as SWRInfinite from 'swr/infinite'
 
 jest.mock('swr/infinite')
@@ -14,10 +15,10 @@ const defaultSWRReturn = {
   mutate: mockMutate,
 }
 
-const sortOption = { label: 'Newest', value: { sortAttribute: 'createdAt', sortDirection: 'DESC' } }
+const sortOption = { isDefault: true, label: 'Newest', value: { sortAttribute: 'createdAt', sortDirection: 'desc' as const } }
 
-function makeReview(id: string) {
-  return { productReviewId: id, text: 'ok', rating: 5, createdAt: '', authorName: '', likesCount: 0, dislikesCount: 0, userReaction: null }
+function makeReview(id: string): Review {
+  return { productReviewId: id, productId: 'p1', productRating: 5, text: 'ok', createdAt: '', userName: 'User', userLastName: 'Last', likesCount: 0, dislikesCount: 0 }
 }
 
 beforeEach(() => {

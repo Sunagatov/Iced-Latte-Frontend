@@ -23,16 +23,16 @@ describe('user api', () => {
   })
 
   it('apiForgotPassword posts to /auth/password/forgot', async () => {
-    ;(mockedApi.post as jest.Mock).mockResolvedValue({ data: { message: 'ok' } })
+    ;(mockedApi.post as jest.Mock).mockResolvedValue({ data: { token: 'tok', refreshToken: 'ref' } })
     const result = await userApi.apiForgotPassword({ email: 'a@b.com' })
     expect(mockedApi.post).toHaveBeenCalledWith('/auth/password/forgot', { email: 'a@b.com' })
-    expect(result.message).toBe('ok')
+    expect(result.token).toBe('tok')
   })
 
   it('apiGuestResetPassword posts to /auth/password/change', async () => {
-    ;(mockedApi.post as jest.Mock).mockResolvedValue({ data: { message: 'ok' } })
-    await userApi.apiGuestResetPassword({ token: 't', newPassword: 'p' })
-    expect(mockedApi.post).toHaveBeenCalledWith('/auth/password/change', { token: 't', newPassword: 'p' })
+    ;(mockedApi.post as jest.Mock).mockResolvedValue({ data: { token: 'tok', refreshToken: 'ref' } })
+    await userApi.apiGuestResetPassword({ code: 'abc', password: 'newpass' })
+    expect(mockedApi.post).toHaveBeenCalledWith('/auth/password/change', { code: 'abc', password: 'newpass' })
   })
 
   it('apiAuthChangePassword patches /users', async () => {

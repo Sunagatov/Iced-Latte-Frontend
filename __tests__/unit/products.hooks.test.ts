@@ -15,7 +15,7 @@ const defaultSWRReturn = {
   setSize: mockSetSize,
 }
 
-const sortOption = { label: 'Default', value: { sortAttribute: 'name', sortDirection: 'ASC' } }
+const sortOption = { isDefault: true, label: 'Default', value: { sortAttribute: 'name', sortDirection: 'asc' as const } }
 
 function makeProduct(id: string) {
   return { id, name: 'p', description: '', price: 10, quantity: 1, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }
