@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const userData = { id: 'u1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', phoneNumber: '+1234567890', birthDate: null, address: { country: 'GB', city: 'London', line: '123 Main St', postcode: 'SW1A 1AA' } }
 
 async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } = {}) {

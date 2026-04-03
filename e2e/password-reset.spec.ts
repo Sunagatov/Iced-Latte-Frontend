@@ -10,7 +10,7 @@ import { test, expect, type Page } from '@playwright/test'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 
 /** Inject a fake auth session so the app treats the user as logged in.
  *  Must be called AFTER route mocks are registered so the reload is covered. */

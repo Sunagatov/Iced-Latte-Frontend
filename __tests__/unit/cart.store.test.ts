@@ -1,0 +1,154 @@
+import { useCartStore } from '@/features/cart/store'
+import { ICartItem } from '@/features/cart/types'
+
+jest.mock('src/features/cart/api', () => ({
+  mergeCarts: jest.fn(),
+  removeCartItem: jest.fn(),
+  changeCartItemQuantity: jest.fn(),
+}))
+jest.mock('src/features/products/api', () => ({
+  getProductByIds: jest.fn(),
+}))
+jest.mock('src/features/auth/store', () => ({
+  useAuthStore: { getState: jest.fn(() => ({ token: null })) },
+}))
+
+const { mergeCarts, removeCartItem, changeCartItemQuantity } = require('src/features/cart/api')
+const { getProductByIds } = require('src/features/products/api')
+const { useAuthStore } = require('src/features/auth/store')
+
+function makeProduct(id: string, price = 10) {
+  return { id, name: 'p', price, productQuantity: 0, averageRating: 0, reviewsCount: 0, imageUrls: [] }
+}
+
+function makeCartItem(id: string, qty = 1): ICartItem {
+  return { id: `slot-${id}`, productInfo: makeProduct(id), productQuantity: qty }
+}
+
+beforeEach(() => {
+  useCartStore.setState({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false })
+  jest.clearAllMocks()
+  useAuthStore.getState.mockReturnValue({ token: null })
+})
+
+describe('cart store — guest add/remove', () => {
+  it('add increases count for new item', async () => {
+    getProductByIds.mockResolvedValue([makeProduct('p1')])
+    useCartStore.getState().add('p1')
+    await Promise.resolve()
+    expect(useCartStore.getState().count).toBe(1)
+  })
+
+  it('add increments quantity for existing item', () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 1 }],
+      tempItems: [makeCartItem('p1', 1)],
+      count: 1,
+      totalPrice: 10,
+      isSync: false,
+    })
+    useCartStore.getState().add('p1')
+    expect(useCartStore.getState().count).toBe(2)
+  })
+
+  it('remove decrements quantity', () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 2 }],
+      tempItems: [makeCartItem('p1', 2)],
+      count: 2,
+      totalPrice: 20,
+      isSync: false,
+    })
+    useCartStore.getState().remove('p1')
+    expect(useCartStore.getState().count).toBe(1)
+  })
+
+  it('remove eliminates item when quantity reaches 0', () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 1 }],
+      tempItems: [makeCartItem('p1', 1)],
+      count: 1,
+      totalPrice: 10,
+      isSync: false,
+    })
+    useCartStore.getState().remove('p1')
+    expect(useCartStore.getState().count).toBe(0)
+    expect(useCartStore.getState().itemsIds).toHaveLength(0)
+  })
+})
+
+describe('cart store — resetCart / setTempItems', () => {
+  it('resetCart clears all state', () => {
+    useCartStore.setState({ itemsIds: [{ productId: 'p1', productQuantity: 1 }], count: 1, totalPrice: 10, isSync: true, tempItems: [] })
+    useCartStore.getState().resetCart()
+    const s = useCartStore.getState()
+    expect(s.count).toBe(0)
+    expect(s.isSync).toBe(false)
+  })
+
+  it('setTempItems syncs state from items array', () => {
+    const items = [makeCartItem('p1', 3)]
+    useCartStore.getState().setTempItems(items)
+    const s = useCartStore.getState()
+    expect(s.count).toBe(3)
+    expect(s.totalPrice).toBe(30)
+    expect(s.isSync).toBe(true)
+  })
+})
+
+describe('cart store — createCart', () => {
+  it('updates state from merged cart response', async () => {
+    mergeCarts.mockResolvedValue({
+      itemsTotalPrice: 20,
+      productsQuantity: 2,
+      items: [makeCartItem('p1', 2)],
+    })
+    await useCartStore.getState().createCart({ items: [{ productId: 'p1', productQuantity: 2 }] })
+    expect(useCartStore.getState().totalPrice).toBe(20)
+    expect(useCartStore.getState().isSync).toBe(true)
+  })
+})
+
+describe('cart store — updateCartItem', () => {
+  it('updates state from response', async () => {
+    changeCartItemQuantity.mockResolvedValue({
+      itemsTotalPrice: 10,
+      productsQuantity: 1,
+      items: [makeCartItem('p1', 1)],
+    })
+    await useCartStore.getState().updateCartItem({ shoppingCartItemId: 'slot-p1', productQuantityChange: 1 })
+    expect(useCartStore.getState().totalPrice).toBe(10)
+  })
+})
+
+describe('cart store — clearCart (guest)', () => {
+  it('clears state without calling removeCartItem', async () => {
+    useCartStore.setState({ itemsIds: [{ productId: 'p1', productQuantity: 1 }], tempItems: [makeCartItem('p1')], count: 1, totalPrice: 10, isSync: false })
+    await useCartStore.getState().clearCart()
+    expect(removeCartItem).not.toHaveBeenCalled()
+    expect(useCartStore.getState().count).toBe(0)
+  })
+})
+
+describe('cart store — removeFullProduct (guest)', () => {
+  it('removes item from guest cart', () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 1 }],
+      tempItems: [makeCartItem('p1', 1)],
+      count: 1,
+      totalPrice: 10,
+      isSync: false,
+    })
+    useCartStore.getState().removeFullProduct('p1')
+    expect(useCartStore.getState().itemsIds).toHaveLength(0)
+  })
+})
+
+describe('cart store — getCartItems', () => {
+  it('hydrates tempItems from product API', async () => {
+    useCartStore.setState({ itemsIds: [{ productId: 'p1', productQuantity: 2 }], tempItems: [], count: 2, totalPrice: 0, isSync: false })
+    getProductByIds.mockResolvedValue([makeProduct('p1', 15)])
+    await useCartStore.getState().getCartItems()
+    expect(useCartStore.getState().totalPrice).toBe(30)
+  })
+})

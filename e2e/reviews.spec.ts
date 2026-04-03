@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
 
 async function mockReviewCalls(page: Page) {
