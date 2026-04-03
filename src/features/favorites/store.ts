@@ -32,11 +32,13 @@ const initialState: FavSliceState = {
   isSync: false,
 }
 
+const uniqueIds = (ids: string[]): string[] => Array.from(new Set(ids))
+
 const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
   ...initialState,
   setLoading: (loading) => set({ loading }),
   addFavourite: async (id, token) => {
-    const updatedIds = [...get().favouriteIds, id]
+    const updatedIds = uniqueIds([...get().favouriteIds, id])
 
     set({ favouriteIds: updatedIds })
     if (token) {
@@ -84,7 +86,7 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
   },
   syncBackendFav: async () => {
     const { favouriteIds } = get()
-    const reqItems: IFavPushItems = { productIds: favouriteIds }
+    const reqItems: IFavPushItems = { productIds: uniqueIds(favouriteIds) }
     const response = await mergeFavs(reqItems)
     const ids = response.products.map((p) => p.id)
 

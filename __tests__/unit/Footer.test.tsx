@@ -11,7 +11,8 @@ describe('Footer', () => {
 
   it('renders copyright with current year', () => {
     render(<Footer />)
-    const year = new Date().getFullYear()
-    expect(screen.getByText(new RegExp(String(year)))).toBeInTheDocument()
+    const year = String(new Date().getFullYear())
+    const matches = screen.getAllByText((_, node) => !!node?.textContent?.includes(year))
+    expect(matches.length).toBeGreaterThan(0)
   })
 })
