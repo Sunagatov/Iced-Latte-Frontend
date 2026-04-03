@@ -1,7 +1,7 @@
-import { useAddressStore } from '@/features/addresses/store'
-import * as api from '@/features/addresses/api'
+import { useAddressStore } from 'src/features/addresses/store'
+import * as api from 'src/features/addresses/api'
 
-jest.mock('@/features/addresses/api', () => ({
+jest.mock('src/features/addresses/api', () => ({
   getAddresses: jest.fn(),
   createAddress: jest.fn(),
   updateAddress: jest.fn(),

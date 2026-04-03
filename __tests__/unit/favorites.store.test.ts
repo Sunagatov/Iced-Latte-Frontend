@@ -1,13 +1,13 @@
-import { useFavouritesStore } from '@/features/favorites/store'
-import * as favsApi from '@/features/favorites/api'
-import * as productsApi from '@/features/products/api'
+import { useFavouritesStore } from 'src/features/favorites/store'
+import * as favsApi from 'src/features/favorites/api'
+import * as productsApi from 'src/features/products/api'
 
-jest.mock('@/features/favorites/api', () => ({
+jest.mock('src/features/favorites/api', () => ({
   mergeFavs: jest.fn(),
   removeFavItem: jest.fn(),
   getFavByIds: jest.fn(),
 }))
-jest.mock('@/features/products/api', () => ({
+jest.mock('src/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
 
