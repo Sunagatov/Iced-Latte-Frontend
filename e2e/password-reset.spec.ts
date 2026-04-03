@@ -23,6 +23,7 @@ async function loginAs(page: Page) {
     )
   }, FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
 }
 
 /** Mock every proxy call with a 200 unless overridden */

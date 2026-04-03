@@ -24,6 +24,7 @@ async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } =
     )
   }, [FAKE_TOKEN, userData] as [string, typeof userData])
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page.reload()
   await page.goto('/profile')
   // Navigate to Personal details section
   await page.getByRole('button', { name: 'Personal details' }).first().click()
