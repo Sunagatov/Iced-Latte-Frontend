@@ -20,7 +20,7 @@ describe('google auth route — disallowed origin', () => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       GET = require('../../../src/app/api/auth/google/route').GET
     })
-    const res = await GET!(makeRequest('https://evil.com'))
+    const res = await GET?.(makeRequest('https://evil.com'))
     expect(res.status).toBe(400)
   })
 })

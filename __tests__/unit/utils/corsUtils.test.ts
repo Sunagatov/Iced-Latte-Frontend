@@ -11,7 +11,7 @@ describe('corsUtils', () => {
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
   })
 
-  it('createCorsResponse uses provided status', async () => {
+  it('createCorsResponse uses provided status', () => {
     const res = createCorsResponse({ error: 'bad' }, 400)
     expect(res.status).toBe(400)
   })
