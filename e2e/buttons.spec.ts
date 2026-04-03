@@ -52,6 +52,7 @@ async function loginAndGoto(page: Page, route: string) {
     FAKE_TOKEN,
   )
   await page.goto(route)
+  await page.waitForLoadState('networkidle')
 }
 
 // ─── LOGGED-IN: product catalog (home page) ───────────────────────────────────
@@ -110,6 +111,7 @@ test.describe('Guest: product card buttons on home page', () => {
   test('heart button toggles favourite state', async ({ page }) => {
     await mockWithCart(page, 0)
     await page.goto('/')
+    await page.waitForLoadState('networkidle')
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     const heart = page.locator('[data-testid="favourite-btn"]').first()
     const before = await heart.getAttribute('data-active')
@@ -201,6 +203,7 @@ test.describe('Logout clears cart and favourites state', () => {
       localStorage.removeItem('fav-storage')
     })
     await page.goto('/')
+    await page.waitForLoadState('networkidle')
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     await expect(page.locator('[data-testid="add-to-cart-circle-btn"]').first()).toBeVisible({ timeout: 5000 })
   })

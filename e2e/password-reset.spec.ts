@@ -24,6 +24,7 @@ async function loginAs(page: Page) {
   }, FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   await page.reload()
+  await page.waitForLoadState('networkidle')
 }
 
 /** Mock every proxy call with a 200 unless overridden */
@@ -295,6 +296,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   })
 
   test('on success shows "Password updated!" and "Go to profile" button', async ({ page }) => {
+    await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
@@ -312,6 +314,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   })
 
   test('"Go to profile" button navigates to /profile', async ({ page }) => {
+    await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
@@ -330,6 +333,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   })
 
   test('wrong current password shows "Current password is incorrect."', async ({ page }) => {
+    await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Current password is incorrect.' }) })
@@ -349,6 +353,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
 
   test('sends correct payload to PATCH /users', async ({ page }) => {
     let capturedBody: Record<string, string> = {}
+    await mockAll200(page)
     await page.route('**/api/proxy/users', async (route) => {
       if (route.request().method() === 'PATCH') {
         capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<string, string>
@@ -369,6 +374,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   })
 
   test('page refresh after success resets to form (local state, not persisted)', async ({ page }) => {
+    await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
