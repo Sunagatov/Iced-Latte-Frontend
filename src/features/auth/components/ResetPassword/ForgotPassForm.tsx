@@ -96,7 +96,7 @@ export default function ForgotPassForm() {
           No worries — enter your email and we&apos;ll send you reset instructions.
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8" noValidate>
           {errorMessage && (
             <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{errorMessage}</div>
           )}

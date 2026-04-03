@@ -59,6 +59,9 @@ test('logged-in user sees review form after clicking "Write a review"', async ({
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.waitForFunction(() => {
+    try { return JSON.parse(localStorage.getItem('token') ?? '{}')?.state?.isLoggedIn === true } catch { return false }
+  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
 })
@@ -70,6 +73,9 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.waitForFunction(() => {
+    try { return JSON.parse(localStorage.getItem('token') ?? '{}')?.state?.isLoggedIn === true } catch { return false }
+  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await expect(page.locator('#submit-review-btn')).toBeDisabled()
@@ -84,6 +90,9 @@ test('cancel button hides form and resets fields', async ({ page }) => {
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.waitForFunction(() => {
+    try { return JSON.parse(localStorage.getItem('token') ?? '{}')?.state?.isLoggedIn === true } catch { return false }
+  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Some text')
@@ -99,6 +108,9 @@ test('character counter updates as user types', async ({ page }) => {
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
   const ok = await gotoProductPage(page)
   if (!ok) return
+  await page.waitForFunction(() => {
+    try { return JSON.parse(localStorage.getItem('token') ?? '{}')?.state?.isLoggedIn === true } catch { return false }
+  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Hello')

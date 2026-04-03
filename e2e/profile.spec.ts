@@ -11,6 +11,8 @@ async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } =
       await route.fulfill({ status: saveStatus, contentType: 'application/json', body: JSON.stringify(saveStatus === 200 ? userData : { message: 'error' }) })
     else if (url.includes('/users'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(userData) })
+    else if (url.includes('/orders'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' })
     else
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
