@@ -13,7 +13,7 @@ const { mergeFavs, removeFavItem, getFavByIds } = require('src/features/favorite
 const { getProductByIds } = require('src/features/products/api')
 
 function makeProduct(id: string) {
-  return { id, name: 'p', price: 10, productQuantity: 0, averageRating: 0, reviewsCount: 0, imageUrls: [] }
+  return { id, name: 'p', description: '', price: 10, quantity: 0, active: true, productFileUrl: null, productQuantity: 0, averageRating: 0, reviewsCount: 0, brandName: '', sellerName: '', productImageUrls: [] }
 }
 
 beforeEach(() => {

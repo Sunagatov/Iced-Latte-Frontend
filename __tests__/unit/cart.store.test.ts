@@ -1,21 +1,24 @@
 import { useCartStore } from '@/features/cart/store'
+import { useAuthStore } from '@/features/auth/store'
+import * as cartApi from '@/features/cart/api'
+import * as productsApi from '@/features/products/api'
 import { ICartItem } from '@/features/cart/types'
 
-jest.mock('src/features/cart/api', () => ({
+jest.mock('@/features/cart/api', () => ({
   mergeCarts: jest.fn(),
   removeCartItem: jest.fn(),
   changeCartItemQuantity: jest.fn(),
 }))
-jest.mock('src/features/products/api', () => ({
+jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
-jest.mock('src/features/auth/store', () => ({
+jest.mock('@/features/auth/store', () => ({
   useAuthStore: { getState: jest.fn(() => ({ token: null })) },
 }))
 
-const { mergeCarts, removeCartItem, changeCartItemQuantity } = require('src/features/cart/api')
-const { getProductByIds } = require('src/features/products/api')
-const { useAuthStore } = require('src/features/auth/store')
+const mockedCartApi = jest.mocked(cartApi)
+const mockedProductsApi = jest.mocked(productsApi)
+const mockedAuthStore = jest.mocked(useAuthStore) as { getState: jest.Mock }
 
 function makeProduct(id: string, price = 10) {
   return { id, name: 'p', price, productQuantity: 0, averageRating: 0, reviewsCount: 0, imageUrls: [] }
@@ -28,12 +31,12 @@ function makeCartItem(id: string, qty = 1): ICartItem {
 beforeEach(() => {
   useCartStore.setState({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false })
   jest.clearAllMocks()
-  useAuthStore.getState.mockReturnValue({ token: null })
+  mockedAuthStore.getState.mockReturnValue({ token: null })
 })
 
 describe('cart store — guest add/remove', () => {
   it('add increases count for new item', async () => {
-    getProductByIds.mockResolvedValue([makeProduct('p1')])
+    mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p1')])
     useCartStore.getState().add('p1')
     await Promise.resolve()
     expect(useCartStore.getState().count).toBe(1)
@@ -98,7 +101,7 @@ describe('cart store — resetCart / setTempItems', () => {
 
 describe('cart store — createCart', () => {
   it('updates state from merged cart response', async () => {
-    mergeCarts.mockResolvedValue({
+    mockedCartApi.mergeCarts.mockResolvedValue({
       itemsTotalPrice: 20,
       productsQuantity: 2,
       items: [makeCartItem('p1', 2)],
@@ -111,7 +114,7 @@ describe('cart store — createCart', () => {
 
 describe('cart store — updateCartItem', () => {
   it('updates state from response', async () => {
-    changeCartItemQuantity.mockResolvedValue({
+    mockedCartApi.changeCartItemQuantity.mockResolvedValue({
       itemsTotalPrice: 10,
       productsQuantity: 1,
       items: [makeCartItem('p1', 1)],
@@ -125,7 +128,7 @@ describe('cart store — clearCart (guest)', () => {
   it('clears state without calling removeCartItem', async () => {
     useCartStore.setState({ itemsIds: [{ productId: 'p1', productQuantity: 1 }], tempItems: [makeCartItem('p1')], count: 1, totalPrice: 10, isSync: false })
     await useCartStore.getState().clearCart()
-    expect(removeCartItem).not.toHaveBeenCalled()
+    expect(mockedCartApi.removeCartItem).not.toHaveBeenCalled()
     expect(useCartStore.getState().count).toBe(0)
   })
 })
@@ -147,7 +150,7 @@ describe('cart store — removeFullProduct (guest)', () => {
 describe('cart store — getCartItems', () => {
   it('hydrates tempItems from product API', async () => {
     useCartStore.setState({ itemsIds: [{ productId: 'p1', productQuantity: 2 }], tempItems: [], count: 2, totalPrice: 0, isSync: false })
-    getProductByIds.mockResolvedValue([makeProduct('p1', 15)])
+    mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p1', 15)])
     await useCartStore.getState().getCartItems()
     expect(useCartStore.getState().totalPrice).toBe(30)
   })
