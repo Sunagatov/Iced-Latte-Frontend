@@ -13,8 +13,14 @@ export default function ResetPassForm() {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    if (authPersist.hasHydrated()) { setHydrated(true); return }
+    if (authPersist.hasHydrated()) {
+      setHydrated(true)
+
+      return
+    }
+
     const unsub = authPersist.onFinishHydration(() => setHydrated(true))
+
     return unsub
   }, [])
 

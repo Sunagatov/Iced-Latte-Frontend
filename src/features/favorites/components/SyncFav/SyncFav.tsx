@@ -24,6 +24,7 @@ export default function SyncFav() {
 
     if (authDone && favDone) {
       setHydrated(true)
+
       return
     }
 

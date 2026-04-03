@@ -26,6 +26,10 @@ import {
   RiNotification3Line,
 } from 'react-icons/ri'
 
+interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (cb: () => void) => () => void } }
+
+const authPersist = (useAuthStore as unknown as PersistApi).persist
+
 type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications' | 'reviews'
 
 const FiledProfile = () => {
@@ -34,18 +38,25 @@ const FiledProfile = () => {
   const [isEditing, setIsEditing] = useState(false)
   const { setUserData, userData, isLoggedIn } = useAuthStore()
 
-  const [, forceUpdate] = useState(0)
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    if ((useAuthStore as any).persist?.hasHydrated()) return
-    const unsub = (useAuthStore as any).persist?.onFinishHydration(() => forceUpdate((n: number) => n + 1))
+    if (authPersist.hasHydrated()) {
+      setHydrated(true)
+
+      return
+    }
+
+    const unsub = authPersist.onFinishHydration(() => setHydrated(true))
+
     return unsub
   }, [])
 
-  const hydrated = typeof window === 'undefined' ? false : ((useAuthStore as any).persist?.hasHydrated() ?? true)
+  const isHydrated = typeof window === 'undefined' ? false : (authPersist.hasHydrated() || hydrated)
+
   useEffect(() => {
-    if (hydrated && !isLoggedIn) router.replace('/signin')
-  }, [hydrated, isLoggedIn, router])
+    if (isHydrated && !isLoggedIn) router.replace('/signin')
+  }, [isHydrated, isLoggedIn, router])
   const { isLoading, logout } = useLogout()
   const favCount = useFavouritesStore((s) => s.count)
   const [orderCount, setOrderCount] = useState<number | null>(null)

@@ -16,8 +16,11 @@ import {
 /** Constant-time string comparison to prevent timing attacks. */
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false
+
   let result = 0
+
   for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+
   return result === 0
 }
 
@@ -26,7 +29,9 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   const { syncBackendFav } = useFavouritesStore()
 
   const resetAuth = useAuthStore((state: AuthStore) => state.reset)
+
   const authenticate = useAuthStore((state: AuthStore) => state.authenticate)
+
   const token = useAuthStore((state: AuthStore) => state.token)
 
   const itemsCount = useCartStore((state) => state.itemsIds.length)
@@ -131,7 +136,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     void fetchData()
-  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth])
 
   return <RouteTracker>{children}</RouteTracker>
 }

@@ -62,11 +62,15 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
     if (!token) {
       // If store hasn't hydrated yet, check persist directly
       const storeToken = useAuthStore.getState().token
+
       if (storeToken) {
         setShowForm(true)
+
         return
       }
+
       router.push('/signin')
+
       return
     }
     setShowForm(true)
