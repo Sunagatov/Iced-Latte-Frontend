@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 interface IChangeValues { code: string; password: string; confirmPassword: string }
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiGuestResetPassword } from '@/features/user/api'
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { GuestResetPasswordCredentials } from '@/features/auth/types'
 import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
@@ -29,7 +29,7 @@ export default function GuestResetPassForm() {
   })
   const router = useRouter()
 
-  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
+  const onSubmit = async (values: IChangeValues) => {
     const { code, password } = values
     const data: GuestResetPasswordCredentials = { code, password }
 

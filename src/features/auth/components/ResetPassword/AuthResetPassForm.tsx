@@ -56,7 +56,7 @@ export default function AuthResetPassForm() {
             </div>
             <h2 className="mb-2 text-2xl font-bold text-primary">Password updated!</h2>
             <p className="mb-6 text-sm text-secondary">Your password has been changed successfully.</p>
-            <Button id="reset-pass-btn" onClick={() => router.push('/profile')} className="w-full justify-center">
+            <Button className="w-full justify-center" id="reset-pass-btn" onClick={() => { router.push('/profile') }}>
               Go to profile
             </Button>
           </div>

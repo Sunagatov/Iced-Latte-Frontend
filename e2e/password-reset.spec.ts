@@ -16,19 +16,20 @@ const FAKE_TOKEN = 'fake-token-for-mocked-test'
  *  Must be called AFTER route mocks are registered so the reload is covered. */
 async function loginAs(page: Page) {
   await page.goto('/')
-  await page.evaluate((t) =>
+  await page.evaluate((t) => {
     localStorage.setItem(
       'token',
       JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 }),
-    ), FAKE_TOKEN)
+    )
+  }, FAKE_TOKEN)
   await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
 }
 
 /** Mock every proxy call with a 200 unless overridden */
 async function mockAll200(page: Page) {
-  await page.route('**/api/proxy/**', (route) =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-  )
+  await page.route('**/api/proxy/**', (route) => {
+    void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+  })
 }
 
 // ─── Flow A: ForgotPassForm (/forgotpass) ───────────────────────────────────
@@ -60,9 +61,9 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
   })
 
   test('on success shows "Check your inbox" screen', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/forgot', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-    )
+    await page.route('**/api/proxy/auth/password/forgot', (route) => {
+      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    })
     await page.goto('/forgotpass')
     await page.fill('#email', 'olivia@example.com')
     await page.locator('#send-reset-btn').click()
@@ -72,9 +73,9 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
   })
 
   test('"Continue to reset password" navigates to /resetpass', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/forgot', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-    )
+    await page.route('**/api/proxy/auth/password/forgot', (route) => {
+      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    })
     await page.goto('/forgotpass')
     await page.fill('#email', 'olivia@example.com')
     await page.locator('#send-reset-btn').click()
@@ -91,9 +92,9 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
   })
 
   test('page refresh resets to form (not stuck on success screen)', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/forgot', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-    )
+    await page.route('**/api/proxy/auth/password/forgot', (route) => {
+      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    })
     await page.goto('/forgotpass')
     await page.fill('#email', 'olivia@example.com')
     await page.locator('#send-reset-btn').click()
@@ -105,9 +106,9 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
   })
 
   test('API error shows error message on form', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/forgot', (route) =>
-      route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ message: 'Server error' }) }),
-    )
+    await page.route('**/api/proxy/auth/password/forgot', (route) => {
+      void route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ message: 'Server error' }) })
+    })
     await page.goto('/forgotpass')
     await page.fill('#email', 'olivia@example.com')
     await page.locator('#send-reset-btn').click()
@@ -172,9 +173,9 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   })
 
   test('on success shows "Password updated!" and "Sign in" button', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/change', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-    )
+    await page.route('**/api/proxy/auth/password/change', (route) => {
+      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
@@ -185,9 +186,9 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   })
 
   test('"Sign in" button on success screen navigates to /signin', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/change', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-    )
+    await page.route('**/api/proxy/auth/password/change', (route) => {
+      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
@@ -199,9 +200,9 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   })
 
   test('invalid/expired token shows error message', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/change', (route) =>
-      route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ message: 'Token is invalid or expired' }) }),
-    )
+    await page.route('**/api/proxy/auth/password/change', (route) => {
+      void route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ message: 'Token is invalid or expired' }) })
+    })
     await page.goto('/resetpass')
     await page.fill('#code', '000000000')
     await page.fill('#password', 'NewPass1!')
@@ -215,7 +216,7 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   test('sends correct payload to /auth/password/change', async ({ page }) => {
     let capturedBody: Record<string, string> = {}
     await page.route('**/api/proxy/auth/password/change', async (route) => {
-      capturedBody = JSON.parse(route.request().postData() ?? '{}')
+      capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<string, string>
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     })
     await page.goto('/resetpass')
@@ -231,9 +232,9 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   })
 
   test('page refresh after success resets to form (local state, not persisted)', async ({ page }) => {
-    await page.route('**/api/proxy/auth/password/change', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
-    )
+    await page.route('**/api/proxy/auth/password/change', (route) => {
+      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
@@ -295,9 +296,9 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('on success shows "Password updated!" and "Go to profile" button', async ({ page }) => {
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       else
-        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -312,9 +313,9 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('"Go to profile" button navigates to /profile', async ({ page }) => {
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       else
-        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -330,9 +331,9 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('wrong current password shows "Current password is incorrect."', async ({ page }) => {
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Current password is incorrect.' }) })
+        void route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Current password is incorrect.' }) })
       else
-        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -349,7 +350,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     let capturedBody: Record<string, string> = {}
     await page.route('**/api/proxy/users', async (route) => {
       if (route.request().method() === 'PATCH') {
-        capturedBody = JSON.parse(route.request().postData() ?? '{}')
+        capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<string, string>
         await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       } else {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
@@ -369,9 +370,9 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('page refresh after success resets to form (local state, not persisted)', async ({ page }) => {
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       else
-        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
     })
     await loginAs(page)
     await page.goto('/resetpass')

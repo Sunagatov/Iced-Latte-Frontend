@@ -53,7 +53,7 @@ export const useFavouritesStore = create<FavStoreState>()(
           }
         } else {
           const products = await getProductByIds(updatedIds)
-          const safeProducts = Array.isArray(products) ? products : []
+          const safeProducts: IProduct[] = Array.isArray(products) ? products : []
 
           set({ favourites: safeProducts, count: updatedIds.length })
         }
@@ -79,7 +79,7 @@ export const useFavouritesStore = create<FavStoreState>()(
         } else {
           const productIds = get().favouriteIds
           const products = await getProductByIds(productIds)
-          const safeProducts = Array.isArray(products) ? products : []
+          const safeProducts: IProduct[] = Array.isArray(products) ? products : []
 
           set((state) => ({ ...state, favourites: safeProducts, count: productIds.length }))
         }

@@ -8,13 +8,13 @@ export const handleAxiosError = (error: unknown): string => {
 
     if (axiosError.response) {
       if (axiosError.response.status === 401) {
-        const backendMessage = axiosError.response.data?.message
+        const backendMessage = (axiosError.response.data as ErrorResponse | undefined)?.message
 
-        return backendMessage || 'Incorrect email or password'
+        return backendMessage ?? 'Incorrect email or password'
       }
       if (axiosError.response.status === 422) return 'Your review was rejected — it may contain inappropriate content.'
 
-      return axiosError.response.data.message || axiosError.response.data.error || 'An unknown error occurred'
+      return (axiosError.response.data as ErrorResponse).message || (axiosError.response.data as ErrorResponse).error || 'An unknown error occurred'
     }
   }
 

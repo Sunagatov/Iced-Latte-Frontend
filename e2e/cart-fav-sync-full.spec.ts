@@ -11,7 +11,7 @@ import { test as base, expect, type Page, type BrowserContext } from '@playwrigh
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-type Fixtures = { page: Page }
+interface Fixtures { page: Page }
 
 const test = base.extend<Fixtures>({
   page: async ({ browser }, use) => {
@@ -61,7 +61,7 @@ function makeCart(items: object[]) {
 
 async function setToken(page: Page, token = FAKE_TOKEN) {
   await page.evaluate(
-    (t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })),
+    (t) => { localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })) },
     token,
   )
 }
@@ -69,17 +69,17 @@ async function setToken(page: Page, token = FAKE_TOKEN) {
 async function setCartStorage(page: Page, itemsIds: object[], isSync = false, tempItems: object[] = []) {
   const count = (itemsIds as { productQuantity: number }[]).reduce((s, i) => s + i.productQuantity, 0)
   await page.evaluate(
-    ([ids, sync, temps, c]) => localStorage.setItem('cart-storage', JSON.stringify({
+    ([ids, sync, temps, c]) => { localStorage.setItem('cart-storage', JSON.stringify({
       state: { itemsIds: ids, tempItems: temps, count: c, totalPrice: 0, isSync: sync },
       version: 0,
-    })),
+    })) },
     [itemsIds, isSync, tempItems, count] as [object[], boolean, object[], number],
   )
 }
 
 async function setFavStorage(page: Page, favouriteIds: string[]) {
   await page.evaluate(
-    (ids) => localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: ids, favourites: [] }, version: 0 })),
+    (ids) => { localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: ids, favourites: [] }, version: 0 })) },
     favouriteIds,
   )
 }

@@ -73,8 +73,8 @@ async function handleProxy(
     const contentType = response.headers.get('content-type') ?? ''
     const rawBody = await response.text()
 
-    const data = contentType.includes('application/json') && rawBody
-      ? JSON.parse(rawBody)
+    const data: unknown = contentType.includes('application/json') && rawBody
+      ? (JSON.parse(rawBody) as unknown)
       : rawBody
 
     if (!response.ok) return createCorsResponse(data, response.status)

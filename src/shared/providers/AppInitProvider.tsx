@@ -100,6 +100,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     if (!hydrated) return
     if (!token) return
     // Only run once per token — not on every favouriteIdsCount change.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-comparison -- internal state comparison, not a secret
     if (favSyncedForToken === token) return
 
     const fetchData = async (): Promise<void> => {

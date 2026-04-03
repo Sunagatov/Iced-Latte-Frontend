@@ -62,7 +62,7 @@ export default function ForgotPassForm() {
           <Button
             id="reset-continue-btn"
             className="mt-8 flex w-full items-center justify-center hover:bg-brand-solid-hover"
-            onClick={() => router.push('/resetpass')}
+            onClick={() => { router.push('/resetpass') }}
           >
             Continue to reset password
           </Button>
@@ -96,7 +96,7 @@ export default function ForgotPassForm() {
           No worries — enter your email and we&apos;ll send you reset instructions.
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8" noValidate>
+        <form className="mt-8" noValidate onSubmit={handleSubmit(onSubmit)}>
           {errorMessage && (
             <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{errorMessage}</div>
           )}
