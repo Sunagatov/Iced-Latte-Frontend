@@ -1,18 +1,18 @@
-import { useCartStore } from 'src/features/cart/store'
-import { useAuthStore } from 'src/features/auth/store'
-import * as cartApi from 'src/features/cart/api'
-import * as productsApi from 'src/features/products/api'
-import { ICartItem } from 'src/features/cart/types'
+import { useCartStore } from '@/features/cart/store'
+import { useAuthStore } from '@/features/auth/store'
+import * as cartApi from '@/features/cart/api'
+import * as productsApi from '@/features/products/api'
+import { ICartItem } from '@/features/cart/types'
 
-jest.mock('src/features/cart/api', () => ({
+jest.mock('@/features/cart/api', () => ({
   mergeCarts: jest.fn(),
   removeCartItem: jest.fn(),
   changeCartItemQuantity: jest.fn(),
 }))
-jest.mock('src/features/products/api', () => ({
+jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
-jest.mock('src/features/auth/store', () => ({
+jest.mock('@/features/auth/store', () => ({
   useAuthStore: { getState: jest.fn(() => ({ token: null })) },
 }))
 
@@ -21,7 +21,7 @@ const mockedProductsApi = jest.mocked(productsApi)
 const mockedAuthStore = jest.mocked(useAuthStore) as { getState: jest.Mock }
 
 function makeProduct(id: string, price = 10) {
-  return { id, name: 'p', price, productQuantity: 0, averageRating: 0, reviewsCount: 0, imageUrls: [] }
+  return { id, name: 'p', description: '', price, quantity: 10, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }
 }
 
 function makeCartItem(id: string, qty = 1): ICartItem {
@@ -102,8 +102,8 @@ describe('cart store — resetCart / setTempItems', () => {
 describe('cart store — createCart', () => {
   it('updates state from merged cart response', async () => {
     mockedCartApi.mergeCarts.mockResolvedValue({
-      itemsTotalPrice: 20,
-      productsQuantity: 2,
+      id: 'c1', userId: 'u1', createdAt: '', closedAt: null,
+      itemsQuantity: 2, itemsTotalPrice: 20, productsQuantity: 2,
       items: [makeCartItem('p1', 2)],
     })
     await useCartStore.getState().createCart({ items: [{ productId: 'p1', productQuantity: 2 }] })
@@ -115,8 +115,8 @@ describe('cart store — createCart', () => {
 describe('cart store — updateCartItem', () => {
   it('updates state from response', async () => {
     mockedCartApi.changeCartItemQuantity.mockResolvedValue({
-      itemsTotalPrice: 10,
-      productsQuantity: 1,
+      id: 'c1', userId: 'u1', createdAt: '', closedAt: null,
+      itemsQuantity: 1, itemsTotalPrice: 10, productsQuantity: 1,
       items: [makeCartItem('p1', 1)],
     })
     await useCartStore.getState().updateCartItem({ shoppingCartItemId: 'slot-p1', productQuantityChange: 1 })

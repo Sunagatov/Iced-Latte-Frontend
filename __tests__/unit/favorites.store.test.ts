@@ -1,13 +1,13 @@
-import { useFavouritesStore } from 'src/features/favorites/store'
-import * as favsApi from 'src/features/favorites/api'
-import * as productsApi from 'src/features/products/api'
+import { useFavouritesStore } from '@/features/favorites/store'
+import * as favsApi from '@/features/favorites/api'
+import * as productsApi from '@/features/products/api'
 
-jest.mock('src/features/favorites/api', () => ({
+jest.mock('@/features/favorites/api', () => ({
   mergeFavs: jest.fn(),
   removeFavItem: jest.fn(),
   getFavByIds: jest.fn(),
 }))
-jest.mock('src/features/products/api', () => ({
+jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
 
@@ -15,7 +15,7 @@ const mockedFavsApi = jest.mocked(favsApi)
 const mockedProductsApi = jest.mocked(productsApi)
 
 function makeProduct(id: string) {
-  return { id, name: 'p', price: 10, productQuantity: 0, averageRating: 0, reviewsCount: 0, imageUrls: [] }
+  return { id, name: 'p', description: '', price: 10, quantity: 10, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }
 }
 
 beforeEach(() => {
@@ -50,7 +50,7 @@ describe('favourites store — addFavourite (authenticated)', () => {
 describe('favourites store — removeFavourite', () => {
   it('removes product from state', async () => {
     useFavouritesStore.setState({ favouriteIds: ['p1'], favourites: [makeProduct('p1')], count: 1, loading: false, isSync: false })
-    mockedFavsApi.removeFavItem.mockResolvedValue(undefined)
+    mockedFavsApi.removeFavItem.mockResolvedValue(null as never)
     await useFavouritesStore.getState().removeFavourite('p1', 'token')
     expect(useFavouritesStore.getState().count).toBe(0)
     expect(useFavouritesStore.getState().favouriteIds).not.toContain('p1')

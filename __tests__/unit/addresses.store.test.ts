@@ -1,7 +1,8 @@
-import { useAddressStore } from 'src/features/addresses/store'
-import * as api from 'src/features/addresses/api'
+import { useAddressStore } from '@/features/addresses/store'
+import * as api from '@/features/addresses/api'
+import { DeliveryAddress } from '@/features/addresses/types'
 
-jest.mock('src/features/addresses/api', () => ({
+jest.mock('@/features/addresses/api', () => ({
   getAddresses: jest.fn(),
   createAddress: jest.fn(),
   updateAddress: jest.fn(),
@@ -11,7 +12,7 @@ jest.mock('src/features/addresses/api', () => ({
 
 const mockedApi = jest.mocked(api)
 
-const addr = (id: string, isDefault = false) => ({
+const addr = (id: string, isDefault = false): DeliveryAddress => ({
   id,
   isDefault,
   label: 'home',
@@ -49,17 +50,17 @@ describe('address store', () => {
 
   it('remove deletes address', async () => {
     useAddressStore.setState({ addresses: [addr('a1')], loading: false })
-    mockedApi.deleteAddress.mockResolvedValue(undefined)
+    mockedApi.deleteAddress.mockResolvedValue(null as never)
     await useAddressStore.getState().remove('a1')
     expect(useAddressStore.getState().addresses).toHaveLength(0)
   })
 
   it('setDefault marks correct address', async () => {
     useAddressStore.setState({ addresses: [addr('a1'), addr('a2')], loading: false })
-    mockedApi.setDefaultAddress.mockResolvedValue(undefined)
+    mockedApi.setDefaultAddress.mockResolvedValue(null as never)
     await useAddressStore.getState().setDefault('a2')
     const addresses = useAddressStore.getState().addresses
-    expect(addresses.find((a) => a.id === 'a2')?.isDefault).toBe(true)
-    expect(addresses.find((a) => a.id === 'a1')?.isDefault).toBe(false)
+    expect(addresses.find((a: DeliveryAddress) => a.id === 'a2')?.isDefault).toBe(true)
+    expect(addresses.find((a: DeliveryAddress) => a.id === 'a1')?.isDefault).toBe(false)
   })
 })

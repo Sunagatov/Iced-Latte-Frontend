@@ -15,12 +15,13 @@ function makeRequest(redirectUrl?: string): NextRequest {
 describe('google auth route — disallowed origin', () => {
   it('returns 400 for disallowed redirect origin', async () => {
     process.env.ALLOWED_REDIRECT_ORIGINS = 'https://iced-latte.uk'
-    let GET: (req: NextRequest) => Promise<Response>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let routeModule: any
     jest.isolateModules(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      GET = require('../../../src/app/api/auth/google/route').GET
+      routeModule = require('../../../src/app/api/auth/google/route')
     })
-    const res = await GET?.(makeRequest('https://evil.com'))
+    const res = await (routeModule.GET as (req: NextRequest) => Promise<Response>)(makeRequest('https://evil.com'))
     expect(res.status).toBe(400)
   })
 })
