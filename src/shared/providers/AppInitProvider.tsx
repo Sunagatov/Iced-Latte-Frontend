@@ -32,7 +32,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   // Without this, the effect fires with stale initial values and may overwrite
   // the guest cart with an empty server cart before localStorage has been read.
   const [hydrated, setHydrated] = useState(false)
-  const [favSyncedForToken, setFavSyncedForToken] = useState<string | null>(null)
+  const [favSyncedForSession, setFavSyncedForSession] = useState<string | null>(null)
 
   useEffect(() => {
     let cartDone = useCartStore.persist.hasHydrated()
@@ -78,7 +78,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Reset fav sync tracker when user logs out so next login triggers a fresh sync.
   useEffect(() => {
-    if (!token) setFavSyncedForToken(null)
+    if (!token) setFavSyncedForSession(null)
   }, [token])
 
   useEffect(() => {
@@ -99,9 +99,8 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!hydrated) return
     if (!token) return
-    // Only run once per token — not on every favouriteIdsCount change.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-comparison -- internal state comparison, not a secret
-    if (favSyncedForToken === token) return
+    // Only run once per login session — not on every favouriteIdsCount change.
+    if (favSyncedForSession === token) return
 
     const fetchData = async (): Promise<void> => {
       try {
@@ -112,7 +111,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
 
           await getFavouriteProducts(token)
         }
-        setFavSyncedForToken(token)
+        setFavSyncedForSession(token)
       } catch (error: unknown) {
         if (
           (error as { response?: { status?: number } })?.response?.status === 401 ||
@@ -124,7 +123,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     void fetchData()
-  }, [hydrated, token, favSyncedForToken, favouriteIdsCount, syncBackendFav, resetAuth]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <RouteTracker>{children}</RouteTracker>
 }

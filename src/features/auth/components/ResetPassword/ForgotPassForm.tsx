@@ -29,7 +29,7 @@ export default function ForgotPassForm() {
     defaultValues: { email: '' },
   })
 
-  const onSubmit = async (data: IForgotValues) => {
+  const onSubmit = async (data: IForgotValues): Promise<void> => {
     const { email } = data
 
     try {

@@ -5,9 +5,12 @@ import { useCartStore, CartSliceStore } from '@/features/cart/store'
 import { useEffect, useState } from 'react'
 import Loader from '@/shared/components/Loader/Loader'
 
+type TypedCartStore = { <T>(selector: (s: CartSliceStore) => T): T }
+const selectCart = useCartStore as unknown as TypedCartStore
+
 export default function Cart() {
-  const tempItems = useCartStore((state: CartSliceStore) => state.tempItems)
-  const count = useCartStore((state: CartSliceStore) => state.count)
+  const tempItems = selectCart((state) => state.tempItems)
+  const count = selectCart((state) => state.count)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => { setHydrated(true) }, [])

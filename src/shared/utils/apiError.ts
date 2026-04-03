@@ -14,7 +14,9 @@ export const handleAxiosError = (error: unknown): string => {
       }
       if (axiosError.response.status === 422) return 'Your review was rejected — it may contain inappropriate content.'
 
-      return (axiosError.response.data as ErrorResponse).message || (axiosError.response.data as ErrorResponse).error || 'An unknown error occurred'
+      const data = axiosError.response.data as ErrorResponse
+
+      return data.message || data.error || 'An unknown error occurred'
     }
   }
 

@@ -33,7 +33,7 @@ export default function CartFull() {
             />
           ))}
           <button
-            onClick={() => { void clearCart().catch((_e: unknown) => { /* best-effort */ }) }}
+            onClick={() => { clearCart().catch(() => { /* best-effort */ }) }}
             className="mt-1 self-start text-sm text-secondary underline-offset-2 transition-colors hover:text-negative hover:underline"
           >
             Clear all
