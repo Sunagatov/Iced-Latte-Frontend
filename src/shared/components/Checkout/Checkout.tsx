@@ -64,8 +64,8 @@ export default function CheckoutForm() {
         <p className="mb-2 text-xs font-bold uppercase tracking-widest text-secondary">Order summary</p>
         <div className="flex flex-col gap-1">
           {tempItems.map((item) => (
-            <div key={item.id} className="flex justify-between text-sm">
-              <span className="text-secondary truncate max-w-[300px]">
+            <div key={item.id} className="flex justify-between gap-4 text-sm">
+              <span className="text-secondary truncate min-w-0">
                 {item.productInfo.name} <span className="opacity-60">×{item.productQuantity}</span>
               </span>
               <span className="font-medium tabular-nums text-primary">
@@ -82,7 +82,7 @@ export default function CheckoutForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <p className="text-xs font-bold uppercase tracking-widest text-secondary">Recipient</p>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <Field id="recipientName" label="First name" value={form.recipientName} onChange={set('recipientName')} required />
           <Field id="recipientSurname" label="Last name" value={form.recipientSurname} onChange={set('recipientSurname')} required />
         </div>
@@ -96,7 +96,7 @@ export default function CheckoutForm() {
         {!selectedAddress && (
           <>
             <Field id="addressLine" label="Address line" value={form.line} onChange={set('line')} required />
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <Field id="city" label="City" value={form.city} onChange={set('city')} required />
               <Field id="postcode" label="Postcode" value={form.postcode} onChange={set('postcode')} required />
             </div>
