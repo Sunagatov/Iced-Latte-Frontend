@@ -80,7 +80,7 @@ describe('useProducts', () => {
   })
 
   it('includes brand and seller in SWR key', () => {
-    let capturedGetKey: ((i: number, prev: unknown) => string | null) | null =
+    let capturedGetKey: ((_i: number, prev: unknown) => string | null) | null =
       null
 
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
@@ -98,7 +98,7 @@ describe('useProducts', () => {
   })
 
   it('returns null key when last page reached', () => {
-    let capturedGetKey: ((i: number, prev: unknown) => string | null) | null =
+    let capturedGetKey: ((_i: number, prev: unknown) => string | null) | null =
       null
 
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
@@ -120,7 +120,7 @@ describe('useProducts', () => {
 
   it('uses size 8 on wide screens', () => {
     jest.spyOn(useHooks, 'useMediaQuery').mockReturnValue(true)
-    let capturedGetKey: ((i: number, prev: unknown) => string | null) | null =
+    let capturedGetKey: ((_i: number, prev: unknown) => string | null) | null =
       null
 
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {

@@ -18,7 +18,7 @@ jest.mock('@/features/auth/store', () => ({
 
 const mockedCartApi = jest.mocked(cartApi)
 const mockedProductsApi = jest.mocked(productsApi)
-const mockedAuthStore = jest.mocked(useAuthStore) as { getState: jest.Mock }
+const mockedAuthStore = useAuthStore as unknown as { getState: jest.Mock }
 
 function makeProduct(id: string, price = 10) {
   return {

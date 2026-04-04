@@ -166,7 +166,7 @@ describe('useReviews', () => {
   })
 
   it('includes ratingFilter in SWR key', () => {
-    let capturedGetKey: ((i: number, prev: unknown) => string | null) | null =
+    let capturedGetKey: ((_i: number, prev: unknown) => string | null) | null =
       null
 
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {

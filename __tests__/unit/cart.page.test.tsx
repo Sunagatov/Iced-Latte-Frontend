@@ -26,10 +26,8 @@ beforeEach(() => {
 })
 
 describe('Cart page', () => {
-  it('shows CartEmpty when no items after hydration', async () => {
-    await act(async () => {
-      render(<Cart />)
-    })
+  it('shows CartEmpty when no items after hydration', () => {
+    render(<Cart />)
     expect(screen.getByText('CartEmpty')).toBeInTheDocument()
   })
 

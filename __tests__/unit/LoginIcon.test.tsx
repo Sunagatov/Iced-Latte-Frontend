@@ -19,14 +19,14 @@ jest.mock('@/features/user/components/UserBar/UserBar', () => ({
 const mockUseAuthStore = jest.fn()
 
 jest.mock('@/features/auth/store', () => ({
-  useAuthStore: (selector: (_s: { isLoggedIn: boolean }) => unknown) =>
+  useAuthStore: (selector: (s: { isLoggedIn: boolean }) => unknown) =>
     mockUseAuthStore(selector),
 }))
 
 beforeEach(() => {
   mockUseAuthStore.mockImplementation(
-    (_selector: (_s: { isLoggedIn: boolean }) => unknown) =>
-      _selector({ isLoggedIn: false }),
+    (selector: (s: { isLoggedIn: boolean }) => unknown) =>
+      selector({ isLoggedIn: false }),
   )
 })
 
@@ -50,8 +50,8 @@ describe('LoginIcon', () => {
 
   it('shows UserBar when authenticated', async () => {
     mockUseAuthStore.mockImplementation(
-      (_selector: (_s: { isLoggedIn: boolean }) => unknown) =>
-        _selector({ isLoggedIn: true }),
+      (selector: (s: { isLoggedIn: boolean }) => unknown) =>
+        selector({ isLoggedIn: true }),
     )
     await act(async () => {
       render(<LoginIcon />)

@@ -5,7 +5,7 @@ jest.mock('@/shared/api/client', () => ({
   api: { get: jest.fn(), put: jest.fn(), post: jest.fn(), patch: jest.fn() },
 }))
 
-const mockedApi = jest.mocked(api) as jest.Mocked<typeof api>
+const mockedApi = api as jest.Mocked<typeof api>
 
 describe('user api', () => {
   beforeEach(() => jest.clearAllMocks())

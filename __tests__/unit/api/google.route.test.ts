@@ -24,7 +24,7 @@ describe('google auth route — disallowed origin', () => {
       routeModule = require('../../../src/app/api/auth/google/route')
     })
     const res = await (
-      routeModule.GET as (req: NextRequest) => Promise<Response>
+      (routeModule as { GET: (req: NextRequest) => Promise<Response> }).GET
     )(makeRequest('https://evil.com'))
 
     expect(res.status).toBe(400)

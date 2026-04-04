@@ -72,7 +72,9 @@ describe('proxy route', () => {
   })
 
   it('returns 503 when fetch throws', async () => {
-    global.fetch = jest.fn().mockRejectedValue(new Error('network'))
+    ;(global as { fetch: unknown }).fetch = jest
+      .fn()
+      .mockRejectedValue(new Error('network'))
     const res = await GET(makeRequest('GET', 'products'), {
       params: Promise.resolve({ path: ['products'] }),
     })
@@ -90,7 +92,7 @@ describe('proxy route', () => {
   })
 
   it('POST telemetry returns 202 without forwarding', async () => {
-    global.fetch = jest.fn()
+    ;(global as { fetch: unknown }).fetch = jest.fn()
     const res = await POST(makeRequest('POST', 'telemetry'), {
       params: Promise.resolve({ path: ['telemetry'] }),
     })
@@ -127,7 +129,7 @@ describe('proxy route', () => {
   })
 
   it('handles plain text response', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    ;(global as { fetch: unknown }).fetch = jest.fn().mockResolvedValue({
       ok: true,
       status: 200,
       headers: {
