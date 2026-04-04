@@ -1,26 +1,22 @@
-<div align="center">
-  <br>
-  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="716">
-  <h1>Iced Latte Frontend</h1>
-  <p><strong>A modern React/Next.js coffee marketplace frontend — built in the open, for engineers who want real experience.</strong></p>
-  <p>
-    <a href="https://iced-latte.uk/">🌐 Live Demo</a> ·
-    <a href="https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22">🟢 Good First Issues</a> ·
-    <a href="https://t.me/zufarexplained">💬 Community</a>
-  </p>
+# Iced Latte Frontend
 
-  [![CI Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
-  [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/blob/main/LICENSE)
+**A modern React/Next.js coffee marketplace frontend — built in the open, for engineers who want real experience.**
 
-  [![GitHub Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
-  [![GitHub Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-Frontend?style=social)](https://github.com/Sunagatov/Iced-Latte-Frontend/network/members)
-  [![Contributors](https://img.shields.io/github/contributors/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/graphs/contributors)
-  [![Docker Pulls](https://img.shields.io/docker/pulls/zufarexplainedit/iced-latte-frontend.svg)](https://hub.docker.com/r/zufarexplainedit/iced-latte-frontend/)
-</div>
+[🌐 Live Demo](https://iced-latte.uk/) ·
+[🟢 Good First Issues](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22) ·
+[💬 Community](https://t.me/zufarexplained)
+
+[![CI Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/blob/main/LICENSE)
+
+[![GitHub Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-Frontend?style=social)](https://github.com/Sunagatov/Iced-Latte-Frontend/network/members)
+[![Contributors](https://img.shields.io/github/contributors/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/graphs/contributors)
+[![Docker Pulls](https://img.shields.io/docker/pulls/zufarexplainedit/iced-latte-frontend.svg)](https://hub.docker.com/r/zufarexplainedit/iced-latte-frontend/)
 
 ---
 
-**📊 Key stats across all three repositories:**
+## 📊 Key stats across all three repositories
 
 | Repository | ⭐ Stars | 🍴 Forks |
 |---|---|---|
@@ -59,6 +55,7 @@ npm run dev
 > 💡 See [Getting Started](docs/getting-started.md) for Docker setup, E2E tests, and troubleshooting.
 
 **🧪 Run the tests:**
+
 ```bash
 npm test
 ```
@@ -67,10 +64,9 @@ npm test
 
 ## 📸 Preview
 
-<div align="center">
-  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="716">
-  <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
-</div>
+![Iced Latte Frontend](iced-latte-avatar.jpg)
+
+_Live application interface: [iced-latte.uk](https://iced-latte.uk/)_
 
 ---
 
@@ -86,21 +82,22 @@ Iced Latte is a non-profit sandbox project started in 2022 as a private pet proj
 
 Iced Latte has earned recognition from the broader tech community.
 
-**🔥 GitHub Trending 🔥 — May 22, 2024**
+### 🔥 GitHub Trending — May 22, 2024
 
-  - The backend repository reached GitHub's Trending page — listed among resources *"the GitHub community is most excited about today"* — gaining **85 stars in a single day** with 27 active contributors. ([link to the archive](https://archive.ph/DRsD8))
+- The backend repository reached GitHub's Trending page — listed among resources *"the GitHub community is most excited about today"* — gaining **85 stars in a single day** with 27 active contributors. ([link to the archive](https://archive.ph/DRsD8))
 
-**🥉 KaiCode 2024 Finalist 🥉** 
+### 🥉 KaiCode 2024 Finalist
 
-  - Iced Latte made it to the finals of [KaiCode](https://www.kaicode.org/2024.html#jury) — an annual open-source festival launched by Huawei, which positions itself as an incubator of open-source technologies and rewards the most promising projects. Iced Latte was selected among **412 applications** and placed in the third group of 26 finalist repositories considered for the prize. Jury members are not allowed to assess their own projects, so the selection was fully independent.
+- Iced Latte made it to the finals of [KaiCode](https://www.kaicode.org/2024.html#jury) — an annual open-source festival launched by Huawei, which positions itself as an incubator of open-source technologies and rewards the most promising projects. Iced Latte was selected among **412 applications** and placed in the third group of 26 finalist repositories considered for the prize. Jury members are not allowed to assess their own projects, so the selection was fully independent.
 
-**🛠️JetBrains Open Source License 🛠**
+### 🛠️ JetBrains Open Source License
 
-  - Iced Latte was recognized by [JetBrains](https://www.jetbrains.com/community/opensource/) — a leading software company specializing in intelligent development tools. As an active participant in the open-source community, JetBrains supports recognized global open-source projects by providing complimentary licenses for non-commercial development. JetBrains granted Iced Latte **8 free All Products Pack licenses** (February 2024, License Reference No. D379769990).
+- Iced Latte was recognized by [JetBrains](https://www.jetbrains.com/community/opensource/) — a leading software company specializing in intelligent development tools. As an active participant in the open-source community, JetBrains supports recognized global open-source projects by providing complimentary licenses for non-commercial development. JetBrains granted Iced Latte **8 free All Products Pack licenses** (February 2024, License Reference No. D379769990).
 
-**👨💻 Recommended by Eddie Jaoude 👨**
+### 👨‍💻 Recommended by Eddie Jaoude
 
-  - Iced Latte was [recommended by Eddie Jaoude](https://www.linkedin.com/feed/update/urn:li:activity:7195685359710617602/) — one of the most influential open-source experts, a [GitHub Star](https://stars.github.com/) with 174K followers on X and 17.6K on LinkedIn — who called it a great example of a Java open-source project. Many Iced Latte contributors shared their positive experience in the comments.
+- Iced Latte was [recommended by Eddie Jaoude](https://www.linkedin.com/feed/update/urn:li:activity:7195685359710617602/) — one of the most influential open-source experts, a [GitHub Star](https://stars.github.com/) with 174K followers on X and 17.6K on LinkedIn — who called it a great example of a Java open-source project. Many Iced Latte contributors shared their positive experience in the comments.
+
 ---
 
 ## 🛠️ Tech Stack
@@ -119,7 +116,7 @@ Iced Latte has earned recognition from the broader tech community.
 
 ## 📁 Project Structure
 
-```
+```text
 src/
 ├── 📁 app/                # Next.js App Router pages
 │   ├── 📁 api/            # API proxy route (avoids CORS)
@@ -167,10 +164,8 @@ The full production setup is in the [backend docker-compose.yml](https://github.
 |---|---|
 | 🐛 Found a bug | [Open an issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new) with the `bug` label |
 | 💡 Want a feature | Start a [Discussion](https://github.com/Sunagatov/Iced-Latte-Frontend/discussions) first |
-| 👨💻 Ready to code | Pick a [`good first issue`](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22), comment "I'm on it" |
+| 👨‍💻 Ready to code | Pick a [`good first issue`](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22), comment "I'm on it" |
 | 🔧 Big change | Comment on the issue before writing code — many tickets have hidden constraints |
-
----
 
 ### 🏷️ Issue labels
 
@@ -183,23 +178,17 @@ The full production setup is in the [backend docker-compose.yml](https://github.
 | 🟠 `new feature` | New functionality — discuss before starting |
 | ⚪ `idea` | Needs design discussion — don't implement yet |
 
----
-
 ### 🐛 Bug reports
 
 - 🔍 Search existing issues before opening a new one
 - 📝 Clearly describe **observed** vs **expected** behaviour
 - 🚀 For minor fixes, just open a PR directly
 
----
-
 ### 🔄 Pull requests
 
 - 🎯 Keep PRs focused — one concern per PR
 - ✅ Make sure `npm run test` passes locally before pushing
 - 🔗 Reference the issue number in your PR description
-
----
 
 ### 🍴 Forking
 
@@ -220,5 +209,3 @@ The full production setup is in the [backend docker-compose.yml](https://github.
 - 📱 **WhatsApp:** [Message me](https://wa.me/447405503609)
 - 📧 **Email:** [zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)
 - 🐛 **Issues:** [GitHub Issues](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)
-
-❤️
