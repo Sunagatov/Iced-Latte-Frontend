@@ -1,14 +1,14 @@
 'use client'
 import FavouritesEmpty from '../FavouritesEmpty/FavouritesEmpty'
 import FavouritesFull from '../FavouritesFull/FavouritesFull'
-import Loader from '@/shared/components/Loader/Loader'
+import FavouritesSkeleton from '../FavouritesSkeleton/FavouritesSkeleton'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
 
 interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
 
-export default function SyncFav() {
+export default function FavouritesPage() {
   const favourites = useFavouritesStore((s) => s.favourites)
   const status = useFavouritesStore((s) => s.status)
   const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
@@ -35,10 +35,11 @@ export default function SyncFav() {
 
   useEffect(() => {
     if (!hydrated) return
-    void getFavouriteProducts(token)
+    if (token) return // AppInitProvider owns authenticated sync
+    void getFavouriteProducts(null)
   }, [getFavouriteProducts, token, hydrated])
 
-  if (!hydrated || status === 'idle' || status === 'syncing') return <Loader />
+  if (!hydrated || status === 'idle' || status === 'syncing') return <FavouritesSkeleton />
 
   if (status === 'error') {
     return (

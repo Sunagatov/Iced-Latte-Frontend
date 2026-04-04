@@ -100,6 +100,14 @@ export const forgotPassSchema = yup.object().shape({
     }),
 })
 
+export const verifyEmailCodeSchema = yup.object().shape({
+  verificationCode: yup
+    .string()
+    .required('Confirmation code is required')
+    .matches(/^\d{9}$/, 'Invalid code format'),
+})
+
+/** @deprecated use verifyEmailCodeSchema */
 export const confirmPasswordSchema = yup.object().shape({
   confirmPassword: yup
     .string()

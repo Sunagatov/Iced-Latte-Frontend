@@ -1,13 +1,14 @@
 'use client'
-import { useLocalSessionStore } from '@/features/user/store'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export function useAuthRedirect() {
   const router = useRouter()
-  const { previousRouteForAuth } = useLocalSessionStore()
+  const searchParams = useSearchParams()
 
   const handleRedirectForAuth = () => {
-    router.push(previousRouteForAuth ?? '/profile')
+    const next = searchParams.get('next')
+
+    router.push(next ?? '/profile')
   }
 
   return { handleRedirectForAuth }

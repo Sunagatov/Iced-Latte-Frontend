@@ -4,7 +4,6 @@ import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
 import { useProductReviewsStore } from '@/features/reviews/store'
 import { useRouter } from 'next/navigation'
-import { removeCookie } from '@/shared/utils/cookieUtils'
 import { apiLogoutUser } from '../api'
 import { useCallback, useState } from 'react'
 
@@ -20,11 +19,10 @@ export function useLogout() {
   const logout = useCallback(async () => {
     try {
       setIsLoading(true)
-      await apiLogoutUser()
+      await apiLogoutUser() // backend clears the session cookie
     } catch {
       // ignore — logout clears state regardless
     } finally {
-      await removeCookie('token')
       reset()
       resetFav()
       resetCart()

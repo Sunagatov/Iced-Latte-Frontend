@@ -206,7 +206,7 @@ const FilledProfile = () => {
                   />
                   <StatCard
                     icon={<RiHeartLine className="h-5 w-5 text-negative" />}
-                    label="Wishlist"
+                    label="Favourites"
                     value={String(favCount || 0)}
                     sub="Saved items"
                     href="/favourites"

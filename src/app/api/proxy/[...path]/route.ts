@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
 
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
-const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
+const FORWARDED_HEADERS = ['X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
@@ -31,6 +31,11 @@ function forwardHeaders(request: NextRequest): HeadersInit {
 
     if (value) headers[name] = value
   }
+
+  // Forward session cookie so the backend can authenticate the request
+  const cookie = request.headers.get('cookie')
+
+  if (cookie) headers['cookie'] = cookie
 
   return headers
 }

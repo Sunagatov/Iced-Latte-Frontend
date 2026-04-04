@@ -1,112 +1,60 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useCartStore } from '@/features/cart/store'
 import { fetchCart } from '@/features/cart/api'
-import type { AuthStore } from '@/features/auth/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
+import { apiGetSession } from '@/features/auth/api'
 import RouteTracker from './RouteTracker'
 
-/** Constant-time string comparison to prevent timing attacks. */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-
-  let result = 0
-
-  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-
-  return result === 0
-}
-
 const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
-  const favouriteIdsCount = useFavouritesStore((state) => state.favouriteIds.length)
-  const { syncBackendFav, resetFav } = useFavouritesStore()
+  const { status, setAuthenticated, setAnonymous, reset: resetAuth } = useAuthStore()
+  const { syncBackendFav, resetFav, getFavouriteProducts } = useFavouritesStore()
+  const { syncBackendCart, resetCart, getCartItems, setTempItems, itemsIds, isSync } = useCartStore()
 
-  const resetAuth = useAuthStore((state: AuthStore) => state.reset)
-
-  const token = useAuthStore((state: AuthStore) => state.token)
-
-  const itemsCount = useCartStore((state) => state.itemsIds.length)
-  const getCartItems = useCartStore((state) => state.getCartItems)
-  const syncBackendCart = useCartStore((state) => state.syncBackendCart)
-  const isSync = useCartStore((state) => state.isSync)
-  const reset = useCartStore((state) => state.resetCart)
-  const setTempItems = useCartStore((state) => state.setTempItems)
-
-  // Wait for both persisted stores to finish hydrating before running sync logic.
-  // Without this, the effect fires with stale initial values and may overwrite
-  // the guest cart with an empty server cart before localStorage has been read.
-  const [hydrated, setHydrated] = useState(false)
-  const [favSyncedForSession, setFavSyncedForSession] = useState<string | null>(null)
-
+  // Bootstrap session on mount
   useEffect(() => {
-    let cartDone = useCartStore.persist.hasHydrated()
-    let authDone = useAuthStore.persist.hasHydrated()
-    let favDone = useFavouritesStore.persist.hasHydrated()
+    apiGetSession()
+      .then((session) => {
+        if (session.authenticated) {
+          setAuthenticated(session.user)
+        } else {
+          setAnonymous()
+        }
+      })
+      .catch(() => setAnonymous())
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (cartDone && authDone && favDone) {
-      setHydrated(true)
+  // Sync cart and favourites once auth status is resolved
+  useEffect(() => {
+    if (status === 'loading') return
+
+    if (status === 'anonymous') {
+      if (isSync) resetCart()
+      if (itemsIds.length) getCartItems().catch(() => {})
 
       return
     }
 
-    const unsubCart = useCartStore.persist.onFinishHydration(() => {
-      cartDone = true
-      if (authDone && favDone) setHydrated(true)
-    })
-    const unsubAuth = useAuthStore.persist.onFinishHydration(() => {
-      authDone = true
-      if (cartDone && favDone) setHydrated(true)
-    })
-    const unsubFav = useFavouritesStore.persist.onFinishHydration(() => {
-      favDone = true
-      if (cartDone && authDone) setHydrated(true)
-    })
-
-    return () => {
-      unsubCart()
-      unsubAuth()
-      unsubFav()
-    }
-  }, [])
-
-  // Reset fav sync tracker when user logs out so next login triggers a fresh sync.
-  useEffect(() => {
-    if (!token) setFavSyncedForSession(null)
-  }, [token])
-
-  useEffect(() => {
-    if (!hydrated) return
-    if (!token) {
-      if (isSync) reset()
-      if (itemsCount) getCartItems().catch(() => {})
-    } else if (!isSync && itemsCount) {
-      syncBackendCart(token).catch(() => {})
-    } else if (token && (isSync || !itemsCount)) {
+    // authenticated
+    if (!isSync && itemsIds.length) {
+      syncBackendCart('').catch(() => {})
+    } else {
       fetchCart()
         .then((cart) => setTempItems(cart.items))
         .catch(() => {})
     }
-  }, [hydrated, token, itemsCount, isSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Track whether the initial fav sync for the current token has already run.
-  useEffect(() => {
-    if (!hydrated) return
-    if (!token) return
-    // Only run once per login session — not on every favouriteIdsCount change.
-    if (favSyncedForSession !== null && timingSafeEqual(favSyncedForSession, token)) return
-
-    const fetchData = async (): Promise<void> => {
+    const syncFavourites = async () => {
       try {
-        if (favouriteIdsCount) {
+        const { favouriteIds } = useFavouritesStore.getState()
+
+        if (favouriteIds.length) {
           await syncBackendFav()
         } else {
-          const { getFavouriteProducts } = useFavouritesStore.getState()
-
-          await getFavouriteProducts(token)
+          await getFavouriteProducts('')
         }
-        setFavSyncedForSession(token)
       } catch (error: unknown) {
         if (
           (error as { response?: { status?: number } })?.response?.status === 401 ||
@@ -118,8 +66,8 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    void fetchData()
-  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth, resetFav])
+    void syncFavourites()
+  }, [status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <RouteTracker>{children}</RouteTracker>
 }

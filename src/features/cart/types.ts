@@ -33,6 +33,7 @@ export interface ICartUpdatedItem {
 
 export interface CartElementProps {
   product: ICartItem
+  isPending?: boolean
   add: () => void
   remove: () => void
   removeAll: () => void

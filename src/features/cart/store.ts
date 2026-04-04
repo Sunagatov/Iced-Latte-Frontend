@@ -7,12 +7,17 @@ import { getProductByIds } from '@/features/products/api'
 import { mergeCarts, removeCartItem, changeCartItemQuantity } from './api'
 import { useAuthStore } from '@/features/auth/store'
 
+export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
+
 interface CartSliceState {
   itemsIds: ICartPushItem[]
   tempItems: ICartItem[]
   count: number
   totalPrice: number
   isSync: boolean
+  status: CartStatus
+  pendingProductIds: Set<string>
+  lastError: string | null
 }
 
 interface CartSliceActions {
@@ -26,6 +31,7 @@ interface CartSliceActions {
   setTempItems: (items: ICartItem[]) => void
   createCart: (reqItems: ICartPushItems) => Promise<void>
   updateCartItem: (updatedItem: ICartUpdatedItem) => Promise<void>
+  retryHydration: () => void
 }
 
 export type CartSliceStore = CartSliceState & CartSliceActions
@@ -36,14 +42,19 @@ const initialState: CartSliceState = {
   count: 0,
   totalPrice: 0,
   isSync: false,
+  status: 'idle',
+  pendingProductIds: new Set(),
+  lastError: null,
 }
 
 const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (set, get) => ({
   ...initialState,
   add: (id: string) => {
-    const { itemsIds, tempItems, updateCartItem, createCart } = get()
+    const { itemsIds, tempItems, updateCartItem, createCart, pendingProductIds } = get()
     const token = useAuthStore?.getState?.()?.token ?? null
     const cartItem = itemsIds.find((item) => item.productId === id)
+
+    if (pendingProductIds.has(id)) return
 
     if (token) {
       if (cartItem) {
@@ -51,9 +62,15 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         const productCartSlotId = getProductCartSlotId(id, tempItems)
 
         if (!productCartSlotId) return
-        updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: 1 }).catch(() => {})
+        setPending(set, id)
+        updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: 1 })
+          .catch(() => {})
+          .finally(() => clearPending(set, id))
       } else {
-        createCart({ items: [{ productId: id, productQuantity: 1 }] }).catch(() => {})
+        setPending(set, id)
+        createCart({ items: [{ productId: id, productQuantity: 1 }] })
+          .catch(() => {})
+          .finally(() => clearPending(set, id))
       }
     } else {
       if (cartItem && cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
@@ -66,7 +83,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
             ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
             : tempItem,
         )
-        : tempItems  // existing product already has a tempItems entry — updated above
+        : tempItems
 
       set((state) => ({
         ...state,
@@ -75,31 +92,36 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         count,
         totalPrice: getTotalPrice(updatedTempItems),
       }))
-      // Always re-hydrate so tempItems stays in sync with itemsIds.
-      // For brand-new products this also fills in the missing row immediately.
       get().getCartItems().catch(() => {})
     }
   },
   getCartItems: async () => {
-    const { itemsIds } = get()
-    const ids = itemsIds.map((item) => item.productId)
-    const productList = await getProductByIds(ids)
-    const cartItems: ICartItem[] = productList.map((item) => ({
-      id: item.id,
-      productInfo: { ...item },
-      productQuantity: itemsIds.find((i) => i.productId === item.id)!.productQuantity,
-    }))
-    // Reconcile itemsIds and count to only reflect products that actually resolved,
-    // preventing stale IDs from causing ghost-cart state.
-    const reconciledIds = cartItems.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity }))
+    set({ status: 'loading', lastError: null })
+    try {
+      const { itemsIds } = get()
+      const ids = itemsIds.map((item) => item.productId)
+      const productList = await getProductByIds(ids)
+      const cartItems: ICartItem[] = productList.map((item) => ({
+        id: item.id,
+        productInfo: { ...item },
+        productQuantity: itemsIds.find((i) => i.productId === item.id)!.productQuantity,
+      }))
+      const reconciledIds = cartItems.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity }))
 
-    set((state) => ({
-      ...state,
-      tempItems: cartItems,
-      itemsIds: reconciledIds,
-      count: getProductsCount(reconciledIds),
-      totalPrice: getTotalPrice(cartItems),
-    }))
+      set((state) => ({
+        ...state,
+        tempItems: cartItems,
+        itemsIds: reconciledIds,
+        count: getProductsCount(reconciledIds),
+        totalPrice: getTotalPrice(cartItems),
+        status: 'ready',
+        lastError: null,
+      }))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load cart'
+
+      set({ status: 'error', lastError: message })
+    }
   },
 
   syncBackendCart: async (token: string) => {
@@ -109,8 +131,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     await createCart({ items: itemsIds })
   },
   remove: (id: string) => {
-    const { tempItems, itemsIds, updateCartItem, removeFullProduct } = get()
+    const { tempItems, itemsIds, updateCartItem, removeFullProduct, pendingProductIds } = get()
     const token = useAuthStore?.getState?.()?.token ?? null
+
+    if (pendingProductIds.has(id)) return
 
     if (token) {
       const productCartSlotId = getProductCartSlotId(id, tempItems)
@@ -123,7 +147,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
         return
       }
-      updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: -1 }).catch(() => {})
+      setPending(set, id)
+      updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: -1 })
+        .catch(() => {})
+        .finally(() => clearPending(set, id))
     } else {
       const updatedCart = removeItem(id, itemsIds)
       const updatedTempItems = tempItems
@@ -147,10 +174,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     const token = useAuthStore?.getState?.()?.token ?? null
 
     if (token) {
-      const { tempItems } = get()
+      const { tempItems, pendingProductIds } = get()
+
+      if (pendingProductIds.has(id)) return
       const productCartSlotId = getProductCartSlotId(id, tempItems)
 
       if (!productCartSlotId) return
+      setPending(set, id)
       removeCartItem([productCartSlotId])
         .then((data) => {
           const { itemsTotalPrice, productsQuantity, items } = data
@@ -164,6 +194,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
           }))
         })
         .catch(() => {})
+        .finally(() => clearPending(set, id))
     } else {
       const { itemsIds, tempItems } = get()
       const updatedCart = itemsIds.filter((item) => item.productId !== id)
@@ -177,19 +208,24 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       } as CartSliceState)
     }
   },
-  resetCart: () => set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false } as CartSliceState),
+  resetCart: () => set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false, status: 'idle', pendingProductIds: new Set(), lastError: null } as CartSliceState),
   clearCart: async () => {
     const { tempItems, isSync } = get()
     const token = useAuthStore?.getState?.()?.token ?? null
 
-    // Only delete from backend when synced — tempItems.id is a real cart slot UUID only after sync.
-    // For guest carts (isSync=false), tempItems.id is the product ID, not the cart item slot ID.
-    if (token && isSync && tempItems.length > 0) {
-      const ids = tempItems.map((item) => item.id)
+    set({ status: 'syncing' })
+    try {
+      if (token && isSync && tempItems.length > 0) {
+        const ids = tempItems.map((item) => item.id)
 
-      await removeCartItem(ids)
+        await removeCartItem(ids)
+      }
+      set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: !!token, status: 'ready', lastError: null, pendingProductIds: new Set() } as CartSliceState)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to clear cart'
+
+      set({ status: 'error', lastError: message })
     }
-    set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: token ? true : false } as CartSliceState)
   },
   setTempItems: (items) => set((state) => ({
     ...state,
@@ -200,6 +236,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
   })),
   createCart: async (reqItems: ICartPushItems): Promise<void> => {
+    set({ status: 'syncing' })
     const mergedCart = await mergeCarts(reqItems)
     const { itemsTotalPrice, productsQuantity, items } = mergedCart
 
@@ -210,9 +247,11 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       count: productsQuantity,
       totalPrice: itemsTotalPrice,
       isSync: true,
+      status: 'ready',
     }))
   },
   updateCartItem: async (updatedItem: ICartUpdatedItem): Promise<void> => {
+    set({ status: 'syncing' })
     const data = await changeCartItemQuantity(updatedItem)
     const { itemsTotalPrice, productsQuantity, items } = data
     const filteredItems = items.filter((item) => item.productQuantity > 0)
@@ -223,7 +262,12 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       tempItems: filteredItems,
       count: productsQuantity,
       totalPrice: itemsTotalPrice,
+      status: 'ready',
     }))
+  },
+  retryHydration: () => {
+    set({ status: 'idle', lastError: null })
+    get().getCartItems().catch(() => {})
   },
 })
 
@@ -264,6 +308,26 @@ function createItemsIdsFromCart(cartItems: ICartItem[]): ICartPushItem[] {
     productId: item.productInfo.id,
     productQuantity: item.productQuantity,
   }))
+}
+
+function setPending(set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void, id: string) {
+  set((state) => {
+    const next = new Set(state.pendingProductIds)
+
+    next.add(id)
+
+    return { pendingProductIds: next }
+  })
+}
+
+function clearPending(set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void, id: string) {
+  set((state) => {
+    const next = new Set(state.pendingProductIds)
+
+    next.delete(id)
+
+    return { pendingProductIds: next }
+  })
 }
 
 export const useCartStore = create<CartSliceStore>()(

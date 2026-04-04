@@ -64,7 +64,7 @@ test('clicking heart toggles favourite state', async ({ page }) => {
   await heartBtn.waitFor({ timeout: 10000 })
   const before = await heartBtn.getAttribute('data-active')
   await heartBtn.click()
-  await page.waitForTimeout(800)
+  await expect(heartBtn).toHaveAttribute('data-active', before === 'true' ? 'false' : 'true', { timeout: 5000 })
   const after = await heartBtn.getAttribute('data-active')
   expect(after).not.toBe(before)
 })

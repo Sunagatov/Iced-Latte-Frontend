@@ -1,11 +1,5 @@
-import Loader from '@/shared/components/Loader/Loader'
+import FavouritesSkeleton from '@/features/favorites/components/FavouritesSkeleton/FavouritesSkeleton'
 
-const FavouritesLoading = () => {
-  return (
-    <div className="flex min-h-[100vh] w-full items-center justify-center">
-      <Loader />
-    </div>
-  )
-}
+const FavouritesLoading = () => <FavouritesSkeleton />
 
 export default FavouritesLoading

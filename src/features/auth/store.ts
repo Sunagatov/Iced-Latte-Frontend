@@ -1,38 +1,27 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { UserData } from '@/features/user/types'
 
+export type AuthStatus = 'loading' | 'anonymous' | 'authenticated'
+
 export interface AuthStore {
-  token: string | null
-  refreshToken: string | null
-  isLoggedIn: boolean
+  status: AuthStatus
   userData: UserData | null
-  authenticate: (token: string | null) => void
-  setRefreshToken: (refreshToken: string) => void
+  setAuthenticated: (userData: UserData | null) => void
+  setAnonymous: () => void
+  setLoading: () => void
   reset: () => void
   setUserData: (userData: UserData | null) => void
+  // Legacy compat — components still reading isLoggedIn
+  readonly isLoggedIn: boolean
 }
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      token: null,
-      refreshToken: null,
-      isLoggedIn: false,
-      userData: null,
-      // Reject null/empty token — never mark user as logged-in without a real token
-      authenticate: (token) => {
-        if (!token) return
-        set({ token, isLoggedIn: true })
-      },
-      setRefreshToken: (refreshToken) => set({ refreshToken, isLoggedIn: true }),
-      reset: () => set({ token: null, refreshToken: null, userData: null, isLoggedIn: false }),
-      setUserData: (userData) => set({ userData }),
-    }),
-    {
-      name: 'token',
-      // Only persist the access token — never persist refreshToken or PII (userData)
-      partialize: (state) => ({ token: state.token, isLoggedIn: state.isLoggedIn }),
-    },
-  ),
-)
+export const useAuthStore = create<AuthStore>()((set, get) => ({
+  status: 'loading',
+  userData: null,
+  get isLoggedIn() { return get().status === 'authenticated' },
+  setAuthenticated: (userData) => set({ status: 'authenticated', userData }),
+  setAnonymous: () => set({ status: 'anonymous', userData: null }),
+  setLoading: () => set({ status: 'loading' }),
+  reset: () => set({ status: 'anonymous', userData: null }),
+  setUserData: (userData) => set({ userData }),
+}))

@@ -8,25 +8,35 @@ import Loader from '@/shared/components/Loader/Loader'
 export default function Cart() {
   const tempItems = useCartStore((state) => state.tempItems)
   const count = useCartStore((state) => state.count)
+  const status = useCartStore((state) => state.status)
+  const lastError = useCartStore((state) => state.lastError)
   const getCartItems = useCartStore((state) => state.getCartItems)
+  const retryHydration = useCartStore((state) => state.retryHydration)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => { setHydrated(true) }, [])
 
-  // While count says the cart is non-empty but tempItems hasn't hydrated yet
-  // (e.g. guest added a brand-new product and getCartItems() is in-flight),
-  // show a loader instead of an empty CartFull.
-  const isHydrating = count > 0 && tempItems.length === 0
-
   useEffect(() => {
-    if (hydrated && isHydrating) {
+    if (hydrated && count > 0 && tempItems.length === 0 && status === 'idle') {
       getCartItems().catch(() => {})
     }
-  }, [hydrated, isHydrating, getCartItems])
+  }, [hydrated, count, tempItems.length, status, getCartItems])
 
-  if (!hydrated || isHydrating) return (
+  if (!hydrated || status === 'loading') return (
     <div className="flex min-h-[50vh] items-center justify-center">
       <Loader />
+    </div>
+  )
+
+  if (status === 'error') return (
+    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
+      <p className="text-sm text-secondary">{lastError ?? 'Failed to load your cart.'}</p>
+      <button
+        onClick={retryHydration}
+        className="rounded-full bg-brand-solid px-5 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
+      >
+        Try again
+      </button>
     </div>
   )
 

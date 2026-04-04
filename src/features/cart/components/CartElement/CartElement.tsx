@@ -9,7 +9,7 @@ import { CartElementProps } from '@/features/cart/types'
 import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/store'
 import { useEffect, useRef, useState } from 'react'
 
-export default function CartElement({ product, add, remove, removeAll }: Readonly<CartElementProps>) {
+export default function CartElement({ product, isPending = false, add, remove, removeAll }: Readonly<CartElementProps>) {
   const { productInfo } = product
   const productQuantity = product.productQuantity
   const totalProductPrice = (productInfo.price * productQuantity).toFixed(2)
@@ -77,7 +77,8 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
           <button
             onClick={removeAll}
             data-testid="cart-trash-btn"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-secondary transition-all hover:bg-[#FFE5E5] hover:text-negative active:scale-90"
+            disabled={isPending}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-secondary transition-all hover:bg-[#FFE5E5] hover:text-negative active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Remove item"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -100,7 +101,8 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
           <button
             onClick={productQuantity === 1 ? removeAll : remove}
             data-testid="cart-minus-btn"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-inverted transition-colors hover:bg-white/20 active:scale-90"
+            disabled={isPending}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-inverted transition-colors hover:bg-white/20 active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={productQuantity === 1 ? 'Remove item' : 'Decrease quantity'}
           >
             {productQuantity === 1 ? (
@@ -116,9 +118,9 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
           <span className="w-6 text-center text-sm font-semibold text-inverted" data-testid="cart-item-qty">{productQuantity}</span>
           <button
             onClick={productQuantity >= MAX_CART_ITEM_QUANTITY ? undefined : add}
-            disabled={productQuantity >= MAX_CART_ITEM_QUANTITY}
+            disabled={isPending || productQuantity >= MAX_CART_ITEM_QUANTITY}
             data-testid="cart-plus-btn"
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-solid text-inverted transition-colors hover:bg-brand-solid-hover active:scale-90"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-solid text-inverted transition-colors hover:bg-brand-solid-hover active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Increase quantity"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

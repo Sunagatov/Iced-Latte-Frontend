@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import FavElement from '../FavElement/FavElement'
 import { IProduct } from '@/features/products/types'
 import { useFavouritesStore } from '@/features/favorites/store'
@@ -30,7 +30,16 @@ function GridIcon({ active }: { active: boolean }) {
 
 export default function FavouritesFull() {
   const favourites = useFavouritesStore((s) => s.favourites)
-  const [view, setView] = useState<'list' | 'grid'>('list')
+  const [view, setView] = useState<'list' | 'grid'>(() => {
+    if (typeof window === 'undefined') return 'list'
+    const saved = window.localStorage.getItem('favourites-view')
+
+    return saved === 'grid' ? 'grid' : 'list'
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem('favourites-view', view)
+  }, [view])
 
   const renderContent = () => {
     if (view === 'grid') {
@@ -62,6 +71,7 @@ export default function FavouritesFull() {
         <div className="flex items-center gap-1 rounded-xl border border-primary/20 p-1">
           <button
             onClick={() => setView('list')}
+            aria-pressed={view === 'list'}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
               view === 'list' ? 'bg-brand-second' : 'hover:bg-secondary'
             }`}
@@ -71,6 +81,7 @@ export default function FavouritesFull() {
           </button>
           <button
             onClick={() => setView('grid')}
+            aria-pressed={view === 'grid'}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
               view === 'grid' ? 'bg-brand-second' : 'hover:bg-secondary'
             }`}

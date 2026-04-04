@@ -1,18 +1,17 @@
 'use client'
-import { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
-import { SuccessRefreshToken } from '@/features/auth/types'
+import { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { useAuthStore } from '@/features/auth/store'
 import { api } from '@/shared/api/client'
 import { useEffect } from 'react'
 import { useLogout } from '@/features/auth/hooks'
-import { setCookie } from '@/shared/utils/cookieUtils'
+import { apiGetSession } from '@/features/auth/api'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean
 }
 
 const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
-  const { token, refreshToken, authenticate, setRefreshToken } = useAuthStore()
+  const { setAuthenticated, setAnonymous } = useAuthStore()
   const { logout } = useLogout()
 
   useEffect(() => {
@@ -29,24 +28,16 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
         ) {
           try {
             originalRequest.isRetry = true
-            const response: AxiosResponse<SuccessRefreshToken> = await api.post(
-              '/auth/refresh',
-              null,
-              { headers: { Authorization: `Bearer ${refreshToken}` } },
-            )
+            // Refresh via cookie — backend reads the refresh token from HttpOnly cookie
+            await api.post('/auth/refresh', null)
+            const session = await apiGetSession()
 
-            const { token: newToken, refreshToken: newRefreshToken } = response.data
-
-            // Sync all auth state atomically after refresh
-            authenticate(newToken)
-            setRefreshToken(newRefreshToken)
-            await setCookie('token', newToken)
-            originalRequest.headers['Authorization'] = `Bearer ${newToken}`
+            setAuthenticated(session.user)
 
             return api.request(originalRequest)
-          } catch (refreshError) {
-            if (refreshError) await logout()
-            throw refreshError
+          } catch {
+            setAnonymous()
+            await logout()
           }
         }
 
@@ -57,7 +48,7 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
     return () => {
       api.interceptors.response.eject(responseInterceptor)
     }
-  }, [authenticate, setRefreshToken, refreshToken, token, logout])
+  }, [setAuthenticated, setAnonymous, logout])
 
   return <>{children}</>
 }

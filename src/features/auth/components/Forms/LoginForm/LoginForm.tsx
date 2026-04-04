@@ -5,17 +5,16 @@ import FormInput from '@/shared/components/FormInput/FormInput'
 import Loader from '@/shared/components/Loader/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { apiLoginUser } from '@/features/auth/api'
+import { apiLoginUser, apiGetSession } from '@/features/auth/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
 interface IFormValues { email: string; password: string }
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { setCookie } from '@/shared/utils/cookieUtils'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
-  const { authenticate, setRefreshToken } = useAuthStore()
+  const { setAuthenticated } = useAuthStore()
   const { handleRedirectForAuth } = useAuthRedirect()
   const { errorMessage, handleError } = useErrorHandler()
   const {
@@ -25,24 +24,18 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm<IFormValues>({
     resolver: yupResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   })
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
-      const data = await apiLoginUser(formData)
+      await apiLoginUser(formData)
+      const session = await apiGetSession()
 
-      if (data) {
-        await setCookie('token', data.token)
-        authenticate(data.token)
-        setRefreshToken(data.refreshToken)
-        reset()
-        handleRedirectForAuth()
-      }
+      setAuthenticated(session.user)
+      reset()
+      handleRedirectForAuth()
     } catch (error) {
       handleError(error)
     } finally {

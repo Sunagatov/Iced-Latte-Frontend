@@ -35,10 +35,11 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
 
   const token = useAuthStore((state) => state.token)
 
-  const { toggleFavourite, favouriteIds } =
+  const { toggleFavourite, favouriteIds, pendingIds } =
     useFavouritesStore()
 
   const isFavourited = favouriteIds.includes(id)
+  const isPending = pendingIds.has(id)
 
   const handleButtonClick = () => { void toggleFavourite(id, token) }
 
@@ -47,6 +48,25 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
       data-testid="product-card"
       className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl border border-black/6 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:min-w-[190px]"
     >
+      {/* Heart button — outside Link to avoid nested interactive elements */}
+      <button
+        onClick={handleButtonClick}
+        disabled={isPending}
+        data-testid="favourite-btn"
+        data-active={isFavourited ? 'true' : 'false'}
+        aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
+        aria-pressed={isFavourited}
+        className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none disabled:opacity-50 ${
+          isFavourited
+            ? 'bg-red-500/90 text-white'
+            : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
+        }`}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      </button>
+
       {/* Image */}
       <Link href={`/product/${id}`} className="flex flex-1 flex-col">
         <div className="relative h-[200px] w-full bg-[#F7F7F9] sm:h-[220px]">
@@ -58,21 +78,6 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
             sizes="(max-width: 768px) 50vw, 25vw"
             priority={priority}
           />
-          {/* Heart button — frosted glass top-right */}
-          <button
-            onClick={(e) => { e.preventDefault(); handleButtonClick() }}
-            data-testid="favourite-btn"
-            data-active={isFavourited ? 'true' : 'false'}
-            className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none ${
-              isFavourited
-                ? 'bg-red-500/90 text-white'
-                : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
-            }`}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
         </div>
 
         {/* Info */}

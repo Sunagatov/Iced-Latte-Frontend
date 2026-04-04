@@ -1,13 +1,12 @@
 import { render, screen, act } from '@testing-library/react'
-import SyncFav from '@/features/favorites/components/SyncFav/SyncFav'
+import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 
-jest.mock('@/shared/components/Loader/Loader', () => ({ __esModule: true, default: () => <div>Loading</div> }))
+jest.mock('@/features/favorites/components/FavouritesSkeleton/FavouritesSkeleton', () => ({ __esModule: true, default: () => <div>Loading</div> }))
 jest.mock('@/features/favorites/components/FavouritesEmpty/FavouritesEmpty', () => ({ __esModule: true, default: () => <div>FavouritesEmpty</div> }))
 jest.mock('@/features/favorites/components/FavouritesFull/FavouritesFull', () => ({ __esModule: true, default: () => <div>FavouritesFull</div> }))
 
-// Make persist.hasHydrated return true immediately so the component skips the subscription path
 const mockPersist = { hasHydrated: () => true, onFinishHydration: jest.fn(() => jest.fn()) }
 ;(useFavouritesStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
 ;(useAuthStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
@@ -17,10 +16,10 @@ beforeEach(() => {
   useAuthStore.setState({ token: null, isLoggedIn: false, refreshToken: null, userData: null })
 })
 
-describe('SyncFav', () => {
+describe('FavouritesPage', () => {
   it('shows FavouritesEmpty when no favourites', async () => {
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
-    await act(async () => { render(<SyncFav />) })
+    await act(async () => { render(<FavouritesPage />) })
     expect(screen.getByText('FavouritesEmpty')).toBeInTheDocument()
   })
 
@@ -32,7 +31,7 @@ describe('SyncFav', () => {
       pendingIds: new Set(),
     })
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
-    await act(async () => { render(<SyncFav />) })
+    await act(async () => { render(<FavouritesPage />) })
     expect(screen.getByText('FavouritesFull')).toBeInTheDocument()
   })
 
@@ -40,7 +39,7 @@ describe('SyncFav', () => {
     const slowPersist = { hasHydrated: () => false, onFinishHydration: jest.fn(() => jest.fn()) }
     ;(useFavouritesStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
     ;(useAuthStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
-    render(<SyncFav />)
+    render(<FavouritesPage />)
     expect(screen.getByText('Loading')).toBeInTheDocument()
     // restore
     ;(useFavouritesStore as unknown as { persist: typeof mockPersist }).persist = mockPersist

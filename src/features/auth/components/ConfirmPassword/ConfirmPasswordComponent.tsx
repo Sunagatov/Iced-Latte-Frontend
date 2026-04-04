@@ -6,17 +6,17 @@ import { useAuthStore } from '@/features/auth/store'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { apiConfirmEmail } from '@/features/auth/api'
-import { confirmPasswordSchema } from '@/features/auth/validation'
-interface IFormValues { confirmPassword: string }
-import { setCookie } from '@/shared/utils/cookieUtils'
+import { verifyEmailCode, apiGetSession } from '@/features/auth/api'
+import { verifyEmailCodeSchema } from '@/features/auth/validation'
+interface IFormValues { verificationCode: string }
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthRedirect } from '@/features/auth/hooks'
 
 const ConfirmPasswordComponent = () => {
   const [loading, setLoading] = useState(false)
-  const { authenticate, setRefreshToken } = useAuthStore()
+  const { setAuthenticated } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
+  const { handleRedirectForAuth } = useAuthRedirect()
 
   const {
     register,
@@ -24,28 +24,19 @@ const ConfirmPasswordComponent = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormValues>({
-    resolver: yupResolver(confirmPasswordSchema),
-    defaultValues: {
-      confirmPassword: '',
-    },
+    resolver: yupResolver(verifyEmailCodeSchema),
+    defaultValues: { verificationCode: '' },
   })
-
-  const { handleRedirectForAuth } = useAuthRedirect()
 
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
       setLoading(true)
+      await verifyEmailCode(values.verificationCode)
+      const session = await apiGetSession()
 
-      const data = await apiConfirmEmail(values.confirmPassword)
-
-      if (data) {
-        await setCookie('token', data.token?.token)
-        authenticate(data.token?.token)
-        setRefreshToken(data.token?.refreshToken)
-        reset()
-
-        handleRedirectForAuth()
-      }
+      setAuthenticated(session.user)
+      reset()
+      handleRedirectForAuth()
     } catch (error) {
       handleError(error)
     } finally {
@@ -67,13 +58,13 @@ const ConfirmPasswordComponent = () => {
         )}
         <div className="flex-grow md:w-full">
           <FormInput
-            id="confirmPassword"
+            id="verificationCode"
             register={register}
             label="Enter code that was sent to your email"
-            name="confirmPassword"
+            name="verificationCode"
             type="text"
             placeholder="Confirmation code"
-            error={errors.confirmPassword}
+            error={errors.verificationCode}
             className="w-full"
           />
         </div>

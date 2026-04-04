@@ -13,7 +13,7 @@ import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
-  const { toggleFavourite, favouriteIds } = useFavouritesStore()
+  const { toggleFavourite, favouriteIds, pendingIds } = useFavouritesStore()
   const { token } = useAuthStore()
   const add = useCartStore((s) => s.add)
   const remove = useCartStore((s) => s.remove)
@@ -22,14 +22,17 @@ export default function FavElement({ product, view = 'list' }: Props) {
 
   const qty = items?.find((i) => i.productId === product.id)?.productQuantity ?? 0
   const isFavourited = favouriteIds.includes(product.id)
+  const isPending = pendingIds.has(product.id)
 
   const handleHeart = () => { void toggleFavourite(product.id, token) }
 
   const HeartBtn = () => (
     <button
       onClick={handleHeart}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-red-50"
+      disabled={isPending}
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-red-50 disabled:opacity-50"
       aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
+      aria-pressed={isFavourited}
     >
       {isFavourited
         ? <RiHeartFill className="h-5 w-5 text-negative" />
@@ -81,7 +84,8 @@ export default function FavElement({ product, view = 'list' }: Props) {
           />
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHeart() }}
-            className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm"
+            disabled={isPending}
+            className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm disabled:opacity-50"
             aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
             aria-pressed={isFavourited}
           >
