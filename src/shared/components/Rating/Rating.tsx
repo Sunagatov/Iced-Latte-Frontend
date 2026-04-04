@@ -7,7 +7,7 @@ export default function Rating({ rating }: Readonly<IRatingProps>) {
       : parseFloat(rating || '0')
     : 0
 
-  const formattedRating = new Intl.NumberFormat('ru', {
+  const formattedRating = new Intl.NumberFormat('en-GB', {
     style: 'decimal',
     maximumFractionDigits: 1,
     minimumFractionDigits: 1,

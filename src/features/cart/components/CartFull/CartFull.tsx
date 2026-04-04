@@ -2,7 +2,6 @@ import CartElement from '../CartElement/CartElement'
 import { useCartStore } from '@/features/cart/store'
 import { ICartItem } from '@/features/cart/types'
 import { useAuthStore } from '@/features/auth/store'
-import { useLocalSessionStore } from '@/features/user/store'
 import { useRouter } from 'next/navigation'
 
 export default function CartFull() {
@@ -10,16 +9,14 @@ export default function CartFull() {
   const clearCart = useCartStore((s) => s.clearCart)
   const status = useCartStore((s) => s.status)
   const pendingProductIds = useCartStore((s) => s.pendingProductIds)
-  const { token } = useAuthStore()
-  const { addPreviousRouteForAuth } = useLocalSessionStore()
+  const { isLoggedIn } = useAuthStore()
   const router = useRouter()
 
   const handleCheckout = () => {
-    if (token) {
+    if (isLoggedIn) {
       router.push('/checkout')
     } else {
-      addPreviousRouteForAuth('/checkout')
-      router.push('/signin')
+      router.push('/signin?next=/checkout')
     }
   }
 

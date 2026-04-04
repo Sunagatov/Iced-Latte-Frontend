@@ -12,15 +12,12 @@ export interface AuthStore {
   reset: () => void
   setUserData: (userData: UserData | null) => void
   readonly isLoggedIn: boolean
-  // Legacy compat — components reading token use this; real auth is cookie-based
-  readonly token: string | null
 }
 
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   status: 'loading',
   userData: null,
   get isLoggedIn() { return get().status === 'authenticated' },
-  get token() { return get().status === 'authenticated' ? 'authenticated' : null },
   setAuthenticated: (userData) => set({ status: 'authenticated', userData }),
   setAnonymous: () => set({ status: 'anonymous', userData: null }),
   setLoading: () => set({ status: 'loading' }),

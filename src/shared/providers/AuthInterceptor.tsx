@@ -32,6 +32,7 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
             await api.post('/auth/refresh', null)
             const session = await apiGetSession()
 
+            if (!session.authenticated) throw new Error('Session invalid after refresh')
             setAuthenticated(session.user)
 
             return api.request(originalRequest)

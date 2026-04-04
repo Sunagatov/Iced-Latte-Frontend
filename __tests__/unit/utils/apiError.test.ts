@@ -8,8 +8,8 @@ function makeAxiosError(status: number, data: Record<string, unknown>) {
 }
 
 describe('handleAxiosError', () => {
-  it('returns backend message for 401', () => {
-    expect(handleAxiosError(makeAxiosError(401, { message: 'Bad creds' }))).toBe('Bad creds')
+  it('returns normalized message for 401 regardless of backend payload', () => {
+    expect(handleAxiosError(makeAxiosError(401, { message: 'Bad creds' }))).toBe('Incorrect email or password')
   })
 
   it('returns default message for 401 without message', () => {

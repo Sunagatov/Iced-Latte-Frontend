@@ -1,21 +1,3 @@
-export function getTokenFromBrowserCookie(name = 'token'): string | null {
-  if (typeof document === 'undefined') return null
-
-  const match = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith(`${name}=`))
-
-  if (!match) return null
-
-  return decodeURIComponent(match.slice(name.length + 1))
-}
-
-export function removeTokenFromBrowserCookie(name = 'token'): void {
-  if (typeof document === 'undefined') return
-
-  document.cookie = `${name}=; Max-Age=0; path=/`
-}
-
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const payload = token.split('.')[1]

@@ -5,6 +5,7 @@ import * as api from './api'
 interface AddressStore {
   addresses: DeliveryAddress[]
   loading: boolean
+  error: string | null
   fetch: () => Promise<void>
   add: (data: AddressFormData) => Promise<void>
   update: (id: string, data: AddressFormData) => Promise<void>
@@ -15,13 +16,16 @@ interface AddressStore {
 export const useAddressStore = create<AddressStore>()(set => ({
   addresses: [],
   loading: false,
+  error: null,
 
   fetch: async () => {
-    set({ loading: true })
+    set({ loading: true, error: null })
     try {
       const addresses = await api.getAddresses()
 
       set({ addresses })
+    } catch {
+      set({ error: 'Failed to load addresses. Please try again.' })
     } finally {
       set({ loading: false })
     }

@@ -12,7 +12,6 @@ import { Review } from '@/features/reviews/types'
 
 interface ReviewFormProps {
   productId: string
-  hasReviews?: boolean
   showForm: boolean
   setShowForm: (v: boolean) => void
   onReviewSubmitted?: (review: Review) => void
@@ -30,9 +29,12 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
   const canSubmit = currentRating > 0 && reviewText.trim().length > 0
 
   const handleAddReview = async () => {
+    const trimmedText = reviewText.trim()
+    if (!currentRating || !trimmedText) return
+
     try {
       setLoading(true)
-      const submitted = await apiAddProductReview(productId, reviewText, currentRating)
+      const submitted = await apiAddProductReview(productId, trimmedText, currentRating)
       const newReview: Review = {
         productReviewId: submitted.productReviewId,
         productId,
@@ -47,16 +49,13 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
       }
 
       onReviewSubmitted?.(newReview)
-      // Re-fetch after delay to reflect async moderation outcome
-      setTimeout(() => onReviewSubmitted?.(newReview), 5000)
+      setRating(productId, 0)
+      setReviewText('')
+      setShowForm(false)
     } catch (error) {
       handleError(error)
     } finally {
       setLoading(false)
-
-      setRating(productId, 0)
-
-      setReviewText('')
     }
   }
 

@@ -10,6 +10,8 @@ import { twMerge } from 'tailwind-merge'
 interface IReview {
   isUserReview: boolean
   review: ReviewType
+  allowVoting?: boolean
+  allowDelete?: boolean
   deleteReview?: (id: string) => void
   rateReview?: (id: string, isLike: boolean) => void
 }
@@ -17,8 +19,10 @@ interface IReview {
 const Review: React.FC<Readonly<IReview>> = ({
   isUserReview = false,
   review,
-  deleteReview = () => {},
-  rateReview = () => {},
+  allowVoting = false,
+  allowDelete = false,
+  deleteReview,
+  rateReview,
 }) => {
   const [isReviewExpanded, setIsReviewExpanded] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -27,44 +31,38 @@ const Review: React.FC<Readonly<IReview>> = ({
 
   const { date, time } = formatReviewDate(review.createdAt)
 
-  const seeMoreButtonClickHandler = () => {
-    setIsReviewExpanded(true)
-  }
-
   const deleteReviewHandler = () => {
-    if (!confirmDelete) { setConfirmDelete(true)
-
-      return }
-    deleteReview(review.productReviewId!)
+    if (!review.productReviewId || !deleteReview) return
+    if (!confirmDelete) { setConfirmDelete(true); return }
+    deleteReview(review.productReviewId)
   }
 
   const likeReviewHandler = () => {
-    rateReview(review.productReviewId!, true)
+    if (review.productReviewId && rateReview) rateReview(review.productReviewId, true)
   }
 
   const dislikeReviewHandler = () => {
-    rateReview(review.productReviewId!, false)
+    if (review.productReviewId && rateReview) rateReview(review.productReviewId, false)
   }
+
+  const displayName = [review.userName, review.userLastName].filter(Boolean).join(' ') || 'Anonymous'
 
   return (
     <article className="group">
       <div className="mb-3 flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-solid text-sm font-bold text-inverted">
-          {review.userName?.[0]?.toUpperCase() ?? '?'}
+          {displayName[0]?.toUpperCase() ?? '?'}
         </div>
         <div>
-          <div className="text-base font-semibold text-primary">
-            {review.userName} {review.userLastName}
-          </div>
+          <div className="text-base font-semibold text-primary">{displayName}</div>
           <div className="flex items-center gap-1.5 text-sm text-tertiary">
             <span>{date}</span>
-            <span>·</span>
-            <span>{time}</span>
+            {time && <><span>·</span><span>{time}</span></>}
           </div>
         </div>
       </div>
 
-      <div className="mb-3 flex items-center gap-1" role="img" aria-label={`Rated ${review.productRating} out of 5 stars`}>
+      <div className="mb-3 flex items-center gap-1" role="img" aria-label={review.productRating ? `Rated ${review.productRating} out of 5 stars` : 'No rating'}>
         {[...Array(5)].map((_, i) => (
           <FaStar
             className={`h-4 w-4 ${review.productRating && i < review.productRating ? 'text-brand' : 'text-disabled'}`}
@@ -84,13 +82,25 @@ const Review: React.FC<Readonly<IReview>> = ({
             <span>
               {review.text.slice(0, 300)}
               <button
-                onClick={seeMoreButtonClickHandler}
+                onClick={() => setIsReviewExpanded(true)}
                 className="ml-1 text-sm font-medium text-brand hover:underline"
               >
-                see more
+                Read more
               </button>
             </span>
-          ) : review.text
+          ) : (
+            <span>
+              {review.text}
+              {review.text.length > 300 && (
+                <button
+                  onClick={() => setIsReviewExpanded(false)}
+                  className="ml-1 text-sm font-medium text-brand hover:underline"
+                >
+                  Show less
+                </button>
+              )}
+            </span>
+          )
         ) : 'No written review'}
       </p>
 
@@ -101,33 +111,35 @@ const Review: React.FC<Readonly<IReview>> = ({
       )}
 
       <div className="flex items-center justify-between">
-        {isUserReview && (
+        {isUserReview && allowDelete && deleteReview && (
           <button
             onClick={deleteReviewHandler}
             onBlur={() => setConfirmDelete(false)}
             className={`text-xs font-medium transition ${confirmDelete ? 'text-negative' : 'text-tertiary hover:text-negative'}`}
           >
-            {confirmDelete ? 'Tap again to confirm' : 'Delete review'}
+            {confirmDelete ? 'Confirm delete' : 'Delete review'}
           </button>
         )}
-        <div className="flex gap-2 xl:ml-auto">
-          <button
-            onClick={likeReviewHandler}
-            aria-label={`Mark review as helpful, ${review.likesCount} likes`}
-            className="flex items-center gap-1 text-xs text-tertiary transition hover:text-positive"
-          >
-            <BiLike className="h-3.5 w-3.5" />
-            <span>{review.likesCount}</span>
-          </button>
-          <button
-            onClick={dislikeReviewHandler}
-            aria-label={`Mark review as not helpful, ${review.dislikesCount} dislikes`}
-            className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative"
-          >
-            <BiDislike className="h-3.5 w-3.5" />
-            <span>{review.dislikesCount}</span>
-          </button>
-        </div>
+        {allowVoting && rateReview && (
+          <div className="flex gap-2 xl:ml-auto">
+            <button
+              onClick={likeReviewHandler}
+              aria-label={`Mark review as helpful, ${review.likesCount} likes`}
+              className="flex items-center gap-1 text-xs text-tertiary transition hover:text-positive"
+            >
+              <BiLike className="h-3.5 w-3.5" />
+              <span>{review.likesCount}</span>
+            </button>
+            <button
+              onClick={dislikeReviewHandler}
+              aria-label={`Mark review as not helpful, ${review.dislikesCount} dislikes`}
+              className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative"
+            >
+              <BiDislike className="h-3.5 w-3.5" />
+              <span>{review.dislikesCount}</span>
+            </button>
+          </div>
+        )}
       </div>
     </article>
   )

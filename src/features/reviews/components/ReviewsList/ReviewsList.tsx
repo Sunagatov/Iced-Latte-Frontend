@@ -71,8 +71,9 @@ const ReviewsList: React.FC<IReviewsList> = ({
           <Review
             isUserReview
             review={userReview}
+            allowDelete
+            allowVoting={false}
             deleteReview={deleteReviewHandler}
-            rateReview={handleRateReview}
           />
         </div>
       )}
@@ -86,6 +87,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
             <Review
               isUserReview={false}
               review={review}
+              allowVoting
               rateReview={handleRateReview}
             />
           </li>

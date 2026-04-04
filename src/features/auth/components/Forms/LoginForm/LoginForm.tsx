@@ -33,6 +33,7 @@ export default function LoginForm() {
       await apiLoginUser(formData)
       const session = await apiGetSession()
 
+      if (!session.authenticated) throw new Error('Login failed')
       setAuthenticated(session.user)
       reset()
       handleRedirectForAuth()

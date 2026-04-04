@@ -1,8 +1,6 @@
-'use client'
 import { useAuthStore } from '../store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
-import { useProductReviewsStore } from '@/features/reviews/store'
 import { useRouter } from 'next/navigation'
 import { apiLogoutUser } from '../api'
 import { useCallback, useState } from 'react'
@@ -13,26 +11,21 @@ export function useLogout() {
   const { resetFav } = useFavouritesStore()
   const { resetCart } = useCartStore()
   const router = useRouter()
-  const { setIsRaitingFormVisible, setIsReviewFormVisible, setIsReviewButtonVisible } =
-    useProductReviewsStore()
 
   const logout = useCallback(async () => {
     try {
       setIsLoading(true)
-      await apiLogoutUser() // backend clears the session cookie
+      await apiLogoutUser()
     } catch {
       // ignore — logout clears state regardless
     } finally {
       reset()
       resetFav()
       resetCart()
-      setIsReviewFormVisible(false)
-      setIsRaitingFormVisible(false)
-      setIsReviewButtonVisible(true)
       router.push('/signin')
       setIsLoading(false)
     }
-  }, [reset, resetFav, resetCart, router, setIsRaitingFormVisible, setIsReviewButtonVisible, setIsReviewFormVisible])
+  }, [reset, resetFav, resetCart, router])
 
   return { logout, isLoading }
 }

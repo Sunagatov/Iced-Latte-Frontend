@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react'
 import { useCartStore } from '@/features/cart/store'
-import { fetchCart } from '@/features/cart/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { apiGetSession } from '@/features/auth/api'
@@ -10,7 +9,7 @@ import { apiGetSession } from '@/features/auth/api'
 const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   const { status, setAuthenticated, setAnonymous, reset: resetAuth } = useAuthStore()
   const { syncBackendFav, resetFav, getFavouriteProducts } = useFavouritesStore()
-  const { syncBackendCart, resetCart, getCartItems, setTempItems, itemsIds, isSync } = useCartStore()
+  const { syncBackendCart, resetCart, getCartItems, loadAuthCart, itemsIds, isSync } = useCartStore()
 
   // Bootstrap session on mount
   useEffect(() => {
@@ -40,9 +39,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     if (!isSync && itemsIds.length) {
       syncBackendCart('').catch(() => {})
     } else {
-      fetchCart()
-        .then((cart) => setTempItems(cart.items))
-        .catch(() => {})
+      loadAuthCart().catch(() => {})
     }
 
     const syncFavourites = async () => {

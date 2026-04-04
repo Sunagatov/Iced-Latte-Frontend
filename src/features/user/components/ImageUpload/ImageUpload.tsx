@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
-import { useState } from 'react'
-import { uploadImage } from '@/features/user/api'
+import { useEffect, useRef, useState } from 'react'
+import { uploadImage, getUserData } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthStore } from '@/features/auth/store'
 import Loader from '@/shared/components/Loader/Loader'
@@ -12,17 +12,32 @@ const ImageUpload = () => {
   const [preview, setPreview] = useState<string | null>(null)
   const [inputKey, setInputKey] = useState(Date.now())
   const { handleError } = useErrorHandler()
-  const { userData } = useAuthStore()
+  const { userData, setUserData } = useAuthStore()
+  const prevPreviewRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
+    }
+  }, [])
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
 
     if (!file) return
     setInputKey(Date.now())
-    setPreview(URL.createObjectURL(file))
+
+    if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
+    const objectUrl = URL.createObjectURL(file)
+
+    prevPreviewRef.current = objectUrl
+    setPreview(objectUrl)
     try {
       setLoading(true)
       await uploadImage(file)
+      const updated = await getUserData()
+
+      setUserData(updated)
     } catch (error) {
       handleError(error)
       setPreview(null)

@@ -4,7 +4,7 @@ export const MAX_CART_ITEM_QUANTITY = 99
 import { persist } from 'zustand/middleware'
 import { ICartItem, ICartPushItem, ICartPushItems, ICartUpdatedItem } from './types'
 import { getProductByIds } from '@/features/products/api'
-import { mergeCarts, removeCartItem, changeCartItemQuantity } from './api'
+import { mergeCarts, removeCartItem, changeCartItemQuantity, fetchCart } from './api'
 import { useAuthStore } from '@/features/auth/store'
 
 export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
@@ -24,6 +24,7 @@ interface CartSliceActions {
   add: (id: string) => void
   remove: (id: string) => void
   getCartItems: () => Promise<void>
+  loadAuthCart: () => Promise<void>
   syncBackendCart: (token: string) => Promise<void>
   removeFullProduct: (id: string) => void
   resetCart: () => void
@@ -129,6 +130,27 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
     void token
     await createCart({ items: itemsIds })
+  },
+  loadAuthCart: async () => {
+    set({ status: 'loading', lastError: null })
+    try {
+      const cart = await fetchCart()
+
+      set((state) => ({
+        ...state,
+        itemsIds: createItemsIdsFromCart(cart.items),
+        tempItems: cart.items,
+        count: cart.productsQuantity,
+        totalPrice: cart.itemsTotalPrice,
+        isSync: true,
+        status: 'ready',
+        lastError: null,
+      }))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load cart'
+
+      set({ status: 'error', lastError: message })
+    }
   },
   remove: (id: string) => {
     const { tempItems, itemsIds, updateCartItem, removeFullProduct, pendingProductIds } = get()
@@ -236,8 +258,6 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
   })),
   createCart: async (reqItems: ICartPushItems): Promise<void> => {
-    const previousStatus = get().status
-
     set({ status: 'syncing' })
     try {
       const mergedCart = await mergeCarts(reqItems)
@@ -255,13 +275,11 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update cart'
 
-      set({ status: previousStatus === 'syncing' ? 'ready' : previousStatus, lastError: message })
+      set({ status: 'error', lastError: message })
       throw err
     }
   },
   updateCartItem: async (updatedItem: ICartUpdatedItem): Promise<void> => {
-    const previousStatus = get().status
-
     set({ status: 'syncing' })
     try {
       const data = await changeCartItemQuantity(updatedItem)
@@ -279,7 +297,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update cart'
 
-      set({ status: previousStatus === 'syncing' ? 'ready' : previousStatus, lastError: message })
+      set({ status: 'error', lastError: message })
       throw err
     }
   },

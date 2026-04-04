@@ -34,6 +34,7 @@ const ConfirmPasswordComponent = () => {
       await verifyEmailCode(values.verificationCode)
       const session = await apiGetSession()
 
+      if (!session.authenticated) throw new Error('Verification failed')
       setAuthenticated(session.user)
       reset()
       handleRedirectForAuth()

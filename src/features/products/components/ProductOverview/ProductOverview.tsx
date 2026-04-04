@@ -6,16 +6,16 @@ import { IProduct } from '@/features/products/types'
 import AddToCartButton from '@/features/products/components/AddToCart/AddToCart'
 import HeartWrapper from '@/features/products/components/HeartWrapper/HeartWrapper'
 import Rating from '@/shared/components/Rating/Rating'
-import { useProductReviewsStore } from '@/features/reviews/store'
+import { IProductReviewsStatistics } from '@/features/reviews/types'
 import { FiPackage, FiShield, FiRefreshCw, FiTruck } from 'react-icons/fi'
 import ProductImageGallery from '@/features/products/components/ProductImageGallery/ProductImageGallery'
 
 interface IProductOverview {
   product: IProduct
+  reviewsStatistics: IProductReviewsStatistics | null
 }
 
-const ProductOverview: React.FC<IProductOverview> = ({ product }) => {
-  const { reviewsStatistics } = useProductReviewsStore()
+const ProductOverview: React.FC<IProductOverview> = ({ product, reviewsStatistics }) => {
   const averageRating = reviewsStatistics ? +reviewsStatistics.avgRating : (product.averageRating || null)
   const reviewsCount = reviewsStatistics?.reviewsCount ?? product.reviewsCount
 

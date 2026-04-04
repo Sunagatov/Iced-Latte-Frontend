@@ -1,7 +1,21 @@
 import { UseFormRegister, FieldValues, Path, FieldError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
+import React from 'react'
 
-interface InputProps<T extends FieldValues> { id: string; register: UseFormRegister<T>; label?: string; name: Path<T>; placeholder?: string; type?: string; error?: FieldError; className?: string; labelClassName?: string; inputClassName?: string; [key: string]: unknown }
+interface InputProps<T extends FieldValues> {
+  id: string
+  register: UseFormRegister<T>
+  label?: string
+  name: Path<T>
+  placeholder?: string
+  type?: string
+  error?: FieldError
+  className?: string
+  labelClassName?: string
+  inputClassName?: string
+  onChange?: React.ChangeEventHandler<HTMLInputElement>
+  [key: string]: unknown
+}
 
 export default function FormInput<T extends FieldValues>({
   id,
@@ -14,8 +28,11 @@ export default function FormInput<T extends FieldValues>({
   className,
   labelClassName,
   inputClassName,
+  onChange,
   ...rest
 }: Readonly<InputProps<T>>) {
+  const registered = register(name)
+
   return (
     <div className={twMerge('mt-6', className)}>
       <label
@@ -36,11 +53,17 @@ export default function FormInput<T extends FieldValues>({
         id={id}
         type={type}
         placeholder={placeholder}
-        {...register(name)}
+        {...registered}
         {...rest}
+        onChange={(e) => {
+          void registered.onChange(e)
+          onChange?.(e)
+        }}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
       {error && (
-        <div className="mt-2 font-medium text-negative">{error.message}</div>
+        <div id={`${id}-error`} className="mt-2 font-medium text-negative">{error.message}</div>
       )}
     </div>
   )

@@ -2,16 +2,15 @@
 import ReviewForm from '../ReviewForm/ReviewForm'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { Review } from '@/features/reviews/types'
+import { Review, IProductReviewsStatistics } from '@/features/reviews/types'
 import { useAuthStore } from '@/features/auth/store'
 import { useReviews } from '@/features/reviews/hooks'
-import { apiGetProductUserReview } from '@/features/reviews/api'
+import { apiGetProductUserReview, apiGetProductReviewsStatistics } from '@/features/reviews/api'
 import Loader from '@/shared/components/Loader/Loader'
 import ReviewsList from '@/features/reviews/components/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/features/reviews/components/ReviewsSorter/ReviewsSorter'
 import { reviewsSortOptions } from '@/features/reviews/constants'
-import { checkIfUserReviewExists, useProductReviewsStore } from '@/features/reviews/store'
-import { apiGetProductReviewsStatistics } from '@/features/reviews/api'
+import { checkIfUserReviewExists } from '@/features/reviews/store'
 import { IOption } from '@/shared/types/Dropdown'
 import { ISortParams } from '@/shared/types/ISortParams'
 import { getDefaultSortOption } from '@/shared/utils/getDefaultSortOption'
@@ -22,13 +21,14 @@ import { FaStar } from 'react-icons/fa'
 
 interface ReviewComponentProps {
   product: IProduct
+  reviewsStatistics: IProductReviewsStatistics | null
+  refreshStatistics: () => Promise<void>
 }
 
-const ReviewsSection = ({ product }: ReviewComponentProps) => {
+const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: ReviewComponentProps) => {
   const { id: productId } = product
   const { errorMessage, handleError } = useErrorHandler()
   const { token } = useAuthStore()
-  const { reviewsStatistics, setReviewsStatistics } = useProductReviewsStore()
 
   const [userReview, setUserReview] = useState<Review | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -41,24 +41,16 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
 
   useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () => setShowFilterDropdown(false))
 
-  const refreshStatistics = useCallback(async () => {
-    try {
-      const stats = await apiGetProductReviewsStatistics(productId)
-
-      setReviewsStatistics(stats)
-    } catch { /* ignore */ }
-  }, [productId, setReviewsStatistics])
-
-  // Load user's existing review on mount
   useEffect(() => {
-    if (!token) return
+    if (!token) {
+      setUserReview(null)
+      return
+    }
     apiGetProductUserReview(productId)
       .then((review) => {
-        if (checkIfUserReviewExists(review)) {
-          setUserReview(review)
-        }
+        setUserReview(checkIfUserReviewExists(review) ? review : null)
       })
-      .catch(() => {/* no review yet */})
+      .catch(() => { setUserReview(null) })
   }, [productId, token])
 
   const {
@@ -81,7 +73,6 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   const ratingFilterChangeHandler = (value: number) => {
     setSelectedFilterRating((prev) => {
       const idx = prev.indexOf(value)
-
       return idx === -1 ? [...prev, value] : prev.toSpliced(idx, 1)
     })
   }
@@ -89,7 +80,18 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
   const showMoreReviews = () => fetchNext().catch((e) => handleError(e))
 
   if (error) {
-    return <h1 className="grid h-screen place-items-center text-4xl text-black">Something went wrong!</h1>
+    return (
+      <div className="rounded-2xl border border-black/8 bg-white p-6 shadow-sm">
+        <p className="text-sm font-medium text-primary">Failed to load reviews.</p>
+        <p className="mt-1 text-sm text-tertiary">Please try again.</p>
+        <button
+          onClick={() => void refreshReviews()}
+          className="mt-4 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-inverted transition hover:bg-brand-solid-hover"
+        >
+          Retry
+        </button>
+      </div>
+    )
   }
 
   if (isLoading) {
@@ -114,12 +116,10 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
           {!userReview && (
             <ReviewForm
               productId={productId}
-              hasReviews={reviews.length > 0}
               showForm={showForm}
               setShowForm={setShowForm}
               onReviewSubmitted={(review) => {
                 setUserReview(review)
-                setShowForm(false)
                 refreshReviews()
                 void refreshStatistics()
               }}
@@ -176,13 +176,23 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
                         )
                       })}
                     </div>
+                    {selectedFilterRating.length > 0 && (
+                      <div className="border-t border-primary/10 px-3 py-2">
+                        <button
+                          onClick={() => setSelectedFilterRating([])}
+                          className="text-xs font-medium text-brand hover:underline"
+                        >
+                          Clear filters
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </ReviewsSorter>
           )}
 
-          {(reviews.length > 0 || userReview) && (
+          {(reviews.length > 0 || userReview) ? (
             <ReviewsList
               productId={productId}
               reviews={reviews}
@@ -197,10 +207,25 @@ const ReviewsSection = ({ product }: ReviewComponentProps) => {
               }}
               onReviewRated={(updated) => updateReviewInCache(updated)}
             />
+          ) : (
+            !isLoading && reviewsStatistics?.reviewsCount === 0 && (
+              <div className="mt-6 rounded-2xl border border-primary/60 bg-white p-8 text-center shadow-sm">
+                <p className="text-base font-semibold text-primary">No reviews yet</p>
+                <p className="mt-1 text-sm text-tertiary">Be the first to review this product</p>
+              </div>
+            )
           )}
 
           {reviews.length === 0 && selectedFilterRating.length > 0 && (
-            <p className="text-sm text-tertiary">No reviews match this filter.</p>
+            <div className="mt-4 flex items-center gap-3 text-sm text-tertiary">
+              <span>No reviews match this filter.</span>
+              <button
+                onClick={() => setSelectedFilterRating([])}
+                className="font-medium text-brand hover:underline"
+              >
+                Clear filters
+              </button>
+            </div>
           )}
           {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
         </div>

@@ -26,50 +26,35 @@ import {
   RiNotification3Line,
 } from 'react-icons/ri'
 
-interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
-
 type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications' | 'reviews'
 
 const FilledProfile = () => {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<Section>('overview')
   const [isEditing, setIsEditing] = useState(false)
-  const { setUserData, userData, isLoggedIn } = useAuthStore()
-
-  const [hydrated, setHydrated] = useState(false)
+  const { setUserData, userData, status } = useAuthStore()
 
   useEffect(() => {
-    const persist = (useAuthStore as unknown as PersistApi).persist
-
-    if (persist.hasHydrated()) {
-      setHydrated(true)
-
-      return
-    }
-
-    return persist.onFinishHydration(() => { setHydrated(true) })
-  }, [])
-
-  useEffect(() => {
-    if (hydrated && !isLoggedIn) router.replace('/signin')
-  }, [hydrated, isLoggedIn, router])
+    if (status === 'anonymous') router.replace('/signin')
+  }, [status, router])
 
   const { isLoading, logout } = useLogout()
   const favCount = useFavouritesStore((s) => s.favouriteIds.length)
   const [orderCount, setOrderCount] = useState<number | null>(null)
 
   useEffect(() => {
-    if (!hydrated || !isLoggedIn) return
+    if (status !== 'authenticated') return
     api.get<{ id: string }[]>('/orders')
       .then((res) => setOrderCount(res.data.length))
       .catch(() => { /* non-critical */ })
-  }, [hydrated, isLoggedIn])
+  }, [status])
+
+  if (status === 'loading') return <div className="flex min-h-screen items-center justify-center"><Loader /></div>
+  if (status !== 'authenticated') return null
 
   const initials = userData
     ? `${userData.firstName?.[0] ?? ''}${userData.lastName?.[0] ?? ''}`.toUpperCase()
     : '?'
-
-  const memberSince = '2024' // placeholder — extend UserData when API supports it
 
   const navItems: { id: Section; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Overview', icon: <RiHomeLine className="h-5 w-5" /> },
@@ -108,9 +93,11 @@ const FilledProfile = () => {
                     ? `${userData.firstName} ${userData.lastName}`
                     : 'Your Account'}
                 </h1>
-                <span className="flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium text-white">
-                  <RiCupLine className="h-3 w-3" /> Member since {memberSince}
-                </span>
+                {userData?.email && (
+                  <span className="flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium text-white">
+                    <RiCupLine className="h-3 w-3" /> Member
+                  </span>
+                )}
               </div>
               {userData?.email && (
                 <p className="mt-0.5 text-sm text-white/70 truncate">{userData.email}</p>
@@ -396,9 +383,14 @@ const FilledProfile = () => {
                   <NotifRow label="Account activity" desc="Login alerts and security notices" defaultOn />
                 </div>
                 <div className="px-5 py-4">
-                  <button className="rounded-lg bg-brand px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-solid-hover">
+                  <button
+                    disabled
+                    title="Notification preferences will be saved in a future update"
+                    className="cursor-not-allowed rounded-lg bg-brand px-5 py-2 text-sm font-medium text-white opacity-40"
+                  >
                     Save preferences
                   </button>
+                  <p className="mt-2 text-xs text-secondary">Saving preferences coming soon</p>
                 </div>
               </div>
             )}

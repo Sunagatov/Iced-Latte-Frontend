@@ -16,14 +16,6 @@ export interface SubmittedReviewInfo {
   createdAt: string
 }
 
-export async function apiGetProductReviews(productId: string, page = 0, size = 3): Promise<IReviews> {
-  const response: AxiosResponse<IReviews> = await api.get(
-    `/products/${productId}/reviews?page=${page}${size ? '&size=' + size : ''}`,
-  )
-
-  return response.data
-}
-
 export async function apiGetAllReviews(url: string) {
   const response: AxiosResponse<IReviews> = await api.get(url, { cache: false })
 
