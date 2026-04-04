@@ -58,8 +58,10 @@ const initialState: CartSliceState = {
   lastError: null,
 }
 
+type SetFn = (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void
+
 const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
-  set,
+  set: SetFn,
   get,
 ) => ({
   ...initialState,
@@ -461,8 +463,6 @@ function createItemsIdsFromCart(cartItems: ICartItem[]): ICartPushItem[] {
     productQuantity: item.productQuantity,
   }))
 }
-
-type SetFn = (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void
 
 function setPending(set: SetFn, id: string) {
   set((state) => {
