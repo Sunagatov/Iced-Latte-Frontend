@@ -214,7 +214,11 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
             totalPrice: itemsTotalPrice,
           }))
         })
-        .catch(() => {})
+        .catch((err) => {
+          const message = err instanceof Error ? err.message : 'Failed to remove item'
+
+          set({ status: 'error', lastError: message })
+        })
         .finally(() => clearPending(set, id))
     } else {
       const { itemsIds, tempItems } = get()

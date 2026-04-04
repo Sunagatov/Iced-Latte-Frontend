@@ -12,7 +12,7 @@ interface IReview {
   review: ReviewType
   allowVoting?: boolean
   allowDelete?: boolean
-§  isPending?: boolean
+  isPending?: boolean
   deleteReview?: (id: string) => void
   rateReview?: (id: string, isLike: boolean) => void
 }
