@@ -1,5 +1,5 @@
 {
-  "name": "online-store",
+  "name": "iced-latte",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "tsc": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test",
+    "test:e2e": "lsof -ti :3000 | xargs kill -9 2>/dev/null; PORT=3000 next dev & sleep 6 && playwright test; kill %1 2>/dev/null",
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
