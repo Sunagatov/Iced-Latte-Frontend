@@ -38,6 +38,8 @@ async function mockFavouritesApi(page: Page, favProducts: object[]) {
 async function setup(page: Page, favProducts: object[]) {
   await mockFavouritesApi(page, favProducts)
   await page.goto('/favourites')
+  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(500)
 }
 
 test('favourites page shows saved products', async ({ page }) => {

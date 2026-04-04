@@ -136,6 +136,8 @@ async function mockWithCart(
 async function loginAndGoto(page: Page, route: string) {
   await page.goto(route)
   await page.waitForLoadState('networkidle')
+  // Give AppInitProvider time to finish loadAuthCart/syncBackendFav
+  await page.waitForTimeout(1000)
 }
 
 // ─── LOGGED-IN: product catalog (home page) ───────────────────────────────────

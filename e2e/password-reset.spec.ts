@@ -53,8 +53,11 @@ async function mockAll200Authenticated(page: Page) {
   })
 }
 
-/** Navigate to / with authenticated session mock, then go to target page. */
+/** Navigate to home first so AppInitProvider resolves auth, then go to /resetpass. */
 async function loginAs(page: Page) {
+  await page.goto('/')
+  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(500)
   await page.goto('/resetpass')
   await page.waitForLoadState('networkidle')
 }

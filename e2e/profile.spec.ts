@@ -1,7 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const userData = {
   id: 'u1',
   firstName: 'John',
@@ -25,7 +23,13 @@ async function setup(
     const url = route.request().url()
     const method = route.request().method()
 
-    if (url.includes('/users') && method === 'PUT')
+    if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: userData }),
+      })
+    else if (url.includes('/users') && method === 'PUT')
       await route.fulfill({
         status: saveStatus,
         contentType: 'application/json',
@@ -52,30 +56,6 @@ async function setup(
         body: '{}',
       })
   })
-  await page.goto('http://localhost:3000')
-  await page.evaluate(
-    ([t, u]) => {
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: {
-            token: t,
-            refreshToken: null,
-            isLoggedIn: true,
-            userData: u,
-          },
-          version: 0,
-        }),
-      )
-    },
-    [FAKE_TOKEN, userData] as [string, typeof userData],
-  )
-  await page
-    .context()
-    .addCookies([
-      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
-    ])
-  await page.reload()
   await page.goto('/profile')
   // Navigate to Personal details section
   await page.getByRole('button', { name: 'Personal details' }).first().click()

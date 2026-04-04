@@ -273,9 +273,6 @@ test.describe('Cart sync — stale state cleanup', () => {
 test.describe('Cart — quantity operations (logged in)', () => {
   test('increasing quantity updates item count display', async ({ page }) => {
     // Spec §3 add: token set, item already in cart → PATCH, response updates qty
-    await page.goto('http://localhost:3000')
-    await setToken(page)
-
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
@@ -300,7 +297,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -311,7 +308,10 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -325,12 +325,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
   test('minus button shows trash icon when quantity is 1', async ({ page }) => {
     // Spec §3 remove: quantity=1 → minus button aria-label = "Remove item"
-    await page.goto('http://localhost:3000')
-    await setToken(page)
     await mockProxy(page, {
       '/cart': makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
     })
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
 
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
@@ -347,8 +347,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     // Spec §3 remove full product: DELETE → response replaces tempItems with []
     // Both GET /cart and DELETE /cart/items must return empty so AppInitProvider
     // doesn't overwrite the cleared state with a re-fetch.
-    await page.goto('http://localhost:3000')
-    await setToken(page)
 
     let itemRemoved = false
 
@@ -377,7 +375,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -388,7 +386,10 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -402,8 +403,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
   test('trash button removes item and shows empty cart', async ({ page }) => {
     // Spec §3 remove full product via trash button
-    await page.goto('http://localhost:3000')
-    await setToken(page)
 
     let itemRemoved = false
 
@@ -432,7 +431,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -443,7 +442,10 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -460,8 +462,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     // Spec §3 clear all: isSync=true → clearCart() sets local state to empty → CartEmpty
     // clearCart() clears local state after DELETE — no re-fetch needed.
     // We verify the store clears by checking CartEmpty appears.
-    await page.goto('http://localhost:3000')
-    await setToken(page)
 
     const state = { cleared: false }
 
@@ -504,7 +504,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -515,7 +515,10 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
       { timeout: 8000 },
@@ -550,6 +553,8 @@ test.describe('Cart — guest operations', () => {
     )
     await mockProxy(page, { '/products/ids': [makeProduct(PRODUCT_A)] })
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -592,7 +597,7 @@ test.describe('Cart — guest operations', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -603,8 +608,8 @@ test.describe('Cart — guest operations', () => {
       }
     })
 
-    await setToken(page)
-    await page.reload()
+    await page.goto('http://localhost:3000')
+    await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     expect(mergeCallMade).toBe(true)
@@ -638,7 +643,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -649,7 +654,7 @@ test.describe('Favourites sync', () => {
       }
     })
 
-    await setToken(page)
+    await page.goto('http://localhost:3000')
     await page.reload()
     await page.waitForTimeout(2000)
 
@@ -661,9 +666,6 @@ test.describe('Favourites sync', () => {
   }) => {
     // Spec §4 add: optimistic update → favouriteIds grows → badge appears
     const product = makeProduct(PRODUCT_A)
-
-    await page.goto('http://localhost:3000')
-    await setToken(page)
 
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
@@ -697,7 +699,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -708,6 +710,7 @@ test.describe('Favourites sync', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
     await page.reload()
     await page.goto('/')
     await page.waitForSelector('[data-testid="product-card"]', {
@@ -732,8 +735,6 @@ test.describe('Favourites sync', () => {
     const product = makeProduct(PRODUCT_A)
     let deleteWasCalled = false
 
-    await page.goto('http://localhost:3000')
-    await setToken(page)
     await setFavStorage(page, [PRODUCT_A])
 
     await page.route('**/api/proxy/**', async (route) => {
@@ -757,7 +758,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -768,7 +769,10 @@ test.describe('Favourites sync', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/favourites')
     await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
       timeout: 8000,
@@ -815,7 +819,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -860,6 +864,8 @@ test.describe('Favourites sync', () => {
     await setFavStorage(page, [PRODUCT_A])
     await mockProxy(page, { '/products/ids': [product] })
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/favourites')
     await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
       timeout: 8000,
@@ -933,7 +939,7 @@ test.describe('Cart — multi-item merge', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -944,8 +950,10 @@ test.describe('Cart — multi-item merge', () => {
       }
     })
 
-    await setToken(page)
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(2, {
       timeout: 8000,
@@ -983,7 +991,7 @@ test.describe('Cart — multi-item merge', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(),
+          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
         })
       } else {
         await route.fulfill({
@@ -994,8 +1002,10 @@ test.describe('Cart — multi-item merge', () => {
       }
     })
 
-    await setToken(page)
+    await page.goto('http://localhost:3000')
     await page.reload()
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(
       page.locator('[data-testid="cart-item-qty"]').first(),

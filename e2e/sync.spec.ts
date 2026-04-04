@@ -32,21 +32,11 @@ const test = base.extend<Fixtures>({
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// Set token in localStorage and navigate.
-async function loginAndGoto(page: Page, token: string, route: string) {
-  await page.goto('http://localhost:3000')
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    token,
-  )
+// Navigate to route — session is handled by the mock registered before calling this.
+async function loginAndGoto(page: Page, _token: string, route: string) {
   await page.goto(route)
+  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(1000)
 }
 
 // Mock all /api/proxy/favorites requests — GET and POST return the given products array.
@@ -54,14 +44,19 @@ async function mockFavourites(page: Page, products: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/favorites')) {
+    if (url.includes('/auth/session')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+      })
+    } else if (url.includes('/favorites')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ products }),
       })
     } else {
-      // Block all other proxy calls — return empty success so auth interceptor doesn't trigger logout
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -87,14 +82,19 @@ async function mockCart(page: Page, items: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/cart')) {
+    if (url.includes('/auth/session')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+      })
+    } else if (url.includes('/cart')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(cart),
       })
     } else {
-      // Block all other proxy calls — return empty success so auth interceptor doesn't trigger logout
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -158,10 +158,8 @@ test.describe('Favourites sync', () => {
   test('guest favourites merge with server favourites after login', async ({
     isolatedPage: page,
   }) => {
-    // Mock POST /favorites (merge) and GET /favorites to return the merged product
     await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
 
-    // Set guest fav in localStorage, then set token and reload to trigger AppInitProvider sync
     await page.goto('http://localhost:3000')
     await page.evaluate((id) => {
       localStorage.setItem(
@@ -172,17 +170,6 @@ test.describe('Favourites sync', () => {
         }),
       )
     }, FAKE_PRODUCT_ID)
-    await page.evaluate(
-      (t) =>
-        localStorage.setItem(
-          'token',
-          JSON.stringify({
-            state: { token: t, refreshToken: null, isLoggedIn: true },
-            version: 0,
-          }),
-        ),
-      FAKE_TOKEN,
-    )
     await page.reload()
 
     await page.goto('/favourites')
@@ -216,7 +203,6 @@ test.describe('Cart sync', () => {
   }) => {
     const productId = FAKE_PRODUCT_ID
 
-    // Mock POST /cart/items (merge) and GET /cart to return the merged cart
     await mockCart(page, [makeCartItem(productId)])
 
     await page.goto('http://localhost:3000')
@@ -235,17 +221,6 @@ test.describe('Cart sync', () => {
         }),
       )
     }, productId)
-    await page.evaluate(
-      (t) =>
-        localStorage.setItem(
-          'token',
-          JSON.stringify({
-            state: { token: t, refreshToken: null, isLoggedIn: true },
-            version: 0,
-          }),
-        ),
-      FAKE_TOKEN,
-    )
     await page.reload()
 
     await page.goto('/cart')

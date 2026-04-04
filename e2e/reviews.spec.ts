@@ -1,8 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
+const FAKE_USER = { firstName: 'Test', lastName: 'User', email: 'test@example.com' }
 
 async function mockReviewCalls(page: Page) {
   const product = {
@@ -112,12 +111,81 @@ async function mockReviewCalls(page: Page) {
         contentType: 'application/json',
         body: JSON.stringify({ products: [] }),
       })
+    else if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: false, user: null }),
+      })
     else
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: '{}',
       })
+  })
+}
+
+async function mockReviewCallsAuthenticated(page: Page) {
+  await mockReviewCalls(page)
+  await page.unroute('**/api/proxy/**')
+  // Re-register with authenticated session
+  const product = {
+    id: PRODUCT_ID,
+    name: 'Turkish Coffee',
+    price: 9.99,
+    productFileUrl: null,
+    brandName: 'Brand',
+    sellerName: 'Seller',
+    averageRating: 4.5,
+    reviewsCount: 1,
+    quantity: 250,
+    description: 'desc',
+    active: true,
+  }
+
+  await page.route('**/api/proxy/**', async (route) => {
+    const url = route.request().url()
+    const method = route.request().method()
+
+    if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: FAKE_USER }),
+      })
+    else if (url.includes('/reviews') && method === 'POST')
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }),
+      })
+    else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews'))
+      await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
+    else if (url.includes('/reviews/statistics'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }),
+      })
+    else if (url.includes('/reviews'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }),
+      })
+    else if (url.includes('/products/ids'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
+    else if (url.includes(`/products/${PRODUCT_ID}`))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) })
+    else if (url.includes('/products'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }),
+      })
+    else
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
 }
 
@@ -146,27 +214,10 @@ test('"Write a review" button redirects guest to /signin', async ({ page }) => {
 test('logged-in user sees review form after clicking "Write a review"', async ({
   page,
 }) => {
-  await mockReviewCalls(page)
+  await mockReviewCallsAuthenticated(page)
   const ok = await gotoProductPage(page)
 
   if (!ok) return
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
-  await page
-    .context()
-    .addCookies([
-      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
-    ])
-  await page.reload()
   await page.waitForSelector('[data-testid="reviews-section"]', {
     timeout: 20000,
   })
@@ -177,27 +228,10 @@ test('logged-in user sees review form after clicking "Write a review"', async ({
 test('submit button disabled until rating + text both filled', async ({
   page,
 }) => {
-  await mockReviewCalls(page)
+  await mockReviewCallsAuthenticated(page)
   const ok = await gotoProductPage(page)
 
   if (!ok) return
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
-  await page
-    .context()
-    .addCookies([
-      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
-    ])
-  await page.reload()
   await page.waitForSelector('[data-testid="reviews-section"]', {
     timeout: 20000,
   })
@@ -209,27 +243,10 @@ test('submit button disabled until rating + text both filled', async ({
 })
 
 test('cancel button hides form and resets fields', async ({ page }) => {
-  await mockReviewCalls(page)
+  await mockReviewCallsAuthenticated(page)
   const ok = await gotoProductPage(page)
 
   if (!ok) return
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
-  await page
-    .context()
-    .addCookies([
-      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
-    ])
-  await page.reload()
   await page.waitForSelector('[data-testid="reviews-section"]', {
     timeout: 20000,
   })
@@ -244,27 +261,10 @@ test('cancel button hides form and resets fields', async ({ page }) => {
 })
 
 test('character counter updates as user types', async ({ page }) => {
-  await mockReviewCalls(page)
+  await mockReviewCallsAuthenticated(page)
   const ok = await gotoProductPage(page)
 
   if (!ok) return
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
-  await page
-    .context()
-    .addCookies([
-      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
-    ])
-  await page.reload()
   await page.waitForSelector('[data-testid="reviews-section"]', {
     timeout: 20000,
   })

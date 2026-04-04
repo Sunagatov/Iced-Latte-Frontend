@@ -93,6 +93,8 @@ async function setup(
     )
   }, cartWithItem)
   await page.goto('/checkout')
+  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(500)
   await page.waitForSelector('h1', { timeout: 8000 })
 }
 
