@@ -462,10 +462,9 @@ function createItemsIdsFromCart(cartItems: ICartItem[]): ICartPushItem[] {
   }))
 }
 
-function setPending(
-  set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void,
-  id: string,
-) {
+type SetFn = (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void
+
+function setPending(set: SetFn, id: string) {
   set((state) => {
     const next = new Set(state.pendingProductIds)
 
@@ -475,10 +474,7 @@ function setPending(
   })
 }
 
-function clearPending(
-  set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void,
-  id: string,
-) {
+function clearPending(set: SetFn, id: string) {
   set((state) => {
     const next = new Set(state.pendingProductIds)
 
