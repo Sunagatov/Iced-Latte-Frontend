@@ -38,17 +38,24 @@ const ReviewsList: React.FC<IReviewsList> = ({
   const { isLoggedIn } = useAuthStore()
   const router = useRouter()
   const { handleError } = useErrorHandler()
+  const [isPending, setIsPending] = React.useState(false)
 
   const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
+    if (isPending) return
+    setIsPending(true)
     try {
       if (productReviewId) await apiDeleteProductReview(productReviewId, productId)
       onReviewDeleted?.(productReviewId)
     } catch (error) {
       handleError(error)
+    } finally {
+      setIsPending(false)
     }
   }
 
   const handleRateReview = async (productReviewId: string, isLike: boolean) => {
+    if (isPending) return
+    setIsPending(true)
     try {
       if (!isLoggedIn) {
         router.push('/signin')
@@ -60,6 +67,8 @@ const ReviewsList: React.FC<IReviewsList> = ({
       onReviewRated?.(updated)
     } catch (error) {
       handleError(error)
+    } finally {
+      setIsPending(false)
     }
   }
 
@@ -74,6 +83,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
             allowDelete
             allowVoting={false}
             deleteReview={deleteReviewHandler}
+            isPending={isPending}
           />
         </div>
       )}
@@ -89,6 +99,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
               review={review}
               allowVoting
               rateReview={handleRateReview}
+              isPending={isPending}
             />
           </li>
         ))}

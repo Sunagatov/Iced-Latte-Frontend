@@ -12,6 +12,7 @@ interface IReview {
   review: ReviewType
   allowVoting?: boolean
   allowDelete?: boolean
+§  isPending?: boolean
   deleteReview?: (id: string) => void
   rateReview?: (id: string, isLike: boolean) => void
 }
@@ -21,6 +22,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   review,
   allowVoting = false,
   allowDelete = false,
+  isPending = false,
   deleteReview,
   rateReview,
 }) => {
@@ -117,7 +119,8 @@ const Review: React.FC<Readonly<IReview>> = ({
           <button
             onClick={deleteReviewHandler}
             onBlur={() => setConfirmDelete(false)}
-            className={`text-xs font-medium transition ${confirmDelete ? 'text-negative' : 'text-tertiary hover:text-negative'}`}
+            disabled={isPending}
+            className={`text-xs font-medium transition disabled:opacity-50 ${confirmDelete ? 'text-negative' : 'text-tertiary hover:text-negative'}`}
           >
             {confirmDelete ? 'Confirm delete' : 'Delete review'}
           </button>
@@ -126,16 +129,18 @@ const Review: React.FC<Readonly<IReview>> = ({
           <div className="flex gap-2 xl:ml-auto">
             <button
               onClick={likeReviewHandler}
+              disabled={isPending}
               aria-label={`Mark review as helpful, ${review.likesCount} likes`}
-              className="flex items-center gap-1 text-xs text-tertiary transition hover:text-positive"
+              className="flex items-center gap-1 text-xs text-tertiary transition hover:text-positive disabled:opacity-50"
             >
               <BiLike className="h-3.5 w-3.5" />
               <span>{review.likesCount}</span>
             </button>
             <button
               onClick={dislikeReviewHandler}
+              disabled={isPending}
               aria-label={`Mark review as not helpful, ${review.dislikesCount} dislikes`}
-              className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative"
+              className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative disabled:opacity-50"
             >
               <BiDislike className="h-3.5 w-3.5" />
               <span>{review.dislikesCount}</span>
