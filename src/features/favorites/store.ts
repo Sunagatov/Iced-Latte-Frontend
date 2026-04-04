@@ -5,19 +5,18 @@ import { mergeFavs, removeFavItem, getFavByIds } from './api'
 import { IFavPushItems } from './types'
 import { getProductByIds } from '@/features/products/api'
 
+export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
+
 interface FavSliceState {
   favouriteIds: string[]
   favourites: IProduct[]
-  loading: boolean
-  count: number
-  isSync: false
+  status: FavStatus
+  pendingIds: Set<string>
 }
 
 interface FavSliceActions {
-  addFavourite: (id: string, token: string | null) => Promise<void>
-  removeFavourite: (id: string, token: string | null) => Promise<void>
+  toggleFavourite: (id: string, token: string | null) => Promise<void>
   getFavouriteProducts: (token: string | null) => Promise<void>
-  setLoading: (loading: boolean) => void
   syncBackendFav: () => Promise<void>
   resetFav: () => void
 }
@@ -27,83 +26,109 @@ export type FavStoreState = FavSliceState & FavSliceActions
 const initialState: FavSliceState = {
   favouriteIds: [],
   favourites: [],
-  count: 0,
-  loading: false,
-  isSync: false,
+  status: 'idle',
+  pendingIds: new Set(),
 }
 
 const uniqueIds = (ids: string[]): string[] => Array.from(new Set(ids))
 
+const setProducts = (products: IProduct[]) => {
+  const seen = new Set<string>()
+  const unique = products.filter((p) => {
+    if (seen.has(p.id)) return false
+
+    seen.add(p.id)
+
+    return true
+  })
+
+  return { favourites: unique, favouriteIds: unique.map((p) => p.id) }
+}
+
 const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
   ...initialState,
-  setLoading: (loading) => set({ loading }),
-  addFavourite: async (id, token) => {
-    const updatedIds = uniqueIds([...get().favouriteIds, id])
+  toggleFavourite: async (id, token) => {
+    if (get().pendingIds.has(id)) return
 
-    set({ favouriteIds: updatedIds })
-    if (token) {
-      try {
-        const reqItems: IFavPushItems = { productIds: [id] }
-        const response = await mergeFavs(reqItems)
-        const ids = response.products.map((p) => p.id)
+    const wasAdded = !get().favouriteIds.includes(id)
+    const prevIds = get().favouriteIds
+    const prevFavs = get().favourites
 
-        set({ favourites: response.products, favouriteIds: ids, count: ids.length })
-      } catch {
-        set((state) => ({ favouriteIds: state.favouriteIds.filter((fid) => fid !== id) }))
+    // optimistic update
+    set((state) => {
+      const pending = new Set(state.pendingIds)
+
+      pending.add(id)
+      if (wasAdded) {
+        return { pendingIds: pending, favouriteIds: uniqueIds([...state.favouriteIds, id]) }
       }
-    } else {
-      const products = await getProductByIds(updatedIds)
-      const safeProducts: IProduct[] = Array.isArray(products) ? products : []
-      const resolvedIds = safeProducts.map((p) => p.id)
 
-      set({ favourites: safeProducts, favouriteIds: resolvedIds, count: safeProducts.length })
-    }
-  },
-  removeFavourite: async (id, token) => {
-    const prev = { favouriteIds: get().favouriteIds, favourites: get().favourites, count: get().count }
-
-    set((state) => ({
-      favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
-      favourites: state.favourites.filter((fav) => fav.id !== id),
-      count: Math.max(0, state.count - 1),
-    }))
-    if (token) {
-      try {
-        await removeFavItem(id)
-      } catch {
-        set(prev)
+      return {
+        pendingIds: pending,
+        favouriteIds: state.favouriteIds.filter((fid) => fid !== id),
+        favourites: state.favourites.filter((f) => f.id !== id),
       }
+    })
+
+    try {
+      if (token) {
+        if (wasAdded) {
+          const reqItems: IFavPushItems = { productIds: [id] }
+          const response = await mergeFavs(reqItems)
+
+          set(setProducts(response.products))
+        } else {
+          await removeFavItem(id)
+        }
+      } else if (wasAdded) {
+        const products = await getProductByIds(uniqueIds([...prevIds, id]))
+        const safe: IProduct[] = Array.isArray(products) ? products : []
+
+        set(setProducts(safe))
+      }
+    } catch {
+      set({ favouriteIds: prevIds, favourites: prevFavs })
+    } finally {
+      set((state) => {
+        const pending = new Set(state.pendingIds)
+
+        pending.delete(id)
+
+        return { pendingIds: pending }
+      })
     }
   },
   getFavouriteProducts: async (token) => {
-    if (token) {
-      const favouritesFromServer = await getFavByIds()
-      const ids = favouritesFromServer.map((p) => p.id)
+    set({ status: 'syncing' })
+    try {
+      if (token) {
+        const products = await getFavByIds()
 
-      set((state) => ({ ...state, favourites: favouritesFromServer, favouriteIds: ids, count: favouritesFromServer.length }))
-    } else {
-      const productIds = get().favouriteIds
-      const products = await getProductByIds(productIds)
-      const safeProducts: IProduct[] = Array.isArray(products) ? products : []
-      const resolvedIds = safeProducts.map((p) => p.id)
+        set({ ...setProducts(products), status: 'ready' })
+      } else {
+        const productIds = get().favouriteIds
+        const products = await getProductByIds(productIds)
+        const safe: IProduct[] = Array.isArray(products) ? products : []
 
-      set((state) => ({ ...state, favourites: safeProducts, favouriteIds: resolvedIds, count: safeProducts.length }))
+        set({ ...setProducts(safe), status: 'ready' })
+      }
+    } catch {
+      set({ status: 'error' })
     }
   },
   syncBackendFav: async () => {
     const { favouriteIds } = get()
     const reqItems: IFavPushItems = { productIds: uniqueIds(favouriteIds) }
     const response = await mergeFavs(reqItems)
-    const ids = response.products.map((p) => p.id)
 
-    set((state) => ({ ...state, favourites: response.products, favouriteIds: ids, count: ids.length }))
+    set(setProducts(response.products))
   },
-  resetFav: () => set({ favourites: [], favouriteIds: [], count: 0, loading: false }),
+  resetFav: () => set({ favourites: [], favouriteIds: [], status: 'idle', pendingIds: new Set() }),
 })
 
 export const useFavouritesStore = create<FavStoreState>()(
   persist(createFavSlice, {
     name: 'fav-storage',
-    partialize: (state) => ({ favouriteIds: state.favouriteIds, favourites: state.favourites }),
+    partialize: (state) => ({ favouriteIds: state.favouriteIds }),
   }),
 )

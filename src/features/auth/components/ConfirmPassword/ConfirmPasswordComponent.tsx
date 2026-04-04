@@ -39,7 +39,7 @@ const ConfirmPasswordComponent = () => {
       const data = await apiConfirmEmail(values.confirmPassword)
 
       if (data) {
-        await setCookie('token', data.token?.token, { path: '/' })
+        await setCookie('token', data.token?.token)
         authenticate(data.token?.token)
         setRefreshToken(data.token?.refreshToken)
         reset()

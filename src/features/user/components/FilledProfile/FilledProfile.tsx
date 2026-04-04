@@ -55,7 +55,7 @@ const FilledProfile = () => {
   }, [hydrated, isLoggedIn, router])
 
   const { isLoading, logout } = useLogout()
-  const favCount = useFavouritesStore((s) => s.count)
+  const favCount = useFavouritesStore((s) => s.favouriteIds.length)
   const [orderCount, setOrderCount] = useState<number | null>(null)
 
   useEffect(() => {

@@ -52,11 +52,11 @@ npm run dev
 
 🌐 App runs at `http://localhost:3000`
 
-> ⚠️ The backend must be running for products and login to work. See [START.md](START.md) Option A to start it with one Docker command.
+> ⚠️ The backend must be running for products and login to work. See [Getting Started](docs/getting-started.md) Option A to start it with one Docker command.
 
 **🔐 Test login:** `olivia@example.com` / `p@ss1logic11` (15 seed users, all share this password)
 
-> 💡 See [START.md](START.md) for Docker setup, E2E tests, and troubleshooting.
+> 💡 See [Getting Started](docs/getting-started.md) for Docker setup, E2E tests, and troubleshooting.
 
 **🧪 Run the tests:**
 ```bash

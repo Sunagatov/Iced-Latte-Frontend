@@ -5,15 +5,12 @@ import { useFavouritesStore } from '@/features/favorites/store'
 interface ButtonHeartProps { id: string; className?: string }
 
 export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProps>) {
-  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+  const { toggleFavourite, favouriteIds } = useFavouritesStore()
   const { token } = useAuthStore()
 
   const isFavourited = favouriteIds.includes(id)
 
-  const handleButtonClick = () => {
-    if (isFavourited) removeFavourite(id, token).catch(() => {})
-    else addFavourite(id, token).catch(() => {})
-  }
+  const handleButtonClick = () => { void toggleFavourite(id, token) }
 
   return <ButtonHeart onClick={handleButtonClick} active={isFavourited} className={className} />
 

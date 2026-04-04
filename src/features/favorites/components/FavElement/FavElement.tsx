@@ -13,7 +13,7 @@ import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
-  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+  const { toggleFavourite, favouriteIds } = useFavouritesStore()
   const { token } = useAuthStore()
   const add = useCartStore((s) => s.add)
   const remove = useCartStore((s) => s.remove)
@@ -23,10 +23,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
   const qty = items?.find((i) => i.productId === product.id)?.productQuantity ?? 0
   const isFavourited = favouriteIds.includes(product.id)
 
-  const handleHeart = () => {
-    if (isFavourited) removeFavourite(product.id, token).catch(() => {})
-    else addFavourite(product.id, token).catch(() => {})
-  }
+  const handleHeart = () => { void toggleFavourite(product.id, token) }
 
   const HeartBtn = () => (
     <button
@@ -85,7 +82,8 @@ export default function FavElement({ product, view = 'list' }: Props) {
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHeart() }}
             className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm"
-            aria-label="Toggle favourite"
+            aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
+            aria-pressed={isFavourited}
           >
             {isFavourited
               ? <RiHeartFill className="h-4 w-4 text-negative" />

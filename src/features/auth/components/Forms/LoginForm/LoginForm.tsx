@@ -37,7 +37,7 @@ export default function LoginForm() {
       const data = await apiLoginUser(formData)
 
       if (data) {
-        await setCookie('token', data.token, { path: '/' })
+        await setCookie('token', data.token)
         authenticate(data.token)
         setRefreshToken(data.refreshToken)
         reset()

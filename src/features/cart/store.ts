@@ -150,7 +150,8 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       const { tempItems } = get()
       const productCartSlotId = getProductCartSlotId(id, tempItems)
 
-      removeCartItem([productCartSlotId!])
+      if (!productCartSlotId) return
+      removeCartItem([productCartSlotId])
         .then((data) => {
           const { itemsTotalPrice, productsQuantity, items } = data
 

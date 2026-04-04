@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import FavElement from '../FavElement/FavElement'
-import Loader from '@/shared/components/Loader/Loader'
 import { IProduct } from '@/features/products/types'
 import { useFavouritesStore } from '@/features/favorites/store'
 
@@ -30,16 +29,14 @@ function GridIcon({ active }: { active: boolean }) {
 }
 
 export default function FavouritesFull() {
-  const { favourites, loading } = useFavouritesStore()
-  const uniqueFavourites = favourites.filter((item, index, self) => self.findIndex(i => i.id === item.id) === index)
+  const favourites = useFavouritesStore((s) => s.favourites)
   const [view, setView] = useState<'list' | 'grid'>('list')
 
   const renderContent = () => {
-    if (loading) return <Loader />
     if (view === 'grid') {
       return (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {uniqueFavourites.map((item: IProduct) => (
+          {favourites.map((item: IProduct) => (
             <FavElement key={item.id} product={item} view="grid" />
           ))}
         </div>
@@ -48,7 +45,7 @@ export default function FavouritesFull() {
 
     return (
       <div className="flex flex-col gap-3">
-        {uniqueFavourites.map((item: IProduct) => (
+        {favourites.map((item: IProduct) => (
           <FavElement key={item.id} product={item} view="list" />
         ))}
       </div>
@@ -60,7 +57,7 @@ export default function FavouritesFull() {
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-baseline gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-primary">Favourites</h1>
-          <span className="text-sm font-medium text-tertiary">{uniqueFavourites.length} items</span>
+          <span className="text-sm font-medium text-tertiary">{favourites.length} items</span>
         </div>
         <div className="flex items-center gap-1 rounded-xl border border-primary/20 p-1">
           <button

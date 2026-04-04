@@ -40,7 +40,7 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
             // Sync all auth state atomically after refresh
             authenticate(newToken)
             setRefreshToken(newRefreshToken)
-            await setCookie('token', newToken, { path: '/' })
+            await setCookie('token', newToken)
             originalRequest.headers['Authorization'] = `Bearer ${newToken}`
 
             return api.request(originalRequest)

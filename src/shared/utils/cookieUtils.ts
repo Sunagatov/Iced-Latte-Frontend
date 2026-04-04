@@ -1,24 +1,25 @@
 'use server'
 import { cookies } from 'next/headers'
 
-interface CookiesSetOptions {
-  [key: string]: string
+const TOKEN_COOKIE_OPTIONS = {
+  path: '/',
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
 }
 
- 
-export async function setCookie(key: string, value: string, options: CookiesSetOptions = {}) {
+export async function setCookie(key: string, value: string) {
   const cookieStore = await cookies()
 
-  cookieStore.set(key, value, options)
+  cookieStore.set(key, value, TOKEN_COOKIE_OPTIONS)
 }
 
 export async function removeCookie(key: string) {
   const cookieStore = await cookies()
 
-  cookieStore.set(key, '', { maxAge: 0 })
+  cookieStore.set(key, '', { ...TOKEN_COOKIE_OPTIONS, maxAge: 0 })
 }
 
- 
 export async function getCookie(): Promise<string | undefined> {
   const cookieStore = await cookies()
 

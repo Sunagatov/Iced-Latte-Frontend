@@ -2,44 +2,27 @@
 
 import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuthStore } from '@/features/auth/store'
-import { useLocalSessionStore } from '@/features/user/store'
-import { setCookie } from '@/shared/utils/cookieUtils'
 
-// KNOWN ISSUE: The backend currently delivers tokens via URL query params.
-// This means both tokens briefly appear in browser history and can leak into
-// logs/analytics before router.replace('/') clears the URL.
-// The correct fix is a backend change: backend sets an HttpOnly session cookie
-// directly and redirects to a clean URL with no token params.
+// The backend now sets the token as an HttpOnly cookie and redirects here
+// with ?auth=success. No tokens ever appear in the URL.
 function GoogleCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { authenticate, setRefreshToken } = useAuthStore()
-  const { previousRouteForAuth } = useLocalSessionStore()
 
   useEffect(() => {
-    const run = async () => {
-      const token = searchParams.get('token')
-      const refreshToken = searchParams.get('refreshToken')
-      const error = searchParams.get('error')
+    const error = searchParams.get('error')
 
-      if (error || !token || !refreshToken) {
-        router.replace('/signin?error=google_auth_failed')
+    if (error) {
+      router.replace('/signin?error=google_auth_failed')
 
-        return
-      }
-
-      authenticate(token)
-      setRefreshToken(refreshToken)
-
-      await setCookie('token', token, { path: '/' })
-
-      // Replace URL immediately to remove tokens from browser history
-      router.replace(previousRouteForAuth || '/')
+      return
     }
 
-    run()
-  }, [searchParams, authenticate, setRefreshToken, router, previousRouteForAuth])
+    // Token is already in the HttpOnly cookie set by the backend.
+    // Just navigate home; the existing auth bootstrap will pick it up.
+    router.replace('/')
+
+  }, [searchParams, router])
 
   return (
     <div className="flex min-h-screen items-center justify-center">

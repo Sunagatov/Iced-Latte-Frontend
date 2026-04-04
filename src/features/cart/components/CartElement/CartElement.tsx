@@ -29,13 +29,10 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
   }, [productQuantity])
 
   const token = useAuthStore((state) => state.token)
-  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+  const { toggleFavourite, favouriteIds } = useFavouritesStore()
   const isFavourited = favouriteIds.includes(productInfo.id)
 
-  const handleButtonClick = () => {
-    if (isFavourited) removeFavourite(productInfo.id, token).catch(() => {})
-    else addFavourite(productInfo.id, token).catch(() => {})
-  }
+  const handleButtonClick = () => { void toggleFavourite(productInfo.id, token) }
 
   return (
     <div data-testid="cart-item" className="rounded-2xl border border-[#242D3429] bg-primary px-4 py-3 shadow-sm transition-shadow hover:shadow-md">

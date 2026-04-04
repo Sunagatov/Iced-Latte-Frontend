@@ -13,7 +13,7 @@ const mockPersist = { hasHydrated: () => true, onFinishHydration: jest.fn(() => 
 ;(useAuthStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
 
 beforeEach(() => {
-  useFavouritesStore.setState({ favouriteIds: [], favourites: [], count: 0, loading: false, isSync: false })
+  useFavouritesStore.setState({ favouriteIds: [], favourites: [], status: 'ready', pendingIds: new Set() })
   useAuthStore.setState({ token: null, isLoggedIn: false, refreshToken: null, userData: null })
 })
 
@@ -28,9 +28,8 @@ describe('SyncFav', () => {
     useFavouritesStore.setState({
       favouriteIds: ['p1'],
       favourites: [{ id: 'p1', name: 'Coffee', description: '', price: 10, quantity: 1, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }],
-      count: 1,
-      loading: false,
-      isSync: false,
+      status: 'ready',
+      pendingIds: new Set(),
     })
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
     await act(async () => { render(<SyncFav />) })

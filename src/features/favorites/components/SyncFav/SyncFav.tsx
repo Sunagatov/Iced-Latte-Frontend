@@ -10,10 +10,10 @@ interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration:
 
 export default function SyncFav() {
   const favourites = useFavouritesStore((s) => s.favourites)
+  const status = useFavouritesStore((s) => s.status)
   const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
   const token = useAuthStore((s) => s.token)
   const [hydrated, setHydrated] = useState(false)
-  const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
     const authPersist = (useAuthStore as unknown as PersistApi).persist
@@ -35,27 +35,24 @@ export default function SyncFav() {
 
   useEffect(() => {
     if (!hydrated) return
-
-    if (token) { setFetched(true)
-
-      return }
-
-    const fetchData = async (): Promise<void> => {
-      try {
-        await getFavouriteProducts(null)
-      } catch {
-        // ignore fetch errors
-      } finally {
-        setFetched(true)
-      }
-    }
-
-    void fetchData()
+    void getFavouriteProducts(token)
   }, [getFavouriteProducts, token, hydrated])
 
-  if (!hydrated || !fetched) return <Loader />
+  if (!hydrated || status === 'idle' || status === 'syncing') return <Loader />
 
-  return <>
-    {favourites.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
-  </>
+  if (status === 'error') {
+    return (
+      <div className="flex flex-col items-center gap-3 pt-20 text-center">
+        <p className="text-sm text-tertiary">Couldn&apos;t load favourites</p>
+        <button
+          onClick={() => void getFavouriteProducts(token)}
+          className="rounded-full bg-brand-solid px-4 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  return <>{favourites.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}</>
 }

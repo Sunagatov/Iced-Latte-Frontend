@@ -17,6 +17,7 @@ dist/
 coverage/
 playwright-report/
 test-results/
+jest-sonar-coverage-report.xml
 
 # env
 .env
