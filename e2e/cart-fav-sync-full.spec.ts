@@ -293,7 +293,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -305,7 +305,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
@@ -323,8 +322,8 @@ test.describe('Cart — quantity operations (logged in)', () => {
     // Spec §3 remove: quantity=1 → minus button aria-label = "Remove item"
     await mockProxy(page, {
       '/cart': makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
-    })
-    await page.reload()
+    }, true)
+    await page.goto('http://localhost:3000')
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
@@ -371,7 +370,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -383,7 +382,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
@@ -427,7 +425,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -439,7 +437,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
@@ -500,7 +497,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -512,7 +509,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
@@ -593,7 +589,7 @@ test.describe('Cart — guest operations', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -639,7 +635,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -695,7 +691,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -752,7 +748,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -812,7 +808,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -932,7 +928,7 @@ test.describe('Cart — multi-item merge', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -944,7 +940,6 @@ test.describe('Cart — multi-item merge', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
@@ -984,7 +979,7 @@ test.describe('Cart — multi-item merge', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"authenticated":true,"user":{"firstName":"Test","lastName":"User","email":"test@example.com"}}),
+          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
         await route.fulfill({
@@ -996,7 +991,6 @@ test.describe('Cart — multi-item merge', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
