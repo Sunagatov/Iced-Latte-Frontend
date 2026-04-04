@@ -22,7 +22,7 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
   const [reviewText, setReviewText] = useState('')
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
-  const { token, userData } = useAuthStore()
+  const { isLoggedIn, userData } = useAuthStore()
   const router = useRouter()
 
   const currentRating = (ratings[productId] || { rating: 0 }).rating
@@ -60,7 +60,7 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
   }
 
   const handleClickReview = () => {
-    if (token) {
+    if (isLoggedIn) {
       setShowForm(true)
     } else {
       router.push('/signin')

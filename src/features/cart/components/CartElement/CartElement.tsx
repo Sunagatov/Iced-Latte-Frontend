@@ -4,7 +4,6 @@ import productImg from '@/../public/coffee.png'
 import getImgUrl from '@/shared/utils/getImgUrl'
 import Link from 'next/link'
 import { useFavouritesStore } from '@/features/favorites/store'
-import { useAuthStore } from '@/features/auth/store'
 import { CartElementProps } from '@/features/cart/types'
 import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/store'
 import { useEffect, useRef, useState } from 'react'
@@ -28,7 +27,6 @@ export default function CartElement({ product, isPending = false, add, remove, r
     }
   }, [productQuantity])
 
-  const token = useAuthStore((state) => state.token)
   const { toggleFavourite, favouriteIds, pendingIds } = useFavouritesStore()
   const isFavourited = favouriteIds.includes(productInfo.id)
   const isFavPending = pendingIds.has(productInfo.id)

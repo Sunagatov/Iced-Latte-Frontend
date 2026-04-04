@@ -52,12 +52,12 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   ...initialState,
   add: (id: string) => {
     const { itemsIds, tempItems, updateCartItem, createCart, pendingProductIds } = get()
-    const token = useAuthStore?.getState?.()?.token ?? null
+    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
     const cartItem = itemsIds.find((item) => item.productId === id)
 
     if (pendingProductIds.has(id)) return
 
-    if (token) {
+    if (isLoggedIn) {
       if (cartItem) {
         if (cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
         const productCartSlotId = getProductCartSlotId(id, tempItems)
@@ -154,11 +154,11 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   },
   remove: (id: string) => {
     const { tempItems, itemsIds, updateCartItem, removeFullProduct, pendingProductIds } = get()
-    const token = useAuthStore?.getState?.()?.token ?? null
+    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
     if (pendingProductIds.has(id)) return
 
-    if (token) {
+    if (isLoggedIn) {
       const productCartSlotId = getProductCartSlotId(id, tempItems)
 
       if (!productCartSlotId) return
@@ -193,9 +193,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     }
   },
   removeFullProduct: (id: string) => {
-    const token = useAuthStore?.getState?.()?.token ?? null
+    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
-    if (token) {
+    if (isLoggedIn) {
       const { tempItems, pendingProductIds } = get()
 
       if (pendingProductIds.has(id)) return
@@ -233,16 +233,16 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   resetCart: () => set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false, status: 'idle', pendingProductIds: new Set(), lastError: null } as CartSliceState),
   clearCart: async () => {
     const { tempItems, isSync } = get()
-    const token = useAuthStore?.getState?.()?.token ?? null
+    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
     set({ status: 'syncing' })
     try {
-      if (token && isSync && tempItems.length > 0) {
+      if (isLoggedIn && isSync && tempItems.length > 0) {
         const ids = tempItems.map((item) => item.id)
 
         await removeCartItem(ids)
       }
-      set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: !!token, status: 'ready', lastError: null, pendingProductIds: new Set() } as CartSliceState)
+      set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: isLoggedIn, status: 'ready', lastError: null, pendingProductIds: new Set() } as CartSliceState)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to clear cart'
 
