@@ -47,8 +47,6 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     (state: CartSliceStore): CartSliceStore['loadAuthCart'] =>
       state.loadAuthCart,
   )
-  const isSync = useCartStore((state: CartSliceStore): boolean => state.isSync)
-
   useEffect(() => {
     const bootstrapSession = async (): Promise<void> => {
       try {
@@ -69,7 +67,9 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     }
 
     if (status === 'anonymous') {
-      if (isSync) {
+      const { isSync: currentIsSync } = useCartStore.getState()
+
+      if (currentIsSync) {
         resetCart()
       }
 
@@ -109,7 +109,6 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     void syncFavourites()
   }, [
     status,
-    isSync,
     getCartItems,
     getFavouriteProducts,
     loadAuthCart,

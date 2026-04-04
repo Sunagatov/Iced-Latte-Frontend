@@ -559,13 +559,6 @@ test.describe('Cart — guest operations', () => {
     // Spec §3: token set, isSync=false, itemsCount>0 → POST /cart/items
     let mergeCallMade = false
 
-    await page.goto('http://localhost:3000')
-    await setCartStorage(
-      page,
-      [{ productId: PRODUCT_A, productQuantity: 2 }],
-      false,
-    )
-
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
@@ -600,6 +593,12 @@ test.describe('Cart — guest operations', () => {
       }
     })
 
+    await page.goto('http://localhost:3000')
+    await setCartStorage(
+      page,
+      [{ productId: PRODUCT_A, productQuantity: 2 }],
+      false,
+    )
     await page.goto('http://localhost:3000')
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(2000)
