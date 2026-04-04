@@ -11,7 +11,7 @@ export interface AuthStore {
   setLoading: () => void
   reset: () => void
   setUserData: (userData: UserData | null) => void
-  readonly isLoggedIn: boolean
+  isLoggedIn: boolean
 }
 
 export const useAuthStore = create<AuthStore>()((set, get) => ({

@@ -49,7 +49,7 @@ function forwardHeaders(request: NextRequest): HeadersInit {
   // Forward session cookie so the backend can authenticate the request
   const cookie = request.headers.get('cookie')
 
-  if (cookie) headers['cookie'] = cookie
+  if (cookie) headers.cookie = cookie
 
   return headers
 }
@@ -104,7 +104,7 @@ async function handleProxy(
   }
 }
 
-export async function OPTIONS(request: NextRequest) {
+export function OPTIONS(request: NextRequest) {
   return handleOptions(request)
 }
 

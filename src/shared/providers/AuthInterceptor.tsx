@@ -33,12 +33,12 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
             const session = await apiGetSession()
 
             if (!session.authenticated) throw new Error('Session invalid after refresh')
-            setAuthenticated(session.user)
+            setAuthenticated(session.user ?? null)
 
             return api.request(originalRequest)
           } catch {
             setAnonymous()
-            await logout()
+            void logout()
           }
         }
 

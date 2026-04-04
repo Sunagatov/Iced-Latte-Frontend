@@ -51,7 +51,7 @@ const initialState: CartSliceState = {
 const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (set, get) => ({
   ...initialState,
   add: (id: string) => {
-    const { itemsIds, tempItems, updateCartItem, createCart, pendingProductIds } = get()
+    const { itemsIds, tempItems, updateCartItem, createCart, pendingProductIds } = get() as CartSliceStore
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
     const cartItem = itemsIds.find((item) => item.productId === id)
 
@@ -65,12 +65,12 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         if (!productCartSlotId) return
         setPending(set, id)
         updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: 1 })
-          .catch(() => {})
+          .then(() => { /* no-op */ }, () => { /* no-op */ })
           .finally(() => clearPending(set, id))
       } else {
         setPending(set, id)
         createCart({ items: [{ productId: id, productQuantity: 1 }] })
-          .catch(() => {})
+          .then(() => { /* no-op */ }, () => { /* no-op */ })
           .finally(() => clearPending(set, id))
       }
     } else {
@@ -170,7 +170,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       }
       setPending(set, id)
       updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: -1 })
-        .catch(() => {})
+        .then(() => { /* no-op */ }, () => { /* no-op */ })
         .finally(() => clearPending(set, id))
     } else {
       const updatedCart = removeItem(id, itemsIds)

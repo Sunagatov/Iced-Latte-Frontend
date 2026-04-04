@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { setupCache } from 'axios-cache-interceptor'
+import { setupCache, AxiosCacheInstance } from 'axios-cache-interceptor'
 import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
 
 const instance = axios.create({
@@ -30,4 +30,4 @@ instance.interceptors.request.use((config) => {
   return config
 })
 
-export const api = setupCache(instance, { cacheTakeover: false })
+export const api: AxiosCacheInstance = setupCache(instance, { cacheTakeover: false })

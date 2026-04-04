@@ -17,9 +17,9 @@ jest.mock('@/features/auth/store', () => ({
   },
 }))
 
-const mockedFavsApi = jest.mocked(favsApi)
-const mockedProductsApi = jest.mocked(productsApi)
-const mockedAuthStore = jest.mocked(useAuthStore as unknown as { getState: jest.Mock })
+const mockedFavsApi = jest.mocked(favsApi) as jest.Mocked<typeof favsApi>
+const mockedProductsApi = jest.mocked(productsApi) as jest.Mocked<typeof productsApi>
+const mockedAuthStore = jest.mocked(useAuthStore as unknown as { getState: jest.Mock }) as { getState: jest.Mock }
 
 function makeProduct(id: string) {
   return { id, name: 'p', description: '', price: 10, quantity: 10, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }

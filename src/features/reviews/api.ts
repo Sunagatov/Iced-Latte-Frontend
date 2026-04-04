@@ -16,7 +16,7 @@ export interface SubmittedReviewInfo {
   createdAt: string
 }
 
-export async function apiGetAllReviews(url: string) {
+export async function apiGetAllReviews(url: string): Promise<IReviews> {
   const response: AxiosResponse<IReviews> = await api.get(url, { cache: false })
 
   return response.data
@@ -51,7 +51,7 @@ export async function apiGetUserReviews(): Promise<Review[]> {
   return response.data.reviewsWithRatings
 }
 
-export async function apiGetProductReviewsStatistics(productId: string) {
+export async function apiGetProductReviewsStatistics(productId: string): Promise<IProductReviewsStatistics> {
   const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
     `/products/${productId}/reviews/statistics`,
     { cache: false },

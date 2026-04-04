@@ -32,14 +32,16 @@ const FilledProfile = () => {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<Section>('overview')
   const [isEditing, setIsEditing] = useState(false)
-  const { setUserData, userData, status } = useAuthStore()
+  const setUserData = useAuthStore((s) => s.setUserData)
+  const userData = useAuthStore((s) => s.userData)
+  const status = useAuthStore((s) => s.status)
 
   useEffect(() => {
     if (status === 'anonymous') router.replace('/signin')
   }, [status, router])
 
   const { isLoading, logout } = useLogout()
-  const favCount = useFavouritesStore((s) => s.favouriteIds.length)
+  const favCount: number = useFavouritesStore((s) => s.favouriteIds.length)
   const [orderCount, setOrderCount] = useState<number | null>(null)
 
   useEffect(() => {

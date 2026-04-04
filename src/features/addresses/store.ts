@@ -13,7 +13,7 @@ interface AddressStore {
   setDefault: (id: string) => Promise<void>
 }
 
-export const useAddressStore = create<AddressStore>()(set => ({
+export const useAddressStore = create<AddressStore>()((set: (partial: Partial<AddressStore> | ((s: AddressStore) => Partial<AddressStore>)) => void) => ({
   addresses: [],
   loading: false,
   error: null,

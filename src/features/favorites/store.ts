@@ -4,7 +4,7 @@ import { IProduct } from '@/features/products/types'
 import { syncFavourites, removeFavourite, fetchFavourites } from './api'
 import { SyncFavouritesRequest } from './types'
 import { getProductByIds } from '@/features/products/api'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore, AuthStore } from '@/features/auth/store'
 
 export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
 
@@ -33,7 +33,7 @@ const initialState: FavSliceState = {
 
 const uniqueIds = (ids: string[]): string[] => Array.from(new Set(ids))
 
-const setProducts = (products: IProduct[]) => {
+const setProducts = (products: IProduct[]): Pick<FavSliceState, 'favourites' | 'favouriteIds'> => {
   const seen = new Set<string>()
   const unique = products.filter((p) => {
     if (seen.has(p.id)) return false
@@ -51,12 +51,12 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
   toggleFavourite: async (id) => {
     if (get().pendingIds.has(id)) return
 
-    const isAuthenticated = useAuthStore.getState().status === 'authenticated'
+    const isAuthenticated = (useAuthStore.getState() as AuthStore).status === 'authenticated'
     const wasAdded = !get().favouriteIds.includes(id)
-    const previousProduct = get().favourites.find((p) => p.id === id) ?? null
+    const previousProduct: IProduct | null = get().favourites.find((p) => p.id === id) ?? null
 
     // optimistic update
-    set((state) => {
+    set((state: FavStoreState) => {
       const pending = new Set(state.pendingIds)
 
       pending.add(id)
@@ -84,15 +84,15 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
           set(setProducts(response.products))
         }
       } else if (wasAdded) {
-        const currentIds = get().favouriteIds
-        const products = await getProductByIds(uniqueIds([...currentIds]))
+        const currentIds: string[] = get().favouriteIds
+        const products: IProduct[] = await getProductByIds(uniqueIds([...currentIds]))
         const safe: IProduct[] = Array.isArray(products) ? products : []
 
         set(setProducts(safe))
       }
     } catch {
       // item-scoped rollback — only revert the affected product
-      set((state) => {
+      set((state: FavStoreState) => {
         if (wasAdded) {
           return {
             favouriteIds: state.favouriteIds.filter((fid) => fid !== id),
@@ -108,7 +108,7 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
         return { favouriteIds: restoredIds, favourites: restoredFavs }
       })
     } finally {
-      set((state) => {
+      set((state: FavStoreState) => {
         const pending = new Set(state.pendingIds)
 
         pending.delete(id)
@@ -118,7 +118,7 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
     }
   },
   getFavouriteProducts: async () => {
-    const isAuthenticated = useAuthStore.getState().status === 'authenticated'
+    const isAuthenticated = (useAuthStore.getState() as AuthStore).status === 'authenticated'
 
     set({ status: 'syncing' })
     try {

@@ -12,7 +12,9 @@ import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
-  const { toggleFavourite, favouriteIds, pendingIds } = useFavouritesStore()
+  const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite)
+  const favouriteIds = useFavouritesStore((s) => s.favouriteIds)
+  const pendingIds = useFavouritesStore((s) => s.pendingIds)
   const add = useCartStore((s) => s.add)
   const remove = useCartStore((s) => s.remove)
   const removeFullProduct = useCartStore((s) => s.removeFullProduct)

@@ -7,9 +7,9 @@ import { useCallback, useState } from 'react'
 
 export function useLogout() {
   const [isLoading, setIsLoading] = useState(false)
-  const { reset } = useAuthStore()
-  const { resetFav } = useFavouritesStore()
-  const { resetCart } = useCartStore()
+  const reset = useAuthStore((s) => s.reset)
+  const resetFav = useFavouritesStore((s) => s.resetFav)
+  const resetCart = useCartStore((s) => s.resetCart)
   const router = useRouter()
 
   const logout = useCallback(async () => {

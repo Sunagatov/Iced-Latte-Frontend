@@ -6,12 +6,12 @@ jest.mock('@/features/user/components/UserBar/UserBar', () => ({ __esModule: tru
 
 const mockUseAuthStore = jest.fn()
 jest.mock('@/features/auth/store', () => ({
-  useAuthStore: (selector: (s: { isLoggedIn: boolean }) => unknown) => mockUseAuthStore(selector),
+  useAuthStore: (selector: (_s: { isLoggedIn: boolean }) => unknown) => mockUseAuthStore(selector),
 }))
 
 beforeEach(() => {
-  mockUseAuthStore.mockImplementation((selector: (s: { isLoggedIn: boolean }) => unknown) =>
-    selector({ isLoggedIn: false })
+  mockUseAuthStore.mockImplementation((_selector: (_s: { isLoggedIn: boolean }) => unknown) =>
+    _selector({ isLoggedIn: false })
   )
 })
 
@@ -28,8 +28,8 @@ describe('LoginIcon', () => {
   })
 
   it('shows UserBar when authenticated', async () => {
-    mockUseAuthStore.mockImplementation((selector: (s: { isLoggedIn: boolean }) => unknown) =>
-      selector({ isLoggedIn: true })
+    mockUseAuthStore.mockImplementation((_selector: (_s: { isLoggedIn: boolean }) => unknown) =>
+      _selector({ isLoggedIn: true })
     )
     await act(async () => { render(<LoginIcon />) })
     expect(screen.getByText('UserBar')).toBeInTheDocument()

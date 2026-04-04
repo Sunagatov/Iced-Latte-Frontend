@@ -5,7 +5,7 @@ import GuestResetPassForm from './GuestResetPassForm'
 import { useAuthStore } from '@/features/auth/store'
 
 export default function ResetPassForm() {
-  const status = useAuthStore((state) => state.status)
+  const status: string = useAuthStore((state) => state.status)
 
   if (status === 'loading') return null
 

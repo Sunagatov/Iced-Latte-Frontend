@@ -7,18 +7,18 @@ import Loader from '@/shared/components/Loader/Loader'
 
 export default function Cart() {
   const tempItems = useCartStore((state) => state.tempItems)
-  const count = useCartStore((state) => state.count)
-  const status = useCartStore((state) => state.status)
-  const lastError = useCartStore((state) => state.lastError)
-  const getCartItems = useCartStore((state) => state.getCartItems)
-  const retryHydration = useCartStore((state) => state.retryHydration)
+  const count: number = useCartStore((state) => state.count)
+  const status: string = useCartStore((state) => state.status)
+  const lastError: string | null = useCartStore((state) => state.lastError)
+  const getCartItems: () => Promise<void> = useCartStore((state) => state.getCartItems)
+  const retryHydration: () => void = useCartStore((state) => state.retryHydration)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => { setHydrated(true) }, [])
 
   useEffect(() => {
     if (hydrated && count > 0 && tempItems.length === 0 && status === 'idle') {
-      getCartItems().catch(() => {})
+      getCartItems().then(() => { /* no-op */ }, () => { /* no-op */ })
     }
   }, [hydrated, count, tempItems.length, status, getCartItems])
 
@@ -32,8 +32,8 @@ export default function Cart() {
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
       <p className="text-sm text-secondary">{lastError ?? 'Failed to load your cart.'}</p>
       <button
-        onClick={retryHydration}
         className="rounded-full bg-brand-solid px-5 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
+        onClick={retryHydration}
       >
         Try again
       </button>

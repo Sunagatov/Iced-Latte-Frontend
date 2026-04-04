@@ -29,7 +29,7 @@ function GridIcon({ active }: { active: boolean }) {
 }
 
 export default function FavouritesFull() {
-  const favourites = useFavouritesStore((s) => s.favourites)
+  const favourites: IProduct[] = useFavouritesStore((s) => s.favourites)
   const [view, setView] = useState<'list' | 'grid'>(() => {
     if (typeof window === 'undefined') return 'list'
     const saved = window.localStorage.getItem('favourites-view')
@@ -70,22 +70,22 @@ export default function FavouritesFull() {
         </div>
         <div className="flex items-center gap-1 rounded-xl border border-primary/20 p-1">
           <button
-            onClick={() => setView('list')}
+            aria-label="List view"
             aria-pressed={view === 'list'}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
               view === 'list' ? 'bg-brand-second' : 'hover:bg-secondary'
             }`}
-            aria-label="List view"
+            onClick={() => setView('list')}
           >
             <ListIcon active={view === 'list'} />
           </button>
           <button
-            onClick={() => setView('grid')}
+            aria-label="Grid view"
             aria-pressed={view === 'grid'}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
               view === 'grid' ? 'bg-brand-second' : 'hover:bg-secondary'
             }`}
-            aria-label="Grid view"
+            onClick={() => setView('grid')}
           >
             <GridIcon active={view === 'grid'} />
           </button>

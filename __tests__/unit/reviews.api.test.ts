@@ -3,7 +3,7 @@ import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({ api: { get: jest.fn(), post: jest.fn(), delete: jest.fn() } }))
 
-const mockedApi = jest.mocked(api)
+const mockedApi = jest.mocked(api) as jest.Mocked<typeof api>
 
 describe('reviews api', () => {
   beforeEach(() => jest.clearAllMocks())

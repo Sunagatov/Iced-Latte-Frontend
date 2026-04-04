@@ -7,9 +7,9 @@ import { useRouter } from 'next/navigation'
 export default function CartFull() {
   const { tempItems, totalPrice, removeFullProduct, remove, add, count } = useCartStore()
   const clearCart = useCartStore((s) => s.clearCart)
-  const status = useCartStore((s) => s.status)
-  const pendingProductIds = useCartStore((s) => s.pendingProductIds)
-  const { isLoggedIn } = useAuthStore()
+  const status: string = useCartStore((s) => s.status)
+  const pendingProductIds: Set<string> = useCartStore((s) => s.pendingProductIds)
+  const isLoggedIn: boolean = useAuthStore((s) => s.isLoggedIn)
   const router = useRouter()
 
   const handleCheckout = () => {
@@ -44,9 +44,9 @@ export default function CartFull() {
             />
           ))}
           <button
-            onClick={() => { clearCart().catch(() => {}) }}
-            disabled={status === 'syncing'}
             className="mt-1 self-start text-sm text-secondary underline-offset-2 transition-colors hover:text-negative hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={status === 'syncing'}
+            onClick={() => { void clearCart() }}
           >
             Clear all
           </button>

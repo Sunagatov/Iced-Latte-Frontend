@@ -12,7 +12,8 @@ const ImageUpload = () => {
   const [preview, setPreview] = useState<string | null>(null)
   const [inputKey, setInputKey] = useState(Date.now())
   const { handleError } = useErrorHandler()
-  const { userData, setUserData } = useAuthStore()
+  const userData = useAuthStore((s) => s.userData)
+  const setUserData = useAuthStore((s) => s.setUserData)
   const prevPreviewRef = useRef<string | null>(null)
 
   useEffect(() => {
