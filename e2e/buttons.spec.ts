@@ -4,7 +4,7 @@
  */
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
+const FAKE_USER = { firstName: 'Test', lastName: 'User', email: 'test@example.com' }
 const PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
 const product = {
@@ -58,6 +58,7 @@ async function mockWithCart(
   page: Page,
   initialQty: number,
   favProducts: object[] = [],
+  authenticated = false,
 ) {
   let serverQty = initialQty
 
@@ -112,6 +113,16 @@ async function mockWithCart(
         contentType: 'application/json',
         body: JSON.stringify({ products: favProducts }),
       })
+    } else if (url.includes('/auth/session')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          authenticated
+            ? { authenticated: true, user: FAKE_USER }
+            : { authenticated: false, user: null },
+        ),
+      })
     } else {
       await route.fulfill({
         status: 200,
@@ -123,18 +134,6 @@ async function mockWithCart(
 }
 
 async function loginAndGoto(page: Page, route: string) {
-  await page.goto('http://localhost:3000')
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
   await page.goto(route)
   await page.waitForLoadState('networkidle')
 }
@@ -143,7 +142,7 @@ async function loginAndGoto(page: Page, route: string) {
 
 test.describe('Logged-in: product card buttons on home page', () => {
   test('plus button adds item — counter appears', async ({ page }) => {
-    await mockWithCart(page, 1)
+    await mockWithCart(page, 1, [], true)
     await loginAndGoto(page, '/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
@@ -154,7 +153,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
   })
 
   test('minus button at qty=1 — circle add btn reappears', async ({ page }) => {
-    await mockWithCart(page, 1)
+    await mockWithCart(page, 1, [], true)
     await loginAndGoto(page, '/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
@@ -171,7 +170,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
   })
 
   test('heart button toggles favourite state', async ({ page }) => {
-    await mockWithCart(page, 0, [product])
+    await mockWithCart(page, 0, [product], true)
     await loginAndGoto(page, '/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
@@ -211,7 +210,9 @@ test.describe('Guest: product card buttons on home page', () => {
       .locator('[data-testid="counter-minus-btn"]')
       .first()
       .waitFor({ timeout: 5000 })
+    await page.waitForTimeout(400)
     await page.locator('[data-testid="counter-minus-btn"]').first().click()
+    await page.waitForTimeout(400)
     await expect(
       page.locator('[data-testid="add-to-cart-circle-btn"]').first(),
     ).toBeVisible({ timeout: 5000 })
@@ -237,30 +238,34 @@ test.describe('Guest: product card buttons on home page', () => {
 
 test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
   test('plus button increments quantity', async ({ page }) => {
-    await mockWithCart(page, 1)
+    await mockWithCart(page, 1, [], true)
     await loginAndGoto(page, '/cart')
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     const qty = page.locator('[data-testid="cart-item-qty"]').first()
     const before = Number(await qty.textContent())
 
+    await page.waitForTimeout(400)
     await page.locator('[data-testid="cart-plus-btn"]').first().click()
+    await page.waitForTimeout(400)
     await expect(qty).not.toHaveText(String(before), { timeout: 5000 })
     expect(Number(await qty.textContent())).toBeGreaterThan(before)
   })
 
   test('minus button decrements quantity', async ({ page }) => {
-    await mockWithCart(page, 2)
+    await mockWithCart(page, 2, [], true)
     await loginAndGoto(page, '/cart')
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     const qty = page.locator('[data-testid="cart-item-qty"]').first()
 
     await expect(qty).toHaveText('2', { timeout: 5000 })
+    await page.waitForTimeout(400)
     await page.locator('[data-testid="cart-minus-btn"]').first().click()
+    await page.waitForTimeout(400)
     await expect(qty).toHaveText('1', { timeout: 8000 })
   })
 
   test('trash button removes item from cart', async ({ page }) => {
-    await mockWithCart(page, 1)
+    await mockWithCart(page, 1, [], true)
     await loginAndGoto(page, '/cart')
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     await page.locator('[data-testid="cart-trash-btn"]').first().click()
@@ -323,7 +328,7 @@ test.describe('Guest: cart page plus / minus / trash buttons', () => {
 
 test.describe('Logout clears cart and favourites state', () => {
   test('cart counter resets after logout', async ({ page }) => {
-    await mockWithCart(page, 1)
+    await mockWithCart(page, 1, [], true)
     await loginAndGoto(page, '/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
@@ -332,8 +337,28 @@ test.describe('Logout clears cart and favourites state', () => {
       .locator('[data-testid="counter-plus-btn"]')
       .first()
       .waitFor({ timeout: 8000 })
+    // Unregister all mocks so the next session check returns anonymous
+    await page.unrouteAll()
+    await page.route('**/api/proxy/**', async (route) => {
+      const url = route.request().url()
+
+      if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ authenticated: false, user: null }),
+        })
+      } else if (url.includes('/products')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(productsList),
+        })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      }
+    })
     await page.evaluate(() => {
-      localStorage.removeItem('token')
       localStorage.removeItem('cart-storage')
       localStorage.removeItem('fav-storage')
     })
@@ -348,13 +373,32 @@ test.describe('Logout clears cart and favourites state', () => {
   })
 
   test('heart resets to inactive after logout', async ({ page }) => {
-    await mockWithCart(page, 0, [product])
+    await mockWithCart(page, 0, [product], true)
     await loginAndGoto(page, '/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })
+    await page.unrouteAll()
+    await page.route('**/api/proxy/**', async (route) => {
+      const url = route.request().url()
+
+      if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ authenticated: false, user: null }),
+        })
+      } else if (url.includes('/products')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(productsList),
+        })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      }
+    })
     await page.evaluate(() => {
-      localStorage.removeItem('token')
       localStorage.removeItem('fav-storage')
     })
     await page.goto('/')

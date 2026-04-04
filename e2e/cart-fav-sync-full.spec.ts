@@ -86,16 +86,10 @@ function makeCart(items: object[]) {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-async function setToken(page: Page, token = FAKE_TOKEN) {
-  await page.evaluate((t) => {
-    localStorage.setItem(
-      'token',
-      JSON.stringify({
-        state: { token: t, refreshToken: null, isLoggedIn: true },
-        version: 0,
-      }),
-    )
-  }, token)
+async function setToken(page: Page, _token = FAKE_TOKEN) {
+  // Token-based auth is not used — session is cookie-based.
+  // This function is kept for call-site compatibility but is now a no-op.
+  void _token
 }
 
 async function setCartStorage(
@@ -146,10 +140,30 @@ async function setFavStorage(page: Page, favouriteIds: string[]) {
   }, favouriteIds)
 }
 
-/** Route all proxy calls. Handlers keyed by URL substring, fallback returns {}. */
-async function mockProxy(page: Page, handlers: Record<string, object>) {
+/** Route all proxy calls. Handlers keyed by URL substring, fallback returns {}.
+ * Pass authenticated=true to make the session endpoint return logged-in state.
+ */
+async function mockProxy(
+  page: Page,
+  handlers: Record<string, object>,
+  authenticated = false,
+) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
+    if (url.includes('/auth/session')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          authenticated
+            ? { authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }
+            : { authenticated: false, user: null },
+        ),
+      })
+
+      return
+    }
 
     for (const [key, body] of Object.entries(handlers)) {
       if (url.includes(key)) {
@@ -282,6 +296,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
             makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
           ),
         })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
+        })
       } else {
         await route.fulfill({
           status: 200,
@@ -297,6 +317,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
       timeout: 8000,
     })
     await page.locator('[data-testid="cart-plus-btn"]').first().click()
+    await page.waitForTimeout(400)
     await expect(
       page.locator('[data-testid="cart-item-qty"]').first(),
     ).toHaveText('2', { timeout: 8000 })
@@ -352,6 +373,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
               : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
           ),
         })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
+        })
       } else {
         await route.fulfill({
           status: 200,
@@ -367,6 +394,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
       timeout: 8000,
     })
     await page.locator('[data-testid="cart-minus-btn"]').first().click()
+    await page.waitForTimeout(400)
     await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({
       timeout: 8000,
     })
@@ -399,6 +427,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
               ? makeCart([])
               : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)]),
           ),
+        })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
         })
       } else {
         await route.fulfill({
@@ -465,6 +499,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
                 makeCartItem(PRODUCT_B, CART_SLOT_B, 2),
               ]),
           ),
+        })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
         })
       } else {
         await route.fulfill({
@@ -548,6 +588,12 @@ test.describe('Cart — guest operations', () => {
           contentType: 'application/json',
           body: JSON.stringify(makeCart([])),
         })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
+        })
       } else {
         await route.fulfill({
           status: 200,
@@ -587,6 +633,12 @@ test.describe('Favourites sync', () => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({ products: [makeProduct(PRODUCT_A)] }),
+        })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
         })
       } else {
         await route.fulfill({
@@ -640,6 +692,12 @@ test.describe('Favourites sync', () => {
             totalElements: 1,
             totalPages: 1,
           }),
+        })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
         })
       } else {
         await route.fulfill({
@@ -695,6 +753,12 @@ test.describe('Favourites sync', () => {
           contentType: 'application/json',
           body: JSON.stringify({ products: [product] }),
         })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
+        })
       } else {
         await route.fulfill({
           status: 200,
@@ -746,6 +810,12 @@ test.describe('Favourites sync', () => {
             totalElements: 1,
             totalPages: 1,
           }),
+        })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
         })
       } else {
         await route.fulfill({
@@ -859,6 +929,12 @@ test.describe('Cart — multi-item merge', () => {
           contentType: 'application/json',
           body: JSON.stringify(mergedCart),
         })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
+        })
       } else {
         await route.fulfill({
           status: 200,
@@ -902,6 +978,12 @@ test.describe('Cart — multi-item merge', () => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(mergedCart),
+        })
+      } else if (url.includes('/auth/session')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(),
         })
       } else {
         await route.fulfill({

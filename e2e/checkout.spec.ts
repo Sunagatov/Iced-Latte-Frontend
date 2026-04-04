@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
 const product = {
   id: 'p1',
   name: 'Test Coffee',
@@ -33,7 +32,13 @@ async function setup(
     const url = route.request().url()
     const method = route.request().method()
 
-    if (url.includes('/orders') && method === 'POST')
+    if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+      })
+    else if (url.includes('/orders') && method === 'POST')
       await route.fulfill({
         status: orderStatus,
         contentType: 'application/json',
@@ -67,17 +72,6 @@ async function setup(
       })
   })
   await page.goto('http://localhost:3000')
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
   await page.evaluate((c) => {
     localStorage.setItem(
       'cart-storage',
@@ -168,7 +162,13 @@ test('cart is cleared after successful order — cart-count badge gone', async (
     const url = route.request().url()
     const method = route.request().method()
 
-    if (url.includes('/orders') && method === 'POST') {
+    if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+      })
+    else if (url.includes('/orders') && method === 'POST') {
       orderPlaced = true
       await route.fulfill({
         status: 200,
@@ -214,17 +214,6 @@ test('cart is cleared after successful order — cart-count badge gone', async (
       })
   })
   await page.goto('http://localhost:3000')
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
   await page.evaluate((c) => {
     localStorage.setItem(
       'cart-storage',

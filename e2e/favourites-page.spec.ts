@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
 const PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 const product = {
   id: PRODUCT_ID,
@@ -16,25 +15,17 @@ const product = {
   active: true,
 }
 
-async function seedAuthState(page: Page) {
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
-}
-
 async function mockFavouritesApi(page: Page, favProducts: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/favorites'))
+    if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+      })
+    else if (url.includes('/favorites'))
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -46,8 +37,6 @@ async function mockFavouritesApi(page: Page, favProducts: object[]) {
 
 async function setup(page: Page, favProducts: object[]) {
   await mockFavouritesApi(page, favProducts)
-  await page.goto('http://localhost:3000')
-  await seedAuthState(page)
   await page.goto('/favourites')
 }
 
@@ -66,7 +55,13 @@ test('removing a favourite updates the list', async ({ page }) => {
     const url = route.request().url()
     const method = route.request().method()
 
-    if (url.includes('/favorites') && method === 'DELETE') {
+    if (url.includes('/auth/session'))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+      })
+    else if (url.includes('/favorites') && method === 'DELETE') {
       removed = true
       await route.fulfill({
         status: 200,
@@ -84,7 +79,6 @@ test('removing a favourite updates the list', async ({ page }) => {
     }
   })
   await page.goto('http://localhost:3000')
-  await seedAuthState(page)
   await page.evaluate((id) => {
     localStorage.setItem(
       'fav-storage',
