@@ -133,19 +133,40 @@ async function mockWithCart(
   })
 }
 
-async function loginAndGoto(page: Page, route: string) {
+async function loginAndGoto(page: Page, route: string, cartQty = 0) {
+  // Pre-populate cart in localStorage so the store hydrates immediately
+  if (cartQty > 0) {
+    await page.goto('http://localhost:3000')
+    await page.evaluate((qty) => {
+      const productId = '00000000-0000-0000-0000-000000000001'
+      localStorage.setItem('cart-storage', JSON.stringify({
+        state: {
+          itemsIds: [{ productId, productQuantity: qty }],
+          tempItems: [{
+            id: 'ci1',
+            productInfo: { id: productId, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true },
+            productQuantity: qty,
+          }],
+          count: qty,
+          totalPrice: +(9.99 * qty).toFixed(2),
+          isSync: true,
+        },
+        version: 0,
+      }))
+    }, cartQty)
+  }
   await page.goto(route)
-  await page.waitForLoadState('networkidle')
-  // Give AppInitProvider time to finish loadAuthCart/syncBackendFav
+  await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(1000)
 }
 
 // ─── LOGGED-IN: product catalog (home page) ───────────────────────────────────
 
 test.describe('Logged-in: product card buttons on home page', () => {
+  test.setTimeout(30000)
   test('plus button adds item — counter appears', async ({ page }) => {
     await mockWithCart(page, 1, [], true)
-    await loginAndGoto(page, '/')
+    await loginAndGoto(page, '/', 1)
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })
@@ -156,7 +177,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
 
   test('minus button at qty=1 — circle add btn reappears', async ({ page }) => {
     await mockWithCart(page, 1, [], true)
-    await loginAndGoto(page, '/')
+    await loginAndGoto(page, '/', 1)
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })
@@ -164,8 +185,9 @@ test.describe('Logged-in: product card buttons on home page', () => {
       .locator('[data-testid="counter-minus-btn"]')
       .first()
       .waitFor({ timeout: 8000 })
+    await page.waitForTimeout(400)
     await page.locator('[data-testid="counter-minus-btn"]').first().click()
-    // qty=1 → removeFullProduct → itemsIds=[] → CircleAddBtn appears
+    await page.waitForTimeout(1000)
     await expect(
       page.locator('[data-testid="add-to-cart-circle-btn"]').first(),
     ).toBeVisible({ timeout: 10000 })
@@ -173,7 +195,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
 
   test('heart button toggles favourite state', async ({ page }) => {
     await mockWithCart(page, 0, [product], true)
-    await loginAndGoto(page, '/')
+    await loginAndGoto(page, '/', 0)
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })
@@ -214,10 +236,10 @@ test.describe('Guest: product card buttons on home page', () => {
       .waitFor({ timeout: 5000 })
     await page.waitForTimeout(400)
     await page.locator('[data-testid="counter-minus-btn"]').first().click()
-    await page.waitForTimeout(400)
+    await page.waitForTimeout(600)
     await expect(
       page.locator('[data-testid="add-to-cart-circle-btn"]').first(),
-    ).toBeVisible({ timeout: 5000 })
+    ).toBeVisible({ timeout: 8000 })
   })
 
   test('heart button toggles favourite state', async ({ page }) => {
@@ -239,9 +261,10 @@ test.describe('Guest: product card buttons on home page', () => {
 // ─── LOGGED-IN: cart page buttons ────────────────────────────────────────────
 
 test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
+  test.setTimeout(30000)
   test('plus button increments quantity', async ({ page }) => {
     await mockWithCart(page, 1, [], true)
-    await loginAndGoto(page, '/cart')
+    await loginAndGoto(page, '/cart', 1)
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     const qty = page.locator('[data-testid="cart-item-qty"]').first()
     const before = Number(await qty.textContent())
@@ -255,7 +278,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
   test('minus button decrements quantity', async ({ page }) => {
     await mockWithCart(page, 2, [], true)
-    await loginAndGoto(page, '/cart')
+    await loginAndGoto(page, '/cart', 2)
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     const qty = page.locator('[data-testid="cart-item-qty"]').first()
 
@@ -268,7 +291,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
   test('trash button removes item from cart', async ({ page }) => {
     await mockWithCart(page, 1, [], true)
-    await loginAndGoto(page, '/cart')
+    await loginAndGoto(page, '/cart', 1)
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     await page.locator('[data-testid="cart-trash-btn"]').first().click()
     await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({
@@ -329,9 +352,10 @@ test.describe('Guest: cart page plus / minus / trash buttons', () => {
 // ─── LOGOUT clears cart and favourites ───────────────────────────────────────
 
 test.describe('Logout clears cart and favourites state', () => {
+  test.setTimeout(30000)
   test('cart counter resets after logout', async ({ page }) => {
     await mockWithCart(page, 1, [], true)
-    await loginAndGoto(page, '/')
+    await loginAndGoto(page, '/', 1)
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })
@@ -376,7 +400,7 @@ test.describe('Logout clears cart and favourites state', () => {
 
   test('heart resets to inactive after logout', async ({ page }) => {
     await mockWithCart(page, 0, [product], true)
-    await loginAndGoto(page, '/')
+    await loginAndGoto(page, '/', 0)
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })

@@ -655,7 +655,7 @@ test.describe('Favourites sync', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
+    await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     expect(syncCallCount).toBe(1)
@@ -711,7 +711,7 @@ test.describe('Favourites sync', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.reload()
+    await page.waitForLoadState('networkidle')
     await page.goto('/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
@@ -734,8 +734,6 @@ test.describe('Favourites sync', () => {
     // Spec §4 remove: token set → DELETE /favorites/:productId called
     const product = makeProduct(PRODUCT_A)
     let deleteWasCalled = false
-
-    await setFavStorage(page, [PRODUCT_A])
 
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
@@ -770,6 +768,7 @@ test.describe('Favourites sync', () => {
     })
 
     await page.goto('http://localhost:3000')
+    await setFavStorage(page, [PRODUCT_A])
     await page.reload()
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(500)
@@ -777,14 +776,12 @@ test.describe('Favourites sync', () => {
     await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
       timeout: 8000,
     })
-
     await page
       .locator('[data-testid="fav-element"]')
       .first()
       .locator('button[aria-label="Remove from favourites"]')
       .click()
     await page.waitForTimeout(1000)
-
     expect(deleteWasCalled).toBe(true)
   })
 

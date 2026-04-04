@@ -23,7 +23,7 @@ test('sign in with valid credentials redirects away from /signin', async ({
       ),
     })
   })
-  await page.goto('/signin')
+  await page.goto('/signin?next=/')
   await page.fill('#email', EXISTING_EMAIL)
   await page.fill('#password', EXISTING_PASSWORD)
   loggedIn = true
