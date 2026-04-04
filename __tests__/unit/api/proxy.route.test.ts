@@ -28,7 +28,7 @@ describe('proxy route', () => {
   afterEach(() => jest.restoreAllMocks())
 
   it('OPTIONS returns 200', async () => {
-    const res = await OPTIONS()
+    const res = await OPTIONS(new NextRequest('http://localhost/api/proxy/test', { method: 'OPTIONS' }))
     expect(res.status).toBe(200)
   })
 

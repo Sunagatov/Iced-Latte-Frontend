@@ -33,7 +33,7 @@ export default function CartElement({ product, isPending = false, add, remove, r
   const isFavourited = favouriteIds.includes(productInfo.id)
   const isFavPending = pendingIds.has(productInfo.id)
 
-  const handleButtonClick = () => { if (!isFavPending) void toggleFavourite(productInfo.id, token) }
+  const handleButtonClick = () => { if (!isFavPending) void toggleFavourite(productInfo.id) }
 
   return (
     <div data-testid="cart-item" className="rounded-2xl border border-[#242D3429] bg-primary px-4 py-3 shadow-sm transition-shadow hover:shadow-md">

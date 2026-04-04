@@ -2,6 +2,7 @@
  * @jest-environment node
  */
 import { createCorsResponse, handleOptions, corsHeaders } from '../../../src/shared/utils/corsUtils'
+import { NextRequest } from 'next/server'
 
 describe('corsUtils', () => {
   it('createCorsResponse returns 200 with data by default', async () => {
@@ -22,7 +23,7 @@ describe('corsUtils', () => {
   })
 
   it('handleOptions returns 200 with cors headers', () => {
-    const res = handleOptions()
+    const res = handleOptions(new NextRequest('http://localhost/', { method: 'OPTIONS' }))
     expect(res.status).toBe(200)
     expect(res.headers.get('Access-Control-Allow-Methods')).toBe(corsHeaders['Access-Control-Allow-Methods'])
   })
