@@ -79,7 +79,7 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     fetchNext,
     hasNextPage: size < totalPages,
     isLoading,
-    isFetchingNextPage: (isLoading && !error) || (size > 0 && data && typeof data[size - 1] === 'undefined'),
+    isFetchingNextPage: size > 0 && data && typeof data[size - 1] === 'undefined',
     error,
     refreshReviews,
     removeReviewFromCache,

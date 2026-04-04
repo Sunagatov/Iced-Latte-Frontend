@@ -471,23 +471,21 @@ const NotifRow = ({
   desc: string
   defaultOn?: boolean
 }) => {
-  const [on, setOn] = useState(defaultOn)
-
   return (
     <div className="flex items-center justify-between py-4">
       <div>
         <p className="text-sm font-medium text-primary">{label}</p>
         <p className="text-xs text-secondary">{desc}</p>
       </div>
-      <button
-        onClick={() => setOn(!on)}
-        className={`relative h-6 w-11 rounded-full transition-colors ${on ? 'bg-brand' : 'bg-tertiary'}`}
-        aria-label={`Toggle ${label}`}
+      <div
+        className={`relative h-6 w-11 rounded-full transition-colors cursor-not-allowed ${defaultOn ? 'bg-brand opacity-40' : 'bg-tertiary opacity-40'}`}
+        aria-label={`${label} (coming soon)`}
+        title="Notification preferences coming soon"
       >
         <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-5' : 'translate-x-0.5'}`}
+          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${defaultOn ? 'translate-x-5' : 'translate-x-0.5'}`}
         />
-      </button>
+      </div>
     </div>
   )
 }

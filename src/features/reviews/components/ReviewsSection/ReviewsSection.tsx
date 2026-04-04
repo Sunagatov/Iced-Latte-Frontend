@@ -1,6 +1,6 @@
 'use client'
 import ReviewForm from '../ReviewForm/ReviewForm'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { Review, IProductReviewsStatistics } from '@/features/reviews/types'
 import { useAuthStore } from '@/features/auth/store'
@@ -41,20 +41,20 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
 
   useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () => setShowFilterDropdown(false))
 
-  useEffect(() => {
+  const refreshUserReview = useCallback(() => {
+    apiGetProductUserReview(productId)
+      .then((review) => setUserReview(checkIfUserReviewExists(review) ? review : null))
+      .catch(() => setUserReview(null))
+  }, [productId])
 
+  useEffect(() => {
     if (!isLoggedIn) {
       setUserReview(null)
 
       return
     }
-
-    apiGetProductUserReview(productId)
-      .then((review) => {
-        setUserReview(checkIfUserReviewExists(review) ? review : null)
-      })
-      .catch(() => { setUserReview(null) })
-  }, [productId, isLoggedIn])
+    refreshUserReview()
+  }, [productId, isLoggedIn, refreshUserReview])
 
   const {
     data: reviews,
@@ -122,8 +122,8 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
               productId={productId}
               showForm={showForm}
               setShowForm={setShowForm}
-              onReviewSubmitted={(review) => {
-                setUserReview(review)
+              onReviewSubmitted={() => {
+                refreshUserReview()
                 refreshReviews()
                 void refreshStatistics()
               }}
@@ -205,7 +205,7 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
               hasNextPage={hasNextPage}
               userReview={userReview}
               onReviewDeleted={(id) => {
-                setUserReview(null)
+                refreshUserReview()
                 removeReviewFromCache(id)
                 void refreshStatistics()
               }}

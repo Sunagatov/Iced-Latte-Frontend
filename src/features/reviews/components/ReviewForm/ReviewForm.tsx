@@ -8,13 +8,12 @@ import { apiAddProductReview } from '@/features/reviews/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useRouter } from 'next/navigation'
 import { RiEditLine } from 'react-icons/ri'
-import { Review } from '@/features/reviews/types'
 
 interface ReviewFormProps {
   productId: string
   showForm: boolean
   setShowForm: (v: boolean) => void
-  onReviewSubmitted?: (review: Review) => void
+  onReviewSubmitted?: () => void
 }
 
 const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: ReviewFormProps) => {
@@ -22,7 +21,7 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
   const [reviewText, setReviewText] = useState('')
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
-  const { isLoggedIn, userData } = useAuthStore()
+  const { isLoggedIn } = useAuthStore()
   const router = useRouter()
 
   const currentRating = (ratings[productId] || { rating: 0 }).rating
@@ -35,21 +34,8 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
 
     try {
       setLoading(true)
-      const submitted = await apiAddProductReview(productId, trimmedText, currentRating)
-      const newReview: Review = {
-        productReviewId: submitted.productReviewId,
-        productId,
-        text: submitted.text,
-        createdAt: submitted.createdAt,
-        productRating: currentRating,
-        userName: userData?.firstName ?? '',
-        userLastName: userData?.lastName ?? '',
-        likesCount: 0,
-        dislikesCount: 0,
-        isCurrentUserComment: true,
-      }
-
-      onReviewSubmitted?.(newReview)
+      await apiAddProductReview(productId, trimmedText, currentRating)
+      onReviewSubmitted?.()
       setRating(productId, 0)
       setReviewText('')
       setShowForm(false)
