@@ -90,7 +90,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
 
       {/* Price row */}
       <div className="flex items-center justify-between border-t border-black/5 px-3 py-2.5">
-        <p data-testid="product-price" className="text-base font-bold text-primary">${price}</p>
+        <p data-testid="product-price" className="text-base font-bold text-primary">{price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
         {productCartQuantity ? (
           <Counter
             theme="light"

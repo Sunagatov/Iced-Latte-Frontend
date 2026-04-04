@@ -25,8 +25,19 @@ export function useProducts(
   const getKey = (pageIndex: number, previousData: IProductsList) => {
     if (previousData && previousData.totalPages - 1 == previousData.page) return null
     const ratingQuery = ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
-
-    return `products?page=${pageIndex}&size=${productSize}&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${brandNames && '&brand_names=' + brandNames}${ratingQuery ? '&minimum_average_rating=' + ratingQuery : ''}${sellerNames && '&seller_names=' + sellerNames}${fromPriceFilter && '&min_price=' + fromPriceFilter}${toPriceFilter && '&max_price=' + toPriceFilter}${searchQuery ? '&keyword=' + encodeURIComponent(searchQuery) : ''}`
+    const params = new URLSearchParams({
+      page: String(pageIndex),
+      size: String(productSize),
+      sort_attribute: sortAttribute,
+      sort_direction: sortDirection,
+    })
+    if (brandNames) params.set('brand_names', brandNames)
+    if (ratingQuery) params.set('minimum_average_rating', String(ratingQuery))
+    if (sellerNames) params.set('seller_names', sellerNames)
+    if (fromPriceFilter) params.set('min_price', fromPriceFilter)
+    if (toPriceFilter) params.set('max_price', toPriceFilter)
+    if (searchQuery) params.set('keyword', searchQuery)
+    return `products?${params}`
   }
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<IProductsList, AxiosError>(

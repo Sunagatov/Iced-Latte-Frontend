@@ -15,18 +15,10 @@ const FilterCheckboxGroup = ({
   onReset = () => {},
   title = '',
 }: Readonly<IFilterCheckboxGroup>) => {
-  const [isItemsToggled, setIsItemsToggled] = useState(true)
-  const [displayedItems, setDisplayedItems] = useState(() => items.slice(0, 5))
+  const [isExpanded, setIsExpanded] = useState(false)
+  const displayedItems = isExpanded ? items : items.slice(0, 5)
 
-  const toggleItemsButtonClick = () => {
-    if (isItemsToggled) {
-      setIsItemsToggled(false)
-      setDisplayedItems(items)
-    } else {
-      setIsItemsToggled(true)
-      setDisplayedItems(items.slice(0, 5))
-    }
-  }
+  const toggleItemsButtonClick = () => setIsExpanded((prev) => !prev)
 
   return (
     <div data-testid={`filter-group-${title.toLowerCase()}`}>
@@ -57,7 +49,7 @@ const FilterCheckboxGroup = ({
             onClick={toggleItemsButtonClick}
             className="mt-1 flex items-center gap-1 px-2 text-xs font-medium text-brand-solid hover:opacity-70"
           >
-            {isItemsToggled ? `Show ${items.length - 5} more ↓` : 'Show less ↑'}
+            {isExpanded ? 'Show less ↑' : `Show ${items.length - 5} more ↓`}
           </button>
         )}
       </div>

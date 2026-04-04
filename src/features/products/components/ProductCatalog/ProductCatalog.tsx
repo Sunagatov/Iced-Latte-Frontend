@@ -35,6 +35,7 @@ export default function ProductCatalog({
   } = useProductFiltersStore()
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [loadMoreError, setLoadMoreError] = useState(false)
 
   const {
     data: products,
@@ -54,20 +55,32 @@ export default function ProductCatalog({
   )
 
   function handleSelectSortOption(selectedOption: IOption<ISortParams>) {
-    updateProductFiltersStore({
-      selectedSortOption: selectedOption,
-    })
+    updateProductFiltersStore({ selectedSortOption: selectedOption })
   }
 
-  const handleFilterClick = () => {
-    setIsMobileFilterOpen((prev) => !prev)
-  }
+  const handleFilterClick = () => setIsMobileFilterOpen((prev) => !prev)
+  const handleCloseMobileFilter = () => setIsMobileFilterOpen(false)
 
-  const handleCloseMobileFilter = () => {
-    setIsMobileFilterOpen(false)
+  const handleLoadMore = () => {
+    setLoadMoreError(false)
+    fetchNext().catch(() => setLoadMoreError(true))
   }
 
   const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
+
+  const hasPriceFilter = fromPriceFilter !== '' || toPriceFilter !== ''
+  const priceChipLabel = fromPriceFilter && toPriceFilter
+    ? `$${fromPriceFilter} – $${toPriceFilter}`
+    : fromPriceFilter
+      ? `From $${fromPriceFilter}`
+      : `Up to $${toPriceFilter}`
+
+  const hasActiveChips =
+    searchQuery ||
+    selectedBrandOptions.length > 0 ||
+    selectedSellerOptions.length > 0 ||
+    hasPriceFilter ||
+    (ratingFilter && ratingFilter !== 'any')
 
   return (
     <section
@@ -94,6 +107,8 @@ export default function ProductCatalog({
             <button
               id="filter-btn"
               onClick={handleFilterClick}
+              aria-expanded={isMobileFilterOpen}
+              aria-controls="mobile-filter-sidebar"
               className="ml-auto block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
             >
               Filter
@@ -116,38 +131,53 @@ export default function ProductCatalog({
               selectedOption={selectedSortOption}
             />
           </div>
-          {/* Row 2: active filter chips (only when present) */}
-          {(searchQuery || selectedBrandOptions.length > 0 || (ratingFilter && ratingFilter !== 'any')) && (
+
+          {/* Row 2: active filter chips */}
+          {hasActiveChips && (
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {searchQuery && (
                 <span className="flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
                   🔍 {searchQuery}
-                  <button onClick={() => updateProductFiltersStore({ searchQuery: '' })} className="ml-1 hover:opacity-70">✕</button>
+                  <button onClick={() => updateProductFiltersStore({ searchQuery: '' })} className="ml-1 hover:opacity-70" aria-label="Remove search filter">✕</button>
                 </span>
               )}
               {selectedBrandOptions.map((b) => (
                 <span key={b} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
                   {b}
-                  <button onClick={() => updateProductFiltersStore({ selectedBrandOptions: selectedBrandOptions.filter((x) => x !== b) })} className="hover:opacity-70">✕</button>
+                  <button onClick={() => updateProductFiltersStore({ selectedBrandOptions: selectedBrandOptions.filter((x) => x !== b) })} className="hover:opacity-70" aria-label={`Remove brand ${b}`}>✕</button>
                 </span>
               ))}
+              {selectedSellerOptions.map((s) => (
+                <span key={s} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                  {s}
+                  <button onClick={() => updateProductFiltersStore({ selectedSellerOptions: selectedSellerOptions.filter((x) => x !== s) })} className="hover:opacity-70" aria-label={`Remove seller ${s}`}>✕</button>
+                </span>
+              ))}
+              {hasPriceFilter && (
+                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                  {priceChipLabel}
+                  <button onClick={() => updateProductFiltersStore({ fromPriceFilter: '', toPriceFilter: '' })} className="hover:opacity-70" aria-label="Remove price filter">✕</button>
+                </span>
+              )}
               {ratingFilter && ratingFilter !== 'any' && (
                 <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
                   {'⭐'.repeat(Number(ratingFilter))}+
-                  <button onClick={() => updateProductFiltersStore({ ratingFilter: null })} className="hover:opacity-70">✕</button>
+                  <button onClick={() => updateProductFiltersStore({ ratingFilter: null })} className="hover:opacity-70" aria-label="Remove rating filter">✕</button>
                 </span>
               )}
             </div>
           )}
         </div>
-        <div className=" flex w-full justify-center gap-x-8 ">
-          <FilterSidebar className=" sticky top-[180px] hidden max-h-[calc(100vh-150px)] overflow-y-auto min-[1100px]:block ">
+
+        <div className="flex w-full justify-center gap-x-8">
+          <FilterSidebar className="sticky top-[180px] hidden max-h-[calc(100vh-150px)] overflow-y-auto min-[1100px]:block">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (
             <MobileFilterSidebar
+              id="mobile-filter-sidebar"
               onClose={handleCloseMobileFilter}
-              className="overflow-y-auto  min-[1100px]:hidden"
+              className="overflow-y-auto min-[1100px]:hidden"
             >
               <Filters brands={brands} sellers={sellers} />
             </MobileFilterSidebar>
@@ -161,18 +191,28 @@ export default function ProductCatalog({
             onSuggestionClick={(q) => updateProductFiltersStore({ searchQuery: q })}
           />
         </div>
+
         {isShowLoadMoreBtn && (
-          <button
-            className={'m-3 mt-[24px] h-[54px] w-[160px] rounded-[46px] border-2 border-brand-solid text-L font-semibold text-brand-solid shadow-sm transition-all duration-200 hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'}
-            onClick={() => {
-              fetchNext().catch(() => {})
-            }}
-          >
-            Show more
-          </button>
+          <div className="mt-[24px] flex flex-col items-center gap-2">
+            <button
+              className="h-[54px] w-[160px] rounded-[46px] border-2 border-brand-solid text-L font-semibold text-brand-solid shadow-sm transition-all duration-200 hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2"
+              onClick={handleLoadMore}
+            >
+              Show more
+            </button>
+            {loadMoreError && (
+              <p className="text-xs text-red-500">
+                Failed to load more.{' '}
+                <button onClick={handleLoadMore} className="underline hover:opacity-70">
+                  Retry
+                </button>
+              </p>
+            )}
+          </div>
         )}
+
         {isFetchingNextPage && (
-          <div className={'mt-[24px] flex h-[54px] items-center'}>
+          <div className="mt-[24px] flex h-[54px] items-center">
             <Loader />
           </div>
         )}
