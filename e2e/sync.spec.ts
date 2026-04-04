@@ -35,7 +35,7 @@ const test = base.extend<Fixtures>({
 // Navigate to route — session is handled by the mock registered before calling this.
 async function loginAndGoto(page: Page, _token: string, route: string) {
   await page.goto(route)
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(1000)
 }
 
@@ -44,11 +44,11 @@ async function mockFavourites(page: Page, products: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/auth/session')) {
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
       })
     } else if (url.includes('/favorites')) {
       await route.fulfill({
@@ -82,11 +82,11 @@ async function mockCart(page: Page, items: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/auth/session')) {
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ authenticated: true, user: { firstName: 'Test', lastName: 'User', email: 'test@example.com' } }),
+        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
       })
     } else if (url.includes('/cart')) {
       await route.fulfill({

@@ -84,9 +84,11 @@ test('clicking heart toggles favourite state', async ({ page }) => {
     totalElements: 1,
     totalPages: 1,
   }
+  let favRemoved = false
 
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+    const method = route.request().method()
 
     if (url.includes('/auth/session')) {
       await route.fulfill({
@@ -100,11 +102,24 @@ test('clicking heart toggles favourite state', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify(productsList),
       })
-    } else if (url.includes('/favorites')) {
+    } else if (url.includes('/favorites') && method === 'POST') {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ products: [product] }),
+      })
+    } else if (url.includes('/favorites') && method === 'DELETE') {
+      favRemoved = true
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ products: [] }),
+      })
+    } else if (url.includes('/favorites')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ products: [] }),
       })
     } else {
       await route.fulfill({
@@ -119,6 +134,8 @@ test('clicking heart toggles favourite state', async ({ page }) => {
   const heartBtn = page.locator('[data-testid="favourite-btn"]').first()
 
   await heartBtn.waitFor({ timeout: 10000 })
+  // Wait for AppInitProvider to finish syncing favourites
+  await page.waitForTimeout(500)
   const before = await heartBtn.getAttribute('data-active')
 
   await heartBtn.click()

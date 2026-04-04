@@ -310,7 +310,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     await page.goto('http://localhost:3000')
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
@@ -329,7 +329,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
       '/cart': makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
     })
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
 
@@ -388,7 +388,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     await page.goto('http://localhost:3000')
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
@@ -444,7 +444,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     await page.goto('http://localhost:3000')
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
@@ -517,7 +517,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     await page.goto('http://localhost:3000')
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
@@ -553,7 +553,7 @@ test.describe('Cart — guest operations', () => {
     )
     await mockProxy(page, { '/products/ids': [makeProduct(PRODUCT_A)] })
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
@@ -609,7 +609,7 @@ test.describe('Cart — guest operations', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(2000)
 
     expect(mergeCallMade).toBe(true)
@@ -655,7 +655,7 @@ test.describe('Favourites sync', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(2000)
 
     expect(syncCallCount).toBe(1)
@@ -711,7 +711,7 @@ test.describe('Favourites sync', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.goto('/')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
@@ -770,7 +770,7 @@ test.describe('Favourites sync', () => {
     await page.goto('http://localhost:3000')
     await setFavStorage(page, [PRODUCT_A])
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/favourites')
     await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
@@ -861,7 +861,7 @@ test.describe('Favourites sync', () => {
     await setFavStorage(page, [PRODUCT_A])
     await mockProxy(page, { '/products/ids': [product] })
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/favourites')
     await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
@@ -949,7 +949,7 @@ test.describe('Cart — multi-item merge', () => {
 
     await page.goto('http://localhost:3000')
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(2, {
@@ -1001,7 +1001,7 @@ test.describe('Cart — multi-item merge', () => {
 
     await page.goto('http://localhost:3000')
     await page.reload()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/cart')
     await expect(

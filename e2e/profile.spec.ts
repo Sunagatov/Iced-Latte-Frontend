@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
+const VALID_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo0MTAyNDQ0ODAwfQ.fake-signature'
+
 const userData = {
   id: 'u1',
   firstName: 'John',
@@ -56,6 +58,7 @@ async function setup(
         body: '{}',
       })
   })
+  await page.context().addCookies([{ name: 'token', value: VALID_JWT, url: 'http://localhost:3000' }])
   await page.goto('/profile')
   // Navigate to Personal details section
   await page.getByRole('button', { name: 'Personal details' }).first().click()

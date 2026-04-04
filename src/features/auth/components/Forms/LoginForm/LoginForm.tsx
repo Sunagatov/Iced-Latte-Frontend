@@ -5,8 +5,9 @@ import FormInput from '@/shared/components/FormInput/FormInput'
 import Loader from '@/shared/components/Loader/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { apiLoginUser, apiGetSession } from '@/features/auth/api'
+import { apiLoginUser } from '@/features/auth/api'
 import { useAuthStore } from '@/features/auth/store'
+import { getUserData } from '@/features/user/api'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
 interface IFormValues {
@@ -34,10 +35,9 @@ export default function LoginForm() {
     try {
       setLoading(true)
       await apiLoginUser(formData)
-      const session = await apiGetSession()
+      const userData = await getUserData()
 
-      if (!session.authenticated) throw new Error('Login failed')
-      setAuthenticated(session.user ?? null)
+      setAuthenticated(userData)
       reset()
       handleRedirectForAuth()
     } catch (error) {

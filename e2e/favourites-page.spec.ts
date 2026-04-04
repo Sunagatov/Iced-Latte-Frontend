@@ -38,7 +38,7 @@ async function mockFavouritesApi(page: Page, favProducts: object[]) {
 async function setup(page: Page, favProducts: object[]) {
   await mockFavouritesApi(page, favProducts)
   await page.goto('/favourites')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(500)
 }
 

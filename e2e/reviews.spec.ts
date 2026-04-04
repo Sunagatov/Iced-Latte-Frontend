@@ -91,7 +91,7 @@ async function mockReviewCalls(page: Page) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ token: FAKE_TOKEN }),
+        body: JSON.stringify({ token: 'fake-token' }),
       })
     else if (url.includes('/auth/logout') || url.includes('/users'))
       await route.fulfill({
@@ -191,7 +191,7 @@ async function mockReviewCallsAuthenticated(page: Page) {
 
 async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
   if (await page.locator('text=Failed to load reviews.').isVisible())
     return false
   if (await page.locator('h1:has-text("404")').isVisible()) return false

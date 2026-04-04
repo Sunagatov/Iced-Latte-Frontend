@@ -19,10 +19,20 @@ export async function verifyEmailCode(code: string): Promise<void> {
   await api.post('/auth/confirm', { token: code })
 }
 
+export interface LoginResponse {
+  token: string
+  refreshToken: string
+}
+
 export async function apiLoginUser(
   credentials: LoginCredentials,
-): Promise<void> {
-  await api.post('/auth/authenticate', credentials)
+): Promise<LoginResponse> {
+  const response: AxiosResponse<LoginResponse> = await api.post(
+    '/auth/authenticate',
+    credentials,
+  )
+
+  return response.data
 }
 
 export async function apiLogoutUser(): Promise<void> {

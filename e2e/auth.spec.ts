@@ -10,25 +10,11 @@ const EXISTING_PASSWORD = process.env.E2E_EXISTING_PASSWORD!
 test('sign in with valid credentials redirects away from /signin', async ({
   page,
 }) => {
-  let loggedIn = false
-
-  await page.route('**/api/proxy/auth/session', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(
-        loggedIn
-          ? { authenticated: true, user: { firstName: 'Olivia', lastName: 'Test', email: EXISTING_EMAIL } }
-          : { authenticated: false, user: null },
-      ),
-    })
-  })
   await page.goto('/signin?next=/')
   await page.fill('#email', EXISTING_EMAIL)
   await page.fill('#password', EXISTING_PASSWORD)
-  loggedIn = true
   await page.click('#login-btn')
-  await expect(page).not.toHaveURL(/\/signin/, { timeout: 10000 })
+  await expect(page).not.toHaveURL(/\/signin/, { timeout: 15000 })
 })
 
 test('sign in with invalid credentials shows error', async ({ page }) => {

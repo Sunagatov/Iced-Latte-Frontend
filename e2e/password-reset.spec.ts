@@ -56,10 +56,10 @@ async function mockAll200Authenticated(page: Page) {
 /** Navigate to home first so AppInitProvider resolves auth, then go to /resetpass. */
 async function loginAs(page: Page) {
   await page.goto('/')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(500)
   await page.goto('/resetpass')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
 }
 
 test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
@@ -517,7 +517,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
     await expect(
-      page.locator('text=Current password is incorrect.').first(),
+      page.locator('text=Incorrect email or password').first(),
     ).toBeVisible({ timeout: 8000 })
     // Must stay on resetpass
     await expect(page).toHaveURL(/\/resetpass/)

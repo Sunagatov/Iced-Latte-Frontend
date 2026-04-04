@@ -245,7 +245,7 @@ test.describe('Guest: product card buttons on home page', () => {
   test('heart button toggles favourite state', async ({ page }) => {
     await mockWithCart(page, 0)
     await page.goto('/')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })
@@ -389,7 +389,7 @@ test.describe('Logout clears cart and favourites state', () => {
       localStorage.removeItem('fav-storage')
     })
     await page.goto('/')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.waitForSelector('[data-testid="product-card"]', {
       timeout: 10000,
     })

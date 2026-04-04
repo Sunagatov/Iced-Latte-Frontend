@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, type ReactNode } from 'react'
-import { apiGetSession } from '@/features/auth/api'
-import type { SessionResponse } from '@/features/auth/types'
+import { getUserData } from '@/features/user/api'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import {
@@ -12,25 +11,6 @@ import {
 
 interface AppInitProviderProps {
   children: ReactNode
-}
-
-const fetchSession = apiGetSession as unknown as () => Promise<SessionResponse>
-
-function ignoreAsyncError(_error: unknown): void {
-  return
-}
-
-function isUnauthorizedError(error: unknown): boolean {
-  if (typeof error !== 'object' || error === null) {
-    return false
-  }
-
-  const candidate = error as {
-    response?: { status?: unknown }
-    status?: unknown
-  }
-
-  return candidate.response?.status === 401 || candidate.status === 401
 }
 
 const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
@@ -77,18 +57,17 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
   const itemsIds = useCartStore(
     (state: CartSliceStore): CartSliceStore['itemsIds'] => state.itemsIds,
   )
+  const itemsCount = useCartStore(
+    (state: CartSliceStore): number => state.itemsIds.length,
+  )
   const isSync = useCartStore((state: CartSliceStore): boolean => state.isSync)
 
   useEffect(() => {
     const bootstrapSession = async (): Promise<void> => {
       try {
-        const session = await fetchSession()
+        const userData = await getUserData()
 
-        if (session.authenticated) {
-          setAuthenticated(session.user ?? null)
-        } else {
-          setAnonymous()
-        }
+        setAuthenticated(userData)
       } catch {
         setAnonymous()
       }
@@ -107,14 +86,14 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
         resetCart()
       }
 
-      if (itemsIds.length > 0) {
+      if (itemsCount > 0) {
         void getCartItems().catch(ignoreAsyncError)
       }
 
       return
     }
 
-    if (!isSync && itemsIds.length > 0) {
+    if (!isSync && itemsCount > 0) {
       void syncBackendCart().catch(ignoreAsyncError)
     } else {
       void loadAuthCart().catch(ignoreAsyncError)
@@ -129,11 +108,8 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
         } else {
           await getFavouriteProducts()
         }
-      } catch (error: unknown) {
-        if (isUnauthorizedError(error)) {
-          resetAuth()
-          resetFav()
-        }
+      } catch {
+        // ignore
       }
     }
 
@@ -141,13 +117,11 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
   }, [
     status,
     isSync,
-    itemsIds,
+    itemsCount,
     getCartItems,
     getFavouriteProducts,
     loadAuthCart,
-    resetAuth,
     resetCart,
-    resetFav,
     syncBackendCart,
     syncBackendFav,
   ])
