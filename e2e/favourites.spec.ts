@@ -34,15 +34,11 @@ async function mockProxy(page: Page, authenticated = false) {
     const url = route.request().url()
 
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(
-          authenticated
-            ? { authenticated: true, user: FAKE_USER }
-            : { authenticated: false, user: null },
-        ),
-      })
+      if (authenticated) {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}) })
+      } else {
+        await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Unauthorized' }) })
+      }
     } else if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({
         status: 200,

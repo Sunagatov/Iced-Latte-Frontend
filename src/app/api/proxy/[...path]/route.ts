@@ -110,7 +110,12 @@ async function handleProxy(
 
     if (!response.ok) return createCorsResponse(data, response.status)
 
-    return createCorsResponse(data)
+    const nextResponse = createCorsResponse(data)
+    const setCookie = response.headers.get('set-cookie')
+
+    if (setCookie) nextResponse.headers.set('set-cookie', setCookie)
+
+    return nextResponse
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)
   }

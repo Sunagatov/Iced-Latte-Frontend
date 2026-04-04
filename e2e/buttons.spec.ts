@@ -114,15 +114,19 @@ async function mockWithCart(
         body: JSON.stringify({ products: favProducts }),
       })
     } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(
-          authenticated
-            ? { authenticated: true, user: FAKE_USER }
-            : { authenticated: false, user: null },
-        ),
-      })
+      if (authenticated) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(FAKE_USER),
+        })
+      } else {
+        await route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Unauthorized' }),
+        })
+      }
     } else {
       await route.fulfill({
         status: 200,
