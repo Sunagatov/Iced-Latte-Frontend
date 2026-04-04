@@ -23,6 +23,7 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
 
   const refreshStatistics = useCallback(async () => {
     try {
+
       const stats = await apiGetProductReviewsStatistics(product.id)
       setReviewsStatistics(stats)
     } catch (error) {

@@ -23,7 +23,7 @@ const labels: Record<number, string> = {
 const StarRating = ({ productId, count, activeColor = '#682EFF', size = 'lg' }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
   const { ratings, setRating } = useProductRatingStore()
-  const { token } = useAuthStore()
+  const { isLoggedIn } = useAuthStore()
   const router = useRouter()
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
@@ -33,7 +33,7 @@ const StarRating = ({ productId, count, activeColor = '#682EFF', size = 'lg' }: 
   const sizeClass = size === 'lg' ? 'h-9 w-9' : size === 'md' ? 'h-6 w-6' : 'h-4 w-4'
 
   const handleRatingClick = (index: number) => {
-    if (token) {
+    if (isLoggedIn) {
       setRating(productId, index + 1)
     } else {
       router.push('/signin')

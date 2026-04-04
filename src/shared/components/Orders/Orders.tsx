@@ -21,22 +21,18 @@ interface PaymentSessionStatus {
 export default function OrdersForm() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [loading, setLoading] = useState(true)
-  const token = useAuthStore((state) => state.token)
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   const resetCart = useCartStore((state) => state.resetCart)
   const urlParams: ReadonlyURLSearchParams = useSearchParams()
 
   useEffect(() => {
     const sessionId: string | null = urlParams.get('sessionId')
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    }
 
     setLoading(true)
-    if (token) {
+    if (isLoggedIn) {
       api
         .get<PaymentSessionStatus>(
           `/payment/order?sessionId=${sessionId}`,
-          config,
         )
         .then(
           (
@@ -50,7 +46,7 @@ export default function OrdersForm() {
         })
         .catch(() => setLoading(false))
     }
-  }, [token, urlParams, resetCart])
+  }, [isLoggedIn, urlParams, resetCart])
 
   if (loading) {
     return (

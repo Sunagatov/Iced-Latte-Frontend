@@ -35,7 +35,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
   onReviewDeleted,
   onReviewRated,
 }) => {
-  const { token } = useAuthStore()
+  const { isLoggedIn } = useAuthStore()
   const router = useRouter()
   const { handleError } = useErrorHandler()
 
@@ -50,7 +50,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
 
   const handleRateReview = async (productReviewId: string, isLike: boolean) => {
     try {
-      if (!token) {
+      if (!isLoggedIn) {
         router.push('/signin')
 
         return

@@ -28,7 +28,7 @@ interface ReviewComponentProps {
 const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: ReviewComponentProps) => {
   const { id: productId } = product
   const { errorMessage, handleError } = useErrorHandler()
-  const { token } = useAuthStore()
+  const { isLoggedIn } = useAuthStore()
 
   const [userReview, setUserReview] = useState<Review | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -42,7 +42,7 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
   useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () => setShowFilterDropdown(false))
 
   useEffect(() => {
-    if (!token) {
+    if (!isLoggedIn) {
       setUserReview(null)
       return
     }
@@ -51,7 +51,7 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
         setUserReview(checkIfUserReviewExists(review) ? review : null)
       })
       .catch(() => { setUserReview(null) })
-  }, [productId, token])
+  }, [productId, isLoggedIn])
 
   const {
     data: reviews,
