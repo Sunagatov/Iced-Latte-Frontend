@@ -64,8 +64,10 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
   useEffect(() => {
     if (!debouncedInput.trim()) {
       setSuggestions([])
+
       return
     }
+
     let cancelled = false
 
     getAllProducts(
@@ -211,7 +213,7 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
               <p className="px-4 pt-3 pb-1 text-xs font-medium text-secondary">Recent searches</p>
               <ul>
                 {recent.map((q, i) => (
-                  <li key={q} className={`flex items-center gap-3 px-4 transition-colors ${i === activeIdx ? 'bg-secondary' : 'hover:bg-secondary'}`}>
+                  <li className={`flex items-center gap-3 px-4 transition-colors ${i === activeIdx ? 'bg-secondary' : 'hover:bg-secondary'}`} key={q}>
                     <button
                       onMouseDown={() => commit(q)}
                       className="flex flex-1 items-center gap-3 py-2.5 text-left text-sm"

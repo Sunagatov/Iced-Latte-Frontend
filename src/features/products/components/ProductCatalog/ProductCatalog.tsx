@@ -58,7 +58,7 @@ export default function ProductCatalog({
     updateProductFiltersStore({ selectedSortOption: selectedOption })
   }
 
-  const handleFilterClick = () => setIsMobileFilterOpen((prev) => !prev)
+  const handleFilterClick = () => { setIsMobileFilterOpen((prev) => !prev) }
   const handleCloseMobileFilter = () => setIsMobileFilterOpen(false)
 
   const handleLoadMore = () => {
@@ -105,11 +105,11 @@ export default function ProductCatalog({
               </h1>
             </div>
             <button
+              aria-controls="mobile-filter-sidebar"
+              aria-expanded={isMobileFilterOpen}
+              className="ml-auto block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
               id="filter-btn"
               onClick={handleFilterClick}
-              aria-expanded={isMobileFilterOpen}
-              aria-controls="mobile-filter-sidebar"
-              className="ml-auto block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
             >
               Filter
             </button>

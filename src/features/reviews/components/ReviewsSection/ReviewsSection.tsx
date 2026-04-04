@@ -43,7 +43,7 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
 
   const refreshUserReview = useCallback(() => {
     apiGetProductUserReview(productId)
-      .then((review) => setUserReview(checkIfUserReviewExists(review) ? review : null))
+      .then((review) => { setUserReview(checkIfUserReviewExists(review) ? review : null) })
       .catch(() => setUserReview(null))
   }, [productId])
 

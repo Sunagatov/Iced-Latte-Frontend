@@ -34,6 +34,7 @@ const PriceFilter = () => {
 
       if (from && to && !isNaN(fromNum) && !isNaN(toNum) && fromNum > toNum) {
         setRangeError('Min price cannot be greater than max price')
+
         return
       }
       setRangeError('')

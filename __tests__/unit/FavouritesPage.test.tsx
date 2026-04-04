@@ -18,7 +18,7 @@ beforeEach(() => {
 describe('FavouritesPage', () => {
   it('shows FavouritesEmpty when no favourites', async () => {
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
-    await act(async () => { render(<FavouritesPage />) })
+    await act(() => { render(<FavouritesPage />) })
     expect(screen.getByText('FavouritesEmpty')).toBeInTheDocument()
   })
 
@@ -30,7 +30,7 @@ describe('FavouritesPage', () => {
       pendingIds: new Set(),
     })
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
-    await act(async () => { render(<FavouritesPage />) })
+    await act(() => { render(<FavouritesPage />) })
     expect(screen.getByText('FavouritesFull')).toBeInTheDocument()
   })
 

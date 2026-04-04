@@ -43,8 +43,8 @@ export default function FavouritesPage() {
       <div className="flex flex-col items-center gap-3 pt-20 text-center">
         <p className="text-sm text-tertiary">Couldn&apos;t load favourites</p>
         <button
-          onClick={() => void getFavouriteProducts()}
           className="rounded-full bg-brand-solid px-4 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
+          onClick={() => void getFavouriteProducts()}
         >
           Retry
         </button>

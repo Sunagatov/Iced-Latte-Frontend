@@ -9,5 +9,5 @@ export default function HeartWrapper({ id, className }: Readonly<ButtonHeartProp
   const isFavourited = favouriteIds.includes(id)
   const isPending = pendingIds.has(id)
 
-  return <ButtonHeart onClick={() => { if (!isPending) void toggleFavourite(id) }} active={isFavourited} disabled={isPending} className={className} />
+  return <ButtonHeart active={isFavourited} className={className} disabled={isPending} onClick={() => { if (!isPending) void toggleFavourite(id) }} />
 }

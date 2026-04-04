@@ -74,11 +74,11 @@ export default function CartElement({ product, isPending = false, add, remove, r
             ${productInfo.price} / unit
           </span>
           <button
-            onClick={removeAll}
+            aria-label="Remove item"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-secondary transition-all hover:bg-[#FFE5E5] hover:text-negative active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
             data-testid="cart-trash-btn"
             disabled={isPending}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-secondary transition-all hover:bg-[#FFE5E5] hover:text-negative active:scale-90 disabled:cursor-not-allowed disabled:opacity-40"
-            aria-label="Remove item"
+            onClick={removeAll}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>

@@ -30,16 +30,16 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (status === 'anonymous') {
       if (isSync) resetCart()
-      if (itemsIds.length) getCartItems().catch(() => {})
+      if (itemsIds.length) getCartItems().catch(() => { /* ignore */ })
 
       return
     }
 
     // authenticated
     if (!isSync && itemsIds.length) {
-      syncBackendCart().catch(() => {})
+      syncBackendCart().catch(() => { /* ignore */ })
     } else {
-      loadAuthCart().catch(() => {})
+      loadAuthCart().catch(() => { /* ignore */ })
     }
 
     const syncFavourites = async () => {

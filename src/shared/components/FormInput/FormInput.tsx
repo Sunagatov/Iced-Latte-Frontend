@@ -55,12 +55,12 @@ export default function FormInput<T extends FieldValues>({
         placeholder={placeholder}
         {...registered}
         {...rest}
+        aria-describedby={error ? `${id}-error` : undefined}
+        aria-invalid={!!error}
         onChange={(e) => {
           void registered.onChange(e)
           onChange?.(e)
         }}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
       />
       {error && (
         <div id={`${id}-error`} className="mt-2 font-medium text-negative">{error.message}</div>

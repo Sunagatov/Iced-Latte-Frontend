@@ -78,12 +78,12 @@ const ReviewsList: React.FC<IReviewsList> = ({
         <div className="mt-8 rounded-2xl border border-brand-solid/30 bg-brand-second/30 p-5">
           <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-solid">Your review</div>
           <Review
-            isUserReview
-            review={userReview}
             allowDelete
             allowVoting={false}
             deleteReview={deleteReviewHandler}
             isPending={isPending}
+            isUserReview
+            review={userReview}
           />
         </div>
       )}
