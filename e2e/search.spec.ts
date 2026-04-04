@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const latteProduct = {
@@ -15,7 +16,7 @@ const latteProduct = {
 }
 
 async function setup(page: Page) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('keyword=latte')) {
@@ -45,7 +46,7 @@ async function setup(page: Page) {
 }
 
 test('search bar is visible in header', async ({ page }) => {
-  await page.route('**/api/proxy/**', (route) =>
+  await mockRoute(page, '**/api/proxy/**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
   )
   await page.goto('/')

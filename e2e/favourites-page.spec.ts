@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
@@ -16,7 +17,7 @@ const product = {
 }
 
 async function mockFavouritesApi(page: Page, favProducts: object[]) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
@@ -53,7 +54,7 @@ test('favourites page shows saved products', async ({ page }) => {
 test('removing a favourite updates the list', async ({ page }) => {
   let removed = false
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 

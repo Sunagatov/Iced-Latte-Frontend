@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect } from '@playwright/test'
 import { nanoid } from 'nanoid'
 import { config } from 'dotenv'
@@ -31,7 +32,7 @@ test('sign up with new email redirects to /confirm_registration', async ({
   const suffix = nanoid(6).replace(/[^a-zA-Z0-9]/g, 'x')
   const email = `testuser${suffix}@example.com`
 
-  await page.route('**/api/proxy/auth/register', async (route) => {
+  await mockRoute(page, '**/api/proxy/auth/register', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -48,7 +49,7 @@ test('sign up with new email redirects to /confirm_registration', async ({
 })
 
 test('sign up with existing email shows error message', async ({ page }) => {
-  await page.route('**/api/proxy/auth/register', async (route) => {
+  await mockRoute(page, '**/api/proxy/auth/register', async (route) => {
     await route.fulfill({
       status: 409,
       contentType: 'application/json',

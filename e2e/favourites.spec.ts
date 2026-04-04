@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
@@ -30,7 +31,7 @@ async function mockProxy(page: Page, authenticated = false) {
     totalPages: 1,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
@@ -82,7 +83,7 @@ test('clicking heart toggles favourite state', async ({ page }) => {
   }
   let favRemoved = false
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 

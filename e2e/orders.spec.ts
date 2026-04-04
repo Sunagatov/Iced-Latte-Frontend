@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const FAKE_TOKEN = 'fake-token-for-mocked-test'
@@ -28,7 +29,7 @@ function makeOrder(id: string, status: string = 'CREATED') {
 }
 
 async function mockOrders(page: Page, orders: object[], status = 200) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/orders')) {

@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const VALID_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo0MTAyNDQ0ODAwfQ.fake-signature'
@@ -21,7 +22,7 @@ async function setup(
   page: Page,
   { saveStatus = 200 }: { saveStatus?: number } = {},
 ) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 

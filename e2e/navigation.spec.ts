@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 function makeProduct(id: string) {
@@ -25,7 +26,7 @@ async function mockProducts(page: Page) {
     totalPages: 1,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/products') && !url.includes('/ids')) {

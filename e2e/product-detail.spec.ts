@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect } from '@playwright/test'
 
 const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
@@ -55,7 +56,7 @@ test('back navigation returns to home', async ({ page }) => {
     active: true,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/products') && !url.includes('/ids')) {

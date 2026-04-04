@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const product = {
@@ -28,7 +29,7 @@ async function setup(
   page: Page,
   { orderStatus = 200 }: { orderStatus?: number } = {},
 ) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 
@@ -108,7 +109,7 @@ async function fillForm(page: Page) {
 }
 
 test('guest visiting /checkout sees the page', async ({ page }) => {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -160,7 +161,7 @@ test('cart is cleared after successful order — cart-count badge gone', async (
   // Mock empty cart after order so AppInitProvider re-fetch returns 0 items
   let orderPlaced = false
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 

@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 /**
  * Cart & Favourites Sync — comprehensive spec coverage
  *
@@ -148,7 +149,7 @@ async function mockProxy(
   handlers: Record<string, object>,
   authenticated = false,
 ) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
@@ -271,7 +272,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
     // Spec §3 add: token set, item already in cart → PATCH, response updates qty
     let serverQty = 1
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -332,7 +333,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     let itemRemoved = false
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -384,7 +385,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     let itemRemoved = false
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -439,7 +440,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     const state = { cleared: false }
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -537,7 +538,7 @@ test.describe('Cart — guest operations', () => {
     // Spec §3: token set, isSync=false, itemsCount>0 → POST /cart/items
     let mergeCallMade = false
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -594,7 +595,7 @@ test.describe('Favourites sync', () => {
     // Spec §4 invariant 2: sync runs once per token
     let syncCallCount = 0
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -635,7 +636,7 @@ test.describe('Favourites sync', () => {
     // Spec §4 add: optimistic update → favouriteIds grows → badge appears
     const product = makeProduct(PRODUCT_A)
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -703,7 +704,7 @@ test.describe('Favourites sync', () => {
     const product = makeProduct(PRODUCT_A)
     let deleteWasCalled = false
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -759,7 +760,7 @@ test.describe('Favourites sync', () => {
     // Spec §4 add guest: add to favouriteIds → getProductByIds → favourites populated
     const product = makeProduct(PRODUCT_A)
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
 
       if (url.includes('/products/ids')) {
@@ -887,7 +888,7 @@ test.describe('Cart — multi-item merge', () => {
       false,
     )
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
@@ -935,7 +936,7 @@ test.describe('Cart — multi-item merge', () => {
       false,
     )
 
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 

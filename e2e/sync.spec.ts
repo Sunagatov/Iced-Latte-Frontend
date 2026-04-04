@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 /**
  * Sync tests — verifies that cart and favourites saved on the server
  * are correctly restored after login, across devices / fresh sessions.
@@ -41,7 +42,7 @@ async function loginAndGoto(page: Page, _token: string, route: string) {
 
 // Mock all /api/proxy/favorites requests — GET and POST return the given products array.
 async function mockFavourites(page: Page, products: object[]) {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
@@ -79,7 +80,7 @@ async function mockCart(page: Page, items: object[]) {
     closedAt: null,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {

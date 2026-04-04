@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
@@ -18,7 +19,7 @@ async function mockReviewCalls(page: Page) {
     active: true,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 
@@ -144,7 +145,7 @@ async function mockReviewCallsAuthenticated(page: Page) {
     active: true,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 

@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
 const FAKE_TOKEN = 'fake-token-for-mocked-test'
@@ -39,7 +40,7 @@ async function mockProxy(page: Page) {
     closedAt: null,
   }
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/products') && !url.includes('/ids')) {

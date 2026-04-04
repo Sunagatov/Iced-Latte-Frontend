@@ -1,9 +1,10 @@
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect } from '@playwright/test'
 
 test('forgot password form submits email and shows confirmation', async ({
   page,
 }) => {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -28,7 +29,7 @@ test('forgot password form submits email and shows confirmation', async ({
 })
 
 test('reset password page renders a form', async ({ page }) => {
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

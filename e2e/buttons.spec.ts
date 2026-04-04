@@ -1,3 +1,4 @@
+import { mockRoute } from './helpers/mockRoute'
 /**
  * Covers plus / minus / trash / heart buttons on product cards
  * for both logged-in and logged-out (guest) users.
@@ -63,7 +64,7 @@ async function mockWithCart(
   let serverQty = initialQty
   let serverFavs = [...favProducts]
 
-  await page.route('**/api/proxy/**', async (route) => {
+  await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 
@@ -384,7 +385,7 @@ test.describe('Logout clears cart and favourites state', () => {
       .waitFor({ timeout: 8000 })
     // Unregister all mocks so the next session check returns anonymous
     await page.unrouteAll()
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
 
       if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
@@ -424,7 +425,7 @@ test.describe('Logout clears cart and favourites state', () => {
       timeout: 10000,
     })
     await page.unrouteAll()
-    await page.route('**/api/proxy/**', async (route) => {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
 
       if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
