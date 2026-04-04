@@ -6,7 +6,7 @@ export default defineConfig({
   retries: 1,
   timeout: 30000,
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.BASE_URL ?? 'http://localhost:3000',
     headless: true,
   },
   reporter: [['list'], ['html', { open: 'never' }]],
