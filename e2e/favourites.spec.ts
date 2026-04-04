@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
 function makeProduct(id: string) {
@@ -19,7 +18,9 @@ function makeProduct(id: string) {
   }
 }
 
-async function mockProxy(page: Page) {
+const FAKE_USER = { firstName: 'Test', lastName: 'User', email: 'test@example.com' }
+
+async function mockProxy(page: Page, authenticated = false) {
   const product = makeProduct(FAKE_PRODUCT_ID)
   const productsList = {
     products: [product],
@@ -32,7 +33,17 @@ async function mockProxy(page: Page) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/products') && !url.includes('/ids')) {
+    if (url.includes('/auth/session')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          authenticated
+            ? { authenticated: true, user: FAKE_USER }
+            : { authenticated: false, user: null },
+        ),
+      })
+    } else if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -48,32 +59,15 @@ async function mockProxy(page: Page) {
   })
 }
 
-async function login(page: Page) {
-  await page.goto('http://localhost:3000')
-  await page.evaluate(
-    (t) =>
-      localStorage.setItem(
-        'token',
-        JSON.stringify({
-          state: { token: t, refreshToken: null, isLoggedIn: true },
-          version: 0,
-        }),
-      ),
-    FAKE_TOKEN,
-  )
-}
-
 test('favourites page is accessible when logged in', async ({ page }) => {
-  await mockProxy(page)
-  await login(page)
+  await mockProxy(page, true)
   await page.goto('/favourites')
   await expect(page).not.toHaveURL(/signin/, { timeout: 10000 })
   await expect(page.locator('main')).toBeVisible({ timeout: 10000 })
 })
 
 test('heart icon on product card is visible', async ({ page }) => {
-  await mockProxy(page)
-  await login(page)
+  await mockProxy(page, true)
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   await expect(
@@ -94,7 +88,13 @@ test('clicking heart toggles favourite state', async ({ page }) => {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/products') && !url.includes('/ids')) {
+    if (url.includes('/auth/session')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: FAKE_USER }),
+      })
+    } else if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -114,7 +114,6 @@ test('clicking heart toggles favourite state', async ({ page }) => {
       })
     }
   })
-  await login(page)
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const heartBtn = page.locator('[data-testid="favourite-btn"]').first()

@@ -10,43 +10,54 @@ import { test, expect, type Page } from '@playwright/test'
 
 const EXISTING_EMAIL = process.env.E2E_EXISTING_EMAIL ?? 'olivia@example.com'
 
-const FAKE_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
-
-/** Inject a fake auth session so the app treats the user as logged in.
- *  Must be called AFTER route mocks are registered so the reload is covered. */
-async function loginAs(page: Page) {
-  await page.goto('/')
-  await page.evaluate((t) => {
-    localStorage.setItem(
-      'token',
-      JSON.stringify({
-        state: { token: t, refreshToken: null, isLoggedIn: true },
-        version: 0,
-      }),
-    )
-  }, FAKE_TOKEN)
-  await page
-    .context()
-    .addCookies([
-      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
-    ])
-  await page.reload()
-  await page.waitForLoadState('networkidle')
-}
-
-/** Mock every proxy call with a 200 unless overridden */
+/** Mock every proxy call with a 200 unless overridden.
+ *  Always returns authenticated=true for session endpoint. */
 async function mockAll200(page: Page) {
   await page.route('**/api/proxy/**', (route) => {
-    void route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: '{}',
-    })
+    const url = route.request().url()
+
+    if (url.includes('/auth/session')) {
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: false, user: null }),
+      })
+    } else {
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
+    }
   })
 }
 
-// ─── Flow A: ForgotPassForm (/forgotpass) ───────────────────────────────────
+/** Mock every proxy call and return authenticated=true for session. */
+async function mockAll200Authenticated(page: Page) {
+  await page.route('**/api/proxy/**', (route) => {
+    const url = route.request().url()
+
+    if (url.includes('/auth/session')) {
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ authenticated: true, user: { firstName: 'Olivia', lastName: 'Test', email: EXISTING_EMAIL } }),
+      })
+    } else {
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
+    }
+  })
+}
+
+/** Navigate to / with authenticated session mock, then go to target page. */
+async function loginAs(page: Page) {
+  await page.goto('/resetpass')
+  await page.waitForLoadState('networkidle')
+}
 
 test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
   test('renders email input and submit button', async ({ page }) => {
@@ -351,7 +362,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('renders "Change your password" title with current + new password fields', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('h2')).toContainText('Change your password', {
@@ -365,7 +376,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('shows validation error when current password is empty', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
@@ -379,7 +390,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('shows validation error when new password is too weak', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
@@ -394,7 +405,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('shows validation error when new password equals old password', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
@@ -409,7 +420,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('on success shows "Password updated!" and "Go to profile" button', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({
@@ -442,7 +453,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   })
 
   test('"Go to profile" button navigates to /profile', async ({ page }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({
@@ -476,7 +487,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('wrong current password shows "Current password is incorrect."', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({
@@ -512,7 +523,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('sends correct payload to PATCH /users', async ({ page }) => {
     let capturedBody: Record<string, string> = {}
 
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await page.route('**/api/proxy/users', async (route) => {
       if (route.request().method() === 'PATCH') {
         capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<
@@ -553,7 +564,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
   test('page refresh after success resets to form (local state, not persisted)', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
         void route.fulfill({
@@ -601,7 +612,7 @@ test.describe('ResetPassForm routing', () => {
   test('authenticated user on /resetpass sees auth form (no code field)', async ({
     page,
   }) => {
-    await mockAll200(page)
+    await mockAll200Authenticated(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })

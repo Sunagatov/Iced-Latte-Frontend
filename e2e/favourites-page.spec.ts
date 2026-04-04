@@ -31,7 +31,7 @@ async function mockFavouritesApi(page: Page, favProducts: object[]) {
         contentType: 'application/json',
         body: JSON.stringify({ products: favProducts }),
       })
-    else await route.continue()
+    else await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
 }
 
@@ -75,7 +75,7 @@ test('removing a favourite updates the list', async ({ page }) => {
         body: JSON.stringify({ products: removed ? [] : [product] }),
       })
     } else {
-      await route.continue()
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     }
   })
   await page.goto('http://localhost:3000')

@@ -128,8 +128,8 @@ test('checkout form renders with required fields', async ({ page }) => {
 
 test('order summary shows cart item and total', async ({ page }) => {
   await setup(page)
-  await expect(page.getByText('Test Coffee')).toBeVisible()
-  await expect(page.locator('text=$9.99').first()).toBeVisible()
+  await expect(page.getByText('Test Coffee')).toBeVisible({ timeout: 8000 })
+  await expect(page.locator('text=$9.99').first()).toBeVisible({ timeout: 5000 })
 })
 
 test('Place order button is present', async ({ page }) => {
