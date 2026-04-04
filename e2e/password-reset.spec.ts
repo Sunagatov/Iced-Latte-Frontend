@@ -6,9 +6,7 @@
  * Flow B — Logged-in: Change Password  (/resetpass while authenticated)
  */
 
-import { test, expect, type Page } from '@playwright/test'
-
-// ─── helpers ────────────────────────────────────────────────────────────────
+const EXISTING_EMAIL = process.env.E2E_EXISTING_EMAIL ?? 'olivia@example.com'
 
 const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 
@@ -67,7 +65,7 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
       void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     })
     await page.goto('/forgotpass')
-    await page.fill('#email', 'olivia@example.com')
+    await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
     await expect(page.locator('h2')).toContainText('Check your inbox', { timeout: 8000 })
     await expect(page.locator('#reset-continue-btn')).toBeVisible()
@@ -79,7 +77,7 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
       void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     })
     await page.goto('/forgotpass')
-    await page.fill('#email', 'olivia@example.com')
+    await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
     await expect(page.locator('#reset-continue-btn')).toBeVisible({ timeout: 8000 })
     await page.locator('#reset-continue-btn').click()
@@ -98,7 +96,7 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
       void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     })
     await page.goto('/forgotpass')
-    await page.fill('#email', 'olivia@example.com')
+    await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
     await expect(page.locator('h2')).toContainText('Check your inbox', { timeout: 8000 })
     // Refresh — local state is gone, form must reappear
@@ -112,7 +110,7 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
       void route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ message: 'Server error' }) })
     })
     await page.goto('/forgotpass')
-    await page.fill('#email', 'olivia@example.com')
+    await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
     await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 8000 })
     // Must stay on forgotpass — not navigate away

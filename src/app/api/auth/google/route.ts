@@ -16,7 +16,16 @@ export async function GET(request: NextRequest) {
   const response = await fetch(backendUrl, { redirect: 'manual' })
   const location = response.headers.get('location')
 
-  if (location && new URL(location).hostname.endsWith('.google.com')) {
+  if (location) {
+    try {
+      const locationUrl = new URL(location)
+
+      if (locationUrl.protocol !== 'https:' || !locationUrl.hostname.endsWith('.google.com')) {
+        return new NextResponse(null, { status: 502 })
+      }
+    } catch {
+      return new NextResponse(null, { status: 502 })
+    }
     return NextResponse.redirect(location)
   }
 

@@ -6,16 +6,19 @@ interface ICircleAddBtnProps {
   onClick: () => void
   className?: string
   iconClassName?: string
+  disabled?: boolean
 }
 
 const CircleAddBtn = ({
   onClick = () => {},
   className,
   iconClassName,
+  disabled = false,
 }: Readonly<ICircleAddBtnProps>) => {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       data-testid="add-to-cart-circle-btn"
       className={twMerge(
         'flex h-12 w-12 transform cursor-pointer items-center justify-center rounded-full  bg-inverted transition-all duration-500 ease-in-out hover:scale-105 focus:bg-inverted active:bg-fullpage-tint',

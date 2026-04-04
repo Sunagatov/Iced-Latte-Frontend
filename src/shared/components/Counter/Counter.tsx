@@ -4,7 +4,7 @@ import plus from '@/../public/plus.svg'
 import plusDark from '@/../public/plus_dark.svg'
 import minus from '@/../public/minus.svg'
 import minusDark from '@/../public/minus_dark.svg'
-interface PropsCounter { theme: 'dark' | 'light'; className?: string; count: number; addProduct: () => void; removeProduct: () => void }
+interface PropsCounter { theme: 'dark' | 'light'; className?: string; count: number; disabled?: boolean; addProduct: () => void; removeProduct: () => void }
 import { debounce } from 'lodash'
 
 const defaultStyles =
@@ -14,6 +14,7 @@ const Counter = ({
   theme,
   className,
   count,
+  disabled = false,
   addProduct,
   removeProduct,
 }: Readonly<PropsCounter>) => {
@@ -42,11 +43,11 @@ const Counter = ({
 
   return (
     <div className={computedStyles}>
-      <button id="min-btn" data-testid="counter-minus-btn" onClick={onMinus} className="flex items-center justify-center p-1">
+      <button id="min-btn" data-testid="counter-minus-btn" onClick={onMinus} disabled={disabled} className="flex items-center justify-center p-1 disabled:opacity-40 disabled:cursor-not-allowed">
         <Image src={theme === 'dark' ? minus : minusDark} alt="minus" />
       </button>
       <span className={'block w-[31px] text-center'}>{count}</span>
-      <button id="plus-btn" data-testid="counter-plus-btn" onClick={onPlus} className="flex items-center justify-center p-1">
+      <button id="plus-btn" data-testid="counter-plus-btn" onClick={onPlus} disabled={disabled} className="flex items-center justify-center p-1 disabled:opacity-40 disabled:cursor-not-allowed">
         <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
       </button>
     </div>

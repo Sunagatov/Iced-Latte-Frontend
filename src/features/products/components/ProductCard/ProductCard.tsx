@@ -24,6 +24,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   } = product
 
   const cartItems = useCartStore((state) => state.itemsIds)
+  const pendingProductIds = useCartStore((state) => state.pendingProductIds)
   const addToCart = useCartStore((state) => state.add)
   const removeFromCart = useCartStore((state) => state.remove)
   const removeFullProduct = useCartStore((state) => state.removeFullProduct)
@@ -31,6 +32,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   const productCartQuantity = cartItems?.find(
     (cartItem) => cartItem.productId === id,
   )?.productQuantity
+  const isCartPending = pendingProductIds.has(id)
 
   const { toggleFavourite, favouriteIds, pendingIds } =
     useFavouritesStore()
@@ -94,14 +96,16 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
             theme="light"
             className={'h-8 gap-1 px-1 text-[12px] sm:text-M'}
             count={productCartQuantity}
+            disabled={isCartPending}
             removeProduct={() => productCartQuantity === 1 ? removeFullProduct(id) : removeFromCart(id)}
             addProduct={() => addToCart(id)}
           />
         ) : (
           <CircleAddBtn
-            className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-9 sm:w-9"
+            className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-9 sm:w-9 disabled:opacity-40 disabled:cursor-not-allowed"
             iconClassName="h-3 w-3 sm:h-4 sm:w-4"
             onClick={() => addToCart(id)}
+            disabled={isCartPending}
           />
         )}
       </div>

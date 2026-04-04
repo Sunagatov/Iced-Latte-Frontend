@@ -5,12 +5,26 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
 
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
+const ALLOWED_QUERY_PARAM_RE = /^[a-zA-Z0-9_.~:@!$&'()*+,;=%[\]-]*$/
 const FORWARDED_HEADERS = ['X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
 
   return ALLOWED_PATH_RE.test(joined) ? joined : null
+}
+
+function sanitizeQueryString(params: URLSearchParams): string {
+  const safe = new URLSearchParams()
+
+  for (const [key, value] of params.entries()) {
+    if (ALLOWED_QUERY_PARAM_RE.test(key) && ALLOWED_QUERY_PARAM_RE.test(value)) {
+      safe.append(key, value)
+    }
+  }
+  const qs = safe.toString()
+
+  return qs ? `?${qs}` : ''
 }
 
 function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
@@ -66,7 +80,7 @@ async function handleProxy(
   if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
 
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
+  const apiUrl = `${API_BASE_URL}/${safePath}${sanitizeQueryString(url.searchParams)}`
   const body = method === 'GET' ? undefined : await readBody(request)
 
   try {
