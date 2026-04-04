@@ -324,14 +324,13 @@ const FilledProfile = () => {
                       <p className="text-sm font-medium text-primary">Password</p>
                       <p className="text-xs text-secondary">Last changed: unknown</p>
                     </div>
-                    <Link href="/resetpass">
-                      <button
-                        id="change-btn"
-                        className="flex items-center gap-1.5 rounded-xl border border-black/10 px-4 py-2 text-sm font-medium text-primary transition hover:bg-secondary"
-                      >
-                        <RiLockPasswordLine className="h-4 w-4" />
-                        Change password
-                      </button>
+                    <Link
+                      id="change-btn"
+                      href="/resetpass"
+                      className="flex items-center gap-1.5 rounded-xl border border-black/10 px-4 py-2 text-sm font-medium text-primary transition hover:bg-secondary"
+                    >
+                      <RiLockPasswordLine className="h-4 w-4" />
+                      Change password
                     </Link>
                   </div>
                   <div className="flex items-center justify-between py-4">
@@ -436,6 +435,8 @@ const StatCard = ({
   return href ? <Link href={href}>{inner}</Link> : <div>{inner}</div>
 }
 
+const quickActionClass = 'flex w-full items-center gap-3 rounded-xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand-second text-left'
+
 const QuickAction = ({
   icon, title, desc, href, onClick,
 }: {
@@ -445,11 +446,8 @@ const QuickAction = ({
   href?: string
   onClick?: () => void
 }) => {
-  const inner = (
-    <div
-      onClick={onClick}
-      className="flex cursor-pointer items-center gap-3 rounded-xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand-second"
-    >
+  const content = (
+    <>
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
         {icon}
       </div>
@@ -458,10 +456,12 @@ const QuickAction = ({
         <p className="text-xs text-secondary truncate">{desc}</p>
       </div>
       <RiArrowRightSLine className="h-5 w-5 shrink-0 text-disabled" />
-    </div>
+    </>
   )
 
-  return href ? <Link href={href}>{inner}</Link> : <>{inner}</>
+  if (href) return <Link href={href} className={quickActionClass}>{content}</Link>
+
+  return <button type="button" onClick={onClick} className={quickActionClass}>{content}</button>
 }
 
 const NotifRow = ({

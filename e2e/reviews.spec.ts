@@ -13,7 +13,7 @@ async function mockReviewCalls(page: Page) {
     else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews'))
       await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
     else if (url.includes('/reviews/statistics'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, averageRating: 0, ratingsMap: {} }) })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }) })
     else if (url.includes('/reviews'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
     else if (url.includes('/products/ids'))
@@ -38,7 +38,7 @@ async function mockReviewCalls(page: Page) {
 async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
   await page.waitForLoadState('networkidle')
-  if (await page.locator('text=Something went wrong!').isVisible()) return false
+  if (await page.locator('text=Failed to load reviews.').isVisible()) return false
   if (await page.locator('h1:has-text("404")').isVisible()) return false
   await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   return true

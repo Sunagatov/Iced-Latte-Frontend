@@ -303,7 +303,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   },
   retryHydration: () => {
     set({ status: 'idle', lastError: null })
-    get().getCartItems().catch(() => {})
+    const isAuthenticated = useAuthStore?.getState?.()?.status === 'authenticated'
+
+    if (isAuthenticated) {
+      get().loadAuthCart().catch(() => {})
+    } else {
+      get().getCartItems().catch(() => {})
+    }
   },
 })
 

@@ -58,21 +58,6 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     [mutate],
   )
 
-  const addReviewToCache = useCallback(
-    (review: Review) => {
-      mutate(
-        (pages) => {
-          if (!pages) return pages
-          const first = pages[0]
-
-          return [{ ...first, reviewsWithRatings: [review, ...first.reviewsWithRatings] }, ...pages.slice(1)]
-        },
-        { revalidate: true },
-      )
-    },
-    [mutate],
-  )
-
   const updateReviewInCache = useCallback(
     (updated: Review) => {
       mutate(
@@ -98,7 +83,6 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     error,
     refreshReviews,
     removeReviewFromCache,
-    addReviewToCache,
     updateReviewInCache,
   }
 }

@@ -80,14 +80,6 @@ describe('useReviews', () => {
     expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), { revalidate: false })
   })
 
-  it('addReviewToCache calls mutate with updater', () => {
-    const { result } = renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),
-    )
-    act(() => { result.current.addReviewToCache(makeReview('r3')) })
-    expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), { revalidate: true })
-  })
-
   it('updateReviewInCache calls mutate with updater', () => {
     const { result } = renderHook(() =>
       useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),

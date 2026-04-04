@@ -8,12 +8,6 @@ const mockedApi = jest.mocked(api)
 describe('reviews api', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('apiGetProductReviews calls correct url', async () => {
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({ data: { reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 } })
-    await reviewsApi.apiGetProductReviews('p1')
-    expect(mockedApi.get).toHaveBeenCalledWith(expect.stringContaining('/products/p1/reviews'))
-  })
-
   it('apiGetAllReviews calls url with cache false', async () => {
     ;(mockedApi.get as jest.Mock).mockResolvedValue({ data: { reviewsWithRatings: [] } })
     await reviewsApi.apiGetAllReviews('/products/p1/reviews?page=0')
@@ -45,10 +39,13 @@ describe('reviews api', () => {
     expect(result).toHaveLength(1)
   })
 
-  it('apiGetProductReviewsStatistics returns stats', async () => {
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({ data: { averageRating: 4.5 } })
+  it('apiGetProductReviewsStatistics returns stats with correct shape', async () => {
+    const stats = { avgRating: 4.5, reviewsCount: 10, ratingMap: { star5: 5, star4: 3, star3: 1, star2: 1, star1: 0 } }
+    ;(mockedApi.get as jest.Mock).mockResolvedValue({ data: stats })
     const result = await reviewsApi.apiGetProductReviewsStatistics('p1')
-    expect(result).toEqual({ averageRating: 4.5 })
+    expect(result.avgRating).toBe(4.5)
+    expect(result.reviewsCount).toBe(10)
+    expect(result.ratingMap).toBeDefined()
   })
 
   it('apiRateProductReview posts like', async () => {

@@ -38,7 +38,7 @@ export default function UserReviews() {
               View product →
             </Link>
           </div>
-          <Review isUserReview={false} review={review} />
+          <Review isUserReview={false} review={review} allowVoting={false} allowDelete={false} />
         </li>
       ))}
     </ul>
