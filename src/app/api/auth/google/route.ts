@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
     try {
       const locationUrl = new URL(location)
 
-      if (locationUrl.protocol !== 'https:' || !locationUrl.hostname.endsWith('.google.com')) {
+      if (
+        locationUrl.protocol !== 'https:' ||
+        !locationUrl.hostname.endsWith('.google.com')
+      ) {
         return new NextResponse(null, { status: 502 })
       }
     } catch {

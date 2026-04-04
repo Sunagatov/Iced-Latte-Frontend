@@ -8,9 +8,30 @@ import { useFavouritesStore } from '@/features/favorites/store'
 function ListIcon({ active }: { active: boolean }) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect x="2" y="4" width="16" height="2" rx="1" fill={active ? '#6B21A8' : '#9CA3AF'} />
-      <rect x="2" y="9" width="16" height="2" rx="1" fill={active ? '#6B21A8' : '#9CA3AF'} />
-      <rect x="2" y="14" width="16" height="2" rx="1" fill={active ? '#6B21A8' : '#9CA3AF'} />
+      <rect
+        x="2"
+        y="4"
+        width="16"
+        height="2"
+        rx="1"
+        fill={active ? '#6B21A8' : '#9CA3AF'}
+      />
+      <rect
+        x="2"
+        y="9"
+        width="16"
+        height="2"
+        rx="1"
+        fill={active ? '#6B21A8' : '#9CA3AF'}
+      />
+      <rect
+        x="2"
+        y="14"
+        width="16"
+        height="2"
+        rx="1"
+        fill={active ? '#6B21A8' : '#9CA3AF'}
+      />
     </svg>
   )
 }
@@ -65,10 +86,14 @@ export default function FavouritesFull() {
     <div className="mx-auto w-full max-w-[960px] px-4 pt-10 pb-16">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-baseline gap-3">
-          <h1 className="text-3xl font-bold tracking-tight text-primary">Favourites</h1>
-          <span className="text-sm font-medium text-tertiary">{favourites.length} items</span>
+          <h1 className="text-primary text-3xl font-bold tracking-tight">
+            Favourites
+          </h1>
+          <span className="text-tertiary text-sm font-medium">
+            {favourites.length} items
+          </span>
         </div>
-        <div className="flex items-center gap-1 rounded-xl border border-primary/20 p-1">
+        <div className="border-primary/20 flex items-center gap-1 rounded-xl border p-1">
           <button
             aria-label="List view"
             aria-pressed={view === 'list'}

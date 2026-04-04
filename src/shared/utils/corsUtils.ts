@@ -6,7 +6,8 @@ export const corsHeaders = {
   // Restrict to same app origin — no wildcard for a same-origin proxy
   'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Authorization, X-Requested-With',
   'Access-Control-Max-Age': '86400',
 }
 

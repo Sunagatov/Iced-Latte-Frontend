@@ -13,39 +13,52 @@ export default function AddressManager() {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<DeliveryAddress | null>(null)
 
-  useEffect(() => { fetch() }, [fetch])
+  useEffect(() => {
+    fetch()
+  }, [fetch])
 
-  const openAdd = () => { setEditing(null); setShowForm(true) }
-  const openEdit = (a: DeliveryAddress) => { setEditing(a); setShowForm(true) }
-  const closeForm = () => { setShowForm(false); setEditing(null) }
+  const openAdd = () => {
+    setEditing(null)
+    setShowForm(true)
+  }
+  const openEdit = (a: DeliveryAddress) => {
+    setEditing(a)
+    setShowForm(true)
+  }
+  const closeForm = () => {
+    setShowForm(false)
+    setEditing(null)
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-2xl bg-primary px-5 py-4 shadow-sm ring-1 ring-black/5">
+      <div className="bg-primary flex items-center justify-between rounded-2xl px-5 py-4 shadow-sm ring-1 ring-black/5">
         <div className="flex items-center gap-2">
-          <RiMapPinLine className="h-5 w-5 text-brand" />
-          <h2 className="font-semibold text-primary">Delivery addresses</h2>
+          <RiMapPinLine className="text-brand h-5 w-5" />
+          <h2 className="text-primary font-semibold">Delivery addresses</h2>
           {addresses.length > 0 && (
-            <span className="rounded-full bg-brand-second px-2 py-0.5 text-xs font-semibold text-brand">
+            <span className="bg-brand-second text-brand rounded-full px-2 py-0.5 text-xs font-semibold">
               {addresses.length}
             </span>
           )}
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-solid-hover"
+          className="bg-brand hover:bg-brand-solid-hover flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition"
         >
           <RiAddLine className="h-4 w-4" /> Add address
         </button>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-8"><Loader /></div>
+        <div className="flex justify-center py-8">
+          <Loader />
+        </div>
       ) : error ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-10 text-center">
-          <p className="font-medium text-negative">{error}</p>
+          <p className="text-negative font-medium">{error}</p>
           <button
-            className="rounded-xl bg-brand px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-solid-hover"
+            className="bg-brand hover:bg-brand-solid-hover rounded-xl px-5 py-2 text-sm font-semibold text-white transition"
             onClick={() => fetch()}
           >
             Try again
@@ -54,12 +67,14 @@ export default function AddressManager() {
       ) : addresses.length === 0 ? (
         <div
           onClick={openAdd}
-          className="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-black/10 bg-primary p-10 text-center transition hover:border-brand hover:bg-brand-second"
+          className="bg-primary hover:border-brand hover:bg-brand-second flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-black/10 p-10 text-center transition"
         >
-          <RiMapPinLine className="h-10 w-10 text-disabled" />
-          <p className="font-medium text-primary">No saved addresses yet</p>
-          <p className="text-sm text-secondary">Add your first delivery address for faster checkout</p>
-          <button className="mt-1 rounded-xl bg-brand px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-solid-hover">
+          <RiMapPinLine className="text-disabled h-10 w-10" />
+          <p className="text-primary font-medium">No saved addresses yet</p>
+          <p className="text-secondary text-sm">
+            Add your first delivery address for faster checkout
+          </p>
+          <button className="bg-brand hover:bg-brand-solid-hover mt-1 rounded-xl px-5 py-2 text-sm font-semibold text-white transition">
             + Add address
           </button>
         </div>
@@ -70,10 +85,12 @@ export default function AddressManager() {
           ))}
           <button
             onClick={openAdd}
-            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-black/10 p-6 text-center transition hover:border-brand hover:bg-brand-second"
+            className="hover:border-brand hover:bg-brand-second flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-black/10 p-6 text-center transition"
           >
-            <RiAddLine className="h-6 w-6 text-disabled" />
-            <span className="text-sm font-medium text-secondary">Add another address</span>
+            <RiAddLine className="text-disabled h-6 w-6" />
+            <span className="text-secondary text-sm font-medium">
+              Add another address
+            </span>
           </button>
         </div>
       )}

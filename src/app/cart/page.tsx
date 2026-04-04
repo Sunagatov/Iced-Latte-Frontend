@@ -9,10 +9,16 @@ import Loader from '@/shared/components/Loader/Loader'
 
 const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems
 const selectCount = (state: CartSliceStore): number => state.count
-const selectStatus = (state: CartSliceStore): CartSliceStore['status'] => state.status
-const selectLastError = (state: CartSliceStore): string | null => state.lastError
-const selectGetCartItems = (state: CartSliceStore): CartSliceStore['getCartItems'] => state.getCartItems
-const selectRetryHydration = (state: CartSliceStore): CartSliceStore['retryHydration'] => state.retryHydration
+const selectStatus = (state: CartSliceStore): CartSliceStore['status'] =>
+  state.status
+const selectLastError = (state: CartSliceStore): string | null =>
+  state.lastError
+const selectGetCartItems = (
+  state: CartSliceStore,
+): CartSliceStore['getCartItems'] => state.getCartItems
+const selectRetryHydration = (
+  state: CartSliceStore,
+): CartSliceStore['retryHydration'] => state.retryHydration
 
 export default function Cart() {
   const tempItems = useCartStore(selectTempItems)
@@ -29,7 +35,14 @@ export default function Cart() {
 
   useEffect(() => {
     if (hydrated && count > 0 && tempItems.length === 0 && status === 'idle') {
-      getCartItems().then(() => { /* no-op */ }, () => { /* no-op */ })
+      getCartItems().then(
+        () => {
+          /* no-op */
+        },
+        () => {
+          /* no-op */
+        },
+      )
     }
   }, [hydrated, count, tempItems.length, status, getCartItems])
 
@@ -44,9 +57,11 @@ export default function Cart() {
   if (status === 'error') {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
-        <p className="text-sm text-secondary">{lastError ?? 'Failed to load your cart.'}</p>
+        <p className="text-secondary text-sm">
+          {lastError ?? 'Failed to load your cart.'}
+        </p>
         <button
-          className="rounded-full bg-brand-solid px-5 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
+          className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-full px-5 py-2 text-sm font-semibold"
           onClick={retryHydration}
         >
           Try again

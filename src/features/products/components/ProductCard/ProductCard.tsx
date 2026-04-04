@@ -7,11 +7,17 @@ import getImgUrl from '@/shared/utils/getImgUrl'
 import { useCartStore } from '@/features/cart/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { IProduct } from '@/features/products/types'
-interface ICardProps { product: IProduct; priority?: boolean }
+interface ICardProps {
+  product: IProduct
+  priority?: boolean
+}
 import ProductRating from '@/features/products/components/ProductRating/ProductRating'
 import Counter from '@/shared/components/Counter/Counter'
 
-export default memo(function ProductCard({ product, priority = false }: Readonly<ICardProps>) {
+export default memo(function ProductCard({
+  product,
+  priority = false,
+}: Readonly<ICardProps>) {
   const {
     id,
     name,
@@ -24,7 +30,9 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   } = product
 
   const cartItems = useCartStore((state) => state.itemsIds)
-  const pendingProductIds: Set<string> = useCartStore((state) => state.pendingProductIds)
+  const pendingProductIds: Set<string> = useCartStore(
+    (state) => state.pendingProductIds,
+  )
   const addToCart = useCartStore((state) => state.add)
   const removeFromCart = useCartStore((state) => state.remove)
   const removeFullProduct = useCartStore((state) => state.removeFullProduct)
@@ -40,7 +48,9 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   const isFavourited = favouriteIds.includes(id)
   const isPending = pendingIds.has(id)
 
-  const handleButtonClick = () => { void toggleFavourite(id) }
+  const handleButtonClick = () => {
+    void toggleFavourite(id)
+  }
 
   return (
     <li
@@ -50,9 +60,11 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
       {/* Heart button — outside Link to avoid nested interactive elements */}
       <button
         aria-busy={isPending}
-        aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
+        aria-label={
+          isFavourited ? 'Remove from favourites' : 'Add to favourites'
+        }
         aria-pressed={isFavourited}
-        className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2 disabled:opacity-50 ${
+        className={`focus-visible:ring-brand-solid absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
           isFavourited
             ? 'bg-red-500/90 text-white'
             : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
@@ -62,7 +74,14 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         disabled={isPending}
         onClick={handleButtonClick}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill={isFavourited ? 'currentColor' : 'none'}
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       </button>
@@ -81,10 +100,12 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         </div>
 
         {/* Info */}
-        <div className="flex flex-1 flex-col gap-2 px-3 pb-3 pt-3">
+        <div className="flex flex-1 flex-col gap-2 px-3 pt-3 pb-3">
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
-          <h2 className="line-clamp-2 text-sm font-semibold leading-tight text-primary sm:text-base">{name}</h2>
-          <p className="text-xs text-secondary">
+          <h2 className="text-primary line-clamp-2 text-sm leading-tight font-semibold sm:text-base">
+            {name}
+          </h2>
+          <p className="text-secondary text-xs">
             {[brandName, sellerName].filter(Boolean).join(' · ')}
           </p>
         </div>
@@ -92,19 +113,31 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
 
       {/* Price row */}
       <div className="flex items-center justify-between border-t border-black/5 px-3 py-2.5">
-        <p data-testid="product-price" className="text-base font-bold text-primary">{price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
+        <p
+          data-testid="product-price"
+          className="text-primary text-base font-bold"
+        >
+          {price.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          })}
+        </p>
         {productCartQuantity ? (
           <Counter
             theme="light"
-            className={'h-8 gap-1 px-1 text-[12px] sm:text-M'}
+            className={'sm:text-M h-8 gap-1 px-1 text-[12px]'}
             count={productCartQuantity}
             disabled={isCartPending}
-            removeProduct={() => productCartQuantity === 1 ? removeFullProduct(id) : removeFromCart(id)}
+            removeProduct={() =>
+              productCartQuantity === 1
+                ? removeFullProduct(id)
+                : removeFromCart(id)
+            }
             addProduct={() => addToCart(id)}
           />
         ) : (
           <CircleAddBtn
-            className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-9 sm:w-9 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid h-8 w-8 disabled:cursor-not-allowed disabled:opacity-40 sm:h-9 sm:w-9"
             iconClassName="h-3 w-3 sm:h-4 sm:w-4"
             onClick={() => addToCart(id)}
             disabled={isCartPending}

@@ -38,7 +38,7 @@ export default function FormInput<T extends FieldValues>({
       <label
         htmlFor={id}
         className={twMerge(
-          'font-XS mb-3 block cursor-pointer text-sm font-medium text-primary',
+          'font-XS text-primary mb-3 block cursor-pointer text-sm font-medium',
           labelClassName,
         )}
       >
@@ -46,8 +46,8 @@ export default function FormInput<T extends FieldValues>({
       </label>
       <input
         className={twMerge(
-          'block h-[54px] w-full rounded-lg bg-secondary p-2.5 text-L text-primary outline-focus placeholder:text-placeholder',
-          error && 'border-2 border-error',
+          'bg-secondary text-L text-primary outline-focus placeholder:text-placeholder block h-[54px] w-full rounded-lg p-2.5',
+          error && 'border-error border-2',
           inputClassName,
         )}
         id={id}
@@ -58,12 +58,16 @@ export default function FormInput<T extends FieldValues>({
         aria-describedby={error ? `${id}-error` : undefined}
         aria-invalid={!!error}
         onChange={(e) => {
-          void (registered.onChange as React.ChangeEventHandler<HTMLInputElement>)(e)
+          void (
+            registered.onChange as React.ChangeEventHandler<HTMLInputElement>
+          )(e)
           onChange?.(e)
         }}
       />
       {error && (
-        <div id={`${id}-error`} className="mt-2 font-medium text-negative">{error.message}</div>
+        <div id={`${id}-error`} className="text-negative mt-2 font-medium">
+          {error.message}
+        </div>
       )}
     </div>
   )

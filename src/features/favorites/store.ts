@@ -74,7 +74,10 @@ const setProducts = (
   }
 }
 
-const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set, get) => ({
+const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
+  set,
+  get,
+) => ({
   ...initialState,
 
   toggleFavourite: async (id: string) => {
@@ -86,7 +89,8 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
 
     const isAuthenticated = useAuthStore.getState().status === 'authenticated'
     const wasAdded = !favouriteIds.includes(id)
-    const previousProduct = favourites.find((product) => product.id === id) ?? null
+    const previousProduct =
+      favourites.find((product) => product.id === id) ?? null
 
     set((state) => {
       const nextPendingIds = new Set(state.pendingIds)
@@ -102,7 +106,9 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
 
       return {
         pendingIds: nextPendingIds,
-        favouriteIds: state.favouriteIds.filter((favouriteId) => favouriteId !== id),
+        favouriteIds: state.favouriteIds.filter(
+          (favouriteId) => favouriteId !== id,
+        ),
         favourites: state.favourites.filter((product) => product.id !== id),
       }
     })
@@ -133,7 +139,9 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
       set((state) => {
         if (wasAdded) {
           return {
-            favouriteIds: state.favouriteIds.filter((favouriteId) => favouriteId !== id),
+            favouriteIds: state.favouriteIds.filter(
+              (favouriteId) => favouriteId !== id,
+            ),
             favourites: state.favourites.filter((product) => product.id !== id),
           }
         }
@@ -194,7 +202,9 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
 
     try {
       const { favouriteIds } = get()
-      const request: SyncFavouritesRequest = { productIds: uniqueIds(favouriteIds) }
+      const request: SyncFavouritesRequest = {
+        productIds: uniqueIds(favouriteIds),
+      }
       const response = await syncFavourites(request)
 
       set({ ...setProducts(response.products), status: 'ready' })
@@ -213,10 +223,13 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
 })
 
 export const useFavouritesStore = create<FavStoreState>()(
-  persist<FavStoreState, [], [], Pick<FavSliceState, 'favouriteIds'>>(createFavSlice, {
-    name: 'fav-storage',
-    partialize: (state): Pick<FavSliceState, 'favouriteIds'> => ({
-      favouriteIds: state.favouriteIds,
-    }),
-  }),
+  persist<FavStoreState, [], [], Pick<FavSliceState, 'favouriteIds'>>(
+    createFavSlice,
+    {
+      name: 'fav-storage',
+      partialize: (state): Pick<FavSliceState, 'favouriteIds'> => ({
+        favouriteIds: state.favouriteIds,
+      }),
+    },
+  ),
 )

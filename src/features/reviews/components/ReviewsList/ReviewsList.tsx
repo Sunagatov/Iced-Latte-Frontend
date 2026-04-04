@@ -40,11 +40,14 @@ const ReviewsList: React.FC<IReviewsList> = ({
   const { handleError } = useErrorHandler()
   const [isPending, setIsPending] = React.useState(false)
 
-  const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
+  const deleteReviewHandler = async (
+    productReviewId: string,
+  ): Promise<void> => {
     if (isPending) return
     setIsPending(true)
     try {
-      if (productReviewId) await apiDeleteProductReview(productReviewId, productId)
+      if (productReviewId)
+        await apiDeleteProductReview(productReviewId, productId)
       onReviewDeleted?.(productReviewId)
     } catch (error) {
       handleError(error)
@@ -62,7 +65,11 @@ const ReviewsList: React.FC<IReviewsList> = ({
 
         return
       }
-      const updated = await apiRateProductReview(productId, productReviewId, isLike)
+      const updated = await apiRateProductReview(
+        productId,
+        productReviewId,
+        isLike,
+      )
 
       onReviewRated?.(updated)
     } catch (error) {
@@ -75,8 +82,10 @@ const ReviewsList: React.FC<IReviewsList> = ({
   return (
     <>
       {userReview && (
-        <div className="mt-8 rounded-2xl border border-brand-solid/30 bg-brand-second/30 p-5">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-solid">Your review</div>
+        <div className="border-brand-solid/30 bg-brand-second/30 mt-8 rounded-2xl border p-5">
+          <div className="text-brand-solid mb-2 text-xs font-semibold tracking-wider uppercase">
+            Your review
+          </div>
           <Review
             allowDelete
             allowVoting={false}
@@ -91,7 +100,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
       <ul className="mt-6 flex flex-col gap-3">
         {reviews.map((review) => (
           <li
-            className="rounded-2xl border border-primary/60 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="border-primary/60 rounded-2xl border bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
             key={review.productReviewId}
           >
             <Review
@@ -110,7 +119,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
         <Button
           id="showmore-btn"
           onClick={showMoreReviews}
-          className="mb-[94px] ml-auto mr-auto mt-6 flex w-[200px] items-center justify-center rounded-[47px] border-2 border-brand-solid bg-transparent text-[18px] font-semibold text-brand-solid shadow-sm hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95"
+          className="border-brand-solid text-brand-solid hover:bg-brand-solid mt-6 mr-auto mb-[94px] ml-auto flex w-[200px] items-center justify-center rounded-[47px] border-2 bg-transparent text-[18px] font-semibold shadow-sm hover:text-white hover:shadow-md active:scale-95"
         >
           Show more
         </Button>

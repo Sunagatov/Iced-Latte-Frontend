@@ -43,17 +43,14 @@ export default function Header() {
   const showSearch = isHome && !heroVisible
 
   return (
-    <header className="sticky left-0 top-0 z-50 flex h-16 w-full items-center gap-3 border-b border-black/5 bg-white/90 px-4 backdrop-blur-md sm:px-8">
+    <header className="sticky top-0 left-0 z-50 flex h-16 w-full items-center gap-3 border-b border-black/5 bg-white/90 px-4 backdrop-blur-md sm:px-8">
       {mobileSearchOpen && showSearch ? (
         <div className="flex w-full items-center gap-2">
-          <SearchBar
-            autoFocus
-            onBlur={() => setMobileSearchOpen(false)}
-          />
+          <SearchBar autoFocus onBlur={() => setMobileSearchOpen(false)} />
           <button
             type="button"
             onClick={() => setMobileSearchOpen(false)}
-            className="shrink-0 text-sm font-medium text-brand"
+            className="text-brand shrink-0 text-sm font-medium"
           >
             Cancel
           </button>
@@ -61,7 +58,7 @@ export default function Header() {
       ) : (
         <>
           <Link href="/" className="group flex shrink-0 items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-solid shadow-sm transition group-hover:bg-brand-solid-hover">
+            <div className="bg-brand-solid group-hover:bg-brand-solid-hover flex h-8 w-8 items-center justify-center rounded-lg shadow-sm transition">
               <Image
                 src={logoSrc}
                 width={18}
@@ -69,7 +66,7 @@ export default function Header() {
                 className="invert"
               />
             </div>
-            <span className="hidden text-base font-semibold tracking-tight text-primary sm:block">
+            <span className="text-primary hidden text-base font-semibold tracking-tight sm:block">
               Iced Latte
             </span>
           </Link>
@@ -85,11 +82,11 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setMobileSearchOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-secondary sm:hidden"
+                className="hover:bg-secondary flex h-9 w-9 items-center justify-center rounded-full sm:hidden"
                 aria-label="Open search"
               >
                 <svg
-                  className="h-5 w-5 text-primary"
+                  className="text-primary h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"

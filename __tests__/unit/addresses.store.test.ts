@@ -37,14 +37,30 @@ describe('address store', () => {
 
   it('add appends address', async () => {
     mockedApi.createAddress.mockResolvedValue(addr('a2'))
-    await useAddressStore.getState().add({ label: 'home', line: 's', city: 'c', country: 'uk', postcode: '1' })
+    await useAddressStore
+      .getState()
+      .add({
+        label: 'home',
+        line: 's',
+        city: 'c',
+        country: 'uk',
+        postcode: '1',
+      })
     expect(useAddressStore.getState().addresses).toHaveLength(1)
   })
 
   it('update replaces address', async () => {
     useAddressStore.setState({ addresses: [addr('a1')], loading: false })
     mockedApi.updateAddress.mockResolvedValue({ ...addr('a1'), city: 'London' })
-    await useAddressStore.getState().update('a1', { label: 'home', line: 's', city: 'London', country: 'uk', postcode: '1' })
+    await useAddressStore
+      .getState()
+      .update('a1', {
+        label: 'home',
+        line: 's',
+        city: 'London',
+        country: 'uk',
+        postcode: '1',
+      })
     expect(useAddressStore.getState().addresses[0].city).toBe('London')
   })
 
@@ -56,12 +72,19 @@ describe('address store', () => {
   })
 
   it('setDefault marks correct address', async () => {
-    useAddressStore.setState({ addresses: [addr('a1'), addr('a2')], loading: false })
+    useAddressStore.setState({
+      addresses: [addr('a1'), addr('a2')],
+      loading: false,
+    })
     mockedApi.setDefaultAddress.mockResolvedValue(null as never)
     await useAddressStore.getState().setDefault('a2')
     const addresses = useAddressStore.getState().addresses
 
-    expect(addresses.find((a: DeliveryAddress) => a.id === 'a2')?.isDefault).toBe(true)
-    expect(addresses.find((a: DeliveryAddress) => a.id === 'a1')?.isDefault).toBe(false)
+    expect(
+      addresses.find((a: DeliveryAddress) => a.id === 'a2')?.isDefault,
+    ).toBe(true)
+    expect(
+      addresses.find((a: DeliveryAddress) => a.id === 'a1')?.isDefault,
+    ).toBe(false)
   })
 })

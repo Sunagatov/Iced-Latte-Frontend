@@ -8,7 +8,9 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { verifyEmailCode, apiGetSession } from '@/features/auth/api'
 import { verifyEmailCodeSchema } from '@/features/auth/validation'
-interface IFormValues { verificationCode: string }
+interface IFormValues {
+  verificationCode: string
+}
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthRedirect } from '@/features/auth/hooks'
 
@@ -47,15 +49,15 @@ const VerifyEmailCodeForm = () => {
 
   return (
     <>
-      <h1 className="mb-[16px] text-[36px] font-medium text-primary">
+      <h1 className="text-primary mb-[16px] text-[36px] font-medium">
         Confirm registration
       </h1>
-      <p className="mb-[40px] text-[18px] font-medium text-primary">
+      <p className="text-primary mb-[40px] text-[18px] font-medium">
         Enter code that was sent to your email to confirm registration.
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         {errorMessage && (
-          <div className="mt-4 text-negative">{errorMessage}</div>
+          <div className="text-negative mt-4">{errorMessage}</div>
         )}
         <div className="flex-grow md:w-full">
           <FormInput
@@ -72,7 +74,7 @@ const VerifyEmailCodeForm = () => {
         <Button
           id="confirm-pass-btn"
           type="submit"
-          className="mt-6 flex w-[220px] items-center justify-center hover:bg-brand-solid-hover"
+          className="hover:bg-brand-solid-hover mt-6 flex w-[220px] items-center justify-center"
         >
           {loading ? <Loader /> : 'Confirm Registration'}
         </Button>

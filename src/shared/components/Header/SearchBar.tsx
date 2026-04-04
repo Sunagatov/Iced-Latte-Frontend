@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from 'react'
+import { useRef, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { useProductFiltersStore } from '@/features/products/store'
 import { getAllProducts } from '@/features/products/api'
@@ -29,7 +23,9 @@ function getRecent(): string[] {
       return []
     }
 
-    return parsed.filter((item: unknown): item is string => typeof item === 'string')
+    return parsed.filter(
+      (item: unknown): item is string => typeof item === 'string',
+    )
   } catch {
     return []
   }
@@ -65,7 +61,7 @@ function highlight(text: string, query: string): ReactNode {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-transparent font-bold text-brand">
+      <mark className="text-brand bg-transparent font-bold">
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -157,9 +153,7 @@ export default function SearchBar({
         setRecent(getRecent())
       }
 
-      document
-        .getElementById('catalog')
-        ?.scrollIntoView({ behavior: 'smooth' })
+      document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
     },
     [updateProductFiltersStore],
   )
@@ -183,7 +177,9 @@ export default function SearchBar({
     setActiveIdx(-1)
   }
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ): void => {
     const items = inputValue.trim() ? suggestions : recent
 
     if (event.key === 'ArrowDown') {
@@ -217,10 +213,7 @@ export default function SearchBar({
     inputRef.current?.focus()
   }
 
-  const handleDeleteRecent = (
-    event: React.MouseEvent,
-    query: string,
-  ): void => {
+  const handleDeleteRecent = (event: React.MouseEvent, query: string): void => {
     event.stopPropagation()
     deleteRecent(query)
     setRecent(getRecent())
@@ -238,12 +231,12 @@ export default function SearchBar({
           heroMode ? 'py-3 shadow-lg shadow-black/20' : 'py-2'
         } ${
           open
-            ? 'border-brand shadow-md shadow-brand/10'
+            ? 'border-brand shadow-brand/10 shadow-md'
             : 'border-black/10 hover:border-black/20'
         }`}
       >
         <svg
-          className="h-4 w-4 shrink-0 text-secondary"
+          className="text-secondary h-4 w-4 shrink-0"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -261,7 +254,7 @@ export default function SearchBar({
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           placeholder="Search coffees, brands…"
-          className="w-full bg-transparent text-sm text-primary outline-none placeholder:text-placeholder"
+          className="text-primary placeholder:text-placeholder w-full bg-transparent text-sm outline-none"
           aria-label="Search products"
           aria-autocomplete="list"
           autoFocus={autoFocus}
@@ -272,7 +265,7 @@ export default function SearchBar({
           <button
             type="button"
             onClick={handleClear}
-            className="shrink-0 text-secondary hover:text-primary"
+            className="text-secondary hover:text-primary shrink-0"
             aria-label="Clear search"
           >
             <svg
@@ -291,11 +284,11 @@ export default function SearchBar({
       {isDropdownOpen && (
         <div
           data-testid="search-dropdown"
-          className="absolute left-0 top-[calc(100%+8px)] z-50 w-full overflow-hidden rounded-2xl border border-black/8 bg-white shadow-xl"
+          className="absolute top-[calc(100%+8px)] left-0 z-50 w-full overflow-hidden rounded-2xl border border-black/8 bg-white shadow-xl"
         >
           {showRecent && (
             <>
-              <p className="px-4 pb-1 pt-3 text-xs font-medium text-secondary">
+              <p className="text-secondary px-4 pt-3 pb-1 text-xs font-medium">
                 Recent searches
               </p>
               <ul>
@@ -314,7 +307,7 @@ export default function SearchBar({
                       onMouseDown={() => commit(query)}
                     >
                       <svg
-                        className="h-3.5 w-3.5 shrink-0 text-secondary"
+                        className="text-secondary h-3.5 w-3.5 shrink-0"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
@@ -322,12 +315,12 @@ export default function SearchBar({
                       >
                         <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
                       </svg>
-                      <span className="flex-1 text-primary">{query}</span>
+                      <span className="text-primary flex-1">{query}</span>
                     </button>
                     <button
                       type="button"
                       aria-label={`Remove ${query}`}
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-secondary hover:bg-tertiary hover:text-primary"
+                      className="text-secondary hover:bg-tertiary hover:text-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
                       onMouseDown={(event) => handleDeleteRecent(event, query)}
                     >
                       <svg
@@ -360,7 +353,7 @@ export default function SearchBar({
                     }`}
                   >
                     <svg
-                      className="h-3.5 w-3.5 shrink-0 text-secondary"
+                      className="text-secondary h-3.5 w-3.5 shrink-0"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
@@ -369,10 +362,10 @@ export default function SearchBar({
                       <circle cx="11" cy="11" r="8" />
                       <path d="m21 21-4.35-4.35" />
                     </svg>
-                    <span className="text-sm text-primary">
+                    <span className="text-primary text-sm">
                       {highlight(product.name, inputValue)}
                     </span>
-                    <span className="ml-auto text-xs text-secondary">
+                    <span className="text-secondary ml-auto text-xs">
                       {product.brandName}
                     </span>
                   </button>

@@ -18,7 +18,7 @@ const CircleAddBtn = ({
   return (
     <button
       className={twMerge(
-        'flex h-12 w-12 transform cursor-pointer items-center justify-center rounded-full  bg-inverted transition-all duration-500 ease-in-out hover:scale-105 focus:bg-inverted active:bg-fullpage-tint',
+        'bg-inverted focus:bg-inverted active:bg-fullpage-tint flex h-12 w-12 transform cursor-pointer items-center justify-center rounded-full transition-all duration-500 ease-in-out hover:scale-105',
         className,
       )}
       data-testid="add-to-cart-circle-btn"

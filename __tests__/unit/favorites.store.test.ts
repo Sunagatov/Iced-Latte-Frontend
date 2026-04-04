@@ -24,16 +24,24 @@ jest.mock('@/features/auth/store', () => ({
 }))
 
 type AuthStateSnapshot = Pick<AuthStore, 'status'>
-type FavStateSnapshot = Pick<FavStoreState, 'favouriteIds' | 'favourites' | 'status' | 'pendingIds'>
+type FavStateSnapshot = Pick<
+  FavStoreState,
+  'favouriteIds' | 'favourites' | 'status' | 'pendingIds'
+>
 
-const mockedSyncFavourites =
-  favsApi.syncFavourites as jest.MockedFunction<typeof favsApi.syncFavourites>
-const mockedRemoveFavourite =
-  favsApi.removeFavourite as jest.MockedFunction<typeof favsApi.removeFavourite>
-const mockedFetchFavourites =
-  favsApi.fetchFavourites as jest.MockedFunction<typeof favsApi.fetchFavourites>
+const mockedSyncFavourites = favsApi.syncFavourites as jest.MockedFunction<
+  typeof favsApi.syncFavourites
+>
+const mockedRemoveFavourite = favsApi.removeFavourite as jest.MockedFunction<
+  typeof favsApi.removeFavourite
+>
+const mockedFetchFavourites = favsApi.fetchFavourites as jest.MockedFunction<
+  typeof favsApi.fetchFavourites
+>
 const mockedGetProductByIds =
-  productsApi.getProductByIds as jest.MockedFunction<typeof productsApi.getProductByIds>
+  productsApi.getProductByIds as jest.MockedFunction<
+    typeof productsApi.getProductByIds
+  >
 
 const mockedAuthStore = useAuthStore as unknown as {
   getState: jest.MockedFunction<() => AuthStateSnapshot>

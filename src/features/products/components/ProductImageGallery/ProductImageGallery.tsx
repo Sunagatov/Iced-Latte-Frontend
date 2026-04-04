@@ -10,7 +10,10 @@ interface ProductImageGalleryProps {
   productName: string
 }
 
-function buildGallery(productFileUrl: string | null, productImageUrls?: string[]): string[] {
+function buildGallery(
+  productFileUrl: string | null,
+  productImageUrls?: string[],
+): string[] {
   if (productImageUrls && productImageUrls.length > 0) {
     return productImageUrls.slice(0, 10)
   }
@@ -28,10 +31,18 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const [activeIndex, setActiveIndex] = useState(0)
   const touchStartX = useRef<number | null>(null)
 
-  const prev = useCallback(() => setActiveIndex((i) => (i - 1 + images.length) % images.length), [images.length])
-  const next = useCallback(() => setActiveIndex((i) => (i + 1) % images.length), [images.length])
+  const prev = useCallback(
+    () => setActiveIndex((i) => (i - 1 + images.length) % images.length),
+    [images.length],
+  )
+  const next = useCallback(
+    () => setActiveIndex((i) => (i + 1) % images.length),
+    [images.length],
+  )
 
-  useEffect(() => { setActiveIndex(0) }, [productFileUrl, productImageUrls])
+  useEffect(() => {
+    setActiveIndex(0)
+  }, [productFileUrl, productImageUrls])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -53,7 +64,11 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     const diff = touchStartX.current - e.changedTouches[0].clientX
 
     if (Math.abs(diff) > 40) {
-      if (diff > 0) { next() } else { prev() }
+      if (diff > 0) {
+        next()
+      } else {
+        prev()
+      }
     }
     touchStartX.current = null
   }
@@ -67,17 +82,16 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       aria-label={`${productName} image gallery`}
       suppressHydrationWarning
     >
-
       {/* Vertical thumbnail strip — desktop only */}
       {hasMany && (
-        <div className="hidden md:flex flex-col gap-2 overflow-y-auto max-h-[500px] pr-1">
+        <div className="hidden max-h-[500px] flex-col gap-2 overflow-y-auto pr-1 md:flex">
           {images.map((src, i) => (
             <button
               key={`${src}-${i}`}
               onClick={() => setActiveIndex(i)}
-              className={`shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
+              className={`shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
                 i === activeIndex
-                  ? 'border-brand-solid shadow-md scale-105'
+                  ? 'border-brand-solid scale-105 shadow-md'
                   : 'border-transparent opacity-60 hover:opacity-100'
               }`}
               aria-label={`View image ${i + 1}`}
@@ -98,7 +112,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
       {/* Main image */}
       <div
-        className="relative overflow-hidden rounded-3xl bg-secondary shadow-sm flex-1"
+        className="bg-secondary relative flex-1 overflow-hidden rounded-3xl shadow-sm"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         aria-live="polite"
@@ -110,7 +124,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
           height={500}
           alt={productName}
           priority
-          className="max-w-full md:h-[500px] md:w-full md:object-cover xl:w-[500px] xl:object-contain transition-opacity duration-200"
+          className="max-w-full transition-opacity duration-200 md:h-[500px] md:w-full md:object-cover xl:w-[500px] xl:object-contain"
         />
 
         {/* Prev / Next arrows — desktop */}
@@ -119,14 +133,14 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
             <button
               onClick={prev}
               aria-label="Previous image"
-              className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 transition-colors"
+              className="absolute top-1/2 left-2 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60 md:flex"
             >
               ‹
             </button>
             <button
               onClick={next}
               aria-label="Next image"
-              className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 transition-colors"
+              className="absolute top-1/2 right-2 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60 md:flex"
             >
               ›
             </button>
@@ -135,7 +149,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
         {/* Counter badge */}
         {hasMany && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+          <span className="absolute right-3 bottom-3 rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {activeIndex + 1} / {images.length}
           </span>
         )}
@@ -143,14 +157,14 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
       {/* Dot strip — mobile only */}
       {hasMany && (
-        <div className="flex md:hidden justify-center gap-1.5 pt-1">
+        <div className="flex justify-center gap-1.5 pt-1 md:hidden">
           {images.map((_, i) => (
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
               aria-label={`Go to image ${i + 1}`}
               className={`h-2 rounded-full transition-all ${
-                i === activeIndex ? 'w-5 bg-brand-solid' : 'w-2 bg-primary/20'
+                i === activeIndex ? 'bg-brand-solid w-5' : 'bg-primary/20 w-2'
               }`}
             />
           ))}

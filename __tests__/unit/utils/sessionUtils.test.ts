@@ -1,4 +1,7 @@
-import { getSessionId, generateTraceId } from '../../../src/shared/utils/sessionUtils'
+import {
+  getSessionId,
+  generateTraceId,
+} from '../../../src/shared/utils/sessionUtils'
 
 describe('getSessionId', () => {
   beforeEach(() => localStorage.clear())

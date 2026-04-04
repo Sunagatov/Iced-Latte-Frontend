@@ -5,7 +5,9 @@ interface SessionStore {
   selectedRating: number | null
   expandedComments: Record<string, boolean>
   setSelectedRating: (rating: number | null) => void
-  setExpandedComments: (update: (prevState: Record<string, boolean>) => Record<string, boolean>) => void
+  setExpandedComments: (
+    update: (prevState: Record<string, boolean>) => Record<string, boolean>,
+  ) => void
 }
 
 export const useLocalSessionStore = create<SessionStore>()(

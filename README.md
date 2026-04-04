@@ -18,11 +18,11 @@
 
 ## 📊 Key stats across all three repositories
 
-| Repository | ⭐ Stars | 🍴 Forks |
-|---|---|---|
-| [🔧 Backend](https://github.com/Sunagatov/Iced-Latte) | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte?style=flat) | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte?style=flat) |
+| Repository                                                      | ⭐ Stars                                                                               | 🍴 Forks                                                                               |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [🔧 Backend](https://github.com/Sunagatov/Iced-Latte)           | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte?style=flat)          | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte?style=flat)          |
 | [🎨 Frontend](https://github.com/Sunagatov/Iced-Latte-Frontend) | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend?style=flat) | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-Frontend?style=flat) |
-| [🧪 QA](https://github.com/Sunagatov/Iced-Latte-QA) | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-QA?style=flat) | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-QA?style=flat) |
+| [🧪 QA](https://github.com/Sunagatov/Iced-Latte-QA)             | ![Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-QA?style=flat)       | ![Forks](https://img.shields.io/github/forks/Sunagatov/Iced-Latte-QA?style=flat)       |
 
 > ⭐ If this project helps you learn or inspires you, please give it a star — it means a lot to the community!
 
@@ -84,7 +84,7 @@ Iced Latte has earned recognition from the broader tech community.
 
 ### 🔥 GitHub Trending — May 22, 2024
 
-- The backend repository reached GitHub's Trending page — listed among resources *"the GitHub community is most excited about today"* — gaining **85 stars in a single day** with 27 active contributors. ([link to the archive](https://archive.ph/DRsD8))
+- The backend repository reached GitHub's Trending page — listed among resources _"the GitHub community is most excited about today"_ — gaining **85 stars in a single day** with 27 active contributors. ([link to the archive](https://archive.ph/DRsD8))
 
 ### 🥉 KaiCode 2024 Finalist
 
@@ -102,15 +102,15 @@ Iced Latte has earned recognition from the broader tech community.
 
 ## 🛠️ Tech Stack
 
-| 📂 Category | 🔧 Technology |
-|---|---|
-| 💻 Core | Next.js 15 + TypeScript 5 + React 19 |
-| 🗃️ State Manager | Zustand |
-| 🎨 CSS Framework | TailwindCSS 4 |
-| 📡 Data Fetching | Axios + SWR |
-| 📝 Forms | React Hook Form + Yup |
-| 🧪 Testing | Jest, React Testing Library, Playwright |
-| 🚢 Deployment | Docker, GitHub Actions, Vercel |
+| 📂 Category      | 🔧 Technology                           |
+| ---------------- | --------------------------------------- |
+| 💻 Core          | Next.js 15 + TypeScript 5 + React 19    |
+| 🗃️ State Manager | Zustand                                 |
+| 🎨 CSS Framework | TailwindCSS 4                           |
+| 📡 Data Fetching | Axios + SWR                             |
+| 📝 Forms         | React Hook Form + Yup                   |
+| 🧪 Testing       | Jest, React Testing Library, Playwright |
+| 🚢 Deployment    | Docker, GitHub Actions, Vercel          |
 
 ---
 
@@ -160,23 +160,23 @@ The full production setup is in the [backend docker-compose.yml](https://github.
 
 🎉 Contributions are welcome. Here's how to get involved:
 
-| 🎯 Situation | 🚀 Action |
-|---|---|
-| 🐛 Found a bug | [Open an issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new) with the `bug` label |
-| 💡 Want a feature | Start a [Discussion](https://github.com/Sunagatov/Iced-Latte-Frontend/discussions) first |
-| 👨‍💻 Ready to code | Pick a [`good first issue`](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22), comment "I'm on it" |
-| 🔧 Big change | Comment on the issue before writing code — many tickets have hidden constraints |
+| 🎯 Situation      | 🚀 Action                                                                                                                                            |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🐛 Found a bug    | [Open an issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new) with the `bug` label                                                    |
+| 💡 Want a feature | Start a [Discussion](https://github.com/Sunagatov/Iced-Latte-Frontend/discussions) first                                                             |
+| 👨‍💻 Ready to code  | Pick a [`good first issue`](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22), comment "I'm on it" |
+| 🔧 Big change     | Comment on the issue before writing code — many tickets have hidden constraints                                                                      |
 
 ### 🏷️ Issue labels
 
-| 🏷️ Label | 📝 Meaning |
-|---|---|
-| 🟢 `good first issue` | Simple, well-scoped — great for first-timers |
-| 🔴 `bug` | Something is broken |
-| 🔵 `high priority` | Do this first |
-| 🟡 `enhancement` | Accepted improvement to an existing module |
-| 🟠 `new feature` | New functionality — discuss before starting |
-| ⚪ `idea` | Needs design discussion — don't implement yet |
+| 🏷️ Label              | 📝 Meaning                                    |
+| --------------------- | --------------------------------------------- |
+| 🟢 `good first issue` | Simple, well-scoped — great for first-timers  |
+| 🔴 `bug`              | Something is broken                           |
+| 🔵 `high priority`    | Do this first                                 |
+| 🟡 `enhancement`      | Accepted improvement to an existing module    |
+| 🟠 `new feature`      | New functionality — discuss before starting   |
+| ⚪ `idea`             | Needs design discussion — don't implement yet |
 
 ### 🐛 Bug reports
 

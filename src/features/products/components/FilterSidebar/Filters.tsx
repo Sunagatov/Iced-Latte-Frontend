@@ -73,15 +73,20 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
         <div className="pb-3">
           <button
             onClick={() => updateProductFiltersStore(defaultProductsFilters)}
-            className="text-xs font-medium text-brand-solid hover:opacity-70"
+            className="text-brand-solid text-xs font-medium hover:opacity-70"
           >
             ✕ Reset all filters
           </button>
         </div>
       )}
-      <div className="py-4"><PriceFilter /></div>
       <div className="py-4">
-        <ProductRatingFilter onChange={ratingFilterChangeHandler} selectedOption={ratingFilter} />
+        <PriceFilter />
+      </div>
+      <div className="py-4">
+        <ProductRatingFilter
+          onChange={ratingFilterChangeHandler}
+          selectedOption={ratingFilter}
+        />
       </div>
       <div className="py-4">
         <FilterCheckboxGroup

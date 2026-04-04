@@ -35,23 +35,34 @@ export async function apiAddProductReview(
   return response.data
 }
 
-export async function apiDeleteProductReview(productReviewId: string, productId: string): Promise<void> {
+export async function apiDeleteProductReview(
+  productReviewId: string,
+  productId: string,
+): Promise<void> {
   await api.delete(`/products/${productId}/reviews/${productReviewId}`)
 }
 
-export async function apiGetProductUserReview(productId: string): Promise<Review> {
-  const response: AxiosResponse<Review> = await api.get(`/products/${productId}/review`, { cache: false })
+export async function apiGetProductUserReview(
+  productId: string,
+): Promise<Review> {
+  const response: AxiosResponse<Review> = await api.get(
+    `/products/${productId}/review`,
+    { cache: false },
+  )
 
   return response.data
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
-  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> = await api.get('/users/reviews', { cache: false })
+  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> =
+    await api.get('/users/reviews', { cache: false })
 
   return response.data.reviewsWithRatings
 }
 
-export async function apiGetProductReviewsStatistics(productId: string): Promise<IProductReviewsStatistics> {
+export async function apiGetProductReviewsStatistics(
+  productId: string,
+): Promise<IProductReviewsStatistics> {
   const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
     `/products/${productId}/reviews/statistics`,
     { cache: false },
@@ -72,4 +83,3 @@ export async function apiRateProductReview(
 
   return response.data
 }
-

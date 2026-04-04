@@ -21,7 +21,6 @@ function GoogleCallbackInner() {
     // Token is already in the HttpOnly cookie set by the backend.
     // Just navigate home; the existing auth bootstrap will pick it up.
     router.replace('/')
-
   }, [searchParams, router])
 
   return (

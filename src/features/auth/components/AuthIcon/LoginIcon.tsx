@@ -25,7 +25,7 @@ export default function LoginIcon() {
     </Link>
   ) : (
     <Link className="inline-flex" href="/signin">
-      <div className="flex h-9 items-center justify-center rounded-full bg-brand-solid px-5 text-sm font-semibold text-white transition hover:bg-brand-solid-hover active:scale-95">
+      <div className="bg-brand-solid hover:bg-brand-solid-hover flex h-9 items-center justify-center rounded-full px-5 text-sm font-semibold text-white transition active:scale-95">
         Log in
       </div>
     </Link>

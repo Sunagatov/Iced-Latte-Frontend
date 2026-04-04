@@ -1,13 +1,14 @@
 import { AxiosResponse } from 'axios'
 import { api } from '@/shared/api/client'
-import {
-  SessionResponse,
-  LoginCredentials,
-  RegisterCredentials,
-} from './types'
+import { SessionResponse, LoginCredentials, RegisterCredentials } from './types'
 
-export async function apiRegisterUser(credentials: RegisterCredentials): Promise<string> {
-  const response: AxiosResponse<string> = await api.post('/auth/register', credentials)
+export async function apiRegisterUser(
+  credentials: RegisterCredentials,
+): Promise<string> {
+  const response: AxiosResponse<string> = await api.post(
+    '/auth/register',
+    credentials,
+  )
 
   return response.data
 }
@@ -18,7 +19,9 @@ export async function verifyEmailCode(code: string): Promise<void> {
   await api.post('/auth/confirm', { token: code })
 }
 
-export async function apiLoginUser(credentials: LoginCredentials): Promise<void> {
+export async function apiLoginUser(
+  credentials: LoginCredentials,
+): Promise<void> {
   await api.post('/auth/authenticate', credentials)
 }
 
@@ -27,7 +30,8 @@ export async function apiLogoutUser(): Promise<void> {
 }
 
 export async function apiGetSession(): Promise<SessionResponse> {
-  const response: AxiosResponse<SessionResponse> = await api.get('/auth/session')
+  const response: AxiosResponse<SessionResponse> =
+    await api.get('/auth/session')
 
   return response.data
 }

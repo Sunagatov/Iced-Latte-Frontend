@@ -17,7 +17,9 @@ export interface AuthStore {
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   status: 'loading',
   userData: null,
-  get isLoggedIn() { return get().status === 'authenticated' },
+  get isLoggedIn() {
+    return get().status === 'authenticated'
+  },
   setAuthenticated: (userData) => set({ status: 'authenticated', userData }),
   setAnonymous: () => set({ status: 'anonymous', userData: null }),
   setLoading: () => set({ status: 'loading' }),

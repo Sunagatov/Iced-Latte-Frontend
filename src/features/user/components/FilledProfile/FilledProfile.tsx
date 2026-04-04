@@ -138,9 +138,7 @@ const FilledProfile = () => {
     firstName && lastName ? `${firstName} ${lastName}` : 'Your Account'
   const initials =
     `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase() || '?'
-  const hasCustomAvatar = Boolean(
-    avatarLink && avatarLink !== 'default file',
-  )
+  const hasCustomAvatar = Boolean(avatarLink && avatarLink !== 'default file')
 
   const handleNavClick = (id: Section): void => {
     setActiveSection(id)
@@ -166,8 +164,8 @@ const FilledProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-secondary">
-      <div className="bg-gradient-to-r from-brand to-brand-solid-hover">
+    <div className="bg-secondary min-h-screen">
+      <div className="from-brand to-brand-solid-hover bg-gradient-to-r">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 shrink-0">
@@ -176,7 +174,7 @@ const FilledProfile = () => {
               </div>
 
               {!hasCustomAvatar && (
-                <div className="pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full bg-brand-solid-hover text-xl font-bold text-white ring-4 ring-white/30">
+                <div className="bg-brand-solid-hover pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full text-xl font-bold text-white ring-4 ring-white/30">
                   {initials}
                 </div>
               )}
@@ -241,12 +239,12 @@ const FilledProfile = () => {
 
         <div className="flex gap-6">
           <aside className="hidden w-56 shrink-0 lg:block">
-            <nav className="sticky top-6 overflow-hidden rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+            <nav className="bg-primary sticky top-6 overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
               {navItems.map((item) => (
                 <button
                   className={`flex w-full items-center gap-3 px-4 py-3.5 text-sm font-medium transition-colors ${
                     activeSection === item.id
-                      ? 'border-r-2 border-brand bg-brand-second text-brand'
+                      ? 'border-brand bg-brand-second text-brand border-r-2'
                       : 'text-secondary hover:bg-secondary hover:text-primary'
                   }`}
                   key={item.id}
@@ -259,7 +257,7 @@ const FilledProfile = () => {
 
               <div className="border-t border-black/5 p-2">
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-negative transition hover:bg-red-50"
+                  className="text-negative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition hover:bg-red-50"
                   onClick={logout}
                 >
                   {isLoading ? (
@@ -281,14 +279,14 @@ const FilledProfile = () => {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <StatCard
                     href="/orders"
-                    icon={<RiShoppingBagLine className="h-5 w-5 text-brand" />}
+                    icon={<RiShoppingBagLine className="text-brand h-5 w-5" />}
                     label="Orders"
                     sub="All time"
                     value={orderCount !== null ? String(orderCount) : '—'}
                   />
                   <StatCard
                     href="/favourites"
-                    icon={<RiHeartLine className="h-5 w-5 text-negative" />}
+                    icon={<RiHeartLine className="text-negative h-5 w-5" />}
                     label="Favourites"
                     sub="Saved items"
                     value={String(favCount || 0)}
@@ -301,8 +299,8 @@ const FilledProfile = () => {
                   />
                 </div>
 
-                <div className="rounded-2xl bg-primary p-5 shadow-sm ring-1 ring-black/5">
-                  <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-secondary">
+                <div className="bg-primary rounded-2xl p-5 shadow-sm ring-1 ring-black/5">
+                  <h2 className="text-secondary mb-4 text-sm font-semibold tracking-wide uppercase">
                     Quick actions
                   </h2>
 
@@ -310,35 +308,39 @@ const FilledProfile = () => {
                     <QuickAction
                       desc="Track and manage your orders"
                       href="/orders"
-                      icon={<RiShoppingBagLine className="h-6 w-6 text-brand" />}
+                      icon={
+                        <RiShoppingBagLine className="text-brand h-6 w-6" />
+                      }
                       title="My Orders"
                     />
                     <QuickAction
                       desc={`${favCount || 0} saved items`}
                       href="/favourites"
-                      icon={<RiHeartLine className="h-6 w-6 text-negative" />}
+                      icon={<RiHeartLine className="text-negative h-6 w-6" />}
                       title="Favourites"
                     />
                     <QuickAction
                       desc="Update your personal details"
-                      icon={<RiUserLine className="h-6 w-6 text-brand" />}
+                      icon={<RiUserLine className="text-brand h-6 w-6" />}
                       onClick={openProfileEditor}
                       title="Edit Profile"
                     />
                     <QuickAction
                       desc="Manage your saved addresses"
-                      icon={<RiMapPinLine className="h-6 w-6 text-brand" />}
+                      icon={<RiMapPinLine className="text-brand h-6 w-6" />}
                       onClick={openAddresses}
                       title="Delivery Address"
                     />
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+                <div className="bg-primary rounded-2xl shadow-sm ring-1 ring-black/5">
                   <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
-                    <h2 className="font-semibold text-primary">Account summary</h2>
+                    <h2 className="text-primary font-semibold">
+                      Account summary
+                    </h2>
                     <button
-                      className="text-sm font-medium text-brand hover:underline"
+                      className="text-brand text-sm font-medium hover:underline"
                       onClick={openProfileEditor}
                     >
                       Edit
@@ -346,7 +348,10 @@ const FilledProfile = () => {
                   </div>
 
                   <div className="divide-y divide-black/5 px-5">
-                    <InfoRow label="Name" value={fullName === 'Your Account' ? null : fullName} />
+                    <InfoRow
+                      label="Name"
+                      value={fullName === 'Your Account' ? null : fullName}
+                    />
                     <InfoRow label="Email" value={email} />
                     <InfoRow label="Phone" value={phoneNumber} />
                     <InfoRow label="City" value={city} />
@@ -356,16 +361,18 @@ const FilledProfile = () => {
             )}
 
             {activeSection === 'profile' && (
-              <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+              <div className="bg-primary rounded-2xl shadow-sm ring-1 ring-black/5">
                 <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
                   <div className="flex items-center gap-2">
-                    <RiUserLine className="h-5 w-5 text-brand" />
-                    <h2 className="font-semibold text-primary">Personal details</h2>
+                    <RiUserLine className="text-brand h-5 w-5" />
+                    <h2 className="text-primary font-semibold">
+                      Personal details
+                    </h2>
                   </div>
 
                   {!isEditing && (
                     <button
-                      className="rounded-lg bg-brand px-4 py-1.5 text-sm font-medium text-white transition hover:bg-brand-solid-hover"
+                      className="bg-brand hover:bg-brand-solid-hover rounded-lg px-4 py-1.5 text-sm font-medium text-white transition"
                       id="edit-btn"
                       onClick={startEditing}
                     >
@@ -377,11 +384,11 @@ const FilledProfile = () => {
                 {isEditing ? (
                   <div className="p-5">
                     <div className="mb-4 flex items-center justify-between">
-                      <p className="text-sm text-secondary">
+                      <p className="text-secondary text-sm">
                         Update your personal information below.
                       </p>
                       <button
-                        className="rounded-lg px-3 py-1.5 text-sm text-secondary hover:bg-secondary"
+                        className="text-secondary hover:bg-secondary rounded-lg px-3 py-1.5 text-sm"
                         onClick={stopEditing}
                       >
                         Cancel
@@ -409,20 +416,24 @@ const FilledProfile = () => {
             {activeSection === 'addresses' && <AddressManager />}
 
             {activeSection === 'security' && (
-              <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+              <div className="bg-primary rounded-2xl shadow-sm ring-1 ring-black/5">
                 <div className="flex items-center gap-2 border-b border-black/5 px-5 py-4">
-                  <RiShieldLine className="h-5 w-5 text-brand" />
-                  <h2 className="font-semibold text-primary">Security</h2>
+                  <RiShieldLine className="text-brand h-5 w-5" />
+                  <h2 className="text-primary font-semibold">Security</h2>
                 </div>
 
                 <div className="divide-y divide-black/5 px-5">
                   <div className="flex items-center justify-between py-4">
                     <div>
-                      <p className="text-sm font-medium text-primary">Password</p>
-                      <p className="text-xs text-secondary">Last changed: unknown</p>
+                      <p className="text-primary text-sm font-medium">
+                        Password
+                      </p>
+                      <p className="text-secondary text-xs">
+                        Last changed: unknown
+                      </p>
                     </div>
                     <Link
-                      className="flex items-center gap-1.5 rounded-xl border border-black/10 px-4 py-2 text-sm font-medium text-primary transition hover:bg-secondary"
+                      className="text-primary hover:bg-secondary flex items-center gap-1.5 rounded-xl border border-black/10 px-4 py-2 text-sm font-medium transition"
                       href="/resetpass"
                       id="change-btn"
                     >
@@ -433,26 +444,28 @@ const FilledProfile = () => {
 
                   <div className="flex items-center justify-between py-4">
                     <div>
-                      <p className="text-sm font-medium text-primary">
+                      <p className="text-primary text-sm font-medium">
                         Two-factor authentication
                       </p>
-                      <p className="text-xs text-secondary">
+                      <p className="text-secondary text-xs">
                         Add an extra layer of security
                       </p>
                     </div>
-                    <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary">
+                    <span className="bg-secondary text-secondary rounded-full px-3 py-1 text-xs font-medium">
                       Coming soon
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-4">
                     <div>
-                      <p className="text-sm font-medium text-primary">Active sessions</p>
-                      <p className="text-xs text-secondary">
+                      <p className="text-primary text-sm font-medium">
+                        Active sessions
+                      </p>
+                      <p className="text-secondary text-xs">
                         Manage devices where you&apos;re logged in
                       </p>
                     </div>
-                    <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary">
+                    <span className="bg-secondary text-secondary rounded-full px-3 py-1 text-xs font-medium">
                       Coming soon
                     </span>
                   </div>
@@ -461,10 +474,10 @@ const FilledProfile = () => {
             )}
 
             {activeSection === 'reviews' && (
-              <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+              <div className="bg-primary rounded-2xl shadow-sm ring-1 ring-black/5">
                 <div className="flex items-center gap-2 border-b border-black/5 px-5 py-4">
-                  <RiStarLine className="h-5 w-5 text-brand" />
-                  <h2 className="font-semibold text-primary">My Reviews</h2>
+                  <RiStarLine className="text-brand h-5 w-5" />
+                  <h2 className="text-primary font-semibold">My Reviews</h2>
                 </div>
                 <div className="p-5">
                   <UserReviews />
@@ -473,30 +486,44 @@ const FilledProfile = () => {
             )}
 
             {activeSection === 'notifications' && (
-              <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5">
+              <div className="bg-primary rounded-2xl shadow-sm ring-1 ring-black/5">
                 <div className="flex items-center gap-2 border-b border-black/5 px-5 py-4">
-                  <RiNotification3Line className="h-5 w-5 text-brand" />
-                  <h2 className="font-semibold text-primary">
+                  <RiNotification3Line className="text-brand h-5 w-5" />
+                  <h2 className="text-primary font-semibold">
                     Notification preferences
                   </h2>
                 </div>
 
                 <div className="divide-y divide-black/5 px-5">
-                  <NotifRow defaultOn desc="Shipping and delivery notifications" label="Order updates" />
-                  <NotifRow desc="Special offers and discounts" label="Promotions & deals" />
-                  <NotifRow desc="Be first to know about new coffees" label="New arrivals" />
-                  <NotifRow defaultOn desc="Login alerts and security notices" label="Account activity" />
+                  <NotifRow
+                    defaultOn
+                    desc="Shipping and delivery notifications"
+                    label="Order updates"
+                  />
+                  <NotifRow
+                    desc="Special offers and discounts"
+                    label="Promotions & deals"
+                  />
+                  <NotifRow
+                    desc="Be first to know about new coffees"
+                    label="New arrivals"
+                  />
+                  <NotifRow
+                    defaultOn
+                    desc="Login alerts and security notices"
+                    label="Account activity"
+                  />
                 </div>
 
                 <div className="px-5 py-4">
                   <button
-                    className="cursor-not-allowed rounded-lg bg-brand px-5 py-2 text-sm font-medium text-white opacity-40"
+                    className="bg-brand cursor-not-allowed rounded-lg px-5 py-2 text-sm font-medium text-white opacity-40"
                     disabled
                     title="Notification preferences will be saved in a future update"
                   >
                     Save preferences
                   </button>
-                  <p className="mt-2 text-xs text-secondary">
+                  <p className="text-secondary mt-2 text-xs">
                     Saving preferences coming soon
                   </p>
                 </div>
@@ -510,18 +537,44 @@ const FilledProfile = () => {
 }
 
 const navItems: { icon: ReactNode; id: Section; label: string }[] = [
-  { icon: <RiHomeLine className="h-5 w-5" />, id: 'overview', label: 'Overview' },
-  { icon: <RiUserLine className="h-5 w-5" />, id: 'profile', label: 'Personal details' },
-  { icon: <RiMapPinLine className="h-5 w-5" />, id: 'addresses', label: 'Addresses' },
-  { icon: <RiShieldLine className="h-5 w-5" />, id: 'security', label: 'Security' },
-  { icon: <RiNotification3Line className="h-5 w-5" />, id: 'notifications', label: 'Notifications' },
-  { icon: <RiStarLine className="h-5 w-5" />, id: 'reviews', label: 'My Reviews' },
+  {
+    icon: <RiHomeLine className="h-5 w-5" />,
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    icon: <RiUserLine className="h-5 w-5" />,
+    id: 'profile',
+    label: 'Personal details',
+  },
+  {
+    icon: <RiMapPinLine className="h-5 w-5" />,
+    id: 'addresses',
+    label: 'Addresses',
+  },
+  {
+    icon: <RiShieldLine className="h-5 w-5" />,
+    id: 'security',
+    label: 'Security',
+  },
+  {
+    icon: <RiNotification3Line className="h-5 w-5" />,
+    id: 'notifications',
+    label: 'Notifications',
+  },
+  {
+    icon: <RiStarLine className="h-5 w-5" />,
+    id: 'reviews',
+    label: 'My Reviews',
+  },
 ]
 
 const InfoRow = ({ label, value }: InfoRowProps) => (
   <div className="flex items-center justify-between py-3.5">
-    <span className="text-sm text-secondary">{label}</span>
-    <span className={`text-sm font-medium ${value ? 'text-primary' : 'text-disabled'}`}>
+    <span className="text-secondary text-sm">{label}</span>
+    <span
+      className={`text-sm font-medium ${value ? 'text-primary' : 'text-disabled'}`}
+    >
       {value || '—'}
     </span>
   </div>
@@ -529,13 +582,13 @@ const InfoRow = ({ label, value }: InfoRowProps) => (
 
 const StatCard = ({ href, icon, label, sub, value }: StatCardProps) => {
   const inner = (
-    <div className="rounded-2xl bg-primary p-4 shadow-sm ring-1 ring-black/5 transition hover:shadow-md">
-      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
+    <div className="bg-primary rounded-2xl p-4 shadow-sm ring-1 ring-black/5 transition hover:shadow-md">
+      <div className="bg-secondary mb-3 flex h-10 w-10 items-center justify-center rounded-xl">
         {icon}
       </div>
-      <p className="text-2xl font-bold text-primary">{value}</p>
-      <p className="text-sm font-medium text-primary">{label}</p>
-      <p className="text-xs text-secondary">{sub}</p>
+      <p className="text-primary text-2xl font-bold">{value}</p>
+      <p className="text-primary text-sm font-medium">{label}</p>
+      <p className="text-secondary text-xs">{sub}</p>
     </div>
   )
 
@@ -545,17 +598,23 @@ const StatCard = ({ href, icon, label, sub, value }: StatCardProps) => {
 const quickActionClass =
   'flex w-full items-center gap-3 rounded-xl border border-black/5 p-4 text-left transition hover:border-brand/30 hover:bg-brand-second'
 
-const QuickAction = ({ desc, href, icon, onClick, title }: QuickActionProps) => {
+const QuickAction = ({
+  desc,
+  href,
+  icon,
+  onClick,
+  title,
+}: QuickActionProps) => {
   const content = (
     <>
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+      <div className="bg-secondary flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-primary">{title}</p>
-        <p className="truncate text-xs text-secondary">{desc}</p>
+        <p className="text-primary text-sm font-semibold">{title}</p>
+        <p className="text-secondary truncate text-xs">{desc}</p>
       </div>
-      <RiArrowRightSLine className="h-5 w-5 shrink-0 text-disabled" />
+      <RiArrowRightSLine className="text-disabled h-5 w-5 shrink-0" />
     </>
   )
 
@@ -578,8 +637,8 @@ const NotifRow = ({ defaultOn = false, desc, label }: NotifRowProps) => {
   return (
     <div className="flex items-center justify-between py-4">
       <div>
-        <p className="text-sm font-medium text-primary">{label}</p>
-        <p className="text-xs text-secondary">{desc}</p>
+        <p className="text-primary text-sm font-medium">{label}</p>
+        <p className="text-secondary text-xs">{desc}</p>
       </div>
       <div
         aria-label={`${label} (coming soon)`}

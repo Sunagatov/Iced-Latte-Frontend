@@ -47,8 +47,13 @@ const ImageUpload = () => {
     }
   }
 
-  const src = preview ?? (userData?.avatarLink && userData.avatarLink !== 'default file' ? userData.avatarLink : undefined)
-  const hasAvatar = src && userData?.avatarLink && userData.avatarLink !== 'default file'
+  const src =
+    preview ??
+    (userData?.avatarLink && userData.avatarLink !== 'default file'
+      ? userData.avatarLink
+      : undefined)
+  const hasAvatar =
+    src && userData?.avatarLink && userData.avatarLink !== 'default file'
 
   return (
     <label className="group relative block h-24 w-24 cursor-pointer">

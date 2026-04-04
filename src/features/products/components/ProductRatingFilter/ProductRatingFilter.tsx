@@ -17,7 +17,7 @@ const ProductRatingFilter = ({
   selectedOption = null,
 }: Readonly<IRatingFilter>) => {
   const handleCheckboxChange = (value: number | 'any') => {
-    onChange(value === selectedOption ? null : value as StarsType | 'any')
+    onChange(value === selectedOption ? null : (value as StarsType | 'any'))
   }
 
   return (
@@ -33,10 +33,13 @@ const ProductRatingFilter = ({
             className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
               value === selectedOption
                 ? 'border-brand-solid bg-brand-solid text-white'
-                : 'border-black/10 bg-white text-primary hover:border-brand-solid hover:text-brand-solid'
+                : 'text-primary hover:border-brand-solid hover:text-brand-solid border-black/10 bg-white'
             }`}
           >
-            <FaStar className="h-3.5 w-3.5" color={value === selectedOption ? 'white' : '#00A30E'} />
+            <FaStar
+              className="h-3.5 w-3.5"
+              color={value === selectedOption ? 'white' : '#00A30E'}
+            />
             {value}+
           </button>
         ))}
@@ -47,7 +50,7 @@ const ProductRatingFilter = ({
           className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
             selectedOption === 'any'
               ? 'border-brand-solid bg-brand-solid text-white'
-              : 'border-black/10 bg-white text-primary hover:border-brand-solid hover:text-brand-solid'
+              : 'text-primary hover:border-brand-solid hover:text-brand-solid border-black/10 bg-white'
           }`}
         >
           Any

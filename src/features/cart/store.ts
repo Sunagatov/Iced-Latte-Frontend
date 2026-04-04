@@ -2,9 +2,19 @@ import { create, StateCreator } from 'zustand'
 
 export const MAX_CART_ITEM_QUANTITY = 99
 import { persist } from 'zustand/middleware'
-import { ICartItem, ICartPushItem, ICartPushItems, ICartUpdatedItem } from './types'
+import {
+  ICartItem,
+  ICartPushItem,
+  ICartPushItems,
+  ICartUpdatedItem,
+} from './types'
 import { getProductByIds } from '@/features/products/api'
-import { mergeCarts, removeCartItem, changeCartItemQuantity, fetchCart } from './api'
+import {
+  mergeCarts,
+  removeCartItem,
+  changeCartItemQuantity,
+  fetchCart,
+} from './api'
 import { useAuthStore } from '@/features/auth/store'
 
 export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
@@ -48,10 +58,19 @@ const initialState: CartSliceState = {
   lastError: null,
 }
 
-const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (set, get) => ({
+const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
+  set,
+  get,
+) => ({
   ...initialState,
   add: (id: string) => {
-    const { itemsIds, tempItems, updateCartItem, createCart, pendingProductIds } = get() as CartSliceStore
+    const {
+      itemsIds,
+      tempItems,
+      updateCartItem,
+      createCart,
+      pendingProductIds,
+    } = get() as CartSliceStore
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
     const cartItem = itemsIds.find((item) => item.productId === id)
 
@@ -64,13 +83,30 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
         if (!productCartSlotId) return
         setPending(set, id)
-        updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: 1 })
-          .then(() => { /* no-op */ }, () => { /* no-op */ })
+        updateCartItem({
+          shoppingCartItemId: productCartSlotId,
+          productQuantityChange: 1,
+        })
+          .then(
+            () => {
+              /* no-op */
+            },
+            () => {
+              /* no-op */
+            },
+          )
           .finally(() => clearPending(set, id))
       } else {
         setPending(set, id)
         createCart({ items: [{ productId: id, productQuantity: 1 }] })
-          .then(() => { /* no-op */ }, () => { /* no-op */ })
+          .then(
+            () => {
+              /* no-op */
+            },
+            () => {
+              /* no-op */
+            },
+          )
           .finally(() => clearPending(set, id))
       }
     } else {
@@ -80,10 +116,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
       const updatedTempItems = cartItem
         ? tempItems.map((tempItem: ICartItem) =>
-          tempItem.productInfo.id === id
-            ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
-            : tempItem,
-        )
+            tempItem.productInfo.id === id
+              ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
+              : tempItem,
+          )
         : tempItems
 
       set((state) => ({
@@ -93,7 +129,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         count,
         totalPrice: getTotalPrice(updatedTempItems),
       }))
-      get().getCartItems().catch(() => {})
+      get()
+        .getCartItems()
+        .catch(() => {})
     }
   },
   getCartItems: async () => {
@@ -105,9 +143,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       const cartItems: ICartItem[] = productList.map((item) => ({
         id: item.id,
         productInfo: { ...item },
-        productQuantity: itemsIds.find((i) => i.productId === item.id)!.productQuantity,
+        productQuantity: itemsIds.find((i) => i.productId === item.id)!
+          .productQuantity,
       }))
-      const reconciledIds = cartItems.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity }))
+      const reconciledIds = cartItems.map((i) => ({
+        productId: i.productInfo.id,
+        productQuantity: i.productQuantity,
+      }))
 
       set((state) => ({
         ...state,
@@ -152,7 +194,13 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     }
   },
   remove: (id: string) => {
-    const { tempItems, itemsIds, updateCartItem, removeFullProduct, pendingProductIds } = get()
+    const {
+      tempItems,
+      itemsIds,
+      updateCartItem,
+      removeFullProduct,
+      pendingProductIds,
+    } = get()
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
     if (pendingProductIds.has(id)) return
@@ -169,8 +217,18 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         return
       }
       setPending(set, id)
-      updateCartItem({ shoppingCartItemId: productCartSlotId, productQuantityChange: -1 })
-        .then(() => { /* no-op */ }, () => { /* no-op */ })
+      updateCartItem({
+        shoppingCartItemId: productCartSlotId,
+        productQuantityChange: -1,
+      })
+        .then(
+          () => {
+            /* no-op */
+          },
+          () => {
+            /* no-op */
+          },
+        )
         .finally(() => clearPending(set, id))
     } else {
       const updatedCart = removeItem(id, itemsIds)
@@ -215,7 +273,8 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
           }))
         })
         .catch((err) => {
-          const message = err instanceof Error ? err.message : 'Failed to remove item'
+          const message =
+            err instanceof Error ? err.message : 'Failed to remove item'
 
           set({ status: 'error', lastError: message })
         })
@@ -223,7 +282,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     } else {
       const { itemsIds, tempItems } = get()
       const updatedCart = itemsIds.filter((item) => item.productId !== id)
-      const removedTempItems = tempItems.filter((item) => item.productInfo.id !== id)
+      const removedTempItems = tempItems.filter(
+        (item) => item.productInfo.id !== id,
+      )
 
       set({
         itemsIds: updatedCart,
@@ -233,7 +294,17 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       } as CartSliceState)
     }
   },
-  resetCart: () => set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: false, status: 'idle', pendingProductIds: new Set(), lastError: null } as CartSliceState),
+  resetCart: () =>
+    set({
+      itemsIds: [],
+      tempItems: [],
+      count: 0,
+      totalPrice: 0,
+      isSync: false,
+      status: 'idle',
+      pendingProductIds: new Set(),
+      lastError: null,
+    } as CartSliceState),
   clearCart: async () => {
     const { tempItems, isSync } = get()
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
@@ -245,21 +316,38 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
         await removeCartItem(ids)
       }
-      set({ itemsIds: [], tempItems: [], count: 0, totalPrice: 0, isSync: isLoggedIn, status: 'ready', lastError: null, pendingProductIds: new Set() } as CartSliceState)
+      set({
+        itemsIds: [],
+        tempItems: [],
+        count: 0,
+        totalPrice: 0,
+        isSync: isLoggedIn,
+        status: 'ready',
+        lastError: null,
+        pendingProductIds: new Set(),
+      } as CartSliceState)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to clear cart'
+      const message =
+        err instanceof Error ? err.message : 'Failed to clear cart'
 
       set({ status: 'error', lastError: message })
     }
   },
-  setTempItems: (items) => set((state) => ({
-    ...state,
-    itemsIds: items.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })),
-    tempItems: items,
-    isSync: true,
-    count: items.reduce((sum, i) => sum + i.productQuantity, 0),
-    totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
-  })),
+  setTempItems: (items) =>
+    set((state) => ({
+      ...state,
+      itemsIds: items.map((i) => ({
+        productId: i.productInfo.id,
+        productQuantity: i.productQuantity,
+      })),
+      tempItems: items,
+      isSync: true,
+      count: items.reduce((sum, i) => sum + i.productQuantity, 0),
+      totalPrice: items.reduce(
+        (sum, i) => sum + i.productInfo.price * i.productQuantity,
+        0,
+      ),
+    })),
   createCart: async (reqItems: ICartPushItems): Promise<void> => {
     set({ status: 'syncing' })
     try {
@@ -276,7 +364,8 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         status: 'ready',
       }))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update cart'
+      const message =
+        err instanceof Error ? err.message : 'Failed to update cart'
 
       set({ status: 'error', lastError: message })
       throw err
@@ -298,7 +387,8 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         status: 'ready',
       }))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update cart'
+      const message =
+        err instanceof Error ? err.message : 'Failed to update cart'
 
       set({ status: 'error', lastError: message })
       throw err
@@ -306,12 +396,17 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
   },
   retryHydration: () => {
     set({ status: 'idle', lastError: null })
-    const isAuthenticated = useAuthStore?.getState?.()?.status === 'authenticated'
+    const isAuthenticated =
+      useAuthStore?.getState?.()?.status === 'authenticated'
 
     if (isAuthenticated) {
-      get().loadAuthCart().catch(() => {})
+      get()
+        .loadAuthCart()
+        .catch(() => {})
     } else {
-      get().getCartItems().catch(() => {})
+      get()
+        .getCartItems()
+        .catch(() => {})
     }
   },
 })
@@ -322,29 +417,41 @@ function addToCart(id: string, cartList: ICartPushItem[]): ICartPushItem[] {
   if (!cartItem) return [...cartList, { productId: id, productQuantity: 1 }]
 
   return cartList.map((item) =>
-    item.productId === id ? { ...item, productQuantity: item.productQuantity + 1 } : item,
+    item.productId === id
+      ? { ...item, productQuantity: item.productQuantity + 1 }
+      : item,
   )
 }
 
 function removeItem(id: string, cartList: ICartPushItem[]): ICartPushItem[] {
   return cartList
     .map((item) =>
-      item.productId === id ? { ...item, productQuantity: item.productQuantity - 1 } : item,
+      item.productId === id
+        ? { ...item, productQuantity: item.productQuantity - 1 }
+        : item,
     )
     .filter((item) => item.productQuantity)
 }
 
 function getProductsCount(cartList: ICartPushItem[]): number {
-  return cartList.length ? cartList.reduce((prev, curr) => prev + curr.productQuantity, 0) : 0
+  return cartList.length
+    ? cartList.reduce((prev, curr) => prev + curr.productQuantity, 0)
+    : 0
 }
 
 function getTotalPrice(cartList: ICartItem[]): number {
   return cartList.length
-    ? cartList.reduce((prev, curr) => prev + curr.productInfo.price * curr.productQuantity, 0)
+    ? cartList.reduce(
+        (prev, curr) => prev + curr.productInfo.price * curr.productQuantity,
+        0,
+      )
     : 0
 }
 
-function getProductCartSlotId(id: string, cartList: ICartItem[]): string | undefined {
+function getProductCartSlotId(
+  id: string,
+  cartList: ICartItem[],
+): string | undefined {
   return cartList.find((item) => item.productInfo.id === id)?.id
 }
 
@@ -355,7 +462,10 @@ function createItemsIdsFromCart(cartItems: ICartItem[]): ICartPushItem[] {
   }))
 }
 
-function setPending(set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void, id: string) {
+function setPending(
+  set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void,
+  id: string,
+) {
   set((state) => {
     const next = new Set(state.pendingProductIds)
 
@@ -365,7 +475,10 @@ function setPending(set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) =>
   })
 }
 
-function clearPending(set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void, id: string) {
+function clearPending(
+  set: (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void,
+  id: string,
+) {
   set((state) => {
     const next = new Set(state.pendingProductIds)
 

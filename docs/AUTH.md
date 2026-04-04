@@ -105,10 +105,10 @@ Handled automatically by `AuthInterceptor`:
 
 ## Route Protection
 
-| Route type | How protected |
-|---|---|
+| Route type                             | How protected                                                                      |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
 | `/profile` (and other protected pages) | Server-side: reads cookie, redirects to `/signin?next=/profile` if missing/expired |
-| `/signin`, `/signup` (guest-only) | `RestrictRoute` server component: redirects to `/` if session cookie present |
+| `/signin`, `/signup` (guest-only)      | `RestrictRoute` server component: redirects to `/` if session cookie present       |
 
 Protected pages redirect with `?next=<path>` so the user lands back after login.
 
@@ -122,13 +122,13 @@ Protected pages redirect with `?next=<path>` so the user lands back after login.
 
 ## Key Files
 
-| File | Responsibility |
-|---|---|
-| `features/auth/store.ts` | Auth status state machine |
-| `features/auth/api.ts` | Auth API calls incl. `apiGetSession` |
-| `shared/providers/AppInitProvider.tsx` | Session bootstrap on app startup |
-| `shared/providers/AuthInterceptor.tsx` | Auto-refresh on 401 |
-| `shared/providers/RestrictRoute.tsx` | Guest-only route guard |
-| `shared/utils/cookieUtils.ts` | Server-side cookie helpers |
-| `app/api/proxy/[...path]/route.ts` | API proxy (forwards cookie) |
-| `app/profile/page.tsx` | Example of a server-protected page |
+| File                                   | Responsibility                       |
+| -------------------------------------- | ------------------------------------ |
+| `features/auth/store.ts`               | Auth status state machine            |
+| `features/auth/api.ts`                 | Auth API calls incl. `apiGetSession` |
+| `shared/providers/AppInitProvider.tsx` | Session bootstrap on app startup     |
+| `shared/providers/AuthInterceptor.tsx` | Auto-refresh on 401                  |
+| `shared/providers/RestrictRoute.tsx`   | Guest-only route guard               |
+| `shared/utils/cookieUtils.ts`          | Server-side cookie helpers           |
+| `app/api/proxy/[...path]/route.ts`     | API proxy (forwards cookie)          |
+| `app/profile/page.tsx`                 | Example of a server-protected page   |

@@ -12,25 +12,32 @@ type UseReviewsParamsType = {
   ratingFilter: number[]
 }
 
-export function useReviews({ productId, userReview, sortOption, ratingFilter }: UseReviewsParamsType) {
+export function useReviews({
+  productId,
+  userReview,
+  sortOption,
+  ratingFilter,
+}: UseReviewsParamsType) {
   const { sortAttribute, sortDirection } = sortOption.value
 
   const getKey = (pageIndex: number, previousData: IReviews) => {
-    if (previousData && previousData.totalPages - 1 == previousData.page) return null
-    const productRatingQuery = ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''
+    if (previousData && previousData.totalPages - 1 == previousData.page)
+      return null
+    const productRatingQuery =
+      ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''
 
     return `/products/${productId}/reviews?page=${pageIndex}&size=3&sortAttribute=${sortAttribute}&sortDirection=${sortDirection}${productRatingQuery}`
   }
 
-  const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite<IReviews, Error>(
-    getKey,
-    apiGetAllReviews,
-    { initialSize: 1, revalidateFirstPage: false },
-  )
+  const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite<
+    IReviews,
+    Error
+  >(getKey, apiGetAllReviews, { initialSize: 1, revalidateFirstPage: false })
 
   const totalPages = data?.[0]?.totalPages ?? 0
   const fetchNext = () => setSize((size) => size + 1)
-  const allLoadedReviews = data?.flatMap((page) => page.reviewsWithRatings) ?? []
+  const allLoadedReviews =
+    data?.flatMap((page) => page.reviewsWithRatings) ?? []
   const seen = new Set<string>()
   const dedupedReviews = allLoadedReviews.filter((r) => {
     if (!r.productReviewId || seen.has(r.productReviewId)) return false
@@ -39,7 +46,9 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     return true
   })
   const filteredReviews = userReview
-    ? dedupedReviews.filter((review) => review.productReviewId !== userReview.productReviewId)
+    ? dedupedReviews.filter(
+        (review) => review.productReviewId !== userReview.productReviewId,
+      )
     : dedupedReviews
 
   const refreshReviews = useCallback(() => mutate(), [mutate])
@@ -50,7 +59,9 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
         (pages) =>
           pages?.map((page) => ({
             ...page,
-            reviewsWithRatings: page.reviewsWithRatings.filter((r) => r.productReviewId !== productReviewId),
+            reviewsWithRatings: page.reviewsWithRatings.filter(
+              (r) => r.productReviewId !== productReviewId,
+            ),
           })),
         { revalidate: false },
       )
@@ -79,7 +90,8 @@ export function useReviews({ productId, userReview, sortOption, ratingFilter }: 
     fetchNext,
     hasNextPage: size < totalPages,
     isLoading,
-    isFetchingNextPage: size > 0 && data && typeof data[size - 1] === 'undefined',
+    isFetchingNextPage:
+      size > 0 && data && typeof data[size - 1] === 'undefined',
     error,
     refreshReviews,
     removeReviewFromCache,

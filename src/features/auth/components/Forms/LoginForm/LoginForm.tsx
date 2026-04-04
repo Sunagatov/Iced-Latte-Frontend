@@ -9,7 +9,10 @@ import { apiLoginUser, apiGetSession } from '@/features/auth/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
-interface IFormValues { email: string; password: string }
+interface IFormValues {
+  email: string
+  password: string
+}
 import { useErrorHandler } from '@/shared/utils/apiError'
 
 export default function LoginForm() {
@@ -46,7 +49,7 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
+      {errorMessage && <div className="text-negative mt-4">{errorMessage}</div>}
       <FormInput
         id="email"
         register={register}
@@ -68,7 +71,7 @@ export default function LoginForm() {
       <Button
         id="login-btn"
         type="submit"
-        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover"
+        className="hover:bg-brand-solid-hover mt-6 flex w-full items-center justify-center"
       >
         {loading ? <Loader /> : 'Login'}
       </Button>

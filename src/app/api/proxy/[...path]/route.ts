@@ -18,7 +18,10 @@ function sanitizeQueryString(params: URLSearchParams): string {
   const safe = new URLSearchParams()
 
   for (const [key, value] of params.entries()) {
-    if (ALLOWED_QUERY_PARAM_RE.test(key) && ALLOWED_QUERY_PARAM_RE.test(value)) {
+    if (
+      ALLOWED_QUERY_PARAM_RE.test(key) &&
+      ALLOWED_QUERY_PARAM_RE.test(value)
+    ) {
       safe.append(key, value)
     }
   }
@@ -27,11 +30,16 @@ function sanitizeQueryString(params: URLSearchParams): string {
   return qs ? `?${qs}` : ''
 }
 
-function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+): Promise<Response> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer))
+  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  )
 }
 
 function forwardHeaders(request: NextRequest): HeadersInit {
@@ -72,7 +80,10 @@ async function handleProxy(
   const pathString = path.join('/')
 
   if (method === 'POST' && pathString.includes('telemetry')) {
-    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
+    return createCorsResponse(
+      { message: 'Telemetry endpoint not implemented' },
+      202,
+    )
   }
 
   const safePath = sanitizePath(path)
@@ -92,9 +103,10 @@ async function handleProxy(
     const contentType = response.headers.get('content-type') ?? ''
     const rawBody = await response.text()
 
-    const data: unknown = contentType.includes('application/json') && rawBody
-      ? (JSON.parse(rawBody) as unknown)
-      : rawBody
+    const data: unknown =
+      contentType.includes('application/json') && rawBody
+        ? (JSON.parse(rawBody) as unknown)
+        : rawBody
 
     if (!response.ok) return createCorsResponse(data, response.status)
 
@@ -108,31 +120,46 @@ export function OPTIONS(request: NextRequest) {
   return handleOptions(request)
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'GET', path)
 }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'POST', path)
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'PUT', path)
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'PATCH', path)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'DELETE', path)

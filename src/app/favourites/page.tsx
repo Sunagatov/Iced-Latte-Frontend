@@ -1,9 +1,7 @@
 import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
 
 const FavPage = () => {
-  return (
-    <FavouritesPage />
-  )
+  return <FavouritesPage />
 }
 
 export default FavPage

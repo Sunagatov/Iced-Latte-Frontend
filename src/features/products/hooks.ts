@@ -23,9 +23,11 @@ export function useProducts(
   const productSize = isMediaQuery ? 8 : 6
 
   const getKey = (pageIndex: number, previousData: IProductsList) => {
-    if (previousData && previousData.totalPages - 1 == previousData.page) return null
+    if (previousData && previousData.totalPages - 1 == previousData.page)
+      return null
 
-    const ratingQuery = ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
+    const ratingQuery =
+      ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
 
     const params = new URLSearchParams({
       page: String(pageIndex),
@@ -45,25 +47,31 @@ export function useProducts(
     return `products?${params}`
   }
 
-  const { data, error, isLoading, size, setSize } = useSWRInfinite<IProductsList, AxiosError>(
-    getKey,
-    (key: string) => getAllProducts(key),
-    {
-      initialSize: 1,
-      onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
-        const status = err?.response?.status
+  const { data, error, isLoading, size, setSize } = useSWRInfinite<
+    IProductsList,
+    AxiosError
+  >(getKey, (key: string) => getAllProducts(key), {
+    initialSize: 1,
+    onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
+      const status = err?.response?.status
 
-        if (status && status >= 400) return
-        if (retryCount >= 3) return
-        setTimeout(() => { void revalidate({ retryCount }) }, 5000)
-      },
+      if (status && status >= 400) return
+      if (retryCount >= 3) return
+      setTimeout(() => {
+        void revalidate({ retryCount })
+      }, 5000)
     },
-  )
+  })
 
   const totalPages = data?.[0]?.totalPages ?? 0
   const fetchNext = () => setSize((size) => size + 1)
   const flattenProducts = Array.from(
-    new Map((data?.flatMap((page) => page.products ?? []) ?? []).map((p) => [p.id, p])).values(),
+    new Map(
+      (data?.flatMap((page) => page.products ?? []) ?? []).map((p) => [
+        p.id,
+        p,
+      ]),
+    ).values(),
   )
 
   return {
@@ -71,7 +79,8 @@ export function useProducts(
     fetchNext,
     hasNextPage: size < totalPages,
     isLoading,
-    isFetchingNextPage: size > 0 && data && typeof data[size - 1] === 'undefined',
+    isFetchingNextPage:
+      size > 0 && data && typeof data[size - 1] === 'undefined',
     error,
   }
 }

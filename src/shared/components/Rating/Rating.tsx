@@ -1,4 +1,6 @@
-interface IRatingProps { rating: number | string | null }
+interface IRatingProps {
+  rating: number | string | null
+}
 
 export default function Rating({ rating }: Readonly<IRatingProps>) {
   const numberRating = rating

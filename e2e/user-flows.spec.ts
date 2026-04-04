@@ -1,35 +1,86 @@
 import { test, expect, type Page } from '@playwright/test'
 
-const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
+const FAKE_TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
 function makeProduct(id: string) {
-  return { id, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+  return {
+    id,
+    name: 'Test Coffee',
+    price: 9.99,
+    productFileUrl: null,
+    brandName: 'Brand',
+    sellerName: 'Seller',
+    averageRating: 4.5,
+    reviewsCount: 1,
+    quantity: 250,
+    description: 'desc',
+    active: true,
+  }
 }
 
 async function mockProxy(page: Page) {
   const product = makeProduct(FAKE_PRODUCT_ID)
-  const productsList = { products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }
-  const cart = { id: 'cart-1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null }
+  const productsList = {
+    products: [product],
+    page: 0,
+    size: 6,
+    totalElements: 1,
+    totalPages: 1,
+  }
+  const cart = {
+    id: 'cart-1',
+    userId: 'u1',
+    items: [],
+    itemsQuantity: 0,
+    itemsTotalPrice: 0,
+    productsQuantity: 0,
+    createdAt: '',
+    closedAt: null,
+  }
 
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/products') && !url.includes('/ids')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(productsList),
+      })
     } else if (url.includes('/cart')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cart) })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(cart),
+      })
     } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     }
   })
 }
 
 async function loginAndGoto(page: Page, route: string) {
   await page.goto('http://localhost:3000')
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page
+    .context()
+    .addCookies([
+      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
+    ])
   await page.evaluate(
-    (t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })),
+    (t) =>
+      localStorage.setItem(
+        'token',
+        JSON.stringify({
+          state: { token: t, refreshToken: null, isLoggedIn: true },
+          version: 0,
+        }),
+      ),
     FAKE_TOKEN,
   )
   await page.goto(route)

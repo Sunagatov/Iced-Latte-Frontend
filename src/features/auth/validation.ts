@@ -85,7 +85,10 @@ export const authChangePassSchema = yup.object().shape({
       /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
       'New Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
     )
-    .notOneOf([yup.ref('oldPassword')], 'New Password must not be the same as Old Password'),
+    .notOneOf(
+      [yup.ref('oldPassword')],
+      'New Password must not be the same as Old Password',
+    ),
 })
 
 export const forgotPassSchema = yup.object().shape({

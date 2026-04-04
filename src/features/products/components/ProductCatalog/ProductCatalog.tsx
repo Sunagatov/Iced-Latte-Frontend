@@ -9,7 +9,10 @@ import { twMerge } from 'tailwind-merge'
 import FilterSidebar from '@/features/products/components/FilterSidebar/FilterSidebar'
 import MobileFilterSidebar from '@/features/products/components/FilterSidebar/MobileFilterSidebar'
 import Filters from '@/features/products/components/FilterSidebar/Filters'
-import { defaultProductsFilters, useProductFiltersStore } from '@/features/products/store'
+import {
+  defaultProductsFilters,
+  useProductFiltersStore,
+} from '@/features/products/store'
 import { ISortParams } from '@/shared/types/ISortParams'
 import { IOption } from '@/shared/types/Dropdown'
 import ProductList from '../ProductList/ProductList'
@@ -24,13 +27,21 @@ export default function ProductCatalog({
   sellers,
 }: Readonly<IProductCatalogProps>) {
   const toPriceFilter: string = useProductFiltersStore((s) => s.toPriceFilter)
-  const fromPriceFilter: string = useProductFiltersStore((s) => s.fromPriceFilter)
-  const selectedBrandOptions: string[] = useProductFiltersStore((s) => s.selectedBrandOptions)
-  const selectedSellerOptions: string[] = useProductFiltersStore((s) => s.selectedSellerOptions)
+  const fromPriceFilter: string = useProductFiltersStore(
+    (s) => s.fromPriceFilter,
+  )
+  const selectedBrandOptions: string[] = useProductFiltersStore(
+    (s) => s.selectedBrandOptions,
+  )
+  const selectedSellerOptions: string[] = useProductFiltersStore(
+    (s) => s.selectedSellerOptions,
+  )
   const selectedSortOption = useProductFiltersStore((s) => s.selectedSortOption)
   const ratingFilter = useProductFiltersStore((s) => s.ratingFilter)
   const searchQuery: string = useProductFiltersStore((s) => s.searchQuery)
-  const updateProductFiltersStore = useProductFiltersStore((s) => s.updateProductFiltersStore)
+  const updateProductFiltersStore = useProductFiltersStore(
+    (s) => s.updateProductFiltersStore,
+  )
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [loadMoreError, setLoadMoreError] = useState(false)
@@ -56,8 +67,12 @@ export default function ProductCatalog({
     updateProductFiltersStore({ selectedSortOption: selectedOption })
   }
 
-  const handleFilterClick = () => { setIsMobileFilterOpen((prev) => !prev) }
-  const handleCloseMobileFilter = () => { setIsMobileFilterOpen(false) }
+  const handleFilterClick = () => {
+    setIsMobileFilterOpen((prev) => !prev)
+  }
+  const handleCloseMobileFilter = () => {
+    setIsMobileFilterOpen(false)
+  }
 
   const handleLoadMore = () => {
     setLoadMoreError(false)
@@ -67,11 +82,12 @@ export default function ProductCatalog({
   const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
 
   const hasPriceFilter = fromPriceFilter !== '' || toPriceFilter !== ''
-  const priceChipLabel = fromPriceFilter && toPriceFilter
-    ? `$${fromPriceFilter} – $${toPriceFilter}`
-    : fromPriceFilter
-      ? `From $${fromPriceFilter}`
-      : `Up to $${toPriceFilter}`
+  const priceChipLabel =
+    fromPriceFilter && toPriceFilter
+      ? `$${fromPriceFilter} – $${toPriceFilter}`
+      : fromPriceFilter
+        ? `From $${fromPriceFilter}`
+        : `Up to $${toPriceFilter}`
 
   const hasActiveChips =
     searchQuery ||
@@ -97,15 +113,15 @@ export default function ProductCatalog({
           {/* Row 1: title + filter btn + sort */}
           <div className="flex items-center gap-3">
             <div className="flex shrink-0 flex-col">
-              <p className="text-xs font-medium text-brand">Our Collection</p>
-              <h1 className="text-2XL font-bold tracking-tight text-primary min-[1124px]:text-3XL">
+              <p className="text-brand text-xs font-medium">Our Collection</p>
+              <h1 className="text-2XL text-primary min-[1124px]:text-3XL font-bold tracking-tight">
                 {searchQuery ? `"${searchQuery}"` : 'All Coffee'}
               </h1>
             </div>
             <button
               aria-controls="mobile-filter-sidebar"
               aria-expanded={isMobileFilterOpen}
-              className="ml-auto block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
+              className="text-L text-brand ml-auto block shrink-0 cursor-pointer font-medium min-[1100px]:hidden"
               id="filter-btn"
               onClick={handleFilterClick}
             >
@@ -134,33 +150,90 @@ export default function ProductCatalog({
           {hasActiveChips && (
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {searchQuery && (
-                <span className="flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
+                <span className="bg-brand/10 text-brand flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium">
                   🔍 {searchQuery}
-                  <button onClick={() => updateProductFiltersStore({ searchQuery: '' })} className="ml-1 hover:opacity-70" aria-label="Remove search filter">✕</button>
+                  <button
+                    onClick={() =>
+                      updateProductFiltersStore({ searchQuery: '' })
+                    }
+                    className="ml-1 hover:opacity-70"
+                    aria-label="Remove search filter"
+                  >
+                    ✕
+                  </button>
                 </span>
               )}
               {selectedBrandOptions.map((b) => (
-                <span key={b} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                <span
+                  key={b}
+                  className="bg-secondary text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium"
+                >
                   {b}
-                  <button onClick={() => updateProductFiltersStore({ selectedBrandOptions: selectedBrandOptions.filter((x) => x !== b) })} className="hover:opacity-70" aria-label={`Remove brand ${b}`}>✕</button>
+                  <button
+                    onClick={() =>
+                      updateProductFiltersStore({
+                        selectedBrandOptions: selectedBrandOptions.filter(
+                          (x) => x !== b,
+                        ),
+                      })
+                    }
+                    className="hover:opacity-70"
+                    aria-label={`Remove brand ${b}`}
+                  >
+                    ✕
+                  </button>
                 </span>
               ))}
               {selectedSellerOptions.map((s) => (
-                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary" key={s}>
+                <span
+                  className="bg-secondary text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium"
+                  key={s}
+                >
                   {s}
-                  <button onClick={() => updateProductFiltersStore({ selectedSellerOptions: selectedSellerOptions.filter((x) => x !== s) })} className="hover:opacity-70" aria-label={`Remove seller ${s}`}>✕</button>
+                  <button
+                    onClick={() =>
+                      updateProductFiltersStore({
+                        selectedSellerOptions: selectedSellerOptions.filter(
+                          (x) => x !== s,
+                        ),
+                      })
+                    }
+                    className="hover:opacity-70"
+                    aria-label={`Remove seller ${s}`}
+                  >
+                    ✕
+                  </button>
                 </span>
               ))}
               {hasPriceFilter && (
-                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                <span className="bg-secondary text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium">
                   {priceChipLabel}
-                  <button onClick={() => updateProductFiltersStore({ fromPriceFilter: '', toPriceFilter: '' })} className="hover:opacity-70" aria-label="Remove price filter">✕</button>
+                  <button
+                    onClick={() =>
+                      updateProductFiltersStore({
+                        fromPriceFilter: '',
+                        toPriceFilter: '',
+                      })
+                    }
+                    className="hover:opacity-70"
+                    aria-label="Remove price filter"
+                  >
+                    ✕
+                  </button>
                 </span>
               )}
               {ratingFilter && ratingFilter !== 'any' && (
-                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                <span className="bg-secondary text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium">
                   {'⭐'.repeat(Number(ratingFilter))}+
-                  <button onClick={() => updateProductFiltersStore({ ratingFilter: null })} className="hover:opacity-70" aria-label="Remove rating filter">✕</button>
+                  <button
+                    onClick={() =>
+                      updateProductFiltersStore({ ratingFilter: null })
+                    }
+                    className="hover:opacity-70"
+                    aria-label="Remove rating filter"
+                  >
+                    ✕
+                  </button>
                 </span>
               )}
             </div>
@@ -185,15 +258,19 @@ export default function ProductCatalog({
             error={error}
             isLoading={isLoading}
             searchQuery={searchQuery}
-            onResetFilters={() => updateProductFiltersStore(defaultProductsFilters)}
-            onSuggestionClick={(q) => updateProductFiltersStore({ searchQuery: q })}
+            onResetFilters={() =>
+              updateProductFiltersStore(defaultProductsFilters)
+            }
+            onSuggestionClick={(q) =>
+              updateProductFiltersStore({ searchQuery: q })
+            }
           />
         </div>
 
         {isShowLoadMoreBtn && (
           <div className="mt-[24px] flex flex-col items-center gap-2">
             <button
-              className="h-[54px] w-[160px] rounded-[46px] border-2 border-brand-solid text-L font-semibold text-brand-solid shadow-sm transition-all duration-200 hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2"
+              className="border-brand-solid text-L text-brand-solid hover:bg-brand-solid focus-visible:ring-brand-solid h-[54px] w-[160px] rounded-[46px] border-2 font-semibold shadow-sm transition-all duration-200 hover:text-white hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
               onClick={handleLoadMore}
             >
               Show more
@@ -201,7 +278,10 @@ export default function ProductCatalog({
             {loadMoreError && (
               <p className="text-xs text-red-500">
                 Failed to load more.{' '}
-                <button onClick={handleLoadMore} className="underline hover:opacity-70">
+                <button
+                  onClick={handleLoadMore}
+                  className="underline hover:opacity-70"
+                >
                   Retry
                 </button>
               </p>

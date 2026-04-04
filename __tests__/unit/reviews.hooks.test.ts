@@ -15,10 +15,24 @@ const defaultSWRReturn = {
   mutate: mockMutate,
 }
 
-const sortOption = { isDefault: true, label: 'Newest', value: { sortAttribute: 'createdAt', sortDirection: 'desc' as const } }
+const sortOption = {
+  isDefault: true,
+  label: 'Newest',
+  value: { sortAttribute: 'createdAt', sortDirection: 'desc' as const },
+}
 
 function makeReview(id: string): Review {
-  return { productReviewId: id, productId: 'p1', productRating: 5, text: 'ok', createdAt: '', userName: 'User', userLastName: 'Last', likesCount: 0, dislikesCount: 0 }
+  return {
+    productReviewId: id,
+    productId: 'p1',
+    productRating: 5,
+    text: 'ok',
+    createdAt: '',
+    userName: 'User',
+    userLastName: 'Last',
+    likesCount: 0,
+    dislikesCount: 0,
+  }
 }
 
 beforeEach(() => {
@@ -29,7 +43,12 @@ beforeEach(() => {
 describe('useReviews', () => {
   it('returns empty data when no pages loaded', () => {
     const { result } = renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [],
+      }),
     )
 
     expect(result.current.data).toEqual([])
@@ -42,12 +61,29 @@ describe('useReviews', () => {
     jest.spyOn(SWRInfinite, 'default').mockReturnValue({
       ...defaultSWRReturn,
       data: [
-        { reviewsWithRatings: [review], page: 0, totalPages: 2, totalElements: 1, size: 3 },
-        { reviewsWithRatings: [review], page: 1, totalPages: 2, totalElements: 1, size: 3 },
+        {
+          reviewsWithRatings: [review],
+          page: 0,
+          totalPages: 2,
+          totalElements: 1,
+          size: 3,
+        },
+        {
+          reviewsWithRatings: [review],
+          page: 1,
+          totalPages: 2,
+          totalElements: 1,
+          size: 3,
+        },
       ],
     } as never)
     const { result } = renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [],
+      }),
     )
 
     expect(result.current.data).toHaveLength(1)
@@ -59,7 +95,15 @@ describe('useReviews', () => {
 
     jest.spyOn(SWRInfinite, 'default').mockReturnValue({
       ...defaultSWRReturn,
-      data: [{ reviewsWithRatings: [userReview, other], page: 0, totalPages: 1, totalElements: 2, size: 3 }],
+      data: [
+        {
+          reviewsWithRatings: [userReview, other],
+          page: 0,
+          totalPages: 1,
+          totalElements: 2,
+          size: 3,
+        },
+      ],
     } as never)
     const { result } = renderHook(() =>
       useReviews({ productId: 'p1', userReview, sortOption, ratingFilter: [] }),
@@ -71,33 +115,59 @@ describe('useReviews', () => {
 
   it('refreshReviews calls mutate', () => {
     const { result } = renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [],
+      }),
     )
 
-    act(() => { result.current.refreshReviews() })
+    act(() => {
+      result.current.refreshReviews()
+    })
     expect(mockMutate).toHaveBeenCalled()
   })
 
   it('removeReviewFromCache calls mutate with updater', () => {
     const { result } = renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [],
+      }),
     )
 
-    act(() => { result.current.removeReviewFromCache('r1') })
-    expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), { revalidate: false })
+    act(() => {
+      result.current.removeReviewFromCache('r1')
+    })
+    expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), {
+      revalidate: false,
+    })
   })
 
   it('updateReviewInCache calls mutate with updater', () => {
     const { result } = renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [] }),
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [],
+      }),
     )
 
-    act(() => { result.current.updateReviewInCache(makeReview('r1')) })
-    expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), { revalidate: false })
+    act(() => {
+      result.current.updateReviewInCache(makeReview('r1'))
+    })
+    expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), {
+      revalidate: false,
+    })
   })
 
   it('includes ratingFilter in SWR key', () => {
-    let capturedGetKey: ((i: number, prev: unknown) => string | null) | null = null
+    let capturedGetKey: ((i: number, prev: unknown) => string | null) | null =
+      null
 
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
       capturedGetKey = getKey as typeof capturedGetKey
@@ -105,7 +175,12 @@ describe('useReviews', () => {
       return defaultSWRReturn as never
     })
     renderHook(() =>
-      useReviews({ productId: 'p1', userReview: null, sortOption, ratingFilter: [4, 5] }),
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [4, 5],
+      }),
     )
     const key = capturedGetKey!(0, null)
 

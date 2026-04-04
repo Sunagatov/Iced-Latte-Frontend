@@ -30,4 +30,6 @@ instance.interceptors.request.use((config) => {
   return config
 })
 
-export const api: AxiosCacheInstance = setupCache(instance, { cacheTakeover: false })
+export const api: AxiosCacheInstance = setupCache(instance, {
+  cacheTakeover: false,
+})

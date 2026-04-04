@@ -4,10 +4,10 @@
 
 This is an open-source non-profit project. Only the latest version on the `master` branch receives security fixes.
 
-| Branch | Supported |
-|--------|-----------|
-| `master` (latest) | ✅ |
-| older commits | ❌ |
+| Branch            | Supported |
+| ----------------- | --------- |
+| `master` (latest) | ✅        |
+| older commits     | ❌        |
 
 ## Reporting a Vulnerability
 

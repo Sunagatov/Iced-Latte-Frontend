@@ -23,7 +23,9 @@ describe('google auth route — disallowed origin', () => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       routeModule = require('../../../src/app/api/auth/google/route')
     })
-    const res = await (routeModule.GET as (req: NextRequest) => Promise<Response>)(makeRequest('https://evil.com'))
+    const res = await (
+      routeModule.GET as (req: NextRequest) => Promise<Response>
+    )(makeRequest('https://evil.com'))
 
     expect(res.status).toBe(400)
   })
@@ -31,7 +33,8 @@ describe('google auth route — disallowed origin', () => {
 
 describe('google auth route — allowed origin', () => {
   beforeAll(() => {
-    process.env.ALLOWED_REDIRECT_ORIGINS = 'http://localhost:3000,https://iced-latte.uk'
+    process.env.ALLOWED_REDIRECT_ORIGINS =
+      'http://localhost:3000,https://iced-latte.uk'
   })
 
   afterEach(() => jest.restoreAllMocks())
@@ -50,7 +53,9 @@ describe('google auth route — allowed origin', () => {
   it('redirects to google when backend returns google location', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 302,
-      headers: new Headers({ location: 'https://accounts.google.com/o/oauth2/auth?foo=bar' }),
+      headers: new Headers({
+        location: 'https://accounts.google.com/o/oauth2/auth?foo=bar',
+      }),
     })
     const res = await getRoute()(makeRequest('http://localhost:3000'))
 

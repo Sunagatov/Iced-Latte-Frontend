@@ -1,19 +1,45 @@
 import { test, expect, type Page } from '@playwright/test'
 
 function makeProduct(id: string) {
-  return { id, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+  return {
+    id,
+    name: 'Test Coffee',
+    price: 9.99,
+    productFileUrl: null,
+    brandName: 'Brand',
+    sellerName: 'Seller',
+    averageRating: 4.5,
+    reviewsCount: 1,
+    quantity: 250,
+    description: 'desc',
+    active: true,
+  }
 }
 
 async function mockProducts(page: Page) {
-  const productsList = { products: [makeProduct('00000000-0000-0000-0000-000000000001')], page: 0, size: 6, totalElements: 1, totalPages: 1 }
+  const productsList = {
+    products: [makeProduct('00000000-0000-0000-0000-000000000001')],
+    page: 0,
+    size: 6,
+    totalElements: 1,
+    totalPages: 1,
+  }
 
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
     if (url.includes('/products') && !url.includes('/ids')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(productsList),
+      })
     } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     }
   })
 }
@@ -46,10 +72,14 @@ test('signup page renders form', async ({ page }) => {
 
 test('forgot password page renders email input', async ({ page }) => {
   await page.goto('/forgotpass')
-  await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5000 })
+  await expect(page.locator('input[type="email"]')).toBeVisible({
+    timeout: 5000,
+  })
 })
 
-test('profile page redirects to signin when not logged in', async ({ page }) => {
+test('profile page redirects to signin when not logged in', async ({
+  page,
+}) => {
   await page.goto('/profile')
   await expect(page).toHaveURL(/signin/, { timeout: 5000 })
 })

@@ -22,8 +22,7 @@ const fetchSession = apiGetSession as unknown as () => Promise<SessionResponse>
 
 const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
   const setAuthenticated = useAuthStore(
-    (state: AuthStore): AuthStore['setAuthenticated'] =>
-      state.setAuthenticated,
+    (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
   )
   const setAnonymous = useAuthStore(
     (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
@@ -34,7 +33,9 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
     const responseInterceptor = apiClient.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as CustomAxiosRequestConfig | undefined
+        const originalRequest = error.config as
+          | CustomAxiosRequestConfig
+          | undefined
 
         if (!originalRequest) {
           throw error

@@ -38,8 +38,7 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     (state: AuthStore): AuthStore['status'] => state.status,
   )
   const setAuthenticated = useAuthStore(
-    (state: AuthStore): AuthStore['setAuthenticated'] =>
-      state.setAuthenticated,
+    (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
   )
   const setAnonymous = useAuthStore(
     (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
@@ -78,9 +77,7 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
   const itemsIds = useCartStore(
     (state: CartSliceStore): CartSliceStore['itemsIds'] => state.itemsIds,
   )
-  const isSync = useCartStore(
-    (state: CartSliceStore): boolean => state.isSync,
-  )
+  const isSync = useCartStore((state: CartSliceStore): boolean => state.isSync)
 
   useEffect(() => {
     const bootstrapSession = async (): Promise<void> => {

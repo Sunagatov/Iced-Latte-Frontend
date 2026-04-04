@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
-import type { AxiosCacheInstance, CacheAxiosResponse } from 'axios-cache-interceptor'
+import type {
+  AxiosCacheInstance,
+  CacheAxiosResponse,
+} from 'axios-cache-interceptor'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import { api } from '@/shared/api/client'

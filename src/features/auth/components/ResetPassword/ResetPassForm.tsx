@@ -9,5 +9,9 @@ export default function ResetPassForm() {
 
   if (status === 'loading') return null
 
-  return status === 'authenticated' ? <AuthResetPassForm /> : <GuestResetPassForm />
+  return status === 'authenticated' ? (
+    <AuthResetPassForm />
+  ) : (
+    <GuestResetPassForm />
+  )
 }

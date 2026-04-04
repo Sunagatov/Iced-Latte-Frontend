@@ -10,7 +10,8 @@ import { test, expect, type Page } from '@playwright/test'
 
 const EXISTING_EMAIL = process.env.E2E_EXISTING_EMAIL ?? 'olivia@example.com'
 
-const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
+const FAKE_TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
 
 /** Inject a fake auth session so the app treats the user as logged in.
  *  Must be called AFTER route mocks are registered so the reload is covered. */
@@ -19,10 +20,17 @@ async function loginAs(page: Page) {
   await page.evaluate((t) => {
     localStorage.setItem(
       'token',
-      JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 }),
+      JSON.stringify({
+        state: { token: t, refreshToken: null, isLoggedIn: true },
+        version: 0,
+      }),
     )
   }, FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
+  await page
+    .context()
+    .addCookies([
+      { name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' },
+    ])
   await page.reload()
   await page.waitForLoadState('networkidle')
 }
@@ -30,14 +38,17 @@ async function loginAs(page: Page) {
 /** Mock every proxy call with a 200 unless overridden */
 async function mockAll200(page: Page) {
   await page.route('**/api/proxy/**', (route) => {
-    void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    void route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: '{}',
+    })
   })
 }
 
 // ─── Flow A: ForgotPassForm (/forgotpass) ───────────────────────────────────
 
 test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
-
   test('renders email input and submit button', async ({ page }) => {
     await mockAll200(page)
     await page.goto('/forgotpass')
@@ -50,7 +61,11 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
     await mockAll200(page)
     await page.goto('/forgotpass')
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 5000 })
+    await expect(
+      page
+        .locator('.text-negative, .text-red-600, [class*="text-red"]')
+        .first(),
+    ).toBeVisible({ timeout: 5000 })
     await expect(page).toHaveURL(/\/forgotpass/)
   })
 
@@ -59,29 +74,45 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
     await page.goto('/forgotpass')
     await page.fill('#email', 'not-an-email')
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('.text-negative').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.text-negative').first()).toBeVisible({
+      timeout: 5000,
+    })
   })
 
   test('on success shows "Check your inbox" screen', async ({ page }) => {
     await page.route('**/api/proxy/auth/password/forgot', (route) => {
-      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/forgotpass')
     await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('h2')).toContainText('Check your inbox', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Check your inbox', {
+      timeout: 8000,
+    })
     await expect(page.locator('#reset-continue-btn')).toBeVisible()
     await expect(page.locator('a[href="/signin"]').first()).toBeVisible()
   })
 
-  test('"Continue to reset password" navigates to /resetpass', async ({ page }) => {
+  test('"Continue to reset password" navigates to /resetpass', async ({
+    page,
+  }) => {
     await page.route('**/api/proxy/auth/password/forgot', (route) => {
-      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/forgotpass')
     await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('#reset-continue-btn')).toBeVisible({ timeout: 8000 })
+    await expect(page.locator('#reset-continue-btn')).toBeVisible({
+      timeout: 8000,
+    })
     await page.locator('#reset-continue-btn').click()
     await expect(page).toHaveURL(/\/resetpass/, { timeout: 8000 })
   })
@@ -93,14 +124,22 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
     await expect(page).toHaveURL(/\/signin/, { timeout: 8000 })
   })
 
-  test('page refresh resets to form (not stuck on success screen)', async ({ page }) => {
+  test('page refresh resets to form (not stuck on success screen)', async ({
+    page,
+  }) => {
     await page.route('**/api/proxy/auth/password/forgot', (route) => {
-      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/forgotpass')
     await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('h2')).toContainText('Check your inbox', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Check your inbox', {
+      timeout: 8000,
+    })
     // Refresh — local state is gone, form must reappear
     await page.reload()
     await expect(page.locator('#email')).toBeVisible({ timeout: 5000 })
@@ -109,23 +148,31 @@ test.describe('Flow A — Step 1-3: ForgotPassForm', () => {
 
   test('API error shows error message on form', async ({ page }) => {
     await page.route('**/api/proxy/auth/password/forgot', (route) => {
-      void route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ message: 'Server error' }) })
+      void route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Server error' }),
+      })
     })
     await page.goto('/forgotpass')
     await page.fill('#email', EXISTING_EMAIL)
     await page.locator('#send-reset-btn').click()
-    await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 8000 })
+    await expect(
+      page
+        .locator('.text-negative, .text-red-600, [class*="text-red"]')
+        .first(),
+    ).toBeVisible({ timeout: 8000 })
     // Must stay on forgotpass — not navigate away
     await expect(page).toHaveURL(/\/forgotpass/)
   })
-
 })
 
 // ─── Flow A: GuestResetPassForm (/resetpass, not logged in) ─────────────────
 
 test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
-
-  test('renders code, password and confirm fields with correct title', async ({ page }) => {
+  test('renders code, password and confirm fields with correct title', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await page.goto('/resetpass')
     await expect(page.locator('h2')).toContainText('Reset your password')
@@ -141,7 +188,9 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'NewPass1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('text=Code is required').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=Code is required').first()).toBeVisible({
+      timeout: 5000,
+    })
   })
 
   test('shows validation error when code is not 9 digits', async ({ page }) => {
@@ -151,17 +200,23 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'NewPass1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('text=Code must be exactly 9 digits').first()).toBeVisible({ timeout: 5000 })
+    await expect(
+      page.locator('text=Code must be exactly 9 digits').first(),
+    ).toBeVisible({ timeout: 5000 })
   })
 
-  test('shows validation error when passwords do not match', async ({ page }) => {
+  test('shows validation error when passwords do not match', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'Different1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('text=Passwords must match').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('text=Passwords must match').first()).toBeVisible(
+      { timeout: 5000 },
+    )
   })
 
   test('shows validation error for weak password', async ({ page }) => {
@@ -171,25 +226,43 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
     await page.fill('#password', 'weak')
     await page.fill('#confirmPassword', 'weak')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('.text-negative, .text-red-600, [class*="text-red"]').first()).toBeVisible({ timeout: 5000 })
+    await expect(
+      page
+        .locator('.text-negative, .text-red-600, [class*="text-red"]')
+        .first(),
+    ).toBeVisible({ timeout: 5000 })
   })
 
-  test('on success shows "Password updated!" and "Sign in" button', async ({ page }) => {
+  test('on success shows "Password updated!" and "Sign in" button', async ({
+    page,
+  }) => {
     await page.route('**/api/proxy/auth/password/change', (route) => {
-      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'NewPass1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('h2')).toContainText('Password updated!', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Password updated!', {
+      timeout: 8000,
+    })
     await expect(page.locator('#return-btn')).toContainText('Sign in')
   })
 
-  test('"Sign in" button on success screen navigates to /signin', async ({ page }) => {
+  test('"Sign in" button on success screen navigates to /signin', async ({
+    page,
+  }) => {
     await page.route('**/api/proxy/auth/password/change', (route) => {
-      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
@@ -203,14 +276,20 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
 
   test('invalid/expired token shows error message', async ({ page }) => {
     await page.route('**/api/proxy/auth/password/change', (route) => {
-      void route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ message: 'Token is invalid or expired' }) })
+      void route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Token is invalid or expired' }),
+      })
     })
     await page.goto('/resetpass')
     await page.fill('#code', '000000000')
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'NewPass1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('text=Token is invalid or expired').first()).toBeVisible({ timeout: 8000 })
+    await expect(
+      page.locator('text=Token is invalid or expired').first(),
+    ).toBeVisible({ timeout: 8000 })
     // Must stay on resetpass — not navigate away
     await expect(page).toHaveURL(/\/resetpass/)
   })
@@ -219,62 +298,87 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
     let capturedBody: Record<string, string> = {}
 
     await page.route('**/api/proxy/auth/password/change', async (route) => {
-      capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<string, string>
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<
+        string,
+        string
+      >
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'NewPass1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('h2')).toContainText('Password updated!', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Password updated!', {
+      timeout: 8000,
+    })
     expect(capturedBody.code).toBe('123456789')
     expect(capturedBody.password).toBe('NewPass1!')
     // email must NOT be sent (removed from contract)
     expect(capturedBody.email).toBeUndefined()
   })
 
-  test('page refresh after success resets to form (local state, not persisted)', async ({ page }) => {
+  test('page refresh after success resets to form (local state, not persisted)', async ({
+    page,
+  }) => {
     await page.route('**/api/proxy/auth/password/change', (route) => {
-      void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      void route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{}',
+      })
     })
     await page.goto('/resetpass')
     await page.fill('#code', '123456789')
     await page.fill('#password', 'NewPass1!')
     await page.fill('#confirmPassword', 'NewPass1!')
     await page.locator('#reset-btn').click()
-    await expect(page.locator('h2')).toContainText('Password updated!', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Password updated!', {
+      timeout: 8000,
+    })
     await page.reload()
     await expect(page.locator('#code')).toBeVisible({ timeout: 5000 })
   })
-
 })
 
 // ─── Flow B: AuthResetPassForm (/resetpass, logged in) ──────────────────────
 
 test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
-
-  test('renders "Change your password" title with current + new password fields', async ({ page }) => {
+  test('renders "Change your password" title with current + new password fields', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await loginAs(page)
     await page.goto('/resetpass')
-    await expect(page.locator('h2')).toContainText('Change your password', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Change your password', {
+      timeout: 8000,
+    })
     await expect(page.locator('#password')).toBeVisible()
     await expect(page.locator('#newPassword')).toBeVisible()
     await expect(page.locator('#reset-confirm-btn')).toBeVisible()
   })
 
-  test('shows validation error when current password is empty', async ({ page }) => {
+  test('shows validation error when current password is empty', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('.text-negative').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.text-negative').first()).toBeVisible({
+      timeout: 5000,
+    })
   })
 
-  test('shows validation error when new password is too weak', async ({ page }) => {
+  test('shows validation error when new password is too weak', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await loginAs(page)
     await page.goto('/resetpass')
@@ -282,10 +386,14 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'OldPass1!')
     await page.fill('#newPassword', 'weak')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('.text-negative').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.text-negative').first()).toBeVisible({
+      timeout: 5000,
+    })
   })
 
-  test('shows validation error when new password equals old password', async ({ page }) => {
+  test('shows validation error when new password equals old password', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await loginAs(page)
     await page.goto('/resetpass')
@@ -293,16 +401,33 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'SamePass1!')
     await page.fill('#newPassword', 'SamePass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('text=New Password must not be the same').first()).toBeVisible({ timeout: 5000 })
+    await expect(
+      page.locator('text=New Password must not be the same').first(),
+    ).toBeVisible({ timeout: 5000 })
   })
 
-  test('on success shows "Password updated!" and "Go to profile" button', async ({ page }) => {
+  test('on success shows "Password updated!" and "Go to profile" button', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: '{}',
+        })
       else
-        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'u1',
+            firstName: 'Olivia',
+            lastName: 'Test',
+            email: 'olivia@example.com',
+          }),
+        })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -310,7 +435,9 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'OldPass1!')
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('h2')).toContainText('Password updated!', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Password updated!', {
+      timeout: 8000,
+    })
     await expect(page.locator('#reset-pass-btn')).toContainText('Go to profile')
   })
 
@@ -318,9 +445,22 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: '{}',
+        })
       else
-        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'u1',
+            firstName: 'Olivia',
+            lastName: 'Test',
+            email: 'olivia@example.com',
+          }),
+        })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -333,13 +473,28 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await expect(page).toHaveURL(/\/profile/, { timeout: 8000 })
   })
 
-  test('wrong current password shows "Current password is incorrect."', async ({ page }) => {
+  test('wrong current password shows "Current password is incorrect."', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        void route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Current password is incorrect.' }) })
+        void route.fulfill({
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Current password is incorrect.' }),
+        })
       else
-        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'u1',
+            firstName: 'Olivia',
+            lastName: 'Test',
+            email: 'olivia@example.com',
+          }),
+        })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -347,7 +502,9 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'WrongOld1!')
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('text=Current password is incorrect.').first()).toBeVisible({ timeout: 8000 })
+    await expect(
+      page.locator('text=Current password is incorrect.').first(),
+    ).toBeVisible({ timeout: 8000 })
     // Must stay on resetpass
     await expect(page).toHaveURL(/\/resetpass/)
   })
@@ -358,10 +515,26 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await mockAll200(page)
     await page.route('**/api/proxy/users', async (route) => {
       if (route.request().method() === 'PATCH') {
-        capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<string, string>
-        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<
+          string,
+          string
+        >
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: '{}',
+        })
       } else {
-        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'u1',
+            firstName: 'Olivia',
+            lastName: 'Test',
+            email: 'olivia@example.com',
+          }),
+        })
       }
     })
     await loginAs(page)
@@ -370,18 +543,35 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'OldPass1!')
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('h2')).toContainText('Password updated!', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Password updated!', {
+      timeout: 8000,
+    })
     expect(capturedBody.oldPassword).toBe('OldPass1!')
     expect(capturedBody.newPassword).toBe('NewPass1!')
   })
 
-  test('page refresh after success resets to form (local state, not persisted)', async ({ page }) => {
+  test('page refresh after success resets to form (local state, not persisted)', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await page.route('**/api/proxy/users', (route) => {
       if (route.request().method() === 'PATCH')
-        void route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: '{}',
+        })
       else
-        void route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Olivia', lastName: 'Test', email: 'olivia@example.com' }) })
+        void route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: 'u1',
+            firstName: 'Olivia',
+            lastName: 'Test',
+            email: 'olivia@example.com',
+          }),
+        })
     })
     await loginAs(page)
     await page.goto('/resetpass')
@@ -389,29 +579,32 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
     await page.fill('#password', 'OldPass1!')
     await page.fill('#newPassword', 'NewPass1!')
     await page.locator('#reset-confirm-btn').click()
-    await expect(page.locator('h2')).toContainText('Password updated!', { timeout: 8000 })
+    await expect(page.locator('h2')).toContainText('Password updated!', {
+      timeout: 8000,
+    })
     await page.reload()
     await expect(page.locator('#password')).toBeVisible({ timeout: 5000 })
   })
-
 })
 
 // ─── Routing: /resetpass dispatches correctly based on auth state ────────────
 
 test.describe('ResetPassForm routing', () => {
-
-  test('unauthenticated user on /resetpass sees guest form (code field)', async ({ page }) => {
+  test('unauthenticated user on /resetpass sees guest form (code field)', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await page.goto('/resetpass')
     await expect(page.locator('#code')).toBeVisible({ timeout: 8000 })
   })
 
-  test('authenticated user on /resetpass sees auth form (no code field)', async ({ page }) => {
+  test('authenticated user on /resetpass sees auth form (no code field)', async ({
+    page,
+  }) => {
     await mockAll200(page)
     await loginAs(page)
     await page.goto('/resetpass')
     await expect(page.locator('#newPassword')).toBeVisible({ timeout: 8000 })
     await expect(page.locator('#code')).not.toBeVisible({ timeout: 5000 })
   })
-
 })

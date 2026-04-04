@@ -9,10 +9,14 @@ export const handleAxiosError = (error: unknown): string => {
     if (axiosError.response) {
       // Normalize auth errors — never expose backend distinctions like
       // "email not found" / "account not confirmed" to the user
-      if (axiosError.response.status === 401 || axiosError.response.status === 403) {
+      if (
+        axiosError.response.status === 401 ||
+        axiosError.response.status === 403
+      ) {
         return 'Incorrect email or password'
       }
-      if (axiosError.response.status === 422) return 'Your review was rejected — it may contain inappropriate content.'
+      if (axiosError.response.status === 422)
+        return 'Your review was rejected — it may contain inappropriate content.'
 
       const data: ErrorResponse = axiosError.response.data
 

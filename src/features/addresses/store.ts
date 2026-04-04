@@ -13,47 +13,55 @@ interface AddressStore {
   setDefault: (id: string) => Promise<void>
 }
 
-export const useAddressStore = create<AddressStore>()((set: (partial: Partial<AddressStore> | ((s: AddressStore) => Partial<AddressStore>)) => void) => ({
-  addresses: [],
-  loading: false,
-  error: null,
+export const useAddressStore = create<AddressStore>()(
+  (
+    set: (
+      partial:
+        | Partial<AddressStore>
+        | ((s: AddressStore) => Partial<AddressStore>),
+    ) => void,
+  ) => ({
+    addresses: [],
+    loading: false,
+    error: null,
 
-  fetch: async () => {
-    set({ loading: true, error: null })
-    try {
-      const addresses = await api.getAddresses()
+    fetch: async () => {
+      set({ loading: true, error: null })
+      try {
+        const addresses = await api.getAddresses()
 
-      set({ addresses })
-    } catch {
-      set({ error: 'Failed to load addresses. Please try again.' })
-    } finally {
-      set({ loading: false })
-    }
-  },
+        set({ addresses })
+      } catch {
+        set({ error: 'Failed to load addresses. Please try again.' })
+      } finally {
+        set({ loading: false })
+      }
+    },
 
-  add: async (data) => {
-    const address = await api.createAddress(data)
+    add: async (data) => {
+      const address = await api.createAddress(data)
 
-    set((s) => ({ addresses: [...s.addresses, address] }))
-  },
+      set((s) => ({ addresses: [...s.addresses, address] }))
+    },
 
-  update: async (id, data) => {
-    const updated = await api.updateAddress(id, data)
+    update: async (id, data) => {
+      const updated = await api.updateAddress(id, data)
 
-    set((s) => ({
-      addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
-    }))
-  },
+      set((s) => ({
+        addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
+      }))
+    },
 
-  remove: async (id) => {
-    await api.deleteAddress(id)
-    set((s) => ({ addresses: s.addresses.filter((a) => a.id !== id) }))
-  },
+    remove: async (id) => {
+      await api.deleteAddress(id)
+      set((s) => ({ addresses: s.addresses.filter((a) => a.id !== id) }))
+    },
 
-  setDefault: async (id) => {
-    await api.setDefaultAddress(id)
-    set((s) => ({
-      addresses: s.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
-    }))
-  },
-}))
+    setDefault: async (id) => {
+      await api.setDefaultAddress(id)
+      set((s) => ({
+        addresses: s.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
+      }))
+    },
+  }),
+)
