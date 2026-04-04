@@ -14,7 +14,7 @@ export default function ProductRating({
             </span>
           </div>
           <span className="text-[10px] text-tertiary sm:text-XS">•</span>
-          <span className="text-[10px] text-tertiary underline sm:text-XS">
+          <span className="text-[10px] text-tertiary sm:text-XS">
             {reviewsCount} reviews
           </span>
         </div>

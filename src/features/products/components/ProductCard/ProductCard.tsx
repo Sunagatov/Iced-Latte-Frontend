@@ -56,7 +56,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
         aria-pressed={isFavourited}
         aria-busy={isPending}
-        className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none disabled:opacity-50 ${
+        className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2 disabled:opacity-50 ${
           isFavourited
             ? 'bg-red-500/90 text-white'
             : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
@@ -84,7 +84,9 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         <div className="flex flex-1 flex-col gap-2 px-3 pb-3 pt-3">
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
           <h2 className="line-clamp-2 text-sm font-semibold leading-tight text-primary sm:text-base">{name}</h2>
-          <p className="text-xs text-secondary">{brandName} · {sellerName}</p>
+          <p className="text-xs text-secondary">
+            {[brandName, sellerName].filter(Boolean).join(' · ')}
+          </p>
         </div>
       </Link>
 
