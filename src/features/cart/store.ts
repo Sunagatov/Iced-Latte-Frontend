@@ -58,7 +58,10 @@ const initialState: CartSliceState = {
   lastError: null,
 }
 
-type SetFn = (fn: (s: CartSliceStore) => Partial<CartSliceStore>) => void
+type SetFn = {
+  (partial: Partial<CartSliceStore>): void
+  (fn: (s: CartSliceStore) => Partial<CartSliceStore>): void
+}
 
 const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
   set: SetFn,
