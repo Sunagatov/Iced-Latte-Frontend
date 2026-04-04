@@ -148,7 +148,7 @@ describe('useReviews', () => {
   })
 
   it('updateReviewInCache calls mutate with updater', () => {
-    const { result } = renderHook(() =>
+    const { result } = renderHook<ReturnType<typeof useReviews>, unknown>(() =>
       useReviews({
         productId: 'p1',
         userReview: null,
