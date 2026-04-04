@@ -8,7 +8,7 @@ import { useAuthStore } from '@/features/auth/store'
 
 export default function FavouritesEmpty() {
   const router = useRouter()
-  const { token } = useAuthStore()
+  const { isLoggedIn } = useAuthStore()
 
   return (
     <div data-testid="favourites-empty" className="mx-auto flex max-w-[480px] flex-col items-center px-4 pt-10 pb-16 text-center">
@@ -23,7 +23,7 @@ export default function FavouritesEmpty() {
             Browse Coffee
           </Button>
         </Link>
-        {!token && (
+        {!isLoggedIn && (
           <Button
             id="login-btn"
             onClick={() => router.push('/signin')}

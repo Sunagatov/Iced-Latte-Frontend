@@ -1,21 +1,3 @@
-export type AuthTokens = {
-  token: string
-  refreshToken: string
-}
-
-/** @deprecated use AuthTokens */
-export type SuccessResponse = AuthTokens
-/** @deprecated use AuthTokens */
-export type SuccessRefreshToken = AuthTokens
-
-export type VerifyEmailResponse = {
-  token: AuthTokens
-  httpStatusCode: number
-}
-
-/** @deprecated use VerifyEmailResponse */
-export type ConfirmEmailResponse = VerifyEmailResponse
-
 export type SessionResponse = {
   authenticated: boolean
   user: import('@/features/user/types').UserData | null

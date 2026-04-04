@@ -5,7 +5,6 @@ import productImg from '@/../public/coffee.png'
 import CircleAddBtn from '@/shared/components/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/shared/utils/getImgUrl'
 import { useCartStore } from '@/features/cart/store'
-import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { IProduct } from '@/features/products/types'
 interface ICardProps { product: IProduct; priority?: boolean }
@@ -33,15 +32,13 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
     (cartItem) => cartItem.productId === id,
   )?.productQuantity
 
-  const token = useAuthStore((state) => state.token)
-
   const { toggleFavourite, favouriteIds, pendingIds } =
     useFavouritesStore()
 
   const isFavourited = favouriteIds.includes(id)
   const isPending = pendingIds.has(id)
 
-  const handleButtonClick = () => { void toggleFavourite(id, token) }
+  const handleButtonClick = () => { void toggleFavourite(id) }
 
   return (
     <li
@@ -56,6 +53,7 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
         data-active={isFavourited ? 'true' : 'false'}
         aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
         aria-pressed={isFavourited}
+        aria-busy={isPending}
         className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none disabled:opacity-50 ${
           isFavourited
             ? 'bg-red-500/90 text-white'

@@ -12,32 +12,29 @@ export default function FavouritesPage() {
   const favourites = useFavouritesStore((s) => s.favourites)
   const status = useFavouritesStore((s) => s.status)
   const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
-  const token = useAuthStore((s) => s.token)
+  const authStatus = useAuthStore((s) => s.status)
   const [hydrated, setHydrated] = useState(false)
 
+  // Only fav store is persisted; auth store resolves via session fetch in AppInitProvider
   useEffect(() => {
-    const authPersist = (useAuthStore as unknown as PersistApi).persist
     const favPersist = (useFavouritesStore as unknown as PersistApi).persist
-    let authDone = authPersist.hasHydrated()
-    let favDone = favPersist.hasHydrated()
 
-    if (authDone && favDone) {
+    if (favPersist.hasHydrated()) {
       setHydrated(true)
 
       return
     }
 
-    const unsubAuth = authPersist.onFinishHydration(() => { authDone = true; if (favDone) setHydrated(true) })
-    const unsubFav = favPersist.onFinishHydration(() => { favDone = true; if (authDone) setHydrated(true) })
-
-    return () => { unsubAuth(); unsubFav() }
+    return favPersist.onFinishHydration(() => setHydrated(true))
   }, [])
 
+  // Guest-only fetch — AppInitProvider owns authenticated sync
   useEffect(() => {
     if (!hydrated) return
-    if (token) return // AppInitProvider owns authenticated sync
-    void getFavouriteProducts(null)
-  }, [getFavouriteProducts, token, hydrated])
+    if (authStatus === 'loading') return
+    if (authStatus === 'authenticated') return
+    void getFavouriteProducts()
+  }, [getFavouriteProducts, authStatus, hydrated])
 
   if (!hydrated || status === 'idle' || status === 'syncing') return <FavouritesSkeleton />
 
@@ -46,7 +43,7 @@ export default function FavouritesPage() {
       <div className="flex flex-col items-center gap-3 pt-20 text-center">
         <p className="text-sm text-tertiary">Couldn&apos;t load favourites</p>
         <button
-          onClick={() => void getFavouriteProducts(token)}
+          onClick={() => void getFavouriteProducts()}
           className="rounded-full bg-brand-solid px-4 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
         >
           Retry

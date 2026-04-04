@@ -29,10 +29,11 @@ export default function CartElement({ product, isPending = false, add, remove, r
   }, [productQuantity])
 
   const token = useAuthStore((state) => state.token)
-  const { toggleFavourite, favouriteIds } = useFavouritesStore()
+  const { toggleFavourite, favouriteIds, pendingIds } = useFavouritesStore()
   const isFavourited = favouriteIds.includes(productInfo.id)
+  const isFavPending = pendingIds.has(productInfo.id)
 
-  const handleButtonClick = () => { void toggleFavourite(productInfo.id, token) }
+  const handleButtonClick = () => { if (!isFavPending) void toggleFavourite(productInfo.id, token) }
 
   return (
     <div data-testid="cart-item" className="rounded-2xl border border-[#242D3429] bg-primary px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
@@ -87,8 +88,11 @@ export default function CartElement({ product, isPending = false, add, remove, r
           </button>
           <button
             onClick={handleButtonClick}
-            className="flex h-7 w-7 items-center justify-center rounded-full transition-all hover:bg-secondary active:scale-90"
+            disabled={isFavPending}
+            className="flex h-7 w-7 items-center justify-center rounded-full transition-all hover:bg-secondary active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
+            aria-pressed={isFavourited}
+            aria-busy={isFavPending}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavourited ? '#E12E3C' : 'none'} stroke={isFavourited ? '#E12E3C' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>

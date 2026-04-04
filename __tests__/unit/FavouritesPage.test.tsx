@@ -9,11 +9,10 @@ jest.mock('@/features/favorites/components/FavouritesFull/FavouritesFull', () =>
 
 const mockPersist = { hasHydrated: () => true, onFinishHydration: jest.fn(() => jest.fn()) }
 ;(useFavouritesStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
-;(useAuthStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
 
 beforeEach(() => {
   useFavouritesStore.setState({ favouriteIds: [], favourites: [], status: 'ready', pendingIds: new Set() })
-  useAuthStore.setState({ token: null, isLoggedIn: false, refreshToken: null, userData: null })
+  useAuthStore.setState({ status: 'anonymous', userData: null })
 })
 
 describe('FavouritesPage', () => {
@@ -38,11 +37,9 @@ describe('FavouritesPage', () => {
   it('shows loader before hydration completes', () => {
     const slowPersist = { hasHydrated: () => false, onFinishHydration: jest.fn(() => jest.fn()) }
     ;(useFavouritesStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
-    ;(useAuthStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
     render(<FavouritesPage />)
     expect(screen.getByText('Loading')).toBeInTheDocument()
     // restore
     ;(useFavouritesStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
-    ;(useAuthStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
   })
 })

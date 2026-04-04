@@ -236,34 +236,52 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     totalPrice: items.reduce((sum, i) => sum + i.productInfo.price * i.productQuantity, 0),
   })),
   createCart: async (reqItems: ICartPushItems): Promise<void> => {
-    set({ status: 'syncing' })
-    const mergedCart = await mergeCarts(reqItems)
-    const { itemsTotalPrice, productsQuantity, items } = mergedCart
+    const previousStatus = get().status
 
-    set((state) => ({
-      ...state,
-      itemsIds: createItemsIdsFromCart(items),
-      tempItems: items,
-      count: productsQuantity,
-      totalPrice: itemsTotalPrice,
-      isSync: true,
-      status: 'ready',
-    }))
+    set({ status: 'syncing' })
+    try {
+      const mergedCart = await mergeCarts(reqItems)
+      const { itemsTotalPrice, productsQuantity, items } = mergedCart
+
+      set((state) => ({
+        ...state,
+        itemsIds: createItemsIdsFromCart(items),
+        tempItems: items,
+        count: productsQuantity,
+        totalPrice: itemsTotalPrice,
+        isSync: true,
+        status: 'ready',
+      }))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update cart'
+
+      set({ status: previousStatus === 'syncing' ? 'ready' : previousStatus, lastError: message })
+      throw err
+    }
   },
   updateCartItem: async (updatedItem: ICartUpdatedItem): Promise<void> => {
-    set({ status: 'syncing' })
-    const data = await changeCartItemQuantity(updatedItem)
-    const { itemsTotalPrice, productsQuantity, items } = data
-    const filteredItems = items.filter((item) => item.productQuantity > 0)
+    const previousStatus = get().status
 
-    set((state) => ({
-      ...state,
-      itemsIds: createItemsIdsFromCart(filteredItems),
-      tempItems: filteredItems,
-      count: productsQuantity,
-      totalPrice: itemsTotalPrice,
-      status: 'ready',
-    }))
+    set({ status: 'syncing' })
+    try {
+      const data = await changeCartItemQuantity(updatedItem)
+      const { itemsTotalPrice, productsQuantity, items } = data
+      const filteredItems = items.filter((item) => item.productQuantity > 0)
+
+      set((state) => ({
+        ...state,
+        itemsIds: createItemsIdsFromCart(filteredItems),
+        tempItems: filteredItems,
+        count: productsQuantity,
+        totalPrice: itemsTotalPrice,
+        status: 'ready',
+      }))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update cart'
+
+      set({ status: previousStatus === 'syncing' ? 'ready' : previousStatus, lastError: message })
+      throw err
+    }
   },
   retryHydration: () => {
     set({ status: 'idle', lastError: null })

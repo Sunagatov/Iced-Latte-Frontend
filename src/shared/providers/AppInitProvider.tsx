@@ -6,7 +6,6 @@ import { fetchCart } from '@/features/cart/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { apiGetSession } from '@/features/auth/api'
-import RouteTracker from './RouteTracker'
 
 const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   const { status, setAuthenticated, setAnonymous, reset: resetAuth } = useAuthStore()
@@ -53,7 +52,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
         if (favouriteIds.length) {
           await syncBackendFav()
         } else {
-          await getFavouriteProducts('')
+          await getFavouriteProducts()
         }
       } catch (error: unknown) {
         if (
@@ -69,7 +68,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     void syncFavourites()
   }, [status]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <RouteTracker>{children}</RouteTracker>
+  return <>{children}</>
 }
 
 export default AppInitProvider

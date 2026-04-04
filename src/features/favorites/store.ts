@@ -4,6 +4,7 @@ import { IProduct } from '@/features/products/types'
 import { syncFavourites, removeFavourite, fetchFavourites } from './api'
 import { SyncFavouritesRequest } from './types'
 import { getProductByIds } from '@/features/products/api'
+import { useAuthStore } from '@/features/auth/store'
 
 export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
 
@@ -15,8 +16,8 @@ interface FavSliceState {
 }
 
 interface FavSliceActions {
-  toggleFavourite: (id: string, token: string | null) => Promise<void>
-  getFavouriteProducts: (token: string | null) => Promise<void>
+  toggleFavourite: (id: string) => Promise<void>
+  getFavouriteProducts: () => Promise<void>
   syncBackendFav: () => Promise<void>
   resetFav: () => void
 }
@@ -47,9 +48,10 @@ const setProducts = (products: IProduct[]) => {
 
 const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
   ...initialState,
-  toggleFavourite: async (id, token) => {
+  toggleFavourite: async (id) => {
     if (get().pendingIds.has(id)) return
 
+    const isAuthenticated = useAuthStore.getState().status === 'authenticated'
     const wasAdded = !get().favouriteIds.includes(id)
     const previousProduct = get().favourites.find((p) => p.id === id) ?? null
 
@@ -70,7 +72,7 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
     })
 
     try {
-      if (token) {
+      if (isAuthenticated) {
         if (wasAdded) {
           const reqItems: SyncFavouritesRequest = { productIds: [id] }
           const response = await syncFavourites(reqItems)
@@ -115,10 +117,12 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
       })
     }
   },
-  getFavouriteProducts: async (token) => {
+  getFavouriteProducts: async () => {
+    const isAuthenticated = useAuthStore.getState().status === 'authenticated'
+
     set({ status: 'syncing' })
     try {
-      if (token) {
+      if (isAuthenticated) {
         const products = await fetchFavourites()
 
         set({ ...setProducts(products), status: 'ready' })

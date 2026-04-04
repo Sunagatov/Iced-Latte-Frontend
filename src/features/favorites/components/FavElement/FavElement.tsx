@@ -4,7 +4,6 @@ import productImg from '@/../public/coffee.png'
 import star from '@/../public/star.png'
 import Link from 'next/link'
 import getImgUrl from '@/shared/utils/getImgUrl'
-import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
 import { FavElementProps } from '@/features/favorites/types'
@@ -14,7 +13,6 @@ type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
   const { toggleFavourite, favouriteIds, pendingIds } = useFavouritesStore()
-  const { token } = useAuthStore()
   const add = useCartStore((s) => s.add)
   const remove = useCartStore((s) => s.remove)
   const removeFullProduct = useCartStore((s) => s.removeFullProduct)
@@ -24,7 +22,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
   const isFavourited = favouriteIds.includes(product.id)
   const isPending = pendingIds.has(product.id)
 
-  const handleHeart = () => { void toggleFavourite(product.id, token) }
+  const handleHeart = () => { if (!isPending) void toggleFavourite(product.id) }
 
   const HeartBtn = () => (
     <button
@@ -33,6 +31,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-red-50 disabled:opacity-50"
       aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
       aria-pressed={isFavourited}
+      aria-busy={isPending}
     >
       {isFavourited
         ? <RiHeartFill className="h-5 w-5 text-negative" />
@@ -88,6 +87,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
             className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm disabled:opacity-50"
             aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
             aria-pressed={isFavourited}
+            aria-busy={isPending}
           >
             {isFavourited
               ? <RiHeartFill className="h-4 w-4 text-negative" />
