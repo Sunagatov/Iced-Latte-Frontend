@@ -213,7 +213,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
 })
 
 export const useFavouritesStore = create<FavStoreState>()(
-  persist<FavStoreState>(createFavSlice, {
+  persist<FavStoreState, [], [], Pick<FavSliceState, 'favouriteIds'>>(createFavSlice, {
     name: 'fav-storage',
     partialize: (state): Pick<FavSliceState, 'favouriteIds'> => ({
       favouriteIds: state.favouriteIds,
