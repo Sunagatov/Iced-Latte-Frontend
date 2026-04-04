@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     } catch {
       return new NextResponse(null, { status: 502 })
     }
+
     return NextResponse.redirect(location)
   }
 
