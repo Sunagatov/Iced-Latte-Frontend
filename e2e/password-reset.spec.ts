@@ -247,6 +247,7 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   test('on success shows "Password updated!" and "Sign in" button', async ({
     page,
   }) => {
+    await mockAll200(page)
     await mockRoute(page, '**/api/proxy/auth/password/change', (route) => {
       void route.fulfill({
         status: 200,
@@ -268,6 +269,7 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
   test('"Sign in" button on success screen navigates to /signin', async ({
     page,
   }) => {
+    await mockAll200(page)
     await mockRoute(page, '**/api/proxy/auth/password/change', (route) => {
       void route.fulfill({
         status: 200,

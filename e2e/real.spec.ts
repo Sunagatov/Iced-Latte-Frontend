@@ -32,6 +32,7 @@ test('@real-only sign in and redirect to home', async ({ page }) => {
 
 test('@real-only product detail page loads', async ({ page }) => {
   await page.goto('/')
+  await expect(page.locator('[data-testid="product-card"]').first()).toBeVisible({ timeout: 15000 })
   await page.locator('[data-testid="product-card"]').first().click()
   await expect(page).toHaveURL(/\/product\//, { timeout: 10000 })
   await expect(page.locator('h1').first()).toBeVisible()

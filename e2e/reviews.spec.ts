@@ -199,6 +199,8 @@ async function gotoProductPage(page: Page) {
   await page.waitForSelector('[data-testid="reviews-section"]', {
     timeout: 20000,
   })
+  // Wait for auth to settle so isLoggedIn is accurate when buttons are clicked
+  await page.waitForLoadState('networkidle')
 
   return true
 }

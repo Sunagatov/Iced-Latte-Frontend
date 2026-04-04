@@ -67,3 +67,4 @@ yarn-error.log*
 /ops/scripts/push.sh
 /ops/scripts/smoke.sh
 /ops/scripts/sync-compose.sh
+e2e/.auth.json

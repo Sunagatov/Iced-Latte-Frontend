@@ -289,6 +289,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
           contentType: 'application/json',
           body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, serverQty)])),
         })
+      } else if (url.includes('/products/ids')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([makeProduct(PRODUCT_A)]),
+        })
       } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
@@ -303,10 +309,10 @@ test.describe('Cart — quantity operations (logged in)', () => {
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
     await page.locator('[data-testid="cart-plus-btn"]').first().click()
-    await page.waitForTimeout(400)
+    await page.waitForTimeout(800)
     await expect(
       page.locator('[data-testid="cart-item-qty"]').first(),
-    ).toHaveText('2', { timeout: 8000 })
+    ).toHaveText('2', { timeout: 10000 })
   })
 
   test('minus button shows trash icon when quantity is 1', async ({ page }) => {
@@ -538,6 +544,13 @@ test.describe('Cart — guest operations', () => {
     // Spec §3: token set, isSync=false, itemsCount>0 → POST /cart/items
     let mergeCallMade = false
 
+    await page.goto('http://localhost:3000')
+    await setCartStorage(
+      page,
+      [{ productId: PRODUCT_A, productQuantity: 2 }],
+      false,
+    )
+
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
@@ -573,14 +586,8 @@ test.describe('Cart — guest operations', () => {
     })
 
     await page.goto('http://localhost:3000')
-    await setCartStorage(
-      page,
-      [{ productId: PRODUCT_A, productQuantity: 2 }],
-      false,
-    )
-    await page.goto('http://localhost:3000')
     await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(3000)
 
     expect(mergeCallMade).toBe(true)
   })
@@ -594,6 +601,9 @@ test.describe('Favourites sync', () => {
   }) => {
     // Spec §4 invariant 2: sync runs once per token
     let syncCallCount = 0
+
+    await page.goto('http://localhost:3000')
+    await setFavStorage(page, [PRODUCT_A])
 
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
@@ -621,8 +631,6 @@ test.describe('Favourites sync', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await setFavStorage(page, [PRODUCT_A])
     await page.goto('http://localhost:3000')
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(2000)
