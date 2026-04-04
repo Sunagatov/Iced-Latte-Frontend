@@ -11,6 +11,7 @@ async function seedAuthState(page: Page) {
 async function mockFavouritesApi(page: Page, favProducts: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/favorites'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: favProducts }) })
     else
@@ -33,9 +34,11 @@ test('favourites page shows saved products', async ({ page }) => {
 
 test('removing a favourite updates the list', async ({ page }) => {
   let removed = false
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     if (url.includes('/favorites') && method === 'DELETE') {
       removed = true
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })

@@ -11,8 +11,10 @@ async function mockProxy(page: Page) {
   const product = makeProduct(FAKE_PRODUCT_ID)
   const productsList = { products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }
   const cart = { id: 'cart-1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null }
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
     } else if (url.includes('/cart')) {
@@ -56,12 +58,15 @@ test('add product to cart updates cart count', async ({ page }) => {
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const addBtn = page.locator('button:has(img[src*="plus"])').first()
+
   await addBtn.waitFor({ timeout: 10000 })
   await addBtn.click()
   await page.waitForTimeout(1000)
   const badge = page.locator('[data-testid="cart-count"]')
+
   if (await badge.isVisible()) {
     const count = parseInt(await badge.textContent() ?? '0')
+
     expect(count).toBeGreaterThan(0)
   }
 })
@@ -72,6 +77,7 @@ test('cart page shows added item after adding to cart', async ({ page }) => {
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const addBtn = page.locator('button:has(img[src*="plus"])').first()
+
   await addBtn.waitFor({ timeout: 10000 })
   await addBtn.click()
   await page.waitForTimeout(1000)

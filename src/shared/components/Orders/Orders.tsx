@@ -1,39 +1,44 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { api } from '@/shared/api/client'
-import { ReadonlyURLSearchParams } from 'next/navigation'
-import { useAuthStore } from '@/features/auth/store'
-import { useCartStore } from '@/features/cart/store'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import order from '@/../public/orders_stub.png'
-import Button from '@/shared/components/Buttons/Button/Button'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { CacheAxiosResponse } from 'axios-cache-interceptor'
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
+import type { AxiosCacheInstance, CacheAxiosResponse } from 'axios-cache-interceptor'
+import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { useCartStore, type CartSliceStore } from '@/features/cart/store'
+import { api } from '@/shared/api/client'
+import Button from '@/shared/components/Buttons/Button/Button'
 import Loader from '@/shared/components/Loader/Loader'
+import order from '@/../public/orders_stub.png'
 
 interface PaymentSessionStatus {
   status: string
   customerEmail: string
 }
 
+const apiClient = api as unknown as AxiosCacheInstance
+
 export default function OrdersForm() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [loading, setLoading] = useState(true)
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
-  const resetCart = useCartStore((state) => state.resetCart)
+
+  const isLoggedIn = useAuthStore(
+    (state: AuthStore): boolean => state.isLoggedIn,
+  )
+  const resetCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['resetCart'] => state.resetCart,
+  )
   const urlParams: ReadonlyURLSearchParams = useSearchParams()
 
   useEffect(() => {
     const sessionId: string | null = urlParams.get('sessionId')
 
     setLoading(true)
+
     if (isLoggedIn) {
-      api
-        .get<PaymentSessionStatus>(
-          `/payment/order?sessionId=${sessionId}`,
-        )
+      apiClient
+        .get<PaymentSessionStatus>(`/payment/order?sessionId=${sessionId}`)
         .then(
           (
             res: CacheAxiosResponse<PaymentSessionStatus>,
@@ -46,7 +51,7 @@ export default function OrdersForm() {
         })
         .catch(() => setLoading(false))
     }
-  }, [isLoggedIn, urlParams, resetCart])
+  }, [isLoggedIn, resetCart, urlParams])
 
   if (loading) {
     return (
@@ -80,7 +85,7 @@ export default function OrdersForm() {
           id="continue-btn"
           className="h-14 w-full max-w-[211px] text-lg font-medium"
         >
-          <Link href={'/'}>Continue Shopping</Link>
+          <Link href="/">Continue Shopping</Link>
         </Button>
       </div>
     </section>

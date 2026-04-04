@@ -85,14 +85,17 @@ describe('cart store — resetCart / setTempItems', () => {
     useCartStore.setState({ itemsIds: [{ productId: 'p1', productQuantity: 1 }], count: 1, totalPrice: 10, isSync: true, tempItems: [] })
     useCartStore.getState().resetCart()
     const s = useCartStore.getState()
+
     expect(s.count).toBe(0)
     expect(s.isSync).toBe(false)
   })
 
   it('setTempItems syncs state from items array', () => {
     const items = [makeCartItem('p1', 3)]
+
     useCartStore.getState().setTempItems(items)
     const s = useCartStore.getState()
+
     expect(s.count).toBe(3)
     expect(s.totalPrice).toBe(30)
     expect(s.isSync).toBe(true)

@@ -11,6 +11,7 @@ describe('user api', () => {
   it('getUserData calls GET /users', async () => {
     ;(mockedApi.get as jest.Mock).mockResolvedValue({ data: { firstName: 'John' } })
     const result = await userApi.getUserData()
+
     expect(mockedApi.get).toHaveBeenCalledWith('/users')
     expect(result.firstName).toBe('John')
   })
@@ -18,6 +19,7 @@ describe('user api', () => {
   it('editUserProfile calls PUT /users', async () => {
     ;(mockedApi.put as jest.Mock).mockResolvedValue({ data: { firstName: 'Jane' } })
     const result = await userApi.editUserProfile({ firstName: 'Jane' })
+
     expect(mockedApi.put).toHaveBeenCalledWith('/users', { firstName: 'Jane' })
     expect(result.firstName).toBe('Jane')
   })
@@ -25,6 +27,7 @@ describe('user api', () => {
   it('apiForgotPassword posts to /auth/password/forgot', async () => {
     ;(mockedApi.post as jest.Mock).mockResolvedValue({ data: { message: 'ok' } })
     const result = await userApi.apiForgotPassword({ email: 'a@b.com' })
+
     expect(mockedApi.post).toHaveBeenCalledWith('/auth/password/forgot', { email: 'a@b.com' })
     expect(result.message).toBe('ok')
   })

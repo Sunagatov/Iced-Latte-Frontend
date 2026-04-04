@@ -5,6 +5,7 @@ describe('getSessionId', () => {
 
   it('generates and stores a session id', () => {
     const id = getSessionId()
+
     expect(id).toBeTruthy()
     expect(localStorage.getItem('il_session_id')).toBe(id)
   })

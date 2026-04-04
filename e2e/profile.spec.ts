@@ -7,6 +7,7 @@ async function setup(page: Page, { saveStatus = 200 }: { saveStatus?: number } =
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     if (url.includes('/users') && method === 'PUT')
       await route.fulfill({ status: saveStatus, contentType: 'application/json', body: JSON.stringify(saveStatus === 200 ? userData : { message: 'error' }) })
     else if (url.includes('/users'))

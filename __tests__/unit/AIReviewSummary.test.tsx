@@ -10,6 +10,7 @@ describe('AIReviewSummary', () => {
 
   it('truncates long summary and shows more/less toggle', () => {
     const long = 'a'.repeat(200)
+
     render(<AIReviewSummary summary={long} reviewsCount={10} />)
     expect(screen.getByRole('button', { name: /more/i })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /more/i }))

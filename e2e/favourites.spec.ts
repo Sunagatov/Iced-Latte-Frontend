@@ -10,8 +10,10 @@ function makeProduct(id: string) {
 async function mockProxy(page: Page) {
   const product = makeProduct(FAKE_PRODUCT_ID)
   const productsList = { products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
     } else {
@@ -47,8 +49,10 @@ test('heart icon on product card is visible', async ({ page }) => {
 test('clicking heart toggles favourite state', async ({ page }) => {
   const product = makeProduct(FAKE_PRODUCT_ID)
   const productsList = { products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
     } else if (url.includes('/favorites')) {
@@ -61,10 +65,13 @@ test('clicking heart toggles favourite state', async ({ page }) => {
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const heartBtn = page.locator('[data-testid="favourite-btn"]').first()
+
   await heartBtn.waitFor({ timeout: 10000 })
   const before = await heartBtn.getAttribute('data-active')
+
   await heartBtn.click()
   await expect(heartBtn).toHaveAttribute('data-active', before === 'true' ? 'false' : 'true', { timeout: 5000 })
   const after = await heartBtn.getAttribute('data-active')
+
   expect(after).not.toBe(before)
 })

@@ -1,71 +1,139 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useCartStore } from '@/features/cart/store'
-import { useAuthStore } from '@/features/auth/store'
-import { useFavouritesStore } from '@/features/favorites/store'
+import { useEffect, type ReactNode } from 'react'
 import { apiGetSession } from '@/features/auth/api'
+import type { SessionResponse } from '@/features/auth/types'
+import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { useCartStore, type CartSliceStore } from '@/features/cart/store'
+import {
+  useFavouritesStore,
+  type FavStoreState,
+} from '@/features/favorites/store'
 
-const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
-  const status = useAuthStore((s) => s.status)
-  const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
-  const setAnonymous = useAuthStore((s) => s.setAnonymous)
-  const resetAuth = useAuthStore((s) => s.reset)
-  const syncBackendFav = useFavouritesStore((s) => s.syncBackendFav)
-  const resetFav = useFavouritesStore((s) => s.resetFav)
-  const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
-  const syncBackendCart = useCartStore((s) => s.syncBackendCart)
-  const resetCart = useCartStore((s) => s.resetCart)
-  const getCartItems = useCartStore((s) => s.getCartItems)
-  const loadAuthCart = useCartStore((s) => s.loadAuthCart)
-  const itemsIds = useCartStore((s) => s.itemsIds)
-  const isSync = useCartStore((s) => s.isSync)
+interface AppInitProviderProps {
+  children: ReactNode
+}
 
-  // Bootstrap session on mount
+const fetchSession = apiGetSession as unknown as () => Promise<SessionResponse>
+
+function ignoreAsyncError(_error: unknown): void {
+  return
+}
+
+function isUnauthorizedError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false
+  }
+
+  const candidate = error as {
+    response?: { status?: unknown }
+    status?: unknown
+  }
+
+  return candidate.response?.status === 401 || candidate.status === 401
+}
+
+const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
+  const status = useAuthStore(
+    (state: AuthStore): AuthStore['status'] => state.status,
+  )
+  const setAuthenticated = useAuthStore(
+    (state: AuthStore): AuthStore['setAuthenticated'] =>
+      state.setAuthenticated,
+  )
+  const setAnonymous = useAuthStore(
+    (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
+  )
+  const resetAuth = useAuthStore(
+    (state: AuthStore): AuthStore['reset'] => state.reset,
+  )
+
+  const syncBackendFav = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['syncBackendFav'] =>
+      state.syncBackendFav,
+  )
+  const resetFav = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['resetFav'] => state.resetFav,
+  )
+  const getFavouriteProducts = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['getFavouriteProducts'] =>
+      state.getFavouriteProducts,
+  )
+
+  const syncBackendCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['syncBackendCart'] =>
+      state.syncBackendCart,
+  )
+  const resetCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['resetCart'] => state.resetCart,
+  )
+  const getCartItems = useCartStore(
+    (state: CartSliceStore): CartSliceStore['getCartItems'] =>
+      state.getCartItems,
+  )
+  const loadAuthCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['loadAuthCart'] =>
+      state.loadAuthCart,
+  )
+  const itemsIds = useCartStore(
+    (state: CartSliceStore): CartSliceStore['itemsIds'] => state.itemsIds,
+  )
+  const isSync = useCartStore(
+    (state: CartSliceStore): boolean => state.isSync,
+  )
+
   useEffect(() => {
-    apiGetSession()
-      .then((session) => {
+    const bootstrapSession = async (): Promise<void> => {
+      try {
+        const session = await fetchSession()
+
         if (session.authenticated) {
           setAuthenticated(session.user ?? null)
         } else {
           setAnonymous()
         }
-      })
-      .then(undefined, () => setAnonymous())
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+      } catch {
+        setAnonymous()
+      }
+    }
 
-  // Sync cart and favourites once auth status is resolved
+    void bootstrapSession()
+  }, [setAnonymous, setAuthenticated])
+
   useEffect(() => {
-    if (status === 'loading') return
+    if (status === 'loading') {
+      return
+    }
 
     if (status === 'anonymous') {
-      if (isSync) resetCart()
-      if (itemsIds.length) getCartItems().then(undefined, () => { /* ignore */ })
+      if (isSync) {
+        resetCart()
+      }
+
+      if (itemsIds.length > 0) {
+        void getCartItems().catch(ignoreAsyncError)
+      }
 
       return
     }
 
-    // authenticated
-    if (!isSync && itemsIds.length) {
-      syncBackendCart().then(undefined, () => { /* ignore */ })
+    if (!isSync && itemsIds.length > 0) {
+      void syncBackendCart().catch(ignoreAsyncError)
     } else {
-      loadAuthCart().then(undefined, () => { /* ignore */ })
+      void loadAuthCart().catch(ignoreAsyncError)
     }
 
-    const syncFavourites = async () => {
+    const syncFavourites = async (): Promise<void> => {
       try {
-        const { favouriteIds } = useFavouritesStore.getState() as { favouriteIds: string[] }
+        const favouriteIds = useFavouritesStore.getState().favouriteIds
 
-        if (favouriteIds.length) {
+        if (favouriteIds.length > 0) {
           await syncBackendFav()
         } else {
           await getFavouriteProducts()
         }
       } catch (error: unknown) {
-        if (
-          (error as { response?: { status?: number } })?.response?.status === 401 ||
-          (error as { status?: number })?.status === 401
-        ) {
+        if (isUnauthorizedError(error)) {
           resetAuth()
           resetFav()
         }
@@ -73,7 +141,19 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     void syncFavourites()
-  }, [status]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    status,
+    isSync,
+    itemsIds,
+    getCartItems,
+    getFavouriteProducts,
+    loadAuthCart,
+    resetAuth,
+    resetCart,
+    resetFav,
+    syncBackendCart,
+    syncBackendFav,
+  ])
 
   return <>{children}</>
 }

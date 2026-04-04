@@ -13,6 +13,7 @@ function makeOrder(id: string, status: string = 'CREATED') {
 async function mockOrders(page: Page, orders: object[], status = 200) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/orders')) {
       await route.fulfill({ status, contentType: 'application/json', body: status === 200 ? JSON.stringify(orders) : JSON.stringify({ message: 'error' }) })
     } else {
@@ -55,6 +56,7 @@ test('status filter tabs filter orders correctly', async ({ page }) => {
   await loginAndGoto(page, '/orders')
   await expect(page.getByText('My Orders')).toBeVisible({ timeout: 8000 })
   const filterBar = page.locator('div.mb-5')
+
   await expect(filterBar.getByRole('button', { name: 'All' })).toBeVisible()
   await expect(filterBar.getByRole('button', { name: 'Placed' })).toBeVisible()
   await expect(filterBar.getByRole('button', { name: 'Delivered' })).toBeVisible()

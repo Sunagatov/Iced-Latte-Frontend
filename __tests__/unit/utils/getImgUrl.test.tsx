@@ -12,7 +12,7 @@ describe('getImgUrl', () => {
   */
 
   it('should return local image when url is a stub', () => {
-    expect(getImgUrl("default file", productImg)).toBe(productImg)
+    expect(getImgUrl('default file', productImg)).toBe(productImg)
   })
 
   it('should return local image when url is null', () => {

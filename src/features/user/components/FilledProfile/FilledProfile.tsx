@@ -104,6 +104,7 @@ const FilledProfile = () => {
     const loadOrderCount = async (): Promise<void> => {
       try {
         const response = await typedApi.get<{ id: string }[]>('/orders')
+
         setOrderCount(response.data.length)
       } catch {
         // non-critical

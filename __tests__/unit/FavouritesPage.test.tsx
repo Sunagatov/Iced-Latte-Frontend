@@ -8,6 +8,7 @@ jest.mock('@/features/favorites/components/FavouritesEmpty/FavouritesEmpty', () 
 jest.mock('@/features/favorites/components/FavouritesFull/FavouritesFull', () => ({ __esModule: true, default: () => <div>FavouritesFull</div> }))
 
 const mockPersist = { hasHydrated: () => true, onFinishHydration: jest.fn(() => jest.fn()) }
+
 ;(useFavouritesStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
 
 beforeEach(() => {
@@ -36,6 +37,7 @@ describe('FavouritesPage', () => {
 
   it('shows loader before hydration completes', () => {
     const slowPersist = { hasHydrated: () => false, onFinishHydration: jest.fn(() => jest.fn()) }
+
     ;(useFavouritesStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
     render(<FavouritesPage />)
     expect(screen.getByText('Loading')).toBeInTheDocument()

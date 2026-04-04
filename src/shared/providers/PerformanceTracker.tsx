@@ -1,10 +1,15 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import type {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios'
+import type { AxiosCacheInstance } from 'axios-cache-interceptor'
 import { api } from '@/shared/api/client'
 import { getSessionId } from '@/shared/utils/sessionUtils'
-import type { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 
 interface ApiCallMetric {
   url: string
@@ -13,14 +18,29 @@ interface ApiCallMetric {
   durationMs: number
 }
 
-interface TimedAxiosConfig { _t?: number }
+type TimedAxiosConfig = InternalAxiosRequestConfig & {
+  _t?: number
+}
+
+interface PerformanceTrackerProps {
+  children: ReactNode
+}
+
+const apiClient = api as unknown as AxiosCacheInstance
+const readSessionId = getSessionId as unknown as () => string
 
 let reqInterceptorId: number | null = null
 let resInterceptorId: number | null = null
 
-export default function PerformanceTracker({ children }: { children: React.ReactNode }) {
+function ignoreUnloadError(_error: unknown): void {
+  return
+}
+
+export default function PerformanceTracker({
+  children,
+}: Readonly<PerformanceTrackerProps>) {
   const pathname = usePathname()
-  const pageLoadStart = useRef(Date.now())
+  const pageLoadStart = useRef<number>(Date.now())
   const apiCalls = useRef<ApiCallMetric[]>([])
 
   useEffect(() => {
@@ -28,17 +48,19 @@ export default function PerformanceTracker({ children }: { children: React.React
     pageLoadStart.current = Date.now()
 
     if (reqInterceptorId === null) {
-      reqInterceptorId = api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-        ;(config as InternalAxiosRequestConfig & TimedAxiosConfig)._t = Date.now()
+      reqInterceptorId = apiClient.interceptors.request.use(
+        (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+          ;(config as TimedAxiosConfig)._t = Date.now()
 
-        return config
-      })
+          return config
+        },
+      )
     }
 
     if (resInterceptorId === null) {
-      resInterceptorId = api.interceptors.response.use(
-        (response: AxiosResponse) => {
-          const start = (response.config as InternalAxiosRequestConfig & TimedAxiosConfig)._t
+      resInterceptorId = apiClient.interceptors.response.use(
+        (response: AxiosResponse): AxiosResponse => {
+          const start = (response.config as TimedAxiosConfig)._t
 
           if (start) {
             apiCalls.current.push({
@@ -51,8 +73,8 @@ export default function PerformanceTracker({ children }: { children: React.React
 
           return response
         },
-        (error: AxiosError) => {
-          const start = (error.config as (InternalAxiosRequestConfig & TimedAxiosConfig) | undefined)?._t
+        (error: AxiosError): Promise<never> => {
+          const start = (error.config as TimedAxiosConfig | undefined)?._t
 
           if (start && error.config) {
             apiCalls.current.push({
@@ -64,30 +86,56 @@ export default function PerformanceTracker({ children }: { children: React.React
           }
 
           return Promise.reject(error)
-        }
+        },
       )
     }
 
-    const flush = () => {
+    const flush = (): void => {
       const pageLoadMs = Date.now() - pageLoadStart.current
       const calls = [...apiCalls.current]
 
-      if (calls.length === 0) return
+      if (calls.length === 0) {
+        return
+      }
 
-      const errorCount = calls.filter(c => c.status >= 400 && c.status !== 0).length
-      const validDurations = calls.filter(c => c.status !== 0).map(c => c.durationMs).sort((a, b) => a - b)
-      const p95DurationMs = validDurations[Math.floor(validDurations.length * 0.95)] ?? validDurations[validDurations.length - 1] ?? 0
+      const errorCount = calls.filter(
+        (call: ApiCallMetric) => call.status >= 400 && call.status !== 0,
+      ).length
+      const validDurations = calls
+        .filter((call: ApiCallMetric) => call.status !== 0)
+        .map((call: ApiCallMetric) => call.durationMs)
+        .sort((a: number, b: number) => a - b)
+      const p95DurationMs =
+        validDurations[Math.floor(validDurations.length * 0.95)] ??
+        validDurations[validDurations.length - 1] ??
+        0
 
-      const payload = { page: pathname, pageLoadMs, errorCount, p95DurationMs, apiCalls: calls }
-      const sessionId = getSessionId()
-      // Send sid in header/body, not query string, to avoid leaking it into logs
-      const url = `/api/proxy/telemetry/performance`
+      const payload = {
+        page: pathname,
+        pageLoadMs,
+        errorCount,
+        p95DurationMs,
+        apiCalls: calls,
+      }
+      const sessionId = readSessionId()
+      const url = '/api/proxy/telemetry/performance'
       const body = JSON.stringify({ ...payload, sessionId })
 
       if (navigator.sendBeacon) {
-        navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }))
+        navigator.sendBeacon(
+          url,
+          new Blob([body], { type: 'application/json' }),
+        )
       } else {
-        fetch(url, { method: 'POST', body, headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId }, keepalive: true }).catch(() => {})
+        void fetch(url, {
+          method: 'POST',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-ID': sessionId,
+          },
+          keepalive: true,
+        }).catch(ignoreUnloadError)
       }
     }
 

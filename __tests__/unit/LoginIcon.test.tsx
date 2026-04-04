@@ -5,6 +5,7 @@ jest.mock('next/link', () => ({ __esModule: true, default: ({ href, children }: 
 jest.mock('@/features/user/components/UserBar/UserBar', () => ({ __esModule: true, default: () => <div>UserBar</div> }))
 
 const mockUseAuthStore = jest.fn()
+
 jest.mock('@/features/auth/store', () => ({
   useAuthStore: (selector: (_s: { isLoggedIn: boolean }) => unknown) => mockUseAuthStore(selector),
 }))
@@ -18,6 +19,7 @@ beforeEach(() => {
 describe('LoginIcon', () => {
   it('renders placeholder before mount', () => {
     const { container } = render(<LoginIcon />)
+
     expect(container).toBeTruthy()
   })
 

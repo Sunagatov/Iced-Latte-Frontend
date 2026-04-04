@@ -1,24 +1,44 @@
 'use client'
-import { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { useAuthStore } from '@/features/auth/store'
-import { api } from '@/shared/api/client'
-import { useEffect } from 'react'
+
+import { useEffect, type ReactNode } from 'react'
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosCacheInstance } from 'axios-cache-interceptor'
 import { useLogout } from '@/features/auth/hooks'
 import { apiGetSession } from '@/features/auth/api'
+import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import type { SessionResponse } from '@/features/auth/types'
+import { api } from '@/shared/api/client'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean
 }
 
-const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
-  const { setAuthenticated, setAnonymous } = useAuthStore()
+interface AuthInterceptorProps {
+  children: ReactNode
+}
+
+const apiClient = api as unknown as AxiosCacheInstance
+const fetchSession = apiGetSession as unknown as () => Promise<SessionResponse>
+
+const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
+  const setAuthenticated = useAuthStore(
+    (state: AuthStore): AuthStore['setAuthenticated'] =>
+      state.setAuthenticated,
+  )
+  const setAnonymous = useAuthStore(
+    (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
+  )
   const { logout } = useLogout()
 
   useEffect(() => {
-    const responseInterceptor = api.interceptors.response.use(
+    const responseInterceptor = apiClient.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as CustomAxiosRequestConfig
+        const originalRequest = error.config as CustomAxiosRequestConfig | undefined
+
+        if (!originalRequest) {
+          throw error
+        }
 
         if (
           error.response?.status === 401 &&
@@ -28,17 +48,22 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
         ) {
           try {
             originalRequest.isRetry = true
-            // Refresh via cookie — backend reads the refresh token from HttpOnly cookie
-            await api.post('/auth/refresh', null)
-            const session = await apiGetSession()
 
-            if (!session.authenticated) throw new Error('Session invalid after refresh')
+            await apiClient.post('/auth/refresh', null)
+
+            const session = await fetchSession()
+
+            if (!session.authenticated) {
+              throw new Error('Session invalid after refresh')
+            }
+
             setAuthenticated(session.user ?? null)
 
-            return api.request(originalRequest)
-          } catch {
+            return apiClient.request(originalRequest)
+          } catch (refreshError: unknown) {
             setAnonymous()
             void logout()
+            throw refreshError
           }
         }
 
@@ -47,9 +72,9 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
     )
 
     return () => {
-      api.interceptors.response.eject(responseInterceptor)
+      apiClient.interceptors.response.eject(responseInterceptor)
     }
-  }, [setAuthenticated, setAnonymous, logout])
+  }, [logout, setAnonymous, setAuthenticated])
 
   return <>{children}</>
 }

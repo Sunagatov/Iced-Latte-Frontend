@@ -6,8 +6,10 @@ function makeProduct(id: string) {
 
 async function mockProducts(page: Page) {
   const productsList = { products: [makeProduct('00000000-0000-0000-0000-000000000001')], page: 0, size: 6, totalElements: 1, totalPages: 1 }
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
     } else {
@@ -79,5 +81,6 @@ test('product cards are visible on home page', async ({ page }) => {
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const count = await page.locator('[data-testid="product-card"]').count()
+
   expect(count).toBeGreaterThan(0)
 })

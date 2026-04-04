@@ -26,6 +26,7 @@ test('sign in with invalid credentials shows error', async ({ page }) => {
 test('sign up with new email redirects to /confirm_registration', async ({ page }) => {
   const suffix = nanoid(6).replace(/[^a-zA-Z0-9]/g, 'x')
   const email = `testuser${suffix}@example.com`
+
   await page.route('**/api/proxy/auth/register', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify('Registration successful') })
   })

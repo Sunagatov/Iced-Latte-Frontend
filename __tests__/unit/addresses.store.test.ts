@@ -60,6 +60,7 @@ describe('address store', () => {
     mockedApi.setDefaultAddress.mockResolvedValue(null as never)
     await useAddressStore.getState().setDefault('a2')
     const addresses = useAddressStore.getState().addresses
+
     expect(addresses.find((a: DeliveryAddress) => a.id === 'a2')?.isDefault).toBe(true)
     expect(addresses.find((a: DeliveryAddress) => a.id === 'a1')?.isDefault).toBe(false)
   })

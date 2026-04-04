@@ -169,6 +169,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
         const products = await fetchFavourites()
 
         set({ ...setProducts(products), status: 'ready' })
+
         return
       }
 
@@ -176,6 +177,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (set,
 
       if (productIds.length === 0) {
         set({ favourites: [], favouriteIds: [], status: 'ready' })
+
         return
       }
 

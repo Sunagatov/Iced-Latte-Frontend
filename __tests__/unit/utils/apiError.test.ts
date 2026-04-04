@@ -3,7 +3,9 @@ import { handleAxiosError } from '../../../src/shared/utils/apiError'
 
 function makeAxiosError(status: number, data: Record<string, unknown>) {
   const err = new axios.AxiosError('err')
+
   err.response = { status, data, headers: {}, config: {} as never, statusText: '' }
+
   return err
 }
 
@@ -36,6 +38,7 @@ describe('handleAxiosError', () => {
 
   it('returns fallback for axios error without response', () => {
     const err = new axios.AxiosError('network')
+
     expect(handleAxiosError(err)).toBe('An unknown error occurred')
   })
 })

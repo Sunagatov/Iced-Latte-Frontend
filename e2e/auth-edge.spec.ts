@@ -26,6 +26,7 @@ test('reset password page renders a form', async ({ page }) => {
   await expect(page.locator('main')).toBeVisible()
   // Page should have at least one input (password field)
   const inputs = page.locator('input')
+
   await expect(inputs.first()).toBeVisible({ timeout: 5000 })
 })
 

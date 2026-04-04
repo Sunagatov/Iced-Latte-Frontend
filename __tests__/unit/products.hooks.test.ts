@@ -32,12 +32,14 @@ describe('useProducts', () => {
     const { result } = renderHook(() =>
       useProducts(sortOption, [], [], '', '', null, ''),
     )
+
     expect(result.current.data).toEqual([])
     expect(result.current.hasNextPage).toBe(false)
   })
 
   it('deduplicates products across pages', () => {
     const p = makeProduct('p1')
+
     jest.spyOn(SWRInfinite, 'default').mockReturnValue({
       ...defaultSWRReturn,
       data: [
@@ -48,6 +50,7 @@ describe('useProducts', () => {
     const { result } = renderHook(() =>
       useProducts(sortOption, [], [], '', '', null, ''),
     )
+
     expect(result.current.data).toHaveLength(1)
   })
 
@@ -55,44 +58,54 @@ describe('useProducts', () => {
     const { result } = renderHook(() =>
       useProducts(sortOption, [], [], '', '', null, ''),
     )
+
     result.current.fetchNext()
     expect(mockSetSize).toHaveBeenCalled()
   })
 
   it('includes brand and seller in SWR key', () => {
     let capturedGetKey: ((i: number, prev: unknown) => string | null) | null = null
+
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
       capturedGetKey = getKey as typeof capturedGetKey
+
       return defaultSWRReturn as never
     })
     renderHook(() =>
       useProducts(sortOption, ['BrandA'], ['SellerX'], '', '', null, ''),
     )
     const key = capturedGetKey!(0, null)
+
     expect(key).toContain('brand_names=BrandA')
     expect(key).toContain('seller_names=SellerX')
   })
 
   it('returns null key when last page reached', () => {
     let capturedGetKey: ((i: number, prev: unknown) => string | null) | null = null
+
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
       capturedGetKey = getKey as typeof capturedGetKey
+
       return defaultSWRReturn as never
     })
     renderHook(() => useProducts(sortOption, [], [], '', '', null, ''))
     const key = capturedGetKey!(1, { products: [], page: 1, totalPages: 2, totalElements: 0, size: 6 })
+
     expect(key).toBeNull()
   })
 
   it('uses size 8 on wide screens', () => {
     jest.spyOn(useHooks, 'useMediaQuery').mockReturnValue(true)
     let capturedGetKey: ((i: number, prev: unknown) => string | null) | null = null
+
     jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
       capturedGetKey = getKey as typeof capturedGetKey
+
       return defaultSWRReturn as never
     })
     renderHook(() => useProducts(sortOption, [], [], '', '', null, ''))
     const key = capturedGetKey!(0, null)
+
     expect(key).toContain('size=8')
   })
 })

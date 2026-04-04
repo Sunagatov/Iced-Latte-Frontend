@@ -1,47 +1,41 @@
+'use client'
+
 import { useRouter } from 'next/navigation'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
-import CartElement from '../CartElement/CartElement'
 import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import type { ICartItem } from '@/features/cart/types'
+import CartElement from '../CartElement/CartElement'
+
+const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems
+const selectTotalPrice = (state: CartSliceStore): number => state.totalPrice
+const selectCount = (state: CartSliceStore): number => state.count
+const selectStatus = (state: CartSliceStore): CartSliceStore['status'] => state.status
+const selectPendingProductIds = (state: CartSliceStore): Set<string> => state.pendingProductIds
+const selectAdd = (state: CartSliceStore): CartSliceStore['add'] => state.add
+const selectRemove = (state: CartSliceStore): CartSliceStore['remove'] => state.remove
+const selectRemoveFullProduct = (state: CartSliceStore): CartSliceStore['removeFullProduct'] => state.removeFullProduct
+const selectClearCart = (state: CartSliceStore): CartSliceStore['clearCart'] => state.clearCart
+const selectIsLoggedIn = (state: AuthStore): boolean => state.isLoggedIn
 
 export default function CartFull() {
-  const tempItems = useCartStore(
-    (state: CartSliceStore): ICartItem[] => state.tempItems,
-  )
-  const totalPrice = useCartStore(
-    (state: CartSliceStore): number => state.totalPrice,
-  )
-  const count = useCartStore(
-    (state: CartSliceStore): number => state.count,
-  )
-  const status = useCartStore(
-    (state: CartSliceStore): CartSliceStore['status'] => state.status,
-  )
-  const pendingProductIds = useCartStore(
-    (state: CartSliceStore): Set<string> => state.pendingProductIds,
-  )
-  const add = useCartStore(
-    (state: CartSliceStore): CartSliceStore['add'] => state.add,
-  )
-  const remove = useCartStore(
-    (state: CartSliceStore): CartSliceStore['remove'] => state.remove,
-  )
-  const removeFullProduct = useCartStore(
-    (state: CartSliceStore): CartSliceStore['removeFullProduct'] => state.removeFullProduct,
-  )
-  const clearCart = useCartStore(
-    (state: CartSliceStore): CartSliceStore['clearCart'] => state.clearCart,
-  )
+  const tempItems = useCartStore(selectTempItems)
+  const totalPrice = useCartStore(selectTotalPrice)
+  const count = useCartStore(selectCount)
+  const status = useCartStore(selectStatus)
+  const pendingProductIds = useCartStore(selectPendingProductIds)
+  const add = useCartStore(selectAdd)
+  const remove = useCartStore(selectRemove)
+  const removeFullProduct = useCartStore(selectRemoveFullProduct)
+  const clearCart = useCartStore(selectClearCart)
 
-  const isLoggedIn = useAuthStore(
-    (state: AuthStore): boolean => state.isLoggedIn,
-  )
+  const isLoggedIn = useAuthStore(selectIsLoggedIn)
 
   const router = useRouter()
 
   const handleCheckout = (): void => {
     if (isLoggedIn) {
       router.push('/checkout')
+
       return
     }
 
@@ -65,9 +59,9 @@ export default function CartFull() {
         <div className="flex flex-1 flex-col gap-3">
           {tempItems.map((item: ICartItem) => (
             <CartElement
-              key={item.id}
               add={() => add(item.productInfo.id)}
               isPending={pendingProductIds.has(item.productInfo.id)}
+              key={item.id}
               product={item}
               remove={() => remove(item.productInfo.id)}
               removeAll={() => removeFullProduct(item.productInfo.id)}
@@ -94,7 +88,7 @@ export default function CartFull() {
             <div className="px-5 py-4">
               <div className="mb-3 flex flex-col gap-1.5">
                 {tempItems.map((item: ICartItem) => (
-                  <div key={item.id} className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2" key={item.id}>
                     <span className="max-w-[180px] truncate text-sm text-secondary">
                       {item.productInfo.name}
                       <span className="ml-1 text-xs text-secondary opacity-60">

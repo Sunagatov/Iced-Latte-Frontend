@@ -8,6 +8,7 @@ async function setup(page: Page, { orderStatus = 200 }: { orderStatus?: number }
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     if (url.includes('/orders') && method === 'POST')
       await route.fulfill({ status: orderStatus, contentType: 'application/json', body: JSON.stringify(orderStatus === 200 ? { id: 'order-1' } : { message: 'error' }) })
     else if (url.includes('/orders'))
@@ -23,7 +24,7 @@ async function setup(page: Page, { orderStatus = 200 }: { orderStatus?: number }
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.evaluate((c) => {
     localStorage.setItem('cart-storage', JSON.stringify({
-      state: { itemsIds: c.items.map((i: any) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })), tempItems: c.items, count: c.itemsQuantity, totalPrice: c.itemsTotalPrice, isSync: true },
+      state: { itemsIds: c.items.map((i: { productInfo: { id: string }, productQuantity: number }) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })), tempItems: c.items, count: c.itemsQuantity, totalPrice: c.itemsTotalPrice, isSync: true },
       version: 0,
     }))
   }, cartWithItem)
@@ -84,9 +85,11 @@ test('API error on submit shows error message', async ({ page }) => {
 test('cart is cleared after successful order — cart-count badge gone', async ({ page }) => {
   // Mock empty cart after order so AppInitProvider re-fetch returns 0 items
   let orderPlaced = false
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     if (url.includes('/orders') && method === 'POST') { orderPlaced = true; await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'order-1' }) }) }
     else if (url.includes('/orders')) await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
     else if (url.includes('/cart')) await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(orderPlaced ? { id: 'c1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null } : cartWithItem) })
@@ -96,7 +99,7 @@ test('cart is cleared after successful order — cart-count badge gone', async (
   await page.goto('http://localhost:3000')
   await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
   await page.evaluate((c) => {
-    localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: c.items.map((i: any) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })), tempItems: c.items, count: c.itemsQuantity, totalPrice: c.itemsTotalPrice, isSync: true }, version: 0 }))
+    localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: c.items.map((i: { productInfo: { id: string }, productQuantity: number }) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })), tempItems: c.items, count: c.itemsQuantity, totalPrice: c.itemsTotalPrice, isSync: true }, version: 0 }))
   }, cartWithItem)
   await page.goto('/checkout')
   await page.waitForSelector('h1', { timeout: 8000 })
@@ -106,5 +109,6 @@ test('cart is cleared after successful order — cart-count badge gone', async (
   await page.waitForTimeout(500)
   const stored = await page.evaluate(() => localStorage.getItem('cart-storage'))
   const parsed = JSON.parse(stored ?? '{}')
+
   expect(parsed?.state?.itemsIds?.length ?? 0).toBe(0)
 })

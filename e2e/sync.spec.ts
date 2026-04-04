@@ -18,6 +18,7 @@ const test = base.extend<Fixtures>({
   isolatedPage: async ({ browser }, use) => {
     const context: BrowserContext = await browser.newContext()
     const page = await context.newPage()
+
     await use(page)
     await context.close()
   },
@@ -39,6 +40,7 @@ async function loginAndGoto(page: Page, token: string, route: string) {
 async function mockFavourites(page: Page, products: object[]) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/favorites')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products }) })
     } else {
@@ -51,8 +53,10 @@ async function mockFavourites(page: Page, products: object[]) {
 // Mock all /api/proxy/cart requests — GET and POST return a cart with the given items.
 async function mockCart(page: Page, items: object[]) {
   const cart = { id: 'cart-1', userId: 'u1', items, itemsQuantity: items.length, itemsTotalPrice: 9.99, productsQuantity: items.length, createdAt: '', closedAt: null }
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/cart')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cart) })
     } else {
@@ -118,6 +122,7 @@ test.describe('Cart sync', () => {
 
   test('server cart items appear on fresh login', async ({ isolatedPage: page }) => {
     const productId = FAKE_PRODUCT_ID
+
     // Mock GET /cart to return a cart with one item — simulates server having a saved cart
     await mockCart(page, [makeCartItem(productId)])
 
@@ -127,6 +132,7 @@ test.describe('Cart sync', () => {
 
   test('guest cart merges with server cart after login', async ({ isolatedPage: page }) => {
     const productId = FAKE_PRODUCT_ID
+
     // Mock POST /cart/items (merge) and GET /cart to return the merged cart
     await mockCart(page, [makeCartItem(productId)])
 
@@ -152,6 +158,7 @@ test.describe('Cart sync', () => {
 
   test('cart persists after page reload when logged in', async ({ isolatedPage: page }) => {
     const productId = FAKE_PRODUCT_ID
+
     await mockCart(page, [makeCartItem(productId)])
 
     await loginAndGoto(page, FAKE_TOKEN, '/cart')

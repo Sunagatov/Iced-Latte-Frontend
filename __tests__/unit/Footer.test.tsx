@@ -13,6 +13,7 @@ describe('Footer', () => {
     render(<Footer />)
     const year = String(new Date().getFullYear())
     const matches = screen.getAllByText((_, node) => !!node?.textContent?.includes(year))
+
     expect(matches.length).toBeGreaterThan(0)
   })
 })

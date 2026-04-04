@@ -11,8 +11,10 @@ async function mockProxy(page: Page) {
   const product = makeProduct(FAKE_PRODUCT_ID)
   const productsList = { products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }
   const cart = { id: 'cart-1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null }
+
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(productsList) })
     } else if (url.includes('/cart')) {
@@ -41,6 +43,7 @@ test.beforeEach(async ({ page }) => {
 test('add product to cart', async ({ page }) => {
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
   const addToCart = page.locator('button:has(img[src*="plus"])').first()
+
   await addToCart.waitFor({ timeout: 10000 })
   await addToCart.click()
   await page.goto('/cart')

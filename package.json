@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "tsc": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -39,7 +40,6 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
     "@hookform/resolvers": "^5.2.2",
     "@next/eslint-plugin-next": "^15.3.4",
     "@playwright/test": "^1.58.2",

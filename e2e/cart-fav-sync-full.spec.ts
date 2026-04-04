@@ -17,6 +17,7 @@ const test = base.extend<Fixtures>({
   page: async ({ browser }, use) => {
     const context: BrowserContext = await browser.newContext()
     const page = await context.newPage()
+
     await use(page)
     await context.close()
   },
@@ -48,6 +49,7 @@ function makeCartItem(productId: string, slotId: string, qty = 1) {
 
 function makeCart(items: object[]) {
   const productsQuantity = (items as { productQuantity: number }[]).reduce((s, i) => s + i.productQuantity, 0)
+
   return {
     id: 'cart-uuid-1', userId: 'user-uuid-1', items,
     itemsQuantity: items.length,
@@ -68,6 +70,7 @@ async function setToken(page: Page, token = FAKE_TOKEN) {
 
 async function setCartStorage(page: Page, itemsIds: object[], isSync = false, tempItems: object[] = []) {
   const count = (itemsIds as { productQuantity: number }[]).reduce((s, i) => s + i.productQuantity, 0)
+
   await page.evaluate(
     ([ids, sync, temps, c]) => { localStorage.setItem('cart-storage', JSON.stringify({
       state: { itemsIds: ids, tempItems: temps, count: c, totalPrice: 0, isSync: sync },
@@ -88,9 +91,11 @@ async function setFavStorage(page: Page, favouriteIds: string[]) {
 async function mockProxy(page: Page, handlers: Record<string, object>) {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     for (const [key, body] of Object.entries(handlers)) {
       if (url.includes(key)) {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) })
+
         return
       }
     }
@@ -113,6 +118,7 @@ test.describe('Header badges', () => {
     await page.reload()
 
     const badge = page.locator('a[href="/cart"] div div').filter({ hasText: /^\d+$/ })
+
     await expect(badge).toHaveText('5', { timeout: 8000 })
   })
 
@@ -124,6 +130,7 @@ test.describe('Header badges', () => {
     await page.reload()
 
     const badge = page.locator('a[href="/favourites"] div div').filter({ hasText: /^\d+$/ })
+
     await expect(badge).toHaveText('2', { timeout: 8000 })
   })
 
@@ -133,6 +140,7 @@ test.describe('Header badges', () => {
     await page.goto('http://localhost:3000')
 
     const badge = page.locator('a[href="/cart"] div div').filter({ hasText: /^\d+$/ })
+
     await expect(badge).not.toBeVisible({ timeout: 5000 })
   })
 
@@ -142,6 +150,7 @@ test.describe('Header badges', () => {
     await page.goto('http://localhost:3000')
 
     const badge = page.locator('a[href="/favourites"] div div').filter({ hasText: /^\d+$/ })
+
     await expect(badge).not.toBeVisible({ timeout: 5000 })
   })
 
@@ -181,6 +190,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/cart/items') && method === 'PATCH') {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)])) })
       } else if (url.includes('/cart')) {
@@ -207,6 +217,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
     const minusBtn = page.locator('[data-testid="cart-minus-btn"]').first()
+
     await expect(minusBtn).toHaveAttribute('aria-label', 'Remove item', { timeout: 5000 })
   })
 
@@ -218,9 +229,11 @@ test.describe('Cart — quantity operations (logged in)', () => {
     await setToken(page)
 
     let itemRemoved = false
+
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/cart/items') && method === 'DELETE') {
         itemRemoved = true
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([])) })
@@ -244,9 +257,11 @@ test.describe('Cart — quantity operations (logged in)', () => {
     await setToken(page)
 
     let itemRemoved = false
+
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/cart/items') && method === 'DELETE') {
         itemRemoved = true
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([])) })
@@ -272,9 +287,11 @@ test.describe('Cart — quantity operations (logged in)', () => {
     await setToken(page)
 
     const state = { cleared: false }
+
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/cart/items') && method === 'DELETE') {
         state.cleared = true
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([])) })
@@ -331,6 +348,7 @@ test.describe('Cart — guest operations', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/cart/items') && method === 'POST') {
         mergeCallMade = true
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)])) })
@@ -364,6 +382,7 @@ test.describe('Favourites sync', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/favorites') && method === 'POST') {
         syncCallCount++
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [makeProduct(PRODUCT_A)] }) })
@@ -389,6 +408,7 @@ test.describe('Favourites sync', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/favorites') && method === 'POST') {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product] }) })
       } else if (url.includes('/favorites') && method === 'GET') {
@@ -405,6 +425,7 @@ test.describe('Favourites sync', () => {
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
 
     const badge = page.locator('a[href="/favourites"] div div').filter({ hasText: /^\d+$/ })
+
     await expect(badge).not.toBeVisible({ timeout: 3000 })
 
     await page.locator('[data-testid="favourite-btn"]').first().click()
@@ -424,6 +445,7 @@ test.describe('Favourites sync', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/favorites') && method === 'DELETE') {
         deleteWasCalled = true
         await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
@@ -450,6 +472,7 @@ test.describe('Favourites sync', () => {
 
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
+
       if (url.includes('/products/ids')) {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
       } else if (url.includes('/products') && !url.includes('/ids')) {
@@ -530,6 +553,7 @@ test.describe('Cart — multi-item merge', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if ((url.includes('/cart/items') && method === 'POST') || url.includes('/cart')) {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mergedCart) })
       } else {
@@ -554,6 +578,7 @@ test.describe('Cart — multi-item merge', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if ((url.includes('/cart/items') && method === 'POST') || url.includes('/cart')) {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mergedCart) })
       } else {

@@ -217,6 +217,7 @@ test.describe('Flow A — Step 4-6: GuestResetPassForm', () => {
 
   test('sends correct payload to /auth/password/change', async ({ page }) => {
     let capturedBody: Record<string, string> = {}
+
     await page.route('**/api/proxy/auth/password/change', async (route) => {
       capturedBody = JSON.parse(route.request().postData() ?? '{}') as Record<string, string>
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
@@ -353,6 +354,7 @@ test.describe('Flow B — Logged-in: AuthResetPassForm', () => {
 
   test('sends correct payload to PATCH /users', async ({ page }) => {
     let capturedBody: Record<string, string> = {}
+
     await mockAll200(page)
     await page.route('**/api/proxy/users', async (route) => {
       if (route.request().method() === 'PATCH') {

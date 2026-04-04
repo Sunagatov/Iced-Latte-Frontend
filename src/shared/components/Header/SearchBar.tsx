@@ -1,43 +1,73 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback } from 'react'
+import {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { useProductFiltersStore } from '@/features/products/store'
 import { getAllProducts } from '@/features/products/api'
-import { IProduct } from '@/features/products/types'
+import type { IProduct, IProductsList } from '@/features/products/types'
 
 const RECENT_KEY = 'il_recent_searches'
 const MAX_RECENT = 5
 const AUTOCOMPLETE_SIZE = 6
 
+const fetchProducts = getAllProducts as unknown as (
+  url: string,
+) => Promise<IProductsList>
+
 function getRecent(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]')
+    const rawValue = localStorage.getItem(RECENT_KEY)
+    const parsed: unknown = JSON.parse(rawValue ?? '[]')
+
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+
+    return parsed.filter((item: unknown): item is string => typeof item === 'string')
   } catch {
     return []
   }
 }
 
-function saveRecent(query: string) {
-  const prev = getRecent().filter((q) => q !== query)
+function saveRecent(query: string): void {
+  const prev = getRecent().filter((q: string) => q !== query)
 
-  localStorage.setItem(RECENT_KEY, JSON.stringify([query, ...prev].slice(0, MAX_RECENT)))
+  localStorage.setItem(
+    RECENT_KEY,
+    JSON.stringify([query, ...prev].slice(0, MAX_RECENT)),
+  )
 }
 
-function deleteRecent(query: string) {
-  localStorage.setItem(RECENT_KEY, JSON.stringify(getRecent().filter((q) => q !== query)))
+function deleteRecent(query: string): void {
+  localStorage.setItem(
+    RECENT_KEY,
+    JSON.stringify(getRecent().filter((q: string) => q !== query)),
+  )
 }
 
-function highlight(text: string, query: string) {
-  if (!query) return text
+function highlight(text: string, query: string): ReactNode {
+  if (!query) {
+    return text
+  }
+
   const idx = text.toLowerCase().indexOf(query.toLowerCase())
 
-  if (idx === -1) return text
+  if (idx === -1) {
+    return text
+  }
 
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-transparent font-bold text-brand">{text.slice(idx, idx + query.length)}</mark>
+      <mark className="bg-transparent font-bold text-brand">
+        {text.slice(idx, idx + query.length)}
+      </mark>
       {text.slice(idx + query.length)}
     </>
   )
@@ -49,7 +79,11 @@ interface SearchBarProps {
   heroMode?: boolean
 }
 
-export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProps = {}) {
+export default function SearchBar({
+  autoFocus,
+  onBlur,
+  heroMode,
+}: Readonly<SearchBarProps> = {}) {
   const { searchQuery, updateProductFiltersStore } = useProductFiltersStore()
   const [inputValue, setInputValue] = useState(searchQuery)
   const [debouncedInput] = useDebounceValue(inputValue, 300)
@@ -57,10 +91,10 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
   const [recent, setRecent] = useState<string[]>([])
   const [open, setOpen] = useState(false)
   const [activeIdx, setActiveIdx] = useState(-1)
+
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Fetch autocomplete suggestions — cancelled if input changes before response arrives
   useEffect(() => {
     if (!debouncedInput.trim()) {
       setSuggestions([])
@@ -70,55 +104,72 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
 
     let cancelled = false
 
-    getAllProducts(
-      `products?page=0&size=${AUTOCOMPLETE_SIZE}&sort_attribute=name&sort_direction=asc&keyword=${encodeURIComponent(debouncedInput)}`
+    void fetchProducts(
+      `products?page=0&size=${AUTOCOMPLETE_SIZE}&sort_attribute=name&sort_direction=asc&keyword=${encodeURIComponent(debouncedInput)}`,
     )
-      .then(
-        (data) => { if (!cancelled) setSuggestions(data.products ?? []) },
-        () => { if (!cancelled) setSuggestions([]) }
-      )
+      .then((data: IProductsList): void => {
+        if (!cancelled) {
+          setSuggestions(Array.isArray(data.products) ? data.products : [])
+        }
+      })
+      .catch((): void => {
+        if (!cancelled) {
+          setSuggestions([])
+        }
+      })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [debouncedInput])
 
-  // Sync store → input for all external changes (e.g. suggestion pills)
   useEffect(() => {
     setInputValue(searchQuery)
   }, [searchQuery])
 
-  // Close on outside click
   useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+    function onClickOutside(event: MouseEvent): void {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setOpen(false)
         setActiveIdx(-1)
       }
     }
+
     document.addEventListener('mousedown', onClickOutside)
 
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
 
-  const commit = useCallback((query: string) => {
-    const trimmed = query.trim()
+  const commit = useCallback(
+    (query: string): void => {
+      const trimmed = query.trim()
 
-    updateProductFiltersStore({ searchQuery: trimmed })
-    setInputValue(trimmed)
-    setOpen(false)
-    setActiveIdx(-1)
-    if (trimmed) {
-      saveRecent(trimmed)
-      setRecent(getRecent())
-    }
-    document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })
-  }, [updateProductFiltersStore])
+      updateProductFiltersStore({ searchQuery: trimmed })
+      setInputValue(trimmed)
+      setOpen(false)
+      setActiveIdx(-1)
 
-  const handleFocus = () => {
+      if (trimmed) {
+        saveRecent(trimmed)
+        setRecent(getRecent())
+      }
+
+      document
+        .getElementById('catalog')
+        ?.scrollIntoView({ behavior: 'smooth' })
+    },
+    [updateProductFiltersStore],
+  )
+
+  const handleFocus = (): void => {
     setRecent(getRecent())
     setOpen(true)
   }
 
-  const handleBlur = () => {
+  const handleBlur = (): void => {
     setTimeout(() => {
       if (!containerRef.current?.contains(document.activeElement)) {
         onBlur?.()
@@ -126,23 +177,24 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
     }, 150)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setInputValue(event.target.value)
     setOpen(true)
     setActiveIdx(-1)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     const items = inputValue.trim() ? suggestions : recent
 
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveIdx((i) => Math.min(i + 1, items.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActiveIdx((i) => Math.max(i - 1, -1))
-    } else if (e.key === 'Enter') {
-      e.preventDefault()
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      setActiveIdx((index: number) => Math.min(index + 1, items.length - 1))
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      setActiveIdx((index: number) => Math.max(index - 1, -1))
+    } else if (event.key === 'Enter') {
+      event.preventDefault()
+
       if (activeIdx >= 0 && inputValue.trim() && suggestions[activeIdx]) {
         commit(suggestions[activeIdx].name)
       } else if (activeIdx >= 0 && !inputValue.trim() && recent[activeIdx]) {
@@ -150,14 +202,14 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
       } else {
         commit(inputValue)
       }
-    } else if (e.key === 'Escape') {
+    } else if (event.key === 'Escape') {
       setOpen(false)
       setActiveIdx(-1)
       inputRef.current?.blur()
     }
   }
 
-  const handleClear = () => {
+  const handleClear = (): void => {
     setInputValue('')
     updateProductFiltersStore({ searchQuery: '' })
     setSuggestions([])
@@ -165,25 +217,42 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
     inputRef.current?.focus()
   }
 
-  const handleDeleteRecent = (e: React.MouseEvent, q: string) => {
-    e.stopPropagation()
-    deleteRecent(q)
+  const handleDeleteRecent = (
+    event: React.MouseEvent,
+    query: string,
+  ): void => {
+    event.stopPropagation()
+    deleteRecent(query)
     setRecent(getRecent())
   }
 
   const showRecent = open && !inputValue.trim() && recent.length > 0
-  const showSuggestions = open && inputValue.trim().length > 0 && suggestions.length > 0
+  const showSuggestions =
+    open && inputValue.trim().length > 0 && suggestions.length > 0
   const isDropdownOpen = showRecent || showSuggestions
 
   return (
     <div ref={containerRef} className="relative w-full max-w-xl">
-      {/* Input */}
-      <div className={`flex items-center gap-2 rounded-full border bg-white px-4 transition-all ${
-        heroMode ? 'py-3 shadow-lg shadow-black/20' : 'py-2'
-      } ${open ? 'border-brand shadow-md shadow-brand/10' : 'border-black/10 hover:border-black/20'}`}>
-        <svg className="h-4 w-4 shrink-0 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+      <div
+        className={`flex items-center gap-2 rounded-full border bg-white px-4 transition-all ${
+          heroMode ? 'py-3 shadow-lg shadow-black/20' : 'py-2'
+        } ${
+          open
+            ? 'border-brand shadow-md shadow-brand/10'
+            : 'border-black/10 hover:border-black/20'
+        }`}
+      >
+        <svg
+          className="h-4 w-4 shrink-0 text-secondary"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
+
         <input
           ref={inputRef}
           type="text"
@@ -198,39 +267,76 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
           autoFocus={autoFocus}
           onBlur={handleBlur}
         />
+
         {inputValue && (
-          <button onClick={handleClear} className="shrink-0 text-secondary hover:text-primary" aria-label="Clear search">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <button
+            type="button"
+            onClick={handleClear}
+            className="shrink-0 text-secondary hover:text-primary"
+            aria-label="Clear search"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
         )}
       </div>
 
-      {/* Dropdown */}
       {isDropdownOpen && (
-        <div data-testid="search-dropdown" className="absolute left-0 top-[calc(100%+8px)] z-50 w-full overflow-hidden rounded-2xl border border-black/8 bg-white shadow-xl">
+        <div
+          data-testid="search-dropdown"
+          className="absolute left-0 top-[calc(100%+8px)] z-50 w-full overflow-hidden rounded-2xl border border-black/8 bg-white shadow-xl"
+        >
           {showRecent && (
             <>
-              <p className="px-4 pt-3 pb-1 text-xs font-medium text-secondary">Recent searches</p>
+              <p className="px-4 pb-1 pt-3 text-xs font-medium text-secondary">
+                Recent searches
+              </p>
               <ul>
-                {recent.map((q, i) => (
-                  <li className={`flex items-center gap-3 px-4 transition-colors ${i === activeIdx ? 'bg-secondary' : 'hover:bg-secondary'}`} key={q}>
+                {recent.map((query: string, index: number) => (
+                  <li
+                    className={`flex items-center gap-3 px-4 transition-colors ${
+                      index === activeIdx
+                        ? 'bg-secondary'
+                        : 'hover:bg-secondary'
+                    }`}
+                    key={query}
+                  >
                     <button
+                      type="button"
                       className="flex flex-1 items-center gap-3 py-2.5 text-left text-sm"
-                      onMouseDown={() => commit(q)}
+                      onMouseDown={() => commit(query)}
                     >
-                      <svg className="h-3.5 w-3.5 shrink-0 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg
+                        className="h-3.5 w-3.5 shrink-0 text-secondary"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
                         <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
                       </svg>
-                      <span className="flex-1 text-primary">{q}</span>
+                      <span className="flex-1 text-primary">{query}</span>
                     </button>
                     <button
-                      aria-label={`Remove ${q}`}
+                      type="button"
+                      aria-label={`Remove ${query}`}
                       className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-secondary hover:bg-tertiary hover:text-primary"
-                      onMouseDown={(e) => handleDeleteRecent(e, q)}
+                      onMouseDown={(event) => handleDeleteRecent(event, query)}
                     >
-                      <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <svg
+                        className="h-3 w-3"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        viewBox="0 0 24 24"
+                      >
                         <path d="M18 6 6 18M6 6l12 12" />
                       </svg>
                     </button>
@@ -242,17 +348,33 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
 
           {showSuggestions && (
             <ul>
-              {suggestions.map((product, i) => (
+              {suggestions.map((product: IProduct, index: number) => (
                 <li key={product.id}>
                   <button
+                    type="button"
                     onMouseDown={() => commit(product.name)}
-                    className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${i === activeIdx ? 'bg-secondary' : 'hover:bg-secondary'}`}
+                    className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                      index === activeIdx
+                        ? 'bg-secondary'
+                        : 'hover:bg-secondary'
+                    }`}
                   >
-                    <svg className="h-3.5 w-3.5 shrink-0 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                    <svg
+                      className="h-3.5 w-3.5 shrink-0 text-secondary"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.35-4.35" />
                     </svg>
-                    <span className="text-sm text-primary">{highlight(product.name, inputValue)}</span>
-                    <span className="ml-auto text-xs text-secondary">{product.brandName}</span>
+                    <span className="text-sm text-primary">
+                      {highlight(product.name, inputValue)}
+                    </span>
+                    <span className="ml-auto text-xs text-secondary">
+                      {product.brandName}
+                    </span>
                   </button>
                 </li>
               ))}
