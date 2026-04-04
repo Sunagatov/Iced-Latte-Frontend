@@ -35,7 +35,5 @@ export interface GuestResetPasswordCredentials {
 
 export interface SuccessResponse {
   message?: string
-  token?: string
-  refreshToken?: string
 }
 

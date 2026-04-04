@@ -12,7 +12,7 @@ interface IFormValues { verificationCode: string }
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthRedirect } from '@/features/auth/hooks'
 
-const ConfirmPasswordComponent = () => {
+const VerifyEmailCodeForm = () => {
   const [loading, setLoading] = useState(false)
   const { setAuthenticated } = useAuthStore()
   const { errorMessage, handleError } = useErrorHandler()
@@ -81,4 +81,4 @@ const ConfirmPasswordComponent = () => {
   )
 }
 
-export default ConfirmPasswordComponent
+export default VerifyEmailCodeForm
