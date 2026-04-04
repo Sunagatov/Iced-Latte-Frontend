@@ -21,7 +21,7 @@ export default function ProductList({
   onResetFilters,
   onSuggestionClick,
 }: Readonly<IProductListProps>) {
-  if (error) {
+  if (error && products.length === 0) {
     return (
       <div className="flex grow flex-col items-center justify-center gap-4 py-24 text-center">
         <span className="text-5xl">⚠️</span>

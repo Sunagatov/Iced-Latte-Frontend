@@ -77,9 +77,9 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
     return () => { cancelled = true }
   }, [debouncedInput])
 
-  // Sync store → input when store is reset externally
+  // Sync store → input for all external changes (e.g. suggestion pills)
   useEffect(() => {
-    if (searchQuery === '') setInputValue('')
+    setInputValue(searchQuery)
   }, [searchQuery])
 
   // Close on outside click
