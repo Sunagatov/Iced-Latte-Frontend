@@ -66,7 +66,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
             ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
             : tempItem,
         )
-        : tempItems  // new product: tempItems has no entry yet — getCartItems() will hydrate it
+        : tempItems  // existing product already has a tempItems entry — updated above
 
       set((state) => ({
         ...state,
@@ -75,11 +75,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         count,
         totalPrice: getTotalPrice(updatedTempItems),
       }))
-      // If this is a brand-new product in the guest cart, fetch full product data so
-      // tempItems stays in sync with itemsIds and the cart page renders it immediately.
-      if (!cartItem) {
-        get().getCartItems().catch(() => {})
-      }
+      // Always re-hydrate so tempItems stays in sync with itemsIds.
+      // For brand-new products this also fills in the missing row immediately.
+      get().getCartItems().catch(() => {})
     }
   },
   getCartItems: async () => {

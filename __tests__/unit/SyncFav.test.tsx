@@ -3,6 +3,7 @@ import SyncFav from '@/features/favorites/components/SyncFav/SyncFav'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 
+jest.mock('@/shared/components/Loader/Loader', () => ({ __esModule: true, default: () => <div>Loading</div> }))
 jest.mock('@/features/favorites/components/FavouritesEmpty/FavouritesEmpty', () => ({ __esModule: true, default: () => <div>FavouritesEmpty</div> }))
 jest.mock('@/features/favorites/components/FavouritesFull/FavouritesFull', () => ({ __esModule: true, default: () => <div>FavouritesFull</div> }))
 
@@ -36,12 +37,12 @@ describe('SyncFav', () => {
     expect(screen.getByText('FavouritesFull')).toBeInTheDocument()
   })
 
-  it('renders nothing before hydration completes', () => {
+  it('shows loader before hydration completes', () => {
     const slowPersist = { hasHydrated: () => false, onFinishHydration: jest.fn(() => jest.fn()) }
     ;(useFavouritesStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
     ;(useAuthStore as unknown as { persist: typeof slowPersist }).persist = slowPersist
-    const { container } = render(<SyncFav />)
-    expect(container.firstChild).toBeNull()
+    render(<SyncFav />)
+    expect(screen.getByText('Loading')).toBeInTheDocument()
     // restore
     ;(useFavouritesStore as unknown as { persist: typeof mockPersist }).persist = mockPersist
     ;(useAuthStore as unknown as { persist: typeof mockPersist }).persist = mockPersist

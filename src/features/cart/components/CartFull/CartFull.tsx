@@ -16,7 +16,7 @@ export default function CartFull() {
     if (token) {
       router.push('/checkout')
     } else {
-      addPreviousRouteForAuth('/cart')
+      addPreviousRouteForAuth('/checkout')
       router.push('/signin')
     }
   }

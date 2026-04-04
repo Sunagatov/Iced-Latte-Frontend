@@ -1,6 +1,6 @@
 <div align="center">
   <br>
-  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="500">
+  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="716">
   <h1>Iced Latte Frontend</h1>
   <p><strong>A modern React/Next.js coffee marketplace frontend — built in the open, for engineers who want real experience.</strong></p>
   <p>
@@ -9,7 +9,7 @@
     <a href="https://t.me/zufarexplained">💬 Community</a>
   </p>
 
-  [![CI Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/dev-branch-pr-deployment-pipeline.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
+  [![CI Status](https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/actions)
   [![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](https://github.com/Sunagatov/Iced-Latte-Frontend/blob/main/LICENSE)
 
   [![GitHub Stars](https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend)](https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers)
@@ -68,7 +68,7 @@ npm test
 ## 📸 Preview
 
 <div align="center">
-  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="500">
+  <img src="iced-latte-avatar.jpg" alt="Iced Latte Frontend" width="716">
   <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
 </div>
 
@@ -153,7 +153,7 @@ src/
 
 🚫 No Kubernetes, no cloud-managed services — the app ships as a Docker container directly via SSH.
 
-The full production setup is in the [backend docker-compose.yml](https://github.com/Sunagatov/Iced-Latte/blob/development/docker-compose.yml). On every merge to `master`, [GitHub Actions](.github/workflows/dev-branch-pr-deployment-pipeline.yml) builds, tests, and deploys to production automatically. Only maintainers can merge to `master`.
+The full production setup is in the [backend docker-compose.yml](https://github.com/Sunagatov/Iced-Latte/blob/development/docker-compose.yml). On every merge to `master`, [GitHub Actions](.github/workflows/cd.yml) builds and pushes a Docker image to production automatically. CI runs on every push and PR to `development`. Only maintainers can merge to `master`.
 
 🔍 Explore the [`.github/`](.github/workflows/) folder for the full CI/CD pipeline.
 

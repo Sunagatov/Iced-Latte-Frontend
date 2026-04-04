@@ -7,11 +7,6 @@ import type { AuthStore } from '@/features/auth/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import RouteTracker from './RouteTracker'
-import {
-  getTokenFromBrowserCookie,
-  isTokenExpired,
-  removeTokenFromBrowserCookie,
-} from '@/shared/utils/authToken'
 
 /** Constant-time string comparison to prevent timing attacks. */
 function timingSafeEqual(a: string, b: string): boolean {
@@ -29,8 +24,6 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   const { syncBackendFav, resetFav } = useFavouritesStore()
 
   const resetAuth = useAuthStore((state: AuthStore) => state.reset)
-
-  const authenticate = useAuthStore((state: AuthStore) => state.authenticate)
 
   const token = useAuthStore((state: AuthStore) => state.token)
 
@@ -77,24 +70,6 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
       unsubFav()
     }
   }, [])
-
-  useEffect(() => {
-    const cookieToken = getTokenFromBrowserCookie()
-
-    if (!cookieToken) return
-
-    if (isTokenExpired(cookieToken)) {
-      removeTokenFromBrowserCookie()
-      resetAuth()
-      resetFav()
-
-      return
-    }
-
-    if (!token) {
-      authenticate(cookieToken)
-    }
-  }, [authenticate, resetAuth, token])
 
   // Reset fav sync tracker when user logs out so next login triggers a fresh sync.
   useEffect(() => {
@@ -144,7 +119,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     void fetchData()
-  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth])
+  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth, resetFav])
 
   return <RouteTracker>{children}</RouteTracker>
 }

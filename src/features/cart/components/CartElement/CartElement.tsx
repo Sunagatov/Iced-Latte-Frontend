@@ -29,10 +29,8 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
   }, [productQuantity])
 
   const token = useAuthStore((state) => state.token)
-  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
-  const isFavourited = token
-    ? favourites?.some((fav) => fav.id === productInfo.id)
-    : favouriteIds.includes(productInfo.id)
+  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
+  const isFavourited = favouriteIds.includes(productInfo.id)
 
   const handleButtonClick = () => {
     if (isFavourited) removeFavourite(productInfo.id, token).catch(() => {})

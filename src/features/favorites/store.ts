@@ -54,8 +54,9 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
     } else {
       const products = await getProductByIds(updatedIds)
       const safeProducts: IProduct[] = Array.isArray(products) ? products : []
+      const resolvedIds = safeProducts.map((p) => p.id)
 
-      set({ favourites: safeProducts, count: updatedIds.length })
+      set({ favourites: safeProducts, favouriteIds: resolvedIds, count: safeProducts.length })
     }
   },
   removeFavourite: async (id, token) => {
@@ -84,8 +85,9 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
       const productIds = get().favouriteIds
       const products = await getProductByIds(productIds)
       const safeProducts: IProduct[] = Array.isArray(products) ? products : []
+      const resolvedIds = safeProducts.map((p) => p.id)
 
-      set((state) => ({ ...state, favourites: safeProducts, count: productIds.length }))
+      set((state) => ({ ...state, favourites: safeProducts, favouriteIds: resolvedIds, count: safeProducts.length }))
     }
   },
   syncBackendFav: async () => {

@@ -35,9 +35,14 @@ export default function SyncFav() {
 
   useEffect(() => {
     if (!hydrated) return
+
+    if (token) { setFetched(true)
+
+      return }
+
     const fetchData = async (): Promise<void> => {
       try {
-        await getFavouriteProducts(token)
+        await getFavouriteProducts(null)
       } catch {
         // ignore fetch errors
       } finally {

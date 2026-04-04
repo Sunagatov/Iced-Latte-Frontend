@@ -183,7 +183,7 @@ npm run tsc
 | `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:8083/api/v1` |
 | `PROTOCOL` | `http` or `https` | `http` |
 | `HOST` | Hostname | `localhost` |
-| `PORT` | Dev server port | `3001` |
+| `PORT` | Dev server port | `3000` |
 
 ---
 
