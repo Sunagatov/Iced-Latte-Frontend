@@ -1,3 +1,5 @@
+import { test, expect, type Page } from '@playwright/test'
+
 /**
  * Password Reset & Change — Playwright Tests
  * Covers every step in password-reset-spec.md
