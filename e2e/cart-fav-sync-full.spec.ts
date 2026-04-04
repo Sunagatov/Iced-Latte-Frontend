@@ -461,9 +461,9 @@ test.describe('Cart — quantity operations (logged in)', () => {
             state.cleared
               ? makeCart([])
               : makeCart([
-                  makeCartItem(PRODUCT_A, CART_SLOT_A, 1),
-                  makeCartItem(PRODUCT_B, CART_SLOT_B, 2),
-                ]),
+                makeCartItem(PRODUCT_A, CART_SLOT_A, 1),
+                makeCartItem(PRODUCT_B, CART_SLOT_B, 2),
+              ]),
           ),
         })
       } else {

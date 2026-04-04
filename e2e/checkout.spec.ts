@@ -188,15 +188,15 @@ test('cart is cleared after successful order — cart-count badge gone', async (
         body: JSON.stringify(
           orderPlaced
             ? {
-                id: 'c1',
-                userId: 'u1',
-                items: [],
-                itemsQuantity: 0,
-                itemsTotalPrice: 0,
-                productsQuantity: 0,
-                createdAt: '',
-                closedAt: null,
-              }
+              id: 'c1',
+              userId: 'u1',
+              items: [],
+              itemsQuantity: 0,
+              itemsTotalPrice: 0,
+              productsQuantity: 0,
+              createdAt: '',
+              closedAt: null,
+            }
             : cartWithItem,
         ),
       })

@@ -9,18 +9,18 @@ test.beforeEach(async ({ page }) => {
       const products = hasKeyword
         ? []
         : Array.from({ length: 6 }, (_, i) => ({
-            id: `id-${i}`,
-            name: `Coffee ${i}`,
-            price: 9.99,
-            productFileUrl: null,
-            brandName: 'Brand',
-            sellerName: 'Seller',
-            averageRating: 4.5,
-            reviewsCount: 1,
-            quantity: 250,
-            description: 'desc',
-            active: true,
-          }))
+          id: `id-${i}`,
+          name: `Coffee ${i}`,
+          price: 9.99,
+          productFileUrl: null,
+          brandName: 'Brand',
+          sellerName: 'Seller',
+          averageRating: 4.5,
+          reviewsCount: 1,
+          quantity: 250,
+          description: 'desc',
+          active: true,
+        }))
 
       await route.fulfill({
         status: 200,
