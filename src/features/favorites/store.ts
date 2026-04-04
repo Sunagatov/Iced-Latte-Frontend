@@ -59,6 +59,8 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
     }
   },
   removeFavourite: async (id, token) => {
+    const prev = { favouriteIds: get().favouriteIds, favourites: get().favourites, count: get().count }
+
     set((state) => ({
       favouriteIds: state.favouriteIds.filter((favId) => favId !== id),
       favourites: state.favourites.filter((fav) => fav.id !== id),
@@ -67,7 +69,9 @@ const createFavSlice: StateCreator<FavStoreState> = (set, get) => ({
     if (token) {
       try {
         await removeFavItem(id)
-      } catch { /* best-effort */ }
+      } catch {
+        set(prev)
+      }
     }
   },
   getFavouriteProducts: async (token) => {

@@ -13,7 +13,7 @@ import { RiHeartFill, RiHeartLine, RiSubtractLine, RiAddLine, RiDeleteBinLine } 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
-  const { addFavourite, removeFavourite, favourites, favouriteIds } = useFavouritesStore()
+  const { addFavourite, removeFavourite, favouriteIds } = useFavouritesStore()
   const { token } = useAuthStore()
   const add = useCartStore((s) => s.add)
   const remove = useCartStore((s) => s.remove)
@@ -21,7 +21,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
   const items = useCartStore((s) => s.itemsIds)
 
   const qty = items?.find((i) => i.productId === product.id)?.productQuantity ?? 0
-  const isFavourited = token ? favourites.some((f) => f.id === product.id) : favouriteIds.includes(product.id)
+  const isFavourited = favouriteIds.includes(product.id)
 
   const handleHeart = () => {
     if (isFavourited) removeFavourite(product.id, token).catch(() => {})
@@ -83,7 +83,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
             className="w-full h-[140px] object-contain p-3"
           />
           <button
-            onClick={handleHeart}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHeart() }}
             className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm"
             aria-label="Toggle favourite"
           >

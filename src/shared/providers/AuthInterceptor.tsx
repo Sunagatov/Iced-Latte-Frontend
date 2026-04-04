@@ -5,13 +5,14 @@ import { useAuthStore } from '@/features/auth/store'
 import { api } from '@/shared/api/client'
 import { useEffect } from 'react'
 import { useLogout } from '@/features/auth/hooks'
+import { setCookie } from '@/shared/utils/cookieUtils'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean
 }
 
 const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
-  const { token, refreshToken, authenticate } = useAuthStore()
+  const { token, refreshToken, authenticate, setRefreshToken } = useAuthStore()
   const { logout } = useLogout()
 
   useEffect(() => {
@@ -34,10 +35,13 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
               { headers: { Authorization: `Bearer ${refreshToken}` } },
             )
 
-            if (response) {
-              authenticate(response.data.token)
-              originalRequest.headers['Authorization'] = `Bearer ${response.data.token}`
-            }
+            const { token: newToken, refreshToken: newRefreshToken } = response.data
+
+            // Sync all auth state atomically after refresh
+            authenticate(newToken)
+            setRefreshToken(newRefreshToken)
+            await setCookie('token', newToken, { path: '/' })
+            originalRequest.headers['Authorization'] = `Bearer ${newToken}`
 
             return api.request(originalRequest)
           } catch (refreshError) {
@@ -53,7 +57,7 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
     return () => {
       api.interceptors.response.eject(responseInterceptor)
     }
-  }, [authenticate, refreshToken, token, logout])
+  }, [authenticate, setRefreshToken, refreshToken, token, logout])
 
   return <>{children}</>
 }

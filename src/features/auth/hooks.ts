@@ -45,7 +45,7 @@ export function useAuthRedirect() {
   const { previousRouteForAuth } = useLocalSessionStore()
 
   const handleRedirectForAuth = () => {
-    router.push(previousRouteForAuth || '/profile')
+    router.push(previousRouteForAuth ?? '/profile')
   }
 
   return { handleRedirectForAuth }

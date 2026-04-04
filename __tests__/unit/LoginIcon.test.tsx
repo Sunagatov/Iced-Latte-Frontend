@@ -1,10 +1,10 @@
 import { render, screen, act } from '@testing-library/react'
-import LoginIcon from '@/shared/components/AuthIcon/LoginIcon'
+import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 import { useAuthStore } from '@/features/auth/store'
 import * as authToken from '@/shared/utils/authToken'
 
 jest.mock('next/link', () => ({ __esModule: true, default: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }))
-jest.mock('@/shared/components/UserBar/UserBar', () => ({ __esModule: true, default: () => <div>UserBar</div> }))
+jest.mock('@/features/user/components/UserBar/UserBar', () => ({ __esModule: true, default: () => <div>UserBar</div> }))
 jest.mock('@/shared/utils/authToken', () => ({ getTokenFromBrowserCookie: jest.fn(), isTokenExpired: jest.fn() }))
 
 const mockedGetToken = jest.mocked(authToken.getTokenFromBrowserCookie)

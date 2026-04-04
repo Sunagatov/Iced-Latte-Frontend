@@ -35,10 +35,10 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
 
   const token = useAuthStore((state) => state.token)
 
-  const { addFavourite, removeFavourite, favourites, favouriteIds } =
+  const { addFavourite, removeFavourite, favouriteIds } =
     useFavouritesStore()
 
-  const isFavourited = token ? favourites?.some((fav) => fav.id === id) : favouriteIds.includes(id)
+  const isFavourited = favouriteIds.includes(id)
 
   const handleButtonClick = () => {
     if (isFavourited) removeFavourite(id, token).catch(() => {})

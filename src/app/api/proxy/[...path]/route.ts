@@ -85,8 +85,8 @@ async function handleProxy(
   }
 }
 
-export async function OPTIONS() {
-  return handleOptions()
+export async function OPTIONS(request: NextRequest) {
+  return handleOptions(request)
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import FormProfile from '../FormProfile/FormProfile'
-import ImageUpload from '@/shared/components/ImageUpload/ImageUpload'
+import ImageUpload from '@/features/user/components/ImageUpload/ImageUpload'
 import AddressManager from '@/features/addresses/components/AddressManager'
 import Link from 'next/link'
 import { api } from '@/shared/api/client'
@@ -30,7 +30,7 @@ interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration:
 
 type Section = 'overview' | 'profile' | 'addresses' | 'security' | 'notifications' | 'reviews'
 
-const FiledProfile = () => {
+const FilledProfile = () => {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<Section>('overview')
   const [isEditing, setIsEditing] = useState(false)
@@ -59,10 +59,11 @@ const FiledProfile = () => {
   const [orderCount, setOrderCount] = useState<number | null>(null)
 
   useEffect(() => {
+    if (!hydrated || !isLoggedIn) return
     api.get<{ id: string }[]>('/orders')
       .then((res) => setOrderCount(res.data.length))
       .catch(() => { /* non-critical */ })
-  }, [])
+  }, [hydrated, isLoggedIn])
 
   const initials = userData
     ? `${userData.firstName?.[0] ?? ''}${userData.lastName?.[0] ?? ''}`.toUpperCase()
@@ -499,4 +500,4 @@ const NotifRow = ({
   )
 }
 
-export default FiledProfile
+export default FilledProfile

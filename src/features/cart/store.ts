@@ -1,4 +1,6 @@
 import { create, StateCreator } from 'zustand'
+
+export const MAX_CART_ITEM_QUANTITY = 99
 import { persist } from 'zustand/middleware'
 import { ICartItem, ICartPushItem, ICartPushItems, ICartUpdatedItem } from './types'
 import { getProductByIds } from '@/features/products/api'
@@ -45,6 +47,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
 
     if (token) {
       if (cartItem) {
+        if (cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
         const productCartSlotId = getProductCartSlotId(id, tempItems)
 
         if (!productCartSlotId) return
@@ -53,6 +56,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
         createCart({ items: [{ productId: id, productQuantity: 1 }] }).catch(() => {})
       }
     } else {
+      if (cartItem && cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
       const updatedCart = addToCart(id, itemsIds)
       const count = getProductsCount(updatedCart)
 
@@ -87,8 +91,17 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
       productInfo: { ...item },
       productQuantity: itemsIds.find((i) => i.productId === item.id)!.productQuantity,
     }))
+    // Reconcile itemsIds and count to only reflect products that actually resolved,
+    // preventing stale IDs from causing ghost-cart state.
+    const reconciledIds = cartItems.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity }))
 
-    set((state) => ({ ...state, tempItems: cartItems, totalPrice: getTotalPrice(cartItems) }))
+    set((state) => ({
+      ...state,
+      tempItems: cartItems,
+      itemsIds: reconciledIds,
+      count: getProductsCount(reconciledIds),
+      totalPrice: getTotalPrice(cartItems),
+    }))
   },
 
   syncBackendCart: async (token: string) => {

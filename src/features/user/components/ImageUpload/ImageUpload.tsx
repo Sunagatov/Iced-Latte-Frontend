@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { uploadImage } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthStore } from '@/features/auth/store'
-import Loader from '../Loader/Loader'
+import Loader from '@/shared/components/Loader/Loader'
 import { RiCameraLine } from 'react-icons/ri'
 
 const ImageUpload = () => {

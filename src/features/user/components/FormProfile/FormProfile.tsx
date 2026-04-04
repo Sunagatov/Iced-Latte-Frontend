@@ -12,7 +12,7 @@ import { useErrorHandler } from '@/shared/utils/apiError'
 import Image from 'next/image'
 import Button from '@/shared/components/Buttons/Button/Button'
 import FormInput from '@/shared/components/FormInput/FormInput'
-import ImageUpload from '@/shared/components/ImageUpload/ImageUpload'
+import ImageUpload from '@/features/user/components/ImageUpload/ImageUpload'
 import countries from '@/features/user/constants'
 
 const FormProfile = ({

@@ -79,7 +79,8 @@ export default function PerformanceTracker({ children }: { children: React.React
 
       const payload = { page: pathname, pageLoadMs, errorCount, p95DurationMs, apiCalls: calls }
       const sessionId = getSessionId()
-      const url = `/api/proxy/telemetry/performance?sid=${encodeURIComponent(sessionId)}`
+      // Send sid in header/body, not query string, to avoid leaking it into logs
+      const url = `/api/proxy/telemetry/performance`
       const body = JSON.stringify(payload)
 
       if (navigator.sendBeacon) {

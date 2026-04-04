@@ -1,8 +1,8 @@
-import FiledProfile from '@/features/user/components/FilledProfile/FiledProfile'
+import FilledProfile from '@/features/user/components/FilledProfile/FilledProfile'
 
 const ProfilePage = () => {
   return (
-    <FiledProfile />
+    <FilledProfile />
   )
 }
 

@@ -28,7 +28,6 @@ test-results/
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # os
 .DS_Store

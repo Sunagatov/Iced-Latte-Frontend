@@ -4,8 +4,8 @@ export type SuccessResponse = {
 }
 
 export type SuccessRefreshToken = {
-  token: string | null
-  refreshToken: string | null
+  token: string
+  refreshToken: string
 }
 
 export type LoginCredentials = {

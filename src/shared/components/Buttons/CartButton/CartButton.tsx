@@ -14,8 +14,8 @@ export default function CartButton() {
           <path d="M16 10a4 4 0 0 1-8 0"/>
         </svg>
         {!!count && (
-          <div className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-solid text-[10px] font-bold text-white">
-            {count}
+          <div className="absolute right-0.5 top-0.5 flex min-w-[16px] h-4 items-center justify-center rounded-full bg-brand-solid px-1 text-[10px] font-bold text-white">
+            {count > 99 ? '99+' : count}
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { AuthStore } from '@/features/auth/store'
 import { useAuthStore } from '@/features/auth/store'
-import UserBar from '../UserBar/UserBar'
+import UserBar from '@/features/user/components/UserBar/UserBar'
 import { getTokenFromBrowserCookie, isTokenExpired } from '@/shared/utils/authToken'
 
 export default function LoginIcon() {

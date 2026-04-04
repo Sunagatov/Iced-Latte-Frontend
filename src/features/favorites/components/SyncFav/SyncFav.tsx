@@ -1,6 +1,7 @@
 'use client'
 import FavouritesEmpty from '../FavouritesEmpty/FavouritesEmpty'
 import FavouritesFull from '../FavouritesFull/FavouritesFull'
+import Loader from '@/shared/components/Loader/Loader'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 import { useEffect, useState } from 'react'
@@ -9,7 +10,6 @@ interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration:
 
 export default function SyncFav() {
   const favourites = useFavouritesStore((s) => s.favourites)
-  const favouriteIds = useFavouritesStore((s) => s.favouriteIds)
   const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
   const token = useAuthStore((s) => s.token)
   const [hydrated, setHydrated] = useState(false)
@@ -48,9 +48,9 @@ export default function SyncFav() {
     void fetchData()
   }, [getFavouriteProducts, token, hydrated])
 
-  if (!hydrated || !fetched) return null
+  if (!hydrated || !fetched) return <Loader />
 
   return <>
-    {favourites && favourites.length > 0 || favouriteIds.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
+    {favourites.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
   </>
 }

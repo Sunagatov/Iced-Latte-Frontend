@@ -7,7 +7,7 @@ const RouteTracker = ({ children }: { children: React.ReactNode }) => {
   const { addPreviousRouteForAuth, setRoutingRelatedAuthCompleted } = useLocalSessionStore()
   const pathname = usePathname()
   const isFirstRender = useRef(true)
-  const authPaths = useMemo(() => ['/signin', '/signup', '/confirm_registration'], [])
+  const authPaths = useMemo(() => ['/signin', '/signup', '/confirm_registration', '/forgotpass', '/resetpass', '/auth/google/callback'], [])
 
   useEffect(() => {
     setRoutingRelatedAuthCompleted(authPaths.includes(pathname))

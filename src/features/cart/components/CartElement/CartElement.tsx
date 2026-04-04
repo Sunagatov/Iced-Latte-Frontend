@@ -6,14 +6,13 @@ import Link from 'next/link'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useAuthStore } from '@/features/auth/store'
 import { CartElementProps } from '@/features/cart/types'
-import { useCartStore } from '@/features/cart/store'
+import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/store'
 import { useEffect, useRef, useState } from 'react'
 
 export default function CartElement({ product, add, remove, removeAll }: Readonly<CartElementProps>) {
   const { productInfo } = product
-  const items = useCartStore((state) => state.itemsIds)
-  const productQuantity = items?.find((item) => item.productId === productInfo.id)?.productQuantity ?? 0
-  const totalProductPrice = (productInfo.price * productQuantity!).toFixed(2)
+  const productQuantity = product.productQuantity
+  const totalProductPrice = (productInfo.price * productQuantity).toFixed(2)
 
   const [pulse, setPulse] = useState(false)
   const prevQty = useRef(productQuantity)
@@ -121,7 +120,8 @@ export default function CartElement({ product, add, remove, removeAll }: Readonl
           </button>
           <span className="w-6 text-center text-sm font-semibold text-inverted" data-testid="cart-item-qty">{productQuantity}</span>
           <button
-            onClick={add}
+            onClick={productQuantity >= MAX_CART_ITEM_QUANTITY ? undefined : add}
+            disabled={productQuantity >= MAX_CART_ITEM_QUANTITY}
             data-testid="cart-plus-btn"
             className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-solid text-inverted transition-colors hover:bg-brand-solid-hover active:scale-90"
             aria-label="Increase quantity"

@@ -2,14 +2,24 @@ import CartElement from '../CartElement/CartElement'
 import { useCartStore } from '@/features/cart/store'
 import { ICartItem } from '@/features/cart/types'
 import { useAuthStore } from '@/features/auth/store'
-import Link from 'next/link'
+import { useLocalSessionStore } from '@/features/user/store'
+import { useRouter } from 'next/navigation'
 
 export default function CartFull() {
-  const { tempItems, totalPrice, removeFullProduct, remove, add } = useCartStore()
+  const { tempItems, totalPrice, removeFullProduct, remove, add, count } = useCartStore()
   const clearCart = useCartStore((s) => s.clearCart)
   const { token } = useAuthStore()
-  const checkoutHref = token ? '/checkout' : '/signin'
-  const itemCount = tempItems.length
+  const { addPreviousRouteForAuth } = useLocalSessionStore()
+  const router = useRouter()
+
+  const handleCheckout = () => {
+    if (token) {
+      router.push('/checkout')
+    } else {
+      addPreviousRouteForAuth('/cart')
+      router.push('/signin')
+    }
+  }
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-4 py-8">
@@ -17,7 +27,7 @@ export default function CartFull() {
       <div className="mb-6 flex items-baseline gap-3">
         <h1 className="text-3xl font-bold text-primary">Shopping cart</h1>
         <span className="rounded-full bg-secondary px-3 py-0.5 text-sm font-medium text-secondary">
-          {itemCount} {itemCount === 1 ? 'item' : 'items'}
+          {count} {count === 1 ? 'item' : 'items'}
         </span>
       </div>
 
@@ -77,12 +87,12 @@ export default function CartFull() {
                 </div>
               </div>
 
-              <Link
-                href={checkoutHref}
+              <button
+                onClick={handleCheckout}
                 className="block w-full rounded-[48px] bg-brand-solid py-3.5 text-center text-base font-semibold text-inverted transition-colors hover:bg-brand-solid-hover active:scale-[0.98]"
               >
                 Go to checkout →
-              </Link>
+              </button>
 
               {/* Trust line */}
               <p className="mt-3 text-center text-xs text-secondary">

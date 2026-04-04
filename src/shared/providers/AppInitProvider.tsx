@@ -26,7 +26,7 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   const favouriteIdsCount = useFavouritesStore((state) => state.favouriteIds.length)
-  const { syncBackendFav } = useFavouritesStore()
+  const { syncBackendFav, resetFav } = useFavouritesStore()
 
   const resetAuth = useAuthStore((state: AuthStore) => state.reset)
 
@@ -50,8 +50,9 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let cartDone = useCartStore.persist.hasHydrated()
     let authDone = useAuthStore.persist.hasHydrated()
+    let favDone = useFavouritesStore.persist.hasHydrated()
 
-    if (cartDone && authDone) {
+    if (cartDone && authDone && favDone) {
       setHydrated(true)
 
       return
@@ -59,16 +60,21 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
 
     const unsubCart = useCartStore.persist.onFinishHydration(() => {
       cartDone = true
-      if (authDone) setHydrated(true)
+      if (authDone && favDone) setHydrated(true)
     })
     const unsubAuth = useAuthStore.persist.onFinishHydration(() => {
       authDone = true
-      if (cartDone) setHydrated(true)
+      if (cartDone && favDone) setHydrated(true)
+    })
+    const unsubFav = useFavouritesStore.persist.onFinishHydration(() => {
+      favDone = true
+      if (cartDone && authDone) setHydrated(true)
     })
 
     return () => {
       unsubCart()
       unsubAuth()
+      unsubFav()
     }
   }, [])
 
@@ -80,6 +86,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
     if (isTokenExpired(cookieToken)) {
       removeTokenFromBrowserCookie()
       resetAuth()
+      resetFav()
 
       return
     }
@@ -131,6 +138,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
           (error as { status?: number })?.status === 401
         ) {
           resetAuth()
+          resetFav()
         }
       }
     }
