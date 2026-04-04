@@ -269,25 +269,24 @@ test.describe('Cart sync — stale state cleanup', () => {
 test.describe('Cart — quantity operations (logged in)', () => {
   test('increasing quantity updates item count display', async ({ page }) => {
     // Spec §3 add: token set, item already in cart → PATCH, response updates qty
+    let serverQty = 1
+
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
 
       if (url.includes('/cart/items') && method === 'PATCH') {
+        serverQty = 2
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(
-            makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)]),
-          ),
+          body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)])),
         })
       } else if (url.includes('/cart')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(
-            makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
-          ),
+          body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, serverQty)])),
         })
       } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
@@ -296,21 +295,12 @@ test.describe('Cart — quantity operations (logged in)', () => {
           body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
         })
       } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
-      timeout: 8000,
-    })
+    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
     await page.locator('[data-testid="cart-plus-btn"]').first().click()
     await page.waitForTimeout(400)
     await expect(
@@ -323,9 +313,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
     await mockProxy(page, {
       '/cart': makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
     }, true)
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
 
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
@@ -381,9 +368,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -436,9 +420,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -508,9 +489,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
       { timeout: 8000 },
@@ -937,9 +915,6 @@ test.describe('Cart — multi-item merge', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(2, {
       timeout: 8000,
@@ -988,9 +963,6 @@ test.describe('Cart — multi-item merge', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
     await page.goto('/cart')
     await expect(
       page.locator('[data-testid="cart-item-qty"]').first(),

@@ -12,7 +12,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "lsof -ti :3000 | xargs kill -9 2>/dev/null; PORT=3000 next dev & sleep 6 && playwright test; kill %1 2>/dev/null",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:prod": "BASE_URL=https://iced-latte.uk playwright test --grep @real",
+    "test:e2e:local-real": "lsof -ti :3000 | xargs kill -9 2>/dev/null; PORT=3000 next dev & sleep 6 && BASE_URL=http://localhost:3000 playwright test --grep @real; kill %1 2>/dev/null"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.0",
