@@ -30,6 +30,7 @@ const ReviewForm = ({ productId, showForm, setShowForm, onReviewSubmitted }: Rev
 
   const handleAddReview = async () => {
     const trimmedText = reviewText.trim()
+
     if (!currentRating || !trimmedText) return
 
     try {

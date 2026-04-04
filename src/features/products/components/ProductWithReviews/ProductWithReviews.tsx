@@ -25,6 +25,7 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
     try {
 
       const stats = await apiGetProductReviewsStatistics(product.id)
+
       setReviewsStatistics(stats)
     } catch (error) {
       handleError(error)

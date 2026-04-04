@@ -34,6 +34,7 @@ const FormProfile = ({
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const saved = await editUserProfile(data as UserData)
+
       updateUserData(saved)
       onSuccessEdit()
     } catch (error) {

@@ -33,7 +33,9 @@ const Review: React.FC<Readonly<IReview>> = ({
 
   const deleteReviewHandler = () => {
     if (!review.productReviewId || !deleteReview) return
-    if (!confirmDelete) { setConfirmDelete(true); return }
+    if (!confirmDelete) { setConfirmDelete(true)
+
+      return }
     deleteReview(review.productReviewId)
   }
 

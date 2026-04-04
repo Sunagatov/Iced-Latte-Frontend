@@ -1,11 +1,11 @@
 'use client'
 import ReviewForm from '../ReviewForm/ReviewForm'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { Review, IProductReviewsStatistics } from '@/features/reviews/types'
 import { useAuthStore } from '@/features/auth/store'
 import { useReviews } from '@/features/reviews/hooks'
-import { apiGetProductUserReview, apiGetProductReviewsStatistics } from '@/features/reviews/api'
+import { apiGetProductUserReview } from '@/features/reviews/api'
 import Loader from '@/shared/components/Loader/Loader'
 import ReviewsList from '@/features/reviews/components/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/features/reviews/components/ReviewsSorter/ReviewsSorter'
@@ -42,10 +42,13 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
   useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () => setShowFilterDropdown(false))
 
   useEffect(() => {
+
     if (!isLoggedIn) {
       setUserReview(null)
+
       return
     }
+
     apiGetProductUserReview(productId)
       .then((review) => {
         setUserReview(checkIfUserReviewExists(review) ? review : null)
@@ -73,6 +76,7 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
   const ratingFilterChangeHandler = (value: number) => {
     setSelectedFilterRating((prev) => {
       const idx = prev.indexOf(value)
+
       return idx === -1 ? [...prev, value] : prev.toSpliced(idx, 1)
     })
   }
