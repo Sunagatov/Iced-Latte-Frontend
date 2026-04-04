@@ -113,7 +113,7 @@ async function mockWithCart(
         contentType: 'application/json',
         body: JSON.stringify({ products: favProducts }),
       })
-    } else if (url.includes('/auth/session')) {
+    } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -368,11 +368,11 @@ test.describe('Logout clears cart and favourites state', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
 
-      if (url.includes('/auth/session')) {
+      if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
-          status: 200,
+          status: 401,
           contentType: 'application/json',
-          body: JSON.stringify({ authenticated: false, user: null }),
+          body: JSON.stringify({ message: 'Unauthorized' }),
         })
       } else if (url.includes('/products')) {
         await route.fulfill({
@@ -408,11 +408,11 @@ test.describe('Logout clears cart and favourites state', () => {
     await page.route('**/api/proxy/**', async (route) => {
       const url = route.request().url()
 
-      if (url.includes('/auth/session')) {
+      if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
-          status: 200,
+          status: 401,
           contentType: 'application/json',
-          body: JSON.stringify({ authenticated: false, user: null }),
+          body: JSON.stringify({ message: 'Unauthorized' }),
         })
       } else if (url.includes('/products')) {
         await route.fulfill({

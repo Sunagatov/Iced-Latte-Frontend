@@ -111,12 +111,12 @@ async function mockReviewCalls(page: Page) {
         contentType: 'application/json',
         body: JSON.stringify({ products: [] }),
       })
-    else if (url.includes('/auth/session'))
+    else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
       await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ authenticated: false, user: null }),
-      })
+          status: 401,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Unauthorized' }),
+        })
     else
       await route.fulfill({
         status: 200,
@@ -148,11 +148,11 @@ async function mockReviewCallsAuthenticated(page: Page) {
     const url = route.request().url()
     const method = route.request().method()
 
-    if (url.includes('/auth/session'))
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ authenticated: true, user: FAKE_USER }),
+        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
       })
     else if (url.includes('/reviews') && method === 'POST')
       await route.fulfill({

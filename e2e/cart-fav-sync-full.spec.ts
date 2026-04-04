@@ -151,7 +151,7 @@ async function mockProxy(
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
 
-    if (url.includes('/auth/session')) {
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -293,7 +293,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
             makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
           ),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -371,7 +371,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
               : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
           ),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -427,7 +427,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
               : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)]),
           ),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -500,7 +500,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
               ]),
           ),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -593,7 +593,7 @@ test.describe('Cart — guest operations', () => {
           contentType: 'application/json',
           body: JSON.stringify(makeCart([])),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -639,7 +639,7 @@ test.describe('Favourites sync', () => {
           contentType: 'application/json',
           body: JSON.stringify({ products: [makeProduct(PRODUCT_A)] }),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -695,7 +695,7 @@ test.describe('Favourites sync', () => {
             totalPages: 1,
           }),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -752,7 +752,7 @@ test.describe('Favourites sync', () => {
           contentType: 'application/json',
           body: JSON.stringify({ products: [product] }),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -812,7 +812,7 @@ test.describe('Favourites sync', () => {
             totalPages: 1,
           }),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -932,7 +932,7 @@ test.describe('Cart — multi-item merge', () => {
           contentType: 'application/json',
           body: JSON.stringify(mergedCart),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -984,7 +984,7 @@ test.describe('Cart — multi-item merge', () => {
           contentType: 'application/json',
           body: JSON.stringify(mergedCart),
         })
-      } else if (url.includes('/auth/session')) {
+      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',

@@ -16,12 +16,8 @@ async function mockAll200(page: Page) {
   await page.route('**/api/proxy/**', (route) => {
     const url = route.request().url()
 
-    if (url.includes('/auth/session')) {
-      void route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ authenticated: false, user: null }),
-      })
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+      void route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Unauthorized' }) })
     } else {
       void route.fulfill({
         status: 200,
@@ -37,11 +33,11 @@ async function mockAll200Authenticated(page: Page) {
   await page.route('**/api/proxy/**', (route) => {
     const url = route.request().url()
 
-    if (url.includes('/auth/session')) {
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
       void route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ authenticated: true, user: { firstName: 'Olivia', lastName: 'Test', email: EXISTING_EMAIL } }),
+        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"olivia@example.com","phoneNumber":null,"birthDate":null,"address":null}),
       })
     } else {
       void route.fulfill({

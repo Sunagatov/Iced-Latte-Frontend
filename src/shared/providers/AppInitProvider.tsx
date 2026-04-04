@@ -87,16 +87,16 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
       }
 
       if (itemsCount > 0) {
-        void getCartItems().catch(ignoreAsyncError)
+        void getCartItems().catch(() => {})
       }
 
       return
     }
 
     if (!isSync && itemsCount > 0) {
-      void syncBackendCart().catch(ignoreAsyncError)
+      void syncBackendCart().catch(() => {})
     } else {
-      void loadAuthCart().catch(ignoreAsyncError)
+      void loadAuthCart().catch(() => {})
     }
 
     const syncFavourites = async (): Promise<void> => {
