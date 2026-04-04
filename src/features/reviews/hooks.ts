@@ -47,8 +47,8 @@ export function useReviews({
   })
   const filteredReviews = userReview
     ? dedupedReviews.filter(
-        (review) => review.productReviewId !== userReview.productReviewId,
-      )
+      (review) => review.productReviewId !== userReview.productReviewId,
+    )
     : dedupedReviews
 
   const refreshReviews = useCallback(() => mutate(), [mutate])

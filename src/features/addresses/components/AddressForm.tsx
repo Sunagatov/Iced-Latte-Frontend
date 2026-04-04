@@ -24,12 +24,12 @@ export default function AddressForm({ editing, onClose }: Props) {
   } = useForm<AddressFormData>({
     defaultValues: editing
       ? {
-          label: editing.label,
-          country: editing.country,
-          city: editing.city,
-          line: editing.line,
-          postcode: editing.postcode,
-        }
+        label: editing.label,
+        country: editing.country,
+        city: editing.city,
+        line: editing.line,
+        postcode: editing.postcode,
+      }
       : { label: '', country: '', city: '', line: '', postcode: '' },
   })
 
@@ -37,12 +37,12 @@ export default function AddressForm({ editing, onClose }: Props) {
     reset(
       editing
         ? {
-            label: editing.label,
-            country: editing.country,
-            city: editing.city,
-            line: editing.line,
-            postcode: editing.postcode,
-          }
+          label: editing.label,
+          country: editing.country,
+          city: editing.city,
+          line: editing.line,
+          postcode: editing.postcode,
+        }
         : { label: '', country: '', city: '', line: '', postcode: '' },
     )
   }, [editing, reset])

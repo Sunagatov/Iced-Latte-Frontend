@@ -18,7 +18,7 @@ export const filterProductsByPriceSchema = yup.object().shape({
     .test(
       'max-gte-min',
       'Min price cannot be greater than max price',
-      function (to) {
+      function(to) {
         const from = this.parent.fromPriceInput as string | undefined
 
         if (!from || !to) return true

@@ -34,17 +34,17 @@ export default function CheckoutForm() {
 
   const address = selectedAddress
     ? {
-        country: selectedAddress.country,
-        city: selectedAddress.city,
-        line: selectedAddress.line,
-        postcode: selectedAddress.postcode,
-      }
+      country: selectedAddress.country,
+      city: selectedAddress.city,
+      line: selectedAddress.line,
+      postcode: selectedAddress.postcode,
+    }
     : {
-        country: form.country,
-        city: form.city,
-        line: form.line,
-        postcode: form.postcode,
-      }
+      country: form.country,
+      city: form.city,
+      line: form.line,
+      postcode: form.postcode,
+    }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

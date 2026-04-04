@@ -89,10 +89,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
         })
           .then(
             () => {
-              /* no-op */
+            /* no-op */
             },
             () => {
-              /* no-op */
+            /* no-op */
             },
           )
           .finally(() => clearPending(set, id))
@@ -101,10 +101,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
         createCart({ items: [{ productId: id, productQuantity: 1 }] })
           .then(
             () => {
-              /* no-op */
+            /* no-op */
             },
             () => {
-              /* no-op */
+            /* no-op */
             },
           )
           .finally(() => clearPending(set, id))
@@ -116,10 +116,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
 
       const updatedTempItems = cartItem
         ? tempItems.map((tempItem: ICartItem) =>
-            tempItem.productInfo.id === id
-              ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
-              : tempItem,
-          )
+          tempItem.productInfo.id === id
+            ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
+            : tempItem,
+        )
         : tempItems
 
       set((state) => ({
@@ -442,9 +442,9 @@ function getProductsCount(cartList: ICartPushItem[]): number {
 function getTotalPrice(cartList: ICartItem[]): number {
   return cartList.length
     ? cartList.reduce(
-        (prev, curr) => prev + curr.productInfo.price * curr.productQuantity,
-        0,
-      )
+      (prev, curr) => prev + curr.productInfo.price * curr.productQuantity,
+      0,
+    )
     : 0
 }
 
