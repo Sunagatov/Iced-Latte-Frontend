@@ -23,16 +23,9 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
   const setAnonymous = useAuthStore(
     (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
   )
-  const resetAuth = useAuthStore(
-    (state: AuthStore): AuthStore['reset'] => state.reset,
-  )
-
   const syncBackendFav = useFavouritesStore(
     (state: FavStoreState): FavStoreState['syncBackendFav'] =>
       state.syncBackendFav,
-  )
-  const resetFav = useFavouritesStore(
-    (state: FavStoreState): FavStoreState['resetFav'] => state.resetFav,
   )
   const getFavouriteProducts = useFavouritesStore(
     (state: FavStoreState): FavStoreState['getFavouriteProducts'] =>
@@ -53,12 +46,6 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
   const loadAuthCart = useCartStore(
     (state: CartSliceStore): CartSliceStore['loadAuthCart'] =>
       state.loadAuthCart,
-  )
-  const itemsIds = useCartStore(
-    (state: CartSliceStore): CartSliceStore['itemsIds'] => state.itemsIds,
-  )
-  const itemsCount = useCartStore(
-    (state: CartSliceStore): number => state.itemsIds.length,
   )
   const isSync = useCartStore((state: CartSliceStore): boolean => state.isSync)
 
@@ -86,14 +73,20 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
         resetCart()
       }
 
-      if (itemsCount > 0) {
+      const count = useCartStore.getState().itemsIds.length
+
+      if (count > 0) {
         void getCartItems().catch(() => {})
       }
 
       return
     }
 
-    if (!isSync && itemsCount > 0) {
+    // status === 'authenticated' — run once on login
+    const { isSync: currentIsSync, itemsIds: currentItemsIds } =
+      useCartStore.getState()
+
+    if (!currentIsSync && currentItemsIds.length > 0) {
       void syncBackendCart().catch(() => {})
     } else {
       void loadAuthCart().catch(() => {})
@@ -117,7 +110,6 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
   }, [
     status,
     isSync,
-    itemsCount,
     getCartItems,
     getFavouriteProducts,
     loadAuthCart,

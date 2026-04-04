@@ -61,6 +61,7 @@ async function mockWithCart(
   authenticated = false,
 ) {
   let serverQty = initialQty
+  let serverFavs = [...favProducts]
 
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
@@ -107,11 +108,25 @@ async function mockWithCart(
         contentType: 'application/json',
         body: JSON.stringify(makeCart(serverQty)),
       })
+    } else if (url.includes('/favorites') && method === 'DELETE') {
+      serverFavs = []
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ products: [] }),
+      })
+    } else if (url.includes('/favorites') && method === 'POST') {
+      serverFavs = [...favProducts]
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ products: serverFavs }),
+      })
     } else if (url.includes('/favorites')) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ products: favProducts }),
+        body: JSON.stringify({ products: serverFavs }),
       })
     } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
       if (authenticated) {
