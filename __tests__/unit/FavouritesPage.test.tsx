@@ -16,13 +16,13 @@ beforeEach(() => {
 })
 
 describe('FavouritesPage', () => {
-  it('shows FavouritesEmpty when no favourites', async () => {
+  it('shows FavouritesEmpty when no favourites', () => {
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
-    await act(() => { render(<FavouritesPage />) })
+    act(() => { render(<FavouritesPage />) })
     expect(screen.getByText('FavouritesEmpty')).toBeInTheDocument()
   })
 
-  it('shows FavouritesFull when favourites exist', async () => {
+  it('shows FavouritesFull when favourites exist', () => {
     useFavouritesStore.setState({
       favouriteIds: ['p1'],
       favourites: [{ id: 'p1', name: 'Coffee', description: '', price: 10, quantity: 1, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }],
@@ -30,7 +30,7 @@ describe('FavouritesPage', () => {
       pendingIds: new Set(),
     })
     jest.spyOn(useFavouritesStore.getState(), 'getFavouriteProducts').mockResolvedValue(undefined)
-    await act(() => { render(<FavouritesPage />) })
+    act(() => { render(<FavouritesPage />) })
     expect(screen.getByText('FavouritesFull')).toBeInTheDocument()
   })
 

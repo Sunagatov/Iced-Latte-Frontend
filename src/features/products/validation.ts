@@ -7,10 +7,10 @@ export const filterProductsByPriceSchema = yup.object().shape({
     .defined()
     .matches(/^\d*\.?\d*$/, { excludeEmptyString: true, message: 'Invalid price' })
     .test('max-gte-min', 'Min price cannot be greater than max price', function(to) {
-      const from = this.parent.fromPriceInput
+      const from = this.parent.fromPriceInput as string | undefined
 
       if (!from || !to) return true
 
-      return parseFloat(from) <= parseFloat(to)
+      return parseFloat(from) <= parseFloat(to as string)
     }),
 })

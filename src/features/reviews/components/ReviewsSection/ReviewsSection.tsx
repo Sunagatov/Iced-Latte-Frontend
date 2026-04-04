@@ -28,7 +28,7 @@ interface ReviewComponentProps {
 const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: ReviewComponentProps) => {
   const { id: productId } = product
   const { errorMessage, handleError } = useErrorHandler()
-  const { isLoggedIn } = useAuthStore()
+  const isLoggedIn: boolean = useAuthStore((s) => s.isLoggedIn)
 
   const [userReview, setUserReview] = useState<Review | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -43,8 +43,7 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
 
   const refreshUserReview = useCallback(() => {
     apiGetProductUserReview(productId)
-      .then((review) => { setUserReview(checkIfUserReviewExists(review) ? review : null) })
-      .catch(() => setUserReview(null))
+      .then((review) => { setUserReview(checkIfUserReviewExists(review) ? review : null) }, () => setUserReview(null))
   }, [productId])
 
   useEffect(() => {
@@ -89,8 +88,8 @@ const ReviewsSection = ({ product, reviewsStatistics, refreshStatistics }: Revie
         <p className="text-sm font-medium text-primary">Failed to load reviews.</p>
         <p className="mt-1 text-sm text-tertiary">Please try again.</p>
         <button
-          onClick={() => void refreshReviews()}
           className="mt-4 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-inverted transition hover:bg-brand-solid-hover"
+          onClick={() => void refreshReviews()}
         >
           Retry
         </button>

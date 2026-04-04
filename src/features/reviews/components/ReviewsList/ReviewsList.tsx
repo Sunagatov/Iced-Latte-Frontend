@@ -35,7 +35,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
   onReviewDeleted,
   onReviewRated,
 }) => {
-  const { isLoggedIn } = useAuthStore()
+  const isLoggedIn: boolean = useAuthStore((s) => s.isLoggedIn)
   const router = useRouter()
   const { handleError } = useErrorHandler()
   const [isPending, setIsPending] = React.useState(false)
@@ -95,11 +95,11 @@ const ReviewsList: React.FC<IReviewsList> = ({
             key={review.productReviewId}
           >
             <Review
-              isUserReview={false}
-              review={review}
               allowVoting
-              rateReview={handleRateReview}
               isPending={isPending}
+              isUserReview={false}
+              rateReview={handleRateReview}
+              review={review}
             />
           </li>
         ))}

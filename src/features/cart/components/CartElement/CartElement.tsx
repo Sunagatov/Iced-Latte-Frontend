@@ -27,7 +27,9 @@ export default function CartElement({ product, isPending = false, add, remove, r
     }
   }, [productQuantity])
 
-  const { toggleFavourite, favouriteIds, pendingIds } = useFavouritesStore()
+  const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite)
+  const favouriteIds: string[] = useFavouritesStore((s) => s.favouriteIds)
+  const pendingIds: Set<string> = useFavouritesStore((s) => s.pendingIds)
   const isFavourited = favouriteIds.includes(productInfo.id)
   const isFavPending = pendingIds.has(productInfo.id)
 

@@ -38,15 +38,15 @@ const Review: React.FC<Readonly<IReview>> = ({
     if (!confirmDelete) { setConfirmDelete(true)
 
       return }
-    deleteReview(review.productReviewId)
+    deleteReview(review.productReviewId as string)
   }
 
   const likeReviewHandler = () => {
-    if (review.productReviewId && rateReview) rateReview(review.productReviewId, true)
+    if (review.productReviewId && rateReview) rateReview(review.productReviewId as string, true)
   }
 
   const dislikeReviewHandler = () => {
-    if (review.productReviewId && rateReview) rateReview(review.productReviewId, false)
+    if (review.productReviewId && rateReview) rateReview(review.productReviewId as string, false)
   }
 
   const displayName = [review.userName, review.userLastName].filter(Boolean).join(' ') || 'Anonymous'
@@ -66,7 +66,7 @@ const Review: React.FC<Readonly<IReview>> = ({
         </div>
       </div>
 
-      <div className="mb-3 flex items-center gap-1" role="img" aria-label={review.productRating ? `Rated ${review.productRating} out of 5 stars` : 'No rating'}>
+      <div className="mb-3 flex items-center gap-1" role="img" aria-label={(review.productRating as number | null) ? `Rated ${review.productRating as number} out of 5 stars` : 'No rating'}>
         {[...Array(5)].map((_, i) => (
           <FaStar
             className={`h-4 w-4 ${review.productRating && i < review.productRating ? 'text-brand' : 'text-disabled'}`}
@@ -117,10 +117,10 @@ const Review: React.FC<Readonly<IReview>> = ({
       <div className="flex items-center justify-between">
         {isUserReview && allowDelete && deleteReview && (
           <button
-            onClick={deleteReviewHandler}
-            onBlur={() => setConfirmDelete(false)}
-            disabled={isPending}
             className={`text-xs font-medium transition disabled:opacity-50 ${confirmDelete ? 'text-negative' : 'text-tertiary hover:text-negative'}`}
+            disabled={isPending}
+            onBlur={() => setConfirmDelete(false)}
+            onClick={deleteReviewHandler}
           >
             {confirmDelete ? 'Confirm delete' : 'Delete review'}
           </button>
@@ -137,10 +137,10 @@ const Review: React.FC<Readonly<IReview>> = ({
               <span>{review.likesCount}</span>
             </button>
             <button
-              onClick={dislikeReviewHandler}
-              disabled={isPending}
               aria-label={`Mark review as not helpful, ${review.dislikesCount} dislikes`}
               className="flex items-center gap-1 text-xs text-tertiary transition hover:text-negative disabled:opacity-50"
+              disabled={isPending}
+              onClick={dislikeReviewHandler}
             >
               <BiDislike className="h-3.5 w-3.5" />
               <span>{review.dislikesCount}</span>

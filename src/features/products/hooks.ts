@@ -30,8 +30,8 @@ export function useProducts(
     const params = new URLSearchParams({
       page: String(pageIndex),
       size: String(productSize),
-      sort_attribute: sortAttribute,
-      sort_direction: sortDirection,
+      sort_attribute: String(sortAttribute),
+      sort_direction: String(sortDirection),
     })
 
     if (brandNames) params.set('brand_names', brandNames)

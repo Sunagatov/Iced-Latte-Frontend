@@ -73,8 +73,10 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
     getAllProducts(
       `products?page=0&size=${AUTOCOMPLETE_SIZE}&sort_attribute=name&sort_direction=asc&keyword=${encodeURIComponent(debouncedInput)}`
     )
-      .then((data) => { if (!cancelled) setSuggestions(data.products ?? []) })
-      .catch(() => { if (!cancelled) setSuggestions([]) })
+      .then(
+        (data) => { if (!cancelled) setSuggestions(data.products ?? []) },
+        () => { if (!cancelled) setSuggestions([]) }
+      )
 
     return () => { cancelled = true }
   }, [debouncedInput])
@@ -215,8 +217,8 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
                 {recent.map((q, i) => (
                   <li className={`flex items-center gap-3 px-4 transition-colors ${i === activeIdx ? 'bg-secondary' : 'hover:bg-secondary'}`} key={q}>
                     <button
-                      onMouseDown={() => commit(q)}
                       className="flex flex-1 items-center gap-3 py-2.5 text-left text-sm"
+                      onMouseDown={() => commit(q)}
                     >
                       <svg className="h-3.5 w-3.5 shrink-0 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
@@ -224,9 +226,9 @@ export default function SearchBar({ autoFocus, onBlur, heroMode }: SearchBarProp
                       <span className="flex-1 text-primary">{q}</span>
                     </button>
                     <button
-                      onMouseDown={(e) => handleDeleteRecent(e, q)}
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-secondary hover:bg-tertiary hover:text-primary"
                       aria-label={`Remove ${q}`}
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-secondary hover:bg-tertiary hover:text-primary"
+                      onMouseDown={(e) => handleDeleteRecent(e, q)}
                     >
                       <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path d="M18 6 6 18M6 6l12 12" />

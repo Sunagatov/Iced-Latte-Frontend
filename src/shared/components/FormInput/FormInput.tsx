@@ -58,7 +58,7 @@ export default function FormInput<T extends FieldValues>({
         aria-describedby={error ? `${id}-error` : undefined}
         aria-invalid={!!error}
         onChange={(e) => {
-          void registered.onChange(e)
+          void (registered.onChange as React.ChangeEventHandler<HTMLInputElement>)(e)
           onChange?.(e)
         }}
       />

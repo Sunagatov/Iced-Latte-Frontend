@@ -15,7 +15,9 @@ const toDecimal = (input: string) => {
 }
 
 const PriceFilter = () => {
-  const { updateProductFiltersStore, toPriceFilter, fromPriceFilter } = useProductFiltersStore()
+  const updateProductFiltersStore = useProductFiltersStore((s) => s.updateProductFiltersStore)
+  const toPriceFilter: string = useProductFiltersStore((s) => s.toPriceFilter)
+  const fromPriceFilter: string = useProductFiltersStore((s) => s.fromPriceFilter)
 
   const [fromInput, setFromInput] = useState(fromPriceFilter)
   const [toInput, setToInput] = useState(toPriceFilter)
@@ -65,23 +67,23 @@ const PriceFilter = () => {
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/40">from</span>
           <input
+            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-10 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
             id="from-price-input"
+            onChange={handleFromChange}
+            placeholder="Min"
             type="text"
             value={fromInput}
-            placeholder="Min"
-            onChange={handleFromChange}
-            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-10 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
           />
         </div>
         <div className="relative flex-1">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/40">to</span>
           <input
+            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-7 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
             id="to-price-input"
+            onChange={handleToChange}
+            placeholder="Max"
             type="text"
             value={toInput}
-            placeholder="Max"
-            onChange={handleToChange}
-            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-7 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
           />
         </div>
       </div>

@@ -4,7 +4,7 @@ import { isTokenExpired } from '@/shared/utils/authToken'
 import FilledProfile from '@/features/user/components/FilledProfile/FilledProfile'
 
 const ProfilePage = async () => {
-  const token = await getCookie()
+  const token: string | undefined = await getCookie()
 
   if (!token || isTokenExpired(token)) redirect('/signin')
 

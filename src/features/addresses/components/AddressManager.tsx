@@ -45,8 +45,8 @@ export default function AddressManager() {
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-10 text-center">
           <p className="font-medium text-negative">{error}</p>
           <button
-            onClick={() => fetch()}
             className="rounded-xl bg-brand px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-solid-hover"
+            onClick={() => fetch()}
           >
             Try again
           </button>

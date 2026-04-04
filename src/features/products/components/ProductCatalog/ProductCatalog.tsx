@@ -23,16 +23,14 @@ export default function ProductCatalog({
   brands,
   sellers,
 }: Readonly<IProductCatalogProps>) {
-  const {
-    toPriceFilter,
-    fromPriceFilter,
-    selectedBrandOptions,
-    selectedSellerOptions,
-    selectedSortOption,
-    ratingFilter,
-    searchQuery,
-    updateProductFiltersStore,
-  } = useProductFiltersStore()
+  const toPriceFilter: string = useProductFiltersStore((s) => s.toPriceFilter)
+  const fromPriceFilter: string = useProductFiltersStore((s) => s.fromPriceFilter)
+  const selectedBrandOptions: string[] = useProductFiltersStore((s) => s.selectedBrandOptions)
+  const selectedSellerOptions: string[] = useProductFiltersStore((s) => s.selectedSellerOptions)
+  const selectedSortOption = useProductFiltersStore((s) => s.selectedSortOption)
+  const ratingFilter = useProductFiltersStore((s) => s.ratingFilter)
+  const searchQuery: string = useProductFiltersStore((s) => s.searchQuery)
+  const updateProductFiltersStore = useProductFiltersStore((s) => s.updateProductFiltersStore)
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [loadMoreError, setLoadMoreError] = useState(false)
@@ -59,11 +57,11 @@ export default function ProductCatalog({
   }
 
   const handleFilterClick = () => { setIsMobileFilterOpen((prev) => !prev) }
-  const handleCloseMobileFilter = () => setIsMobileFilterOpen(false)
+  const handleCloseMobileFilter = () => { setIsMobileFilterOpen(false) }
 
   const handleLoadMore = () => {
     setLoadMoreError(false)
-    fetchNext().catch(() => setLoadMoreError(true))
+    fetchNext().then(undefined, () => setLoadMoreError(true))
   }
 
   const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
@@ -148,7 +146,7 @@ export default function ProductCatalog({
                 </span>
               ))}
               {selectedSellerOptions.map((s) => (
-                <span key={s} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
+                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary" key={s}>
                   {s}
                   <button onClick={() => updateProductFiltersStore({ selectedSellerOptions: selectedSellerOptions.filter((x) => x !== s) })} className="hover:opacity-70" aria-label={`Remove seller ${s}`}>✕</button>
                 </span>

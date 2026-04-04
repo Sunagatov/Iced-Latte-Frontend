@@ -2,17 +2,18 @@
 import FavouritesEmpty from '../FavouritesEmpty/FavouritesEmpty'
 import FavouritesFull from '../FavouritesFull/FavouritesFull'
 import FavouritesSkeleton from '../FavouritesSkeleton/FavouritesSkeleton'
-import { useFavouritesStore } from '@/features/favorites/store'
-import { useAuthStore } from '@/features/auth/store'
+import { useFavouritesStore, FavStatus } from '@/features/favorites/store'
+import { useAuthStore, AuthStatus } from '@/features/auth/store'
+import { IProduct } from '@/features/products/types'
 import { useEffect, useState } from 'react'
 
 interface PersistApi { persist: { hasHydrated: () => boolean; onFinishHydration: (fn: () => void) => () => void } }
 
 export default function FavouritesPage() {
-  const favourites = useFavouritesStore((s) => s.favourites)
-  const status = useFavouritesStore((s) => s.status)
-  const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
-  const authStatus = useAuthStore((s) => s.status)
+  const favourites: IProduct[] = useFavouritesStore((s) => s.favourites)
+  const status: FavStatus = useFavouritesStore((s) => s.status)
+  const getFavouriteProducts: () => Promise<void> = useFavouritesStore((s) => s.getFavouriteProducts)
+  const authStatus: AuthStatus = useAuthStore((s) => s.status)
   const [hydrated, setHydrated] = useState(false)
 
   // Only fav store is persisted; auth store resolves via session fetch in AppInitProvider

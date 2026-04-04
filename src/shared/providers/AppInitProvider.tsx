@@ -7,21 +7,31 @@ import { useFavouritesStore } from '@/features/favorites/store'
 import { apiGetSession } from '@/features/auth/api'
 
 const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
-  const { status, setAuthenticated, setAnonymous, reset: resetAuth } = useAuthStore()
-  const { syncBackendFav, resetFav, getFavouriteProducts } = useFavouritesStore()
-  const { syncBackendCart, resetCart, getCartItems, loadAuthCart, itemsIds, isSync } = useCartStore()
+  const status = useAuthStore((s) => s.status)
+  const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
+  const setAnonymous = useAuthStore((s) => s.setAnonymous)
+  const resetAuth = useAuthStore((s) => s.reset)
+  const syncBackendFav = useFavouritesStore((s) => s.syncBackendFav)
+  const resetFav = useFavouritesStore((s) => s.resetFav)
+  const getFavouriteProducts = useFavouritesStore((s) => s.getFavouriteProducts)
+  const syncBackendCart = useCartStore((s) => s.syncBackendCart)
+  const resetCart = useCartStore((s) => s.resetCart)
+  const getCartItems = useCartStore((s) => s.getCartItems)
+  const loadAuthCart = useCartStore((s) => s.loadAuthCart)
+  const itemsIds = useCartStore((s) => s.itemsIds)
+  const isSync = useCartStore((s) => s.isSync)
 
   // Bootstrap session on mount
   useEffect(() => {
     apiGetSession()
       .then((session) => {
         if (session.authenticated) {
-          setAuthenticated(session.user)
+          setAuthenticated(session.user ?? null)
         } else {
           setAnonymous()
         }
       })
-      .catch(() => setAnonymous())
+      .then(undefined, () => setAnonymous())
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync cart and favourites once auth status is resolved
@@ -30,21 +40,21 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (status === 'anonymous') {
       if (isSync) resetCart()
-      if (itemsIds.length) getCartItems().catch(() => { /* ignore */ })
+      if (itemsIds.length) getCartItems().then(undefined, () => { /* ignore */ })
 
       return
     }
 
     // authenticated
     if (!isSync && itemsIds.length) {
-      syncBackendCart().catch(() => { /* ignore */ })
+      syncBackendCart().then(undefined, () => { /* ignore */ })
     } else {
-      loadAuthCart().catch(() => { /* ignore */ })
+      loadAuthCart().then(undefined, () => { /* ignore */ })
     }
 
     const syncFavourites = async () => {
       try {
-        const { favouriteIds } = useFavouritesStore.getState()
+        const { favouriteIds } = useFavouritesStore.getState() as { favouriteIds: string[] }
 
         if (favouriteIds.length) {
           await syncBackendFav()

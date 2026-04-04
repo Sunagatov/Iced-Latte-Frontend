@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { api } from '@/shared/api/client'
 import { getSessionId } from '@/shared/utils/sessionUtils'
+import type { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 
 interface ApiCallMetric {
   url: string
@@ -27,8 +28,8 @@ export default function PerformanceTracker({ children }: { children: React.React
     pageLoadStart.current = Date.now()
 
     if (reqInterceptorId === null) {
-      reqInterceptorId = api.interceptors.request.use((config) => {
-        ;(config as typeof config & TimedAxiosConfig)._t = Date.now()
+      reqInterceptorId = api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+        ;(config as InternalAxiosRequestConfig & TimedAxiosConfig)._t = Date.now()
 
         return config
       })
@@ -36,8 +37,8 @@ export default function PerformanceTracker({ children }: { children: React.React
 
     if (resInterceptorId === null) {
       resInterceptorId = api.interceptors.response.use(
-        (response) => {
-          const start = (response.config as typeof response.config & TimedAxiosConfig)._t
+        (response: AxiosResponse) => {
+          const start = (response.config as InternalAxiosRequestConfig & TimedAxiosConfig)._t
 
           if (start) {
             apiCalls.current.push({
@@ -50,8 +51,8 @@ export default function PerformanceTracker({ children }: { children: React.React
 
           return response
         },
-        (error) => {
-          const start = (error.config as typeof error.config & TimedAxiosConfig)?._t
+        (error: AxiosError) => {
+          const start = (error.config as (InternalAxiosRequestConfig & TimedAxiosConfig) | undefined)?._t
 
           if (start && error.config) {
             apiCalls.current.push({
