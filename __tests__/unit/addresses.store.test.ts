@@ -37,30 +37,26 @@ describe('address store', () => {
 
   it('add appends address', async () => {
     mockedApi.createAddress.mockResolvedValue(addr('a2'))
-    await useAddressStore
-      .getState()
-      .add({
-        label: 'home',
-        line: 's',
-        city: 'c',
-        country: 'uk',
-        postcode: '1',
-      })
+    await useAddressStore.getState().add({
+      label: 'home',
+      line: 's',
+      city: 'c',
+      country: 'uk',
+      postcode: '1',
+    })
     expect(useAddressStore.getState().addresses).toHaveLength(1)
   })
 
   it('update replaces address', async () => {
     useAddressStore.setState({ addresses: [addr('a1')], loading: false })
     mockedApi.updateAddress.mockResolvedValue({ ...addr('a1'), city: 'London' })
-    await useAddressStore
-      .getState()
-      .update('a1', {
-        label: 'home',
-        line: 's',
-        city: 'London',
-        country: 'uk',
-        postcode: '1',
-      })
+    await useAddressStore.getState().update('a1', {
+      label: 'home',
+      line: 's',
+      city: 'London',
+      country: 'uk',
+      postcode: '1',
+    })
     expect(useAddressStore.getState().addresses[0].city).toBe('London')
   })
 

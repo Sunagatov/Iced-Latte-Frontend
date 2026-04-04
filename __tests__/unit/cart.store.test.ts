@@ -162,12 +162,10 @@ describe('cart store — updateCartItem', () => {
       productsQuantity: 1,
       items: [makeCartItem('p1', 1)],
     })
-    await useCartStore
-      .getState()
-      .updateCartItem({
-        shoppingCartItemId: 'slot-p1',
-        productQuantityChange: 1,
-      })
+    await useCartStore.getState().updateCartItem({
+      shoppingCartItemId: 'slot-p1',
+      productQuantityChange: 1,
+    })
     expect(useCartStore.getState().totalPrice).toBe(10)
   })
 })

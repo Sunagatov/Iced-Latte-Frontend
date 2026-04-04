@@ -5,7 +5,7 @@ jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt }: { src: string; alt: string }) => (
     <img src={src} alt={alt} />
-  ), // eslint-disable-line @next/next/no-img-element
+  ),
 }))
 jest.mock('@/shared/utils/getImgUrl', () => ({
   __esModule: true,
