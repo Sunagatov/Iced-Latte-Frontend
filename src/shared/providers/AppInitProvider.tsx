@@ -37,7 +37,7 @@ const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
 
     // authenticated
     if (!isSync && itemsIds.length) {
-      syncBackendCart('').catch(() => {})
+      syncBackendCart().catch(() => {})
     } else {
       loadAuthCart().catch(() => {})
     }

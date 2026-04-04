@@ -25,7 +25,7 @@ interface CartSliceActions {
   remove: (id: string) => void
   getCartItems: () => Promise<void>
   loadAuthCart: () => Promise<void>
-  syncBackendCart: (token: string) => Promise<void>
+  syncBackendCart: () => Promise<void>
   removeFullProduct: (id: string) => void
   resetCart: () => void
   clearCart: () => Promise<void>
@@ -125,10 +125,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (s
     }
   },
 
-  syncBackendCart: async (token: string) => {
+  syncBackendCart: async () => {
     const { createCart, itemsIds } = get()
 
-    void token
     await createCart({ items: itemsIds })
   },
   loadAuthCart: async () => {
