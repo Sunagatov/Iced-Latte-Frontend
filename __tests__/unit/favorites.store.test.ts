@@ -1,45 +1,100 @@
 import { useFavouritesStore } from '@/features/favorites/store'
+import type { FavStoreState } from '@/features/favorites/store'
 import * as favsApi from '@/features/favorites/api'
 import * as productsApi from '@/features/products/api'
 import { useAuthStore } from '@/features/auth/store'
+import type { AuthStore } from '@/features/auth/store'
+import type { IProduct } from '@/features/products/types'
+import type { StoreApi } from 'zustand'
 
 jest.mock('@/features/favorites/api', () => ({
   syncFavourites: jest.fn(),
   removeFavourite: jest.fn(),
   fetchFavourites: jest.fn(),
 }))
+
 jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
+
 jest.mock('@/features/auth/store', () => ({
   useAuthStore: {
     getState: jest.fn(),
   },
 }))
 
-const mockedFavsApi = jest.mocked(favsApi) as jest.Mocked<typeof favsApi>
-const mockedProductsApi = jest.mocked(productsApi) as jest.Mocked<typeof productsApi>
-const mockedAuthStore = jest.mocked(useAuthStore as unknown as { getState: jest.Mock }) as { getState: jest.Mock }
+type AuthStateSnapshot = Pick<AuthStore, 'status'>
+type FavStateSnapshot = Pick<FavStoreState, 'favouriteIds' | 'favourites' | 'status' | 'pendingIds'>
 
-function makeProduct(id: string) {
-  return { id, name: 'p', description: '', price: 10, quantity: 10, active: true, productFileUrl: null, averageRating: 0, reviewsCount: 0, brandName: 'b', sellerName: 's' }
+const mockedSyncFavourites =
+  favsApi.syncFavourites as jest.MockedFunction<typeof favsApi.syncFavourites>
+const mockedRemoveFavourite =
+  favsApi.removeFavourite as jest.MockedFunction<typeof favsApi.removeFavourite>
+const mockedFetchFavourites =
+  favsApi.fetchFavourites as jest.MockedFunction<typeof favsApi.fetchFavourites>
+const mockedGetProductByIds =
+  productsApi.getProductByIds as jest.MockedFunction<typeof productsApi.getProductByIds>
+
+const mockedAuthStore = useAuthStore as unknown as {
+  getState: jest.MockedFunction<() => AuthStateSnapshot>
 }
 
-function setAuthStatus(status: 'authenticated' | 'anonymous') {
+const favouritesStore = useFavouritesStore as unknown as Pick<
+  StoreApi<FavStoreState>,
+  'getState' | 'setState'
+>
+
+const initialFavState: FavStateSnapshot = {
+  favouriteIds: [],
+  favourites: [],
+  status: 'idle',
+  pendingIds: new Set(),
+}
+
+function getFavState(): FavStoreState {
+  return favouritesStore.getState()
+}
+
+function setFavState(overrides: Partial<FavStateSnapshot> = {}): void {
+  favouritesStore.setState({
+    ...initialFavState,
+    ...overrides,
+  })
+}
+
+function makeProduct(id: string): IProduct {
+  return {
+    id,
+    name: 'p',
+    description: '',
+    price: 10,
+    quantity: 10,
+    active: true,
+    productFileUrl: null,
+    averageRating: 0,
+    reviewsCount: 0,
+    brandName: 'b',
+    sellerName: 's',
+  }
+}
+
+function setAuthStatus(status: AuthStore['status']): void {
   mockedAuthStore.getState.mockReturnValue({ status })
 }
 
 beforeEach(() => {
-  useFavouritesStore.setState({ favouriteIds: [], favourites: [], status: 'idle', pendingIds: new Set() })
   jest.clearAllMocks()
+  setFavState()
   setAuthStatus('anonymous')
 })
 
 describe('favourites store — toggleFavourite (guest add)', () => {
   it('adds product locally', async () => {
-    mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p1')])
-    await useFavouritesStore.getState().toggleFavourite('p1')
-    expect(useFavouritesStore.getState().favouriteIds).toContain('p1')
+    mockedGetProductByIds.mockResolvedValue([makeProduct('p1')])
+
+    await getFavState().toggleFavourite('p1')
+
+    expect(getFavState().favouriteIds).toContain('p1')
   })
 })
 
@@ -47,87 +102,125 @@ describe('favourites store — toggleFavourite (authenticated add)', () => {
   beforeEach(() => setAuthStatus('authenticated'))
 
   it('calls syncFavourites and updates state', async () => {
-    mockedFavsApi.syncFavourites.mockResolvedValue({ products: [makeProduct('p1')] })
-    await useFavouritesStore.getState().toggleFavourite('p1')
-    expect(mockedFavsApi.syncFavourites).toHaveBeenCalledWith({ productIds: ['p1'] })
-    expect(useFavouritesStore.getState().favouriteIds).toContain('p1')
+    mockedSyncFavourites.mockResolvedValue({ products: [makeProduct('p1')] })
+
+    await getFavState().toggleFavourite('p1')
+
+    expect(mockedSyncFavourites).toHaveBeenCalledWith({ productIds: ['p1'] })
+    expect(getFavState().favouriteIds).toContain('p1')
   })
 
   it('rolls back on error', async () => {
-    mockedFavsApi.syncFavourites.mockRejectedValue(new Error('fail'))
-    await useFavouritesStore.getState().toggleFavourite('p1')
-    expect(useFavouritesStore.getState().favouriteIds).not.toContain('p1')
+    mockedSyncFavourites.mockRejectedValue(new Error('fail'))
+
+    await getFavState().toggleFavourite('p1')
+
+    expect(getFavState().favouriteIds).not.toContain('p1')
   })
 
   it('ignores repeat clicks while pending', async () => {
     let resolve!: () => void
-    mockedFavsApi.syncFavourites.mockReturnValue(new Promise((r) => { resolve = () => r({ products: [makeProduct('p1')] }) }))
-    const p = useFavouritesStore.getState().toggleFavourite('p1')
-    // second click while first is in flight — should be ignored
-    await useFavouritesStore.getState().toggleFavourite('p1')
+
+    mockedSyncFavourites.mockReturnValue(
+      new Promise((r) => {
+        resolve = () => r({ products: [makeProduct('p1')] })
+      }),
+    )
+
+    const pendingRequest = getFavState().toggleFavourite('p1')
+
+    await getFavState().toggleFavourite('p1')
+
     resolve()
-    await p
-    expect(mockedFavsApi.syncFavourites).toHaveBeenCalledTimes(1)
+    await pendingRequest
+
+    expect(mockedSyncFavourites).toHaveBeenCalledTimes(1)
   })
 })
 
 describe('favourites store — toggleFavourite (remove)', () => {
   it('removes product from state when authenticated', async () => {
     setAuthStatus('authenticated')
-    useFavouritesStore.setState({ favouriteIds: ['p1'], favourites: [makeProduct('p1')], status: 'ready', pendingIds: new Set() })
-    mockedFavsApi.removeFavourite.mockResolvedValue({ products: [] })
-    await useFavouritesStore.getState().toggleFavourite('p1')
-    expect(useFavouritesStore.getState().favouriteIds).not.toContain('p1')
+    setFavState({
+      favouriteIds: ['p1'],
+      favourites: [makeProduct('p1')],
+      status: 'ready',
+    })
+    mockedRemoveFavourite.mockResolvedValue({ products: [] })
+
+    await getFavState().toggleFavourite('p1')
+
+    expect(getFavState().favouriteIds).not.toContain('p1')
   })
 
   it('removes product locally when guest', async () => {
-    useFavouritesStore.setState({ favouriteIds: ['p1'], favourites: [makeProduct('p1')], status: 'ready', pendingIds: new Set() })
-    await useFavouritesStore.getState().toggleFavourite('p1')
-    expect(mockedFavsApi.removeFavourite).not.toHaveBeenCalled()
-    expect(useFavouritesStore.getState().favouriteIds).not.toContain('p1')
+    setFavState({
+      favouriteIds: ['p1'],
+      favourites: [makeProduct('p1')],
+      status: 'ready',
+    })
+
+    await getFavState().toggleFavourite('p1')
+
+    expect(mockedRemoveFavourite).not.toHaveBeenCalled()
+    expect(getFavState().favouriteIds).not.toContain('p1')
   })
 })
 
 describe('favourites store — getFavouriteProducts', () => {
   it('fetches from server when authenticated', async () => {
     setAuthStatus('authenticated')
-    mockedFavsApi.fetchFavourites.mockResolvedValue([makeProduct('p1')])
-    await useFavouritesStore.getState().getFavouriteProducts()
-    expect(useFavouritesStore.getState().favourites).toHaveLength(1)
-    expect(useFavouritesStore.getState().status).toBe('ready')
+    mockedFetchFavourites.mockResolvedValue([makeProduct('p1')])
+
+    await getFavState().getFavouriteProducts()
+
+    expect(getFavState().favourites).toHaveLength(1)
+    expect(getFavState().status).toBe('ready')
   })
 
   it('fetches by ids when guest', async () => {
-    useFavouritesStore.setState({ favouriteIds: ['p1'], favourites: [], status: 'idle', pendingIds: new Set() })
-    mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p1')])
-    await useFavouritesStore.getState().getFavouriteProducts()
-    expect(useFavouritesStore.getState().favourites).toHaveLength(1)
-    expect(useFavouritesStore.getState().status).toBe('ready')
+    setFavState({ favouriteIds: ['p1'] })
+    mockedGetProductByIds.mockResolvedValue([makeProduct('p1')])
+
+    await getFavState().getFavouriteProducts()
+
+    expect(getFavState().favourites).toHaveLength(1)
+    expect(getFavState().status).toBe('ready')
   })
 
   it('sets status to error on failure', async () => {
     setAuthStatus('authenticated')
-    mockedFavsApi.fetchFavourites.mockRejectedValue(new Error('fail'))
-    await useFavouritesStore.getState().getFavouriteProducts()
-    expect(useFavouritesStore.getState().status).toBe('error')
+    mockedFetchFavourites.mockRejectedValue(new Error('fail'))
+
+    await getFavState().getFavouriteProducts()
+
+    expect(getFavState().status).toBe('error')
   })
 })
 
 describe('favourites store — syncBackendFav', () => {
   it('merges and updates state', async () => {
-    useFavouritesStore.setState({ favouriteIds: ['p1'], favourites: [], status: 'idle', pendingIds: new Set() })
-    mockedFavsApi.syncFavourites.mockResolvedValue({ products: [makeProduct('p1')] })
-    await useFavouritesStore.getState().syncBackendFav()
-    expect(useFavouritesStore.getState().favouriteIds).toContain('p1')
+    setFavState({ favouriteIds: ['p1'] })
+    mockedSyncFavourites.mockResolvedValue({ products: [makeProduct('p1')] })
+
+    await getFavState().syncBackendFav()
+
+    expect(getFavState().favouriteIds).toContain('p1')
   })
 })
 
 describe('favourites store — resetFav', () => {
   it('clears all state', () => {
-    useFavouritesStore.setState({ favouriteIds: ['p1'], favourites: [makeProduct('p1')], status: 'ready', pendingIds: new Set() })
-    useFavouritesStore.getState().resetFav()
-    expect(useFavouritesStore.getState().favouriteIds).toHaveLength(0)
-    expect(useFavouritesStore.getState().favourites).toHaveLength(0)
-    expect(useFavouritesStore.getState().status).toBe('idle')
+    setFavState({
+      favouriteIds: ['p1'],
+      favourites: [makeProduct('p1')],
+      status: 'ready',
+    })
+
+    getFavState().resetFav()
+
+    expect(getFavState().favouriteIds).toHaveLength(0)
+    expect(getFavState().favourites).toHaveLength(0)
+    expect(getFavState().status).toBe('idle')
   })
 })

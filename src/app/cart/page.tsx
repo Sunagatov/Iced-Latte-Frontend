@@ -1,20 +1,31 @@
 'use client'
-import CartFull from '@/features/cart/components/CartFull/CartFull'
-import CartEmpty from '@/features/cart/components/CartEmpty/CartEmpty'
-import { useCartStore } from '@/features/cart/store'
+
 import { useEffect, useState } from 'react'
+import CartEmpty from '@/features/cart/components/CartEmpty/CartEmpty'
+import CartFull from '@/features/cart/components/CartFull/CartFull'
+import { type CartSliceStore, useCartStore } from '@/features/cart/store'
+import type { ICartItem } from '@/features/cart/types'
 import Loader from '@/shared/components/Loader/Loader'
 
+const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems
+const selectCount = (state: CartSliceStore): number => state.count
+const selectStatus = (state: CartSliceStore): CartSliceStore['status'] => state.status
+const selectLastError = (state: CartSliceStore): string | null => state.lastError
+const selectGetCartItems = (state: CartSliceStore): CartSliceStore['getCartItems'] => state.getCartItems
+const selectRetryHydration = (state: CartSliceStore): CartSliceStore['retryHydration'] => state.retryHydration
+
 export default function Cart() {
-  const tempItems = useCartStore((state) => state.tempItems)
-  const count: number = useCartStore((state) => state.count)
-  const status: string = useCartStore((state) => state.status)
-  const lastError: string | null = useCartStore((state) => state.lastError)
-  const getCartItems: () => Promise<void> = useCartStore((state) => state.getCartItems)
-  const retryHydration: () => void = useCartStore((state) => state.retryHydration)
+  const tempItems = useCartStore(selectTempItems)
+  const count = useCartStore(selectCount)
+  const status = useCartStore(selectStatus)
+  const lastError = useCartStore(selectLastError)
+  const getCartItems = useCartStore(selectGetCartItems)
+  const retryHydration = useCartStore(selectRetryHydration)
   const [hydrated, setHydrated] = useState(false)
 
-  useEffect(() => { setHydrated(true) }, [])
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
 
   useEffect(() => {
     if (hydrated && count > 0 && tempItems.length === 0 && status === 'idle') {
@@ -22,23 +33,27 @@ export default function Cart() {
     }
   }, [hydrated, count, tempItems.length, status, getCartItems])
 
-  if (!hydrated || status === 'loading') return (
-    <div className="flex min-h-[50vh] items-center justify-center">
-      <Loader />
-    </div>
-  )
+  if (!hydrated || status === 'loading') {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader />
+      </div>
+    )
+  }
 
-  if (status === 'error') return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
-      <p className="text-sm text-secondary">{lastError ?? 'Failed to load your cart.'}</p>
-      <button
-        className="rounded-full bg-brand-solid px-5 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
-        onClick={retryHydration}
-      >
-        Try again
-      </button>
-    </div>
-  )
+  if (status === 'error') {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
+        <p className="text-sm text-secondary">{lastError ?? 'Failed to load your cart.'}</p>
+        <button
+          className="rounded-full bg-brand-solid px-5 py-2 text-sm font-semibold text-inverted hover:bg-brand-solid-hover"
+          onClick={retryHydration}
+        >
+          Try again
+        </button>
+      </div>
+    )
+  }
 
   return <>{tempItems.length > 0 ? <CartFull /> : <CartEmpty />}</>
 }
