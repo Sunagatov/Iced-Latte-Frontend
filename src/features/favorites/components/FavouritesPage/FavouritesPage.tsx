@@ -2,7 +2,7 @@
 import FavouritesEmpty from '../FavouritesEmpty/FavouritesEmpty'
 import FavouritesFull from '../FavouritesFull/FavouritesFull'
 import FavouritesSkeleton from '../FavouritesSkeleton/FavouritesSkeleton'
-import { useFavouritesStore, FavStatus } from '@/features/favorites/store'
+import { useFavouritesStore, FavStatus, type FavStoreState } from '@/features/favorites/store'
 import { useAuthStore, AuthStatus } from '@/features/auth/store'
 import { IProduct } from '@/features/products/types'
 import { useEffect, useState } from 'react'
@@ -15,7 +15,9 @@ interface PersistApi {
 }
 
 export default function FavouritesPage() {
-  const favourites: IProduct[] = useFavouritesStore((s) => s.favourites)
+  const favourites: IProduct[] = useFavouritesStore(
+    (s: FavStoreState): IProduct[] => s.favourites,
+  )
   const status: FavStatus = useFavouritesStore((s) => s.status)
   const getFavouriteProducts: () => Promise<void> = useFavouritesStore(
     (s) => s.getFavouriteProducts,

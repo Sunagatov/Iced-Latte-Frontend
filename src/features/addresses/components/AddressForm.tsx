@@ -106,9 +106,9 @@ export default function AddressForm({ editing, onClose }: Props) {
               />
             </Field>
             <Field
-              label="Postcode"
-              error={errors.postcode?.message}
               className="flex-1"
+              error={errors.postcode?.message}
+              label="Postcode"
             >
               <input
                 {...register('postcode', { required: 'Postcode is required' })}
@@ -143,9 +143,9 @@ export default function AddressForm({ editing, onClose }: Props) {
               Cancel
             </button>
             <button
-              type="submit"
-              disabled={isSubmitting}
               className="bg-brand hover:bg-brand-solid-hover flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition disabled:opacity-60"
+              disabled={isSubmitting}
+              type="submit"
             >
               {isSubmitting
                 ? 'Saving…'

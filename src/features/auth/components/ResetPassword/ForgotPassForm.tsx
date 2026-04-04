@@ -62,9 +62,9 @@ export default function ForgotPassForm() {
               <path
                 d="m2 6 10 7 10-7"
                 stroke="#682EFF"
-                strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                strokeWidth="1.8"
               />
             </svg>
           </div>
@@ -120,13 +120,13 @@ export default function ForgotPassForm() {
         <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0EAFF]">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <rect
-              x="3"
-              y="11"
-              width="18"
               height="11"
               rx="2"
               stroke="#682EFF"
               strokeWidth="1.8"
+              width="18"
+              x="3"
+              y="11"
             />
             <path
               d="M7 11V7a5 5 0 0 1 10 0v4"

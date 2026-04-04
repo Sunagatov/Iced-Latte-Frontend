@@ -11,8 +11,8 @@ export default function FavouritesSkeleton() {
       <div className="flex flex-col gap-3">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
-            key={i}
             className="flex overflow-hidden rounded-2xl border border-black/8 bg-white shadow-sm"
+            key={i}
           >
             <div className="bg-secondary h-24 w-24 shrink-0" />
             <div className="flex flex-1 flex-col justify-between gap-2 p-3">

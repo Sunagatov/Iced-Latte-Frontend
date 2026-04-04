@@ -9,28 +9,28 @@ function ListIcon({ active }: { active: boolean }) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <rect
+        fill={active ? '#6B21A8' : '#9CA3AF'}
+        height="2"
+        rx="1"
+        width="16"
         x="2"
         y="4"
-        width="16"
-        height="2"
-        rx="1"
-        fill={active ? '#6B21A8' : '#9CA3AF'}
       />
       <rect
+        fill={active ? '#6B21A8' : '#9CA3AF'}
+        height="2"
+        rx="1"
+        width="16"
         x="2"
         y="9"
-        width="16"
-        height="2"
-        rx="1"
-        fill={active ? '#6B21A8' : '#9CA3AF'}
       />
       <rect
-        x="2"
-        y="14"
-        width="16"
+        fill={active ? '#6B21A8' : '#9CA3AF'}
         height="2"
         rx="1"
-        fill={active ? '#6B21A8' : '#9CA3AF'}
+        width="16"
+        x="2"
+        y="14"
       />
     </svg>
   )

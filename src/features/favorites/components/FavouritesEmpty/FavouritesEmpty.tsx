@@ -44,9 +44,9 @@ export default function FavouritesEmpty() {
         </Link>
         {!isLoggedIn && (
           <Button
+            className="border-brand-solid text-brand-solid hover:bg-brand-solid h-[54px] w-full border-2 bg-transparent font-semibold shadow-sm hover:text-white"
             id="login-btn"
             onClick={() => router.push('/signin')}
-            className="border-brand-solid text-brand-solid hover:bg-brand-solid h-[54px] w-full border-2 bg-transparent font-semibold shadow-sm hover:text-white"
           >
             Log in
           </Button>
