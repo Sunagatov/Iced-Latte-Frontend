@@ -14,13 +14,7 @@ interface AddressStore {
 }
 
 export const useAddressStore = create<AddressStore>()(
-  (
-    set: (
-      partial:
-        | Partial<AddressStore>
-        | ((s: AddressStore) => Partial<AddressStore>),
-    ) => void,
-  ) => ({
+  (set) => ({
     addresses: [],
     loading: false,
     error: null,

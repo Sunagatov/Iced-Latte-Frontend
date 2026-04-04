@@ -14,7 +14,7 @@ export interface AuthStore {
   isLoggedIn: boolean
 }
 
-export const useAuthStore = create<AuthStore>()((set, get) => ({
+export const useAuthStore = create<AuthStore>()((set, get: () => AuthStore) => ({
   status: 'loading',
   userData: null,
   get isLoggedIn() {
