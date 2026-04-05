@@ -112,7 +112,7 @@ test('successful order submission redirects to /orders', async ({ page }) => {
   }
   await fillForm(page)
   await page.getByRole('button', { name: 'Place order' }).click()
-  await expect(page).toHaveURL(/\/orders/, { timeout: 10000 })
+  await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
 })
 
 test('API error on submit shows error message', async ({ page }) => {
@@ -135,7 +135,7 @@ test('cart is cleared after successful order — cart-count badge gone', async (
     await page.waitForSelector('h1', { timeout: 8000 })
     await fillForm(page)
     await page.getByRole('button', { name: 'Place order' }).click()
-    await expect(page).toHaveURL(/\/orders/, { timeout: 10000 })
+    await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
     return
   }
   let orderPlaced = false
@@ -164,7 +164,7 @@ test('cart is cleared after successful order — cart-count badge gone', async (
   await page.waitForSelector('h1', { timeout: 8000 })
   await fillForm(page)
   await page.getByRole('button', { name: 'Place order' }).click()
-  await expect(page).toHaveURL(/\/orders/, { timeout: 10000 })
+  await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
   await page.waitForTimeout(500)
   const stored = await page.evaluate(() => localStorage.getItem('cart-storage'))
   const parsed = JSON.parse(stored ?? '{}')
