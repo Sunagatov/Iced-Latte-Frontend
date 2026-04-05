@@ -1,4 +1,10 @@
+import { Suspense } from 'react'
 import ForgotPassForm from '@/features/auth/components/ResetPassword/ForgotPassForm'
+
 export default function ForgotPass() {
-  return <ForgotPassForm />
+  return (
+    <Suspense>
+      <ForgotPassForm />
+    </Suspense>
+  )
 }

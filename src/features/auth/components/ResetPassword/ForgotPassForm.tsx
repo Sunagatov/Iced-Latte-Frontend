@@ -6,7 +6,7 @@ import FormInput from '@/shared/components/FormInput/FormInput'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiForgotPassword } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
@@ -21,6 +21,8 @@ export default function ForgotPassForm() {
   const [emailSent, setEmailSent] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const prefilledEmail = searchParams.get('email') ?? ''
 
   const {
     handleSubmit,
@@ -29,7 +31,7 @@ export default function ForgotPassForm() {
     formState: { errors },
   } = useForm<IForgotValues>({
     resolver: yupResolver(forgotPassSchema),
-    defaultValues: { email: '' },
+    defaultValues: { email: prefilledEmail },
   })
 
   const onSubmit = async (data: IForgotValues): Promise<void> => {
