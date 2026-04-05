@@ -9,6 +9,12 @@ export default defineConfig({
   retries: 1,
   timeout: 30000,
   globalSetup: IS_REAL ? './e2e/global-setup.ts' : undefined,
+  webServer: IS_REAL ? undefined : {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: true,
+    timeout: 120000,
+  },
   use: {
     baseURL: BASE_URL,
     headless: true,

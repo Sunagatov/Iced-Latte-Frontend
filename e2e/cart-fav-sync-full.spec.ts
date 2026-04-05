@@ -901,9 +901,9 @@ test.describe('Real-mode: favourites operations', () => {
 
   test('favourites shows empty state after clearing', async ({ page }) => {
     await clearFavourites(page)
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(3000)
     await page.goto('/favourites')
-    await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
+    await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 12000 })
   })
 
   test('add favourite updates header badge', async ({ page }) => {

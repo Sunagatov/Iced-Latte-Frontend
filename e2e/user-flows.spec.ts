@@ -49,7 +49,7 @@ test('add product to cart', async ({ page }) => {
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
   } else {
-    const addToCart = page.locator('button:has(img[src*="plus"])').first()
+    const addToCart = page.locator('[data-testid="add-to-cart-circle-btn"]').first()
     await addToCart.waitFor({ timeout: 10000 })
     await addToCart.click()
     await page.goto('/cart')
