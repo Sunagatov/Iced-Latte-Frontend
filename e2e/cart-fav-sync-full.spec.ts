@@ -1,6 +1,7 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID, REAL_PRODUCT_ID_2 } from './helpers/realData'
+import { ensureAuth } from './helpers/ensureAuth'
 /**
  * Cart & Favourites Sync — comprehensive spec coverage
  *
@@ -994,6 +995,7 @@ test.describe('Cart — multi-item merge', () => {
 test.describe('Real-mode: cart operations', () => {
   test.beforeEach(() => { test.skip(!IS_REAL, 'real-mode only') })
   test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+  test.beforeEach(async ({ page }) => { await ensureAuth(page) })
   test.setTimeout(30000)
 
   test('cart shows item after seeding', async ({ page }) => {
@@ -1023,6 +1025,7 @@ test.describe('Real-mode: cart operations', () => {
 test.describe('Real-mode: favourites operations', () => {
   test.beforeEach(() => { test.skip(!IS_REAL, 'real-mode only') })
   test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+  test.beforeEach(async ({ page }) => { await ensureAuth(page) })
   test.setTimeout(30000)
 
   test('favourites shows item after seeding', async ({ page }) => {

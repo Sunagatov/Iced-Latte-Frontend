@@ -18,7 +18,7 @@ export async function seedCart(
   items: { productId: string; productQuantity: number }[],
 ): Promise<void> {
   if (!IS_REAL) return
-  await req(page).post('/api/proxy/cart/items', { data: items })
+  await req(page).post('/api/proxy/cart/items', { data: { items } })
 }
 
 export async function clearCart(page: Page): Promise<void> {

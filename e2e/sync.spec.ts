@@ -20,6 +20,7 @@ const test = base.extend<Fixtures>({
       : await browser.newContext()
     const page = await context.newPage()
 
+    await ensureAuth(page)
     await use(page)
     await context.close()
   },
