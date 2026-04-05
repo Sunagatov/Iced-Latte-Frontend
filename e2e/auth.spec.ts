@@ -51,6 +51,10 @@ test('sign up with new email redirects to /confirm_registration', async ({
 })
 
 test('sign up with existing email shows error message', async ({ page }) => {
+  if (IS_REAL) {
+    test.skip(true, 'real backend does not return 409 synchronously — confirmation is async')
+    return
+  }
   await mockRoute(page, '**/api/proxy/auth/register', async (route) => {
     await route.fulfill({
       status: 409,

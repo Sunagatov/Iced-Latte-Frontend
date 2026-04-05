@@ -31,6 +31,9 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     (state: FavStoreState): FavStoreState['getFavouriteProducts'] =>
       state.getFavouriteProducts,
   )
+  const resetFav = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['resetFav'] => state.resetFav,
+  )
 
   const syncBackendCart = useCartStore(
     (state: CartSliceStore): CartSliceStore['syncBackendCart'] =>
@@ -79,6 +82,10 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
         void getCartItems().catch(() => {})
       }
 
+      if (useFavouritesStore.getState().isSync) {
+        resetFav()
+      }
+
       return
     }
 
@@ -113,6 +120,7 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     getFavouriteProducts,
     loadAuthCart,
     resetCart,
+    resetFav,
     syncBackendCart,
     syncBackendFav,
   ])

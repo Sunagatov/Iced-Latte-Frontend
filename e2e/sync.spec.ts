@@ -89,10 +89,14 @@ test.describe('Favourites sync', () => {
   test('empty state shown when server has no favourites', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
       await clearFavourites(page)
+      await page.waitForTimeout(1000)
       await page.goto('/favourites')
       await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 10000 })
     } else {
       await mockFavourites(page, [])
+      // Clear any persisted fav-storage from previous tests
+      await page.goto('http://localhost:3000')
+      await page.evaluate(() => localStorage.removeItem('fav-storage'))
       await loginAndGoto(page, FAKE_TOKEN, '/favourites')
       await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 10000 })
     }

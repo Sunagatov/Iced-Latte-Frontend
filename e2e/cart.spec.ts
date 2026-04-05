@@ -64,8 +64,10 @@ test.describe('authenticated', () => {
     } else {
       await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/')
-      const badge = page.locator('[data-testid="cart-count"]')
-      await expect(badge).toBeVisible({ timeout: 5000 })
+      await page.waitForLoadState('domcontentloaded')
+      await page.waitForTimeout(1500)
+      const badge = page.locator('a[href="/cart"] div div').filter({ hasText: /^\d+$/ })
+      await expect(badge).toBeVisible({ timeout: 8000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     }
   })

@@ -26,8 +26,7 @@ export function useProducts(
     if (previousData && previousData.totalPages - 1 == previousData.page)
       return null
 
-    const ratingQuery =
-      ratingFilter !== null && ratingFilter !== 'any' ? ratingFilter : null
+    const ratingQuery = ratingFilter
 
     const params = new URLSearchParams({
       page: String(pageIndex),

@@ -188,61 +188,76 @@ async function mockProxy(
 // ─── §5 Header badges ─────────────────────────────────────────────────────────
 
 test.describe('Header badges', () => {
-  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('cart badge shows total product units from persisted count', async ({
     page,
   }) => {
-    // Spec §5: cart badge reads `count` = total units (3+2=5), not distinct items
-    await page.goto('http://localhost:3000')
-    await setCartStorage(page, [
-      { productId: PRODUCT_A, productQuantity: 3 },
-      { productId: PRODUCT_B, productQuantity: 2 },
-    ])
-    await mockProxy(page, { '/cart': makeCart([]) })
-    await page.reload()
-
+    if (IS_REAL) {
+      await clearCart(page)
+      await seedCart(page, [
+        { productId: REAL_PRODUCT_ID, productQuantity: 3 },
+        { productId: REAL_PRODUCT_ID_2, productQuantity: 2 },
+      ])
+      await page.goto('/')
+    } else {
+      await page.goto('http://localhost:3000')
+      await setCartStorage(page, [
+        { productId: PRODUCT_A, productQuantity: 3 },
+        { productId: PRODUCT_B, productQuantity: 2 },
+      ])
+      await mockProxy(page, { '/cart': makeCart([]) })
+      await page.reload()
+    }
     const badge = page
       .locator('a[href="/cart"] div div')
       .filter({ hasText: /^\d+$/ })
-
     await expect(badge).toHaveText('5', { timeout: 8000 })
+    if (IS_REAL) await clearCart(page)
   })
 
   test('favourites badge shows favouriteIds.length', async ({ page }) => {
-    // Spec §5: fav badge reads favouriteIds.length directly
-    await page.goto('http://localhost:3000')
-    await setFavStorage(page, [PRODUCT_A, PRODUCT_B])
-    await mockProxy(page, { '/favorites': { products: [] } })
-    await page.reload()
-
+    if (IS_REAL) {
+      await clearFavourites(page)
+      await seedFavourite(page, REAL_PRODUCT_ID)
+      await seedFavourite(page, REAL_PRODUCT_ID_2)
+      await page.goto('/')
+    } else {
+      await page.goto('http://localhost:3000')
+      await setFavStorage(page, [PRODUCT_A, PRODUCT_B])
+      await mockProxy(page, { '/favorites': { products: [] } })
+      await page.reload()
+    }
     const badge = page
       .locator('a[href="/favourites"] div div')
       .filter({ hasText: /^\d+$/ })
-
     await expect(badge).toHaveText('2', { timeout: 8000 })
+    if (IS_REAL) await clearFavourites(page)
   })
 
   test('cart badge not visible when cart is empty', async ({ page }) => {
-    // Spec §5: no badge when count=0
-    await mockProxy(page, {})
-    await page.goto('http://localhost:3000')
-
+    if (IS_REAL) {
+      await clearCart(page)
+      await page.goto('/')
+    } else {
+      await mockProxy(page, {})
+      await page.goto('http://localhost:3000')
+    }
     const badge = page
       .locator('a[href="/cart"] div div')
       .filter({ hasText: /^\d+$/ })
-
     await expect(badge).not.toBeVisible({ timeout: 5000 })
   })
 
   test('favourites badge not visible when no favourites', async ({ page }) => {
-    // Spec §5: no badge when favouriteIds=[]
-    await mockProxy(page, {})
-    await page.goto('http://localhost:3000')
-
+    if (IS_REAL) {
+      await clearFavourites(page)
+      await page.goto('/')
+    } else {
+      await mockProxy(page, {})
+      await page.goto('http://localhost:3000')
+    }
     const badge = page
       .locator('a[href="/favourites"] div div')
       .filter({ hasText: /^\d+$/ })
-
     await expect(badge).not.toBeVisible({ timeout: 5000 })
   })
 })
@@ -274,243 +289,154 @@ test.describe('Cart sync — stale state cleanup', () => {
 // ─── §3 Cart sync — quantity operations (logged in) ──────────────────────────
 
 test.describe('Cart — quantity operations (logged in)', () => {
-  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('increasing quantity updates item count display', async ({ page }) => {
-    // Spec §3 add: token set, item already in cart → PATCH, response updates qty
-    let serverQty = 1
-
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      const url = route.request().url()
-      const method = route.request().method()
-
-      if (url.includes('/cart/items') && method === 'PATCH') {
-        serverQty = 2
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)])),
-        })
-      } else if (url.includes('/cart')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, serverQty)])),
-        })
-      } else if (url.includes('/products/ids')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([makeProduct(PRODUCT_A)]),
-        })
-      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
-      } else {
-        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-      }
-    })
-
-    await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
-    await page.locator('[data-testid="cart-plus-btn"]').first().click()
-    await page.waitForTimeout(800)
-    await expect(
-      page.locator('[data-testid="cart-item-qty"]').first(),
-    ).toHaveText('2', { timeout: 10000 })
+    if (IS_REAL) {
+      await clearCart(page)
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 10000 })
+      await page.locator('[data-testid="cart-plus-btn"]').first().click()
+      await expect(page.locator('[data-testid="cart-item-qty"]').first()).toHaveText('2', { timeout: 10000 })
+      await clearCart(page)
+    } else {
+      let serverQty = 1
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        const method = route.request().method()
+        if (url.includes('/cart/items') && method === 'PATCH') {
+          serverQty = 2
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)])) })
+        } else if (url.includes('/cart')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, serverQty)])) })
+        } else if (url.includes('/products/ids')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([makeProduct(PRODUCT_A)]) })
+        } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
+      await page.locator('[data-testid="cart-plus-btn"]').first().click()
+      await page.waitForTimeout(800)
+      await expect(page.locator('[data-testid="cart-item-qty"]').first()).toHaveText('2', { timeout: 10000 })
+    }
   })
 
   test('minus button shows trash icon when quantity is 1', async ({ page }) => {
-    // Spec §3 remove: quantity=1 → minus button aria-label = "Remove item"
-    await mockProxy(page, {
-      '/cart': makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
-    }, true)
-    await page.goto('/cart')
-
-    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
-      timeout: 8000,
-    })
-    const minusBtn = page.locator('[data-testid="cart-minus-btn"]').first()
-
-    await expect(minusBtn).toHaveAttribute('aria-label', 'Remove item', {
-      timeout: 5000,
-    })
+    if (IS_REAL) {
+      await clearCart(page)
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 10000 })
+      await expect(page.locator('[data-testid="cart-minus-btn"]').first()).toHaveAttribute('aria-label', 'Remove item', { timeout: 5000 })
+      await clearCart(page)
+    } else {
+      await mockProxy(page, { '/cart': makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]) }, true)
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
+      await expect(page.locator('[data-testid="cart-minus-btn"]').first()).toHaveAttribute('aria-label', 'Remove item', { timeout: 5000 })
+    }
   })
 
   test('removing last unit of item shows empty cart', async ({ page }) => {
-    // Spec §3 remove full product: DELETE → response replaces tempItems with []
-    // Both GET /cart and DELETE /cart/items must return empty so AppInitProvider
-    // doesn't overwrite the cleared state with a re-fetch.
-
-    let itemRemoved = false
-
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      const url = route.request().url()
-      const method = route.request().method()
-
-      if (url.includes('/cart/items') && method === 'DELETE') {
-        itemRemoved = true
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(makeCart([])),
-        })
-      } else if (url.includes('/cart')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(
-            itemRemoved
-              ? makeCart([])
-              : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)]),
-          ),
-        })
-      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
-      }
-    })
-
-    await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
-      timeout: 8000,
-    })
-    await page.locator('[data-testid="cart-minus-btn"]').first().click()
-    await page.waitForTimeout(400)
-    await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({
-      timeout: 8000,
-    })
+    if (IS_REAL) {
+      await clearCart(page)
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 10000 })
+      await page.locator('[data-testid="cart-minus-btn"]').first().click()
+      await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 10000 })
+    } else {
+      let itemRemoved = false
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        const method = route.request().method()
+        if (url.includes('/cart/items') && method === 'DELETE') {
+          itemRemoved = true
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([])) })
+        } else if (url.includes('/cart')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(itemRemoved ? makeCart([]) : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1)])) })
+        } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
+      await page.locator('[data-testid="cart-minus-btn"]').first().click()
+      await page.waitForTimeout(400)
+      await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 8000 })
+    }
   })
 
   test('trash button removes item and shows empty cart', async ({ page }) => {
-    // Spec §3 remove full product via trash button
-
-    let itemRemoved = false
-
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      const url = route.request().url()
-      const method = route.request().method()
-
-      if (url.includes('/cart/items') && method === 'DELETE') {
-        itemRemoved = true
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(makeCart([])),
-        })
-      } else if (url.includes('/cart')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(
-            itemRemoved
-              ? makeCart([])
-              : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)]),
-          ),
-        })
-      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
-      }
-    })
-
-    await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
-      timeout: 8000,
-    })
-    await page.locator('[data-testid="cart-trash-btn"]').first().click()
-    await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({
-      timeout: 8000,
-    })
+    if (IS_REAL) {
+      await clearCart(page)
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 10000 })
+      await page.locator('[data-testid="cart-trash-btn"]').first().click()
+      await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 10000 })
+    } else {
+      let itemRemoved = false
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        const method = route.request().method()
+        if (url.includes('/cart/items') && method === 'DELETE') {
+          itemRemoved = true
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([])) })
+        } else if (url.includes('/cart')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(itemRemoved ? makeCart([]) : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 2)])) })
+        } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
+      await page.locator('[data-testid="cart-trash-btn"]').first().click()
+      await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 8000 })
+    }
   })
 
-  test('clear all removes all items and shows empty state', async ({
-    page,
-  }) => {
-    // Spec §3 clear all: isSync=true → clearCart() sets local state to empty → CartEmpty
-    // clearCart() clears local state after DELETE — no re-fetch needed.
-    // We verify the store clears by checking CartEmpty appears.
-
-    const state = { cleared: false }
-
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      const url = route.request().url()
-      const method = route.request().method()
-
-      if (url.includes('/cart/items') && method === 'DELETE') {
-        state.cleared = true
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(makeCart([])),
-        })
-      } else if (url.includes('/cart/items') && method === 'POST') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(
-            makeCart([
-              makeCartItem(PRODUCT_A, CART_SLOT_A, 1),
-              makeCartItem(PRODUCT_B, CART_SLOT_B, 2),
-            ]),
-          ),
-        })
-      } else if (url.includes('/cart')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(
-            state.cleared
-              ? makeCart([])
-              : makeCart([
-                makeCartItem(PRODUCT_A, CART_SLOT_A, 1),
-                makeCartItem(PRODUCT_B, CART_SLOT_B, 2),
-              ]),
-          ),
-        })
-      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
-      }
-    })
-
-    await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
-      { timeout: 8000 },
-    )
-    await page.getByText('Clear all').click()
-    await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({
-      timeout: 8000,
-    })
+  test('clear all removes all items and shows empty state', async ({ page }) => {
+    if (IS_REAL) {
+      await clearCart(page)
+      await seedCart(page, [
+        { productId: REAL_PRODUCT_ID, productQuantity: 1 },
+        { productId: REAL_PRODUCT_ID_2, productQuantity: 2 },
+      ])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+      await page.getByText('Clear all').click()
+      await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 10000 })
+    } else {
+      const state = { cleared: false }
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        const method = route.request().method()
+        if (url.includes('/cart/items') && method === 'DELETE') {
+          state.cleared = true
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([])) })
+        } else if (url.includes('/cart/items') && method === 'POST') {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1), makeCartItem(PRODUCT_B, CART_SLOT_B, 2)])) })
+        } else if (url.includes('/cart')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.cleared ? makeCart([]) : makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 1), makeCartItem(PRODUCT_B, CART_SLOT_B, 2)])) })
+        } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 8000 })
+      await page.getByText('Clear all').click()
+      await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 8000 })
+    }
   })
 })
 
@@ -604,169 +530,103 @@ test.describe('Cart — guest operations', () => {
 // ─── §4 Favourites sync ───────────────────────────────────────────────────────
 
 test.describe('Favourites sync', () => {
-  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('fav sync fires only once on login, not on subsequent add/remove', async ({
     page,
   }) => {
-    // Spec §4 invariant 2: sync runs once per token
+    test.skip(IS_REAL, 'mocked-only: call-count assertion not possible against real API')
     let syncCallCount = 0
-
     await page.goto('http://localhost:3000')
     await setFavStorage(page, [PRODUCT_A])
-
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
-
       if (url.includes('/favorites') && method === 'POST') {
         syncCallCount++
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ products: [makeProduct(PRODUCT_A)] }),
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [makeProduct(PRODUCT_A)] }) })
       } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
       } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       }
     })
-
     await page.goto('http://localhost:3000')
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(2000)
-
     expect(syncCallCount).toBe(1)
   })
 
   test('add favourite (logged in) updates header badge immediately', async ({
     page,
   }) => {
-    // Spec §4 add: optimistic update → favouriteIds grows → badge appears
-    const product = makeProduct(PRODUCT_A)
-
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      const url = route.request().url()
-      const method = route.request().method()
-
-      if (url.includes('/favorites') && method === 'POST') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ products: [product] }),
-        })
-      } else if (url.includes('/favorites') && method === 'GET') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ products: [] }),
-        })
-      } else if (url.includes('/products') && !url.includes('/ids')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            products: [product],
-            page: 0,
-            size: 6,
-            totalElements: 1,
-            totalPages: 1,
-          }),
-        })
-      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
-      }
-    })
-
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="product-card"]', {
-      timeout: 10000,
-    })
-
-    const badge = page
-      .locator('a[href="/favourites"] div div')
-      .filter({ hasText: /^\d+$/ })
-
-    await expect(badge).not.toBeVisible({ timeout: 3000 })
-
-    await page.locator('[data-testid="favourite-btn"]').first().click()
-    await expect(badge).toBeVisible({ timeout: 5000 })
-    await expect(badge).toHaveText('1', { timeout: 5000 })
+    if (IS_REAL) {
+      await clearFavourites(page)
+      await page.goto('/')
+      await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      const badge = page.locator('a[href="/favourites"] div div').filter({ hasText: /^\d+$/ })
+      await expect(badge).not.toBeVisible({ timeout: 3000 })
+      await page.locator('[data-testid="favourite-btn"]').first().click()
+      await expect(badge).toBeVisible({ timeout: 5000 })
+      await clearFavourites(page)
+    } else {
+      const product = makeProduct(PRODUCT_A)
+      // Clear any persisted fav-storage from previous tests
+      await page.goto('http://localhost:3000')
+      await page.evaluate(() => localStorage.removeItem('fav-storage'))
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        const method = route.request().method()
+        if (url.includes('/favorites') && method === 'POST') {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product] }) })
+        } else if (url.includes('/favorites') && method === 'GET') {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
+        } else if (url.includes('/products') && !url.includes('/ids')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
+        } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
+      await page.goto('http://localhost:3000')
+      await page.waitForLoadState('domcontentloaded')
+      await page.goto('/')
+      await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      const badge = page.locator('a[href="/favourites"] div div').filter({ hasText: /^\d+$/ })
+      await expect(badge).not.toBeVisible({ timeout: 3000 })
+      await page.locator('[data-testid="favourite-btn"]').first().click()
+      await expect(badge).toBeVisible({ timeout: 5000 })
+      await expect(badge).toHaveText('1', { timeout: 5000 })
+    }
   })
 
   test('remove favourite (logged in) calls DELETE endpoint', async ({
     page,
   }) => {
-    // Spec §4 remove: token set → DELETE /favorites/:productId called
+    test.skip(IS_REAL, 'mocked-only: network call assertion not possible against real API')
     const product = makeProduct(PRODUCT_A)
     let deleteWasCalled = false
-
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
-
       if (url.includes('/favorites') && method === 'DELETE') {
         deleteWasCalled = true
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       } else if (url.includes('/favorites') && method === 'GET') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ products: [product] }),
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product] }) })
       } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
       } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       }
     })
-
     await page.goto('http://localhost:3000')
     await setFavStorage(page, [PRODUCT_A])
     await page.reload()
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
     await page.goto('/favourites')
-    await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
-      timeout: 8000,
-    })
-    await page
-      .locator('[data-testid="fav-element"]')
-      .first()
-      .locator('button[aria-label="Remove from favourites"]')
-      .click()
+    await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
+    await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
     await page.waitForTimeout(1000)
     expect(deleteWasCalled).toBe(true)
   })
@@ -774,99 +634,96 @@ test.describe('Favourites sync', () => {
   test('guest add favourite shows item in favourites list', async ({
     page,
   }) => {
-    // Spec §4 add guest: add to favouriteIds → getProductByIds → favourites populated
-    const product = makeProduct(PRODUCT_A)
-
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      const url = route.request().url()
-
-      if (url.includes('/products/ids')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([product]),
-        })
-      } else if (url.includes('/products') && !url.includes('/ids')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            products: [product],
-            page: 0,
-            size: 6,
-            totalElements: 1,
-            totalPages: 1,
-          }),
-        })
-      } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({
-          status: 401,
-          contentType: 'application/json',
-          body: JSON.stringify({ message: 'Unauthorized' }),
-        })
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: '{}',
-        })
-      }
-    })
-
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="product-card"]', {
-      timeout: 10000,
-    })
-    await page.locator('[data-testid="favourite-btn"]').first().click()
-    await page.waitForTimeout(1000)
-
-    await page.goto('/favourites')
-    await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
-      timeout: 8000,
-    })
+    if (IS_REAL) {
+      // Use a fresh unauthenticated context
+      const ctx = await page.context().browser()!.newContext({ storageState: { cookies: [], origins: [] } })
+      const guestPage = await ctx.newPage()
+      await guestPage.goto('/')
+      await guestPage.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      await guestPage.locator('[data-testid="favourite-btn"]').first().click()
+      await guestPage.waitForTimeout(500)
+      await guestPage.goto('/favourites')
+      await expect(guestPage.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
+      await ctx.close()
+    } else {
+      const product = makeProduct(PRODUCT_A)
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        if (url.includes('/products/ids')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
+        } else if (url.includes('/products') && !url.includes('/ids')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
+        } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+          await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Unauthorized' }) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
+      await page.goto('/')
+      await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      await page.locator('[data-testid="favourite-btn"]').first().click()
+      await page.waitForTimeout(1000)
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
+    }
   })
 
   test('favourites page shows empty state for guest with no favourites', async ({
     page,
   }) => {
-    // Spec §7: FavouritesEmpty shown when favourites=[] and favouriteIds=[]
-    await mockProxy(page, {})
-    await page.goto('/favourites')
-    await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({
-      timeout: 8000,
-    })
+    if (IS_REAL) {
+      const ctx = await page.context().browser()!.newContext({ storageState: { cookies: [], origins: [] } })
+      const guestPage = await ctx.newPage()
+      await guestPage.goto('/favourites')
+      await expect(guestPage.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
+      await ctx.close()
+    } else {
+      await mockProxy(page, {})
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
+    }
   })
 
   test('favourites page shows full list for guest with persisted favouriteIds', async ({
     page,
   }) => {
-    // Spec §7: FavouritesFull shown when favouriteIds.length > 0
-    const product = makeProduct(PRODUCT_A)
-
-    await page.goto('http://localhost:3000')
-    await setFavStorage(page, [PRODUCT_A])
-    await mockProxy(page, { '/products/ids': [product] })
-    await page.reload()
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(500)
-    await page.goto('/favourites')
-    await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({
-      timeout: 8000,
-    })
+    if (IS_REAL) {
+      const ctx = await page.context().browser()!.newContext({ storageState: { cookies: [], origins: [] } })
+      const guestPage = await ctx.newPage()
+      await guestPage.goto('/')
+      await guestPage.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      await guestPage.locator('[data-testid="favourite-btn"]').first().click()
+      await guestPage.waitForTimeout(500)
+      await guestPage.goto('/favourites')
+      await expect(guestPage.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
+      await ctx.close()
+    } else {
+      const product = makeProduct(PRODUCT_A)
+      await page.goto('http://localhost:3000')
+      await setFavStorage(page, [PRODUCT_A])
+      await mockProxy(page, { '/products/ids': [product] })
+      await page.reload()
+      await page.waitForLoadState('domcontentloaded')
+      await page.waitForTimeout(500)
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
+    }
   })
 })
 
 // ─── §3+§4 Logout clears both stores ─────────────────────────────────────────
 
 test.describe('Logout clears cart and favourites', () => {
-  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('fresh session with no stored state shows empty cart', async ({
     page,
   }) => {
-    // Spec §3 logout: after resetCart, count=0, isSync=false → CartEmpty
-    // Simulated by a fresh isolated context with no localStorage
-    await mockProxy(page, {})
-    await page.goto('/cart')
+    if (IS_REAL) {
+      await clearCart(page)
+      await page.goto('/cart')
+    } else {
+      await mockProxy(page, {})
+      await page.goto('/cart')
+    }
     await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({
       timeout: 8000,
     })
@@ -875,9 +732,16 @@ test.describe('Logout clears cart and favourites', () => {
   test('fresh session with no stored state shows empty favourites', async ({
     page,
   }) => {
-    // Spec §4 logout: after resetFav, favouriteIds=[] → FavouritesEmpty
-    await mockProxy(page, {})
-    await page.goto('/favourites')
+    if (IS_REAL) {
+      await clearFavourites(page)
+      await page.goto('/favourites')
+    } else {
+      await mockProxy(page, {})
+      // Clear persisted fav-storage to avoid state from previous tests
+      await page.goto('http://localhost:3000')
+      await page.evaluate(() => localStorage.removeItem('fav-storage'))
+      await page.goto('/favourites')
+    }
     await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({
       timeout: 8000,
     })
@@ -1037,6 +901,7 @@ test.describe('Real-mode: favourites operations', () => {
 
   test('favourites shows empty state after clearing', async ({ page }) => {
     await clearFavourites(page)
+    await page.waitForTimeout(2000)
     await page.goto('/favourites')
     await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
   })

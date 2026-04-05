@@ -56,7 +56,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     })
   }
 
-  const ratingFilterChangeHandler = (value: null | 'any' | StarsType) => {
+  const ratingFilterChangeHandler = (value: null | StarsType) => {
     updateProductFiltersStore({ ratingFilter: value })
   }
 

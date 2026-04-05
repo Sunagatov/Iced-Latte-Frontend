@@ -13,7 +13,7 @@ interface IProductFiltersStore {
   selectedSellerOptions: string[]
   selectedSortOption: IOption<ISortParams>
   sortingOptions: Array<IOption<ISortParams>>
-  ratingFilter: StarsType | null | 'any'
+  ratingFilter: StarsType | null
   searchQuery: string
   selectBrandOption: (value: string) => void
   removeBrandOption: (value: string) => void

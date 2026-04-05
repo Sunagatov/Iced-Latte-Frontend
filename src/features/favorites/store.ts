@@ -13,6 +13,7 @@ interface FavSliceState {
   favourites: IProduct[]
   status: FavStatus
   pendingIds: Set<string>
+  isSync: boolean
 }
 
 interface FavSliceActions {
@@ -29,6 +30,7 @@ const initialState: FavSliceState = {
   favourites: [],
   status: 'idle',
   pendingIds: new Set<string>(),
+  isSync: false,
 }
 
 const uniqueIds = (ids: readonly string[]): string[] => Array.from(new Set(ids))
@@ -176,7 +178,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       if (isAuthenticated) {
         const products = await fetchFavourites()
 
-        set({ ...setProducts(products), status: 'ready' })
+        set({ ...setProducts(products), status: 'ready', isSync: true })
 
         return
       }
@@ -207,7 +209,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       }
       const response = await syncFavourites(request)
 
-      set({ ...setProducts(response.products), status: 'ready' })
+      set({ ...setProducts(response.products), status: 'ready', isSync: true })
     } catch {
       set({ status: 'error' })
     }
@@ -219,16 +221,18 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       favouriteIds: [],
       status: 'idle',
       pendingIds: new Set<string>(),
+      isSync: false,
     }),
 })
 
 export const useFavouritesStore = create<FavStoreState>()(
-  persist<FavStoreState, [], [], Pick<FavSliceState, 'favouriteIds'>>(
+  persist<FavStoreState, [], [], Pick<FavSliceState, 'favouriteIds' | 'isSync'>>(
     createFavSlice,
     {
       name: 'fav-storage',
-      partialize: (state): Pick<FavSliceState, 'favouriteIds'> => ({
+      partialize: (state): Pick<FavSliceState, 'favouriteIds' | 'isSync'> => ({
         favouriteIds: state.favouriteIds,
+        isSync: state.isSync,
       }),
     },
   ),

@@ -6,7 +6,7 @@ import FilledProfile from '@/features/user/components/FilledProfile/FilledProfil
 const ProfilePage = async () => {
   const token: string | undefined = await getCookie()
 
-  if (!token || isTokenExpired(token)) redirect('/signin')
+  if (!token || isTokenExpired(token)) redirect('/signin?next=/profile')
 
   return <FilledProfile />
 }

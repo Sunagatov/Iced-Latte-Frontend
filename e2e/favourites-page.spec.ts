@@ -80,6 +80,10 @@ test.describe('authenticated', () => {
   test('empty state shown when no favourites', async ({ page }) => {
     if (IS_REAL) await clearFavourites(page)
     else await mockFavouritesApi(page, [])
+    if (IS_REAL) await page.waitForTimeout(2500)
+    // Clear persisted fav-storage so previous test's favouriteIds don't trigger sync
+    await page.goto('http://localhost:3000')
+    await page.evaluate(() => localStorage.removeItem('fav-storage'))
     await page.goto('/favourites')
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)

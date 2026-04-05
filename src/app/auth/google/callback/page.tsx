@@ -18,9 +18,11 @@ function GoogleCallbackInner() {
       return
     }
 
-    // Token is already in the HttpOnly cookie set by the backend.
-    // Just navigate home; the existing auth bootstrap will pick it up.
-    router.replace('/')
+    const next = searchParams.get('state')
+    const destination =
+      next && /^\/[a-zA-Z0-9/_-]*$/.test(next) ? next : '/'
+
+    router.replace(destination)
   }, [searchParams, router])
 
   return (

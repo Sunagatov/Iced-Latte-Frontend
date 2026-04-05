@@ -1,5 +1,7 @@
 'use client'
 
+import { useSearchParams, usePathname } from 'next/navigation'
+
 function SocialButton({
   icon,
   label,
@@ -71,13 +73,14 @@ export default function SocialAuthButtons({
 }) {
   const googleLabel =
     mode === 'signin' ? 'Continue with Google' : 'Sign up with Google'
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
 
   const handleGoogleAuth = () => {
-    const url = new URL('/api/auth/google', window.location.origin)
+    const next = searchParams.get('next') ?? (pathname !== '/signin' && pathname !== '/signup' ? pathname : '')
+    const url = next ? `/api/auth/google?next=${encodeURIComponent(next)}` : '/api/auth/google'
 
-    url.searchParams.set('redirectUrl', window.location.origin)
-
-    window.location.assign(url.toString())
+    window.location.assign(url)
   }
 
   return (

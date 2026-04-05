@@ -18,6 +18,7 @@ async function mockProducts(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
+  if (IS_REAL) await page.waitForTimeout(1000)
   if (!IS_REAL) await mockProducts(page)
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
@@ -63,9 +64,9 @@ test('rating filter - selecting 4 stars filters products', async ({ page }) => {
 })
 
 test('rating filter - selecting Any shows all products', async ({ page }) => {
+  await page.locator('#checkbox-any').waitFor({ state: 'visible', timeout: 5000 })
   await page.locator('#checkbox-any').click()
-  await page.waitForTimeout(500)
-  await expect(page.locator('#checkbox-any')).toHaveClass(/bg-brand-solid/)
+  await expect(page.locator('#checkbox-any')).toHaveClass(/bg-brand-solid/, { timeout: 3000 })
 })
 
 test('rating filter - only one rating option can be selected at a time', async ({ page }) => {

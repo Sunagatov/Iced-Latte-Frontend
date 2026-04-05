@@ -94,7 +94,7 @@ export default function ProductCatalog({
     selectedBrandOptions.length > 0 ||
     selectedSellerOptions.length > 0 ||
     hasPriceFilter ||
-    (ratingFilter && ratingFilter !== 'any')
+    !!ratingFilter
 
   return (
     <section
@@ -222,7 +222,7 @@ export default function ProductCatalog({
                   </button>
                 </span>
               )}
-              {ratingFilter && ratingFilter !== 'any' && (
+              {ratingFilter && (
                 <span className="bg-secondary text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium">
                   {'⭐'.repeat(Number(ratingFilter))}+
                   <button

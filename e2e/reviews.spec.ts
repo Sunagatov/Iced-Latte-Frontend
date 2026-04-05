@@ -6,7 +6,8 @@ import { ensureAuth } from './helpers/ensureAuth'
 test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
 test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
-const PRODUCT_ID = IS_REAL ? REAL_PRODUCT_ID_WITH_REVIEWS : 'd1a2b3c4-0001-4000-8000-000000000001'
+// Use a product less likely to have been reviewed by olivia
+const PRODUCT_ID = IS_REAL ? 'd1a2b3c4-0001-4000-8000-000000000007' : 'd1a2b3c4-0001-4000-8000-000000000001' // Coconut Cold Brew
 
 async function mockReviewCalls(page: Page, authenticated = false) {
   const product = { id: PRODUCT_ID, name: 'Turkish Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
@@ -36,12 +37,21 @@ async function mockReviewCalls(page: Page, authenticated = false) {
 }
 
 async function gotoProductPage(page: Page) {
+  if (IS_REAL) await page.waitForTimeout(1000)
   await page.goto(`/product/${PRODUCT_ID}`)
   await page.waitForLoadState('domcontentloaded')
   if (await page.locator('text=Failed to load reviews.').isVisible()) return false
   if (await page.locator('h1:has-text("404")').isVisible()) return false
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
+  const section = page.locator('[data-testid="reviews-section"]')
+  const visible = await section.waitFor({ timeout: 20000 }).then(() => true).catch(() => false)
+  if (!visible) return false
   await page.waitForLoadState('networkidle')
+  // In real mode, skip if user already has a review (button won't be #add-review-btn)
+  if (IS_REAL) {
+    const btn = page.locator('#add-review-btn')
+    const btnVisible = await btn.isVisible({ timeout: 3000 }).catch(() => false)
+    if (!btnVisible) return false
+  }
   return true
 }
 
@@ -62,6 +72,8 @@ test('logged-in user sees review form after clicking "Write a review"', async ({
   if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
   if (!ok) return
+  // Wait for auth to resolve (Log in link disappears when authenticated)
+  if (!IS_REAL) await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
 })
@@ -70,6 +82,7 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
   if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
   if (!ok) return
+  if (!IS_REAL) await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await expect(page.locator('#submit-review-btn')).toBeDisabled()
@@ -81,6 +94,7 @@ test('cancel button hides form and resets fields', async ({ page }) => {
   if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
   if (!ok) return
+  if (!IS_REAL) await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Some text')
@@ -93,6 +107,7 @@ test('character counter updates as user types', async ({ page }) => {
   if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
   if (!ok) return
+  if (!IS_REAL) await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Hello')

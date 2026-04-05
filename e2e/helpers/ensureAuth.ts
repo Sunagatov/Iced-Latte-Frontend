@@ -19,6 +19,9 @@ const TOKEN_TTL_MS = 12 * 60 * 1000 // re-auth if within 3 min of 15-min expiry
 export async function ensureAuth(page: Page): Promise<void> {
   if (!IS_REAL) return
 
+  // Pause between tests to avoid rate limiting
+  await new Promise((r) => setTimeout(r, 1000))
+
   const now = Date.now()
   if (now - lastAuthMs < TOKEN_TTL_MS) return // token still fresh
 
@@ -30,6 +33,11 @@ export async function ensureAuth(page: Page): Promise<void> {
 
   // Token expired — re-login
   await page.goto('/signin?next=/')
+  // If already logged in, signin redirects away immediately
+  if (!page.url().includes('/signin')) {
+    lastAuthMs = Date.now()
+    return
+  }
   await page.fill('#email', EMAIL)
   await page.fill('#password', PASSWORD)
   await page.click('#login-btn')

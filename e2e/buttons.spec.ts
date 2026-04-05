@@ -127,6 +127,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
 
 test.describe('Guest: product card buttons on home page', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
+  test.beforeEach(async ({ page }) => { if (IS_REAL) await page.waitForTimeout(1000) })
 
   test('plus button adds item — counter appears', async ({ page }) => {
     if (!IS_REAL) await mockWithCart(page, 0)
@@ -235,6 +236,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
 test.describe('Guest: cart page plus / minus / trash buttons', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
+  test.beforeEach(async ({ page }) => { if (IS_REAL) await page.waitForTimeout(1500) })
 
   test('plus and minus buttons work on cart page', async ({ page }) => {
     if (!IS_REAL) await mockWithCart(page, 0)

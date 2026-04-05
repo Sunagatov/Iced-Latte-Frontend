@@ -17,11 +17,9 @@ async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: numb
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(userData) })
-    else if (url.includes('/users') && method === 'PUT')
+    if (url.includes('/users') && method === 'PUT' && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
       await route.fulfill({ status: saveStatus, contentType: 'application/json', body: JSON.stringify(saveStatus === 200 ? userData : { message: 'error' }) })
-    else if (url.includes('/users'))
+    else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(userData) })
     else if (url.includes('/orders'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' })
@@ -46,8 +44,8 @@ test('profile page shows user name in header', async ({ page }) => {
   if (!IS_REAL) await setupMocked(page)
   await gotoProfile(page)
   if (IS_REAL) {
-    // Real user is olivia@example.com — just check a name is shown
-    await expect(page.locator('header').getByText(/\w+ \w+/)).toBeVisible({ timeout: 8000 })
+    // Real user is olivia@example.com — check the profile page loaded with user data
+    await expect(page.locator('text=First name').first()).toBeVisible({ timeout: 8000 })
   } else {
     await expect(page.getByText('John Doe')).toBeVisible({ timeout: 8000 })
   }
@@ -65,8 +63,18 @@ test('editing name and saving calls API', async ({ page }) => {
   await gotoProfile(page)
   await openEditForm(page)
   await page.fill('#firstName', IS_REAL ? 'Olivia' : 'Jane')
+  if (IS_REAL) {
+    // Real backend requires address fields to avoid null constraint
+    const city = page.locator('#city')
+    if (await city.isVisible()) await city.fill('London')
+    const address = page.locator('#address')
+    if (await address.isVisible()) await address.fill('123 Main St')
+    const postcode = page.locator('#postcode')
+    if (await postcode.isVisible()) await postcode.fill('SW1A 1AA')
+  }
   await page.locator('#save-btn').click()
-  await expect(page.locator('#firstName')).not.toBeVisible({ timeout: 8000 })
+  // On success isEditing → false, form hides
+  await expect(page.locator('#firstName')).not.toBeVisible({ timeout: 15000 })
 })
 
 test('validation error shown for invalid phone number', async ({ page }) => {
