@@ -13,6 +13,8 @@ import {
   type BrowserContext,
 } from '@playwright/test'
 
+base.beforeEach(() => { base.skip(IS_REAL, 'mocked-only') })
+
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 const FAKE_TOKEN =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
