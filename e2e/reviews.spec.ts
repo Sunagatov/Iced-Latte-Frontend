@@ -1,245 +1,71 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
+import { REAL_PRODUCT_ID_WITH_REVIEWS } from './helpers/realData'
 
-test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
+const PRODUCT_ID = IS_REAL ? REAL_PRODUCT_ID_WITH_REVIEWS : 'd1a2b3c4-0001-4000-8000-000000000001'
 
-const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
-const FAKE_USER = { firstName: 'Test', lastName: 'User', email: 'test@example.com' }
-
-async function mockReviewCalls(page: Page) {
-  const product = {
-    id: PRODUCT_ID,
-    name: 'Turkish Coffee',
-    price: 9.99,
-    productFileUrl: null,
-    brandName: 'Brand',
-    sellerName: 'Seller',
-    averageRating: 4.5,
-    reviewsCount: 1,
-    quantity: 250,
-    description: 'desc',
-    active: true,
-  }
+async function mockReviewCalls(page: Page, authenticated = false) {
+  const product = { id: PRODUCT_ID, name: 'Turkish Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
 
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
 
-    if (url.includes('/reviews') && method === 'POST')
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          productReviewId: 'r1',
-          text: 'Great!',
-          createdAt: new Date().toISOString(),
-        }),
-      })
-    else if (
-      url.includes(`/products/${PRODUCT_ID}/review`) &&
-      !url.includes('/reviews')
-    )
-      await route.fulfill({
-        status: 404,
-        contentType: 'application/json',
-        body: '{}',
-      })
-    else if (url.includes('/reviews/statistics'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          reviewsCount: 0,
-          avgRating: 0,
-          ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 },
-        }),
-      })
-    else if (url.includes('/reviews'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          reviewsWithRatings: [],
-          page: 0,
-          totalPages: 1,
-          totalElements: 0,
-          size: 3,
-        }),
-      })
-    else if (url.includes('/products/ids'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([product]),
-      })
-    else if (url.includes(`/products/${PRODUCT_ID}`))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(product),
-      })
-    else if (url.includes('/products'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          products: [product],
-          page: 0,
-          size: 6,
-          totalElements: 1,
-          totalPages: 1,
-        }),
-      })
-    else if (url.includes('/auth/refresh'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ token: 'fake-token' }),
-      })
-    else if (url.includes('/auth/logout') || url.includes('/users'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: '{}',
-      })
-    else if (url.includes('/cart'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ items: [], totalPrice: 0 }),
-      })
-    else if (url.includes('/wishlist') || url.includes('/favourites'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ products: [] }),
-      })
-    else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
-      await route.fulfill({
-          status: 401,
-          contentType: 'application/json',
-          body: JSON.stringify({ message: 'Unauthorized' }),
-        })
-    else
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: '{}',
-      })
-  })
-}
-
-async function mockReviewCallsAuthenticated(page: Page) {
-  await mockReviewCalls(page)
-  await page.unroute('**/api/proxy/**')
-  // Re-register with authenticated session
-  const product = {
-    id: PRODUCT_ID,
-    name: 'Turkish Coffee',
-    price: 9.99,
-    productFileUrl: null,
-    brandName: 'Brand',
-    sellerName: 'Seller',
-    averageRating: 4.5,
-    reviewsCount: 1,
-    quantity: 250,
-    description: 'desc',
-    active: true,
-  }
-
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    const method = route.request().method()
-
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-      })
-    else if (url.includes('/reviews') && method === 'POST')
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }),
-      })
-    else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews'))
+    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
+      await route.fulfill({ status: authenticated ? 200 : 401, contentType: 'application/json', body: authenticated ? JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) : JSON.stringify({ message: 'Unauthorized' }) })
+    } else if (url.includes('/reviews') && method === 'POST') {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }) })
+    } else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews')) {
       await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
-    else if (url.includes('/reviews/statistics'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }),
-      })
-    else if (url.includes('/reviews'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }),
-      })
-    else if (url.includes('/products/ids'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
-    else if (url.includes(`/products/${PRODUCT_ID}`))
+    } else if (url.includes('/reviews/statistics')) {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }) })
+    } else if (url.includes('/reviews')) {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
+    } else if (url.includes(`/products/${PRODUCT_ID}`)) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) })
-    else if (url.includes('/products'))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }),
-      })
-    else
+    } else if (url.includes('/products')) {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
+    } else {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    }
   })
 }
 
 async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
   await page.waitForLoadState('domcontentloaded')
-  if (await page.locator('text=Failed to load reviews.').isVisible())
-    return false
+  if (await page.locator('text=Failed to load reviews.').isVisible()) return false
   if (await page.locator('h1:has-text("404")').isVisible()) return false
-  await page.waitForSelector('[data-testid="reviews-section"]', {
-    timeout: 20000,
-  })
-  // Wait for auth to settle so isLoggedIn is accurate when buttons are clicked
+  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
   await page.waitForLoadState('networkidle')
-
   return true
 }
 
 test('"Write a review" button redirects guest to /signin', async ({ page }) => {
-  await mockReviewCalls(page)
+  if (IS_REAL) {
+    // In real mode we are logged in — this test doesn't apply
+    test.skip(true, 'logged in via global-setup — guest redirect not testable')
+    return
+  }
+  await mockReviewCalls(page, false)
   const ok = await gotoProductPage(page)
-
   if (!ok) return
   await page.locator('#add-review-btn').click()
   await expect(page).toHaveURL(/\/signin/, { timeout: 8000 })
 })
 
-test('logged-in user sees review form after clicking "Write a review"', async ({
-  page,
-}) => {
-  await mockReviewCallsAuthenticated(page)
+test('logged-in user sees review form after clicking "Write a review"', async ({ page }) => {
+  if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
-
   if (!ok) return
-  await page.waitForSelector('[data-testid="reviews-section"]', {
-    timeout: 20000,
-  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
 })
 
-test('submit button disabled until rating + text both filled', async ({
-  page,
-}) => {
-  await mockReviewCallsAuthenticated(page)
+test('submit button disabled until rating + text both filled', async ({ page }) => {
+  if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
-
   if (!ok) return
-  await page.waitForSelector('[data-testid="reviews-section"]', {
-    timeout: 20000,
-  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await expect(page.locator('#submit-review-btn')).toBeDisabled()
@@ -248,31 +74,21 @@ test('submit button disabled until rating + text both filled', async ({
 })
 
 test('cancel button hides form and resets fields', async ({ page }) => {
-  await mockReviewCallsAuthenticated(page)
+  if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
-
   if (!ok) return
-  await page.waitForSelector('[data-testid="reviews-section"]', {
-    timeout: 20000,
-  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Some text')
   await page.getByRole('button', { name: 'Cancel' }).click()
-  await expect(page.locator('#review-textarea')).not.toBeVisible({
-    timeout: 3000,
-  })
+  await expect(page.locator('#review-textarea')).not.toBeVisible({ timeout: 3000 })
   await expect(page.locator('#add-review-btn')).toBeVisible()
 })
 
 test('character counter updates as user types', async ({ page }) => {
-  await mockReviewCallsAuthenticated(page)
+  if (!IS_REAL) await mockReviewCalls(page, true)
   const ok = await gotoProductPage(page)
-
   if (!ok) return
-  await page.waitForSelector('[data-testid="reviews-section"]', {
-    timeout: 20000,
-  })
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Hello')

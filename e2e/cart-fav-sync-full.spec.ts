@@ -1,12 +1,11 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
+import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
+import { REAL_PRODUCT_ID, REAL_PRODUCT_ID_2 } from './helpers/realData'
 /**
  * Cart & Favourites Sync — comprehensive spec coverage
  *
- * Covers every scenario from .amazonq/cart-fav-sync-spec.md that is not
- * already tested in sync.spec.ts, cart.spec.ts, or favourites.spec.ts.
- *
- * All tests are fully mocked — no real backend calls, immune to rate limiting.
- * Each test gets an isolated browser context so localStorage never leaks.
+ * Mocked tests: fully isolated, immune to rate limiting.
+ * Real-mode tests: behavioral equivalents using real API.
  */
 import {
   test as base,
@@ -16,7 +15,6 @@ import {
 } from '@playwright/test'
 
 if (IS_REAL) base.use({ storageState: { cookies: [], origins: [] } })
-base.beforeEach(() => { base.skip(IS_REAL, 'mocked-only') })
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 

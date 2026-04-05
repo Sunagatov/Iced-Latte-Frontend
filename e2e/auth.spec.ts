@@ -6,7 +6,6 @@ import { config } from 'dotenv'
 config({ path: '.env.local' })
 
 test.use({ storageState: { cookies: [], origins: [] } })
-test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
 
 const EXISTING_EMAIL = process.env.E2E_EXISTING_EMAIL!
 const EXISTING_PASSWORD = process.env.E2E_EXISTING_PASSWORD!

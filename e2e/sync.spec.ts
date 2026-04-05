@@ -1,31 +1,22 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
-/**
- * Sync tests — verifies that cart and favourites saved on the server
- * are correctly restored after login, across devices / fresh sessions.
- *
- * Favourites tests are fully mocked (no real backend calls) — immune to rate limiting.
- * Cart tests hit the real backend but use DOM assertions instead of waitForResponse.
- */
 import {
   test as base,
   expect,
   type Page,
   type BrowserContext,
 } from '@playwright/test'
-
-base.beforeEach(() => { base.skip(IS_REAL, 'mocked-only') })
+import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
+import { REAL_PRODUCT_ID } from './helpers/realData'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
-const FAKE_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
-
-// ─── Custom fixture: fresh context per test ───────────────────────────────────
 
 type Fixtures = { isolatedPage: Page }
 
 const test = base.extend<Fixtures>({
   isolatedPage: async ({ browser }, use) => {
-    const context: BrowserContext = await browser.newContext()
+    const context: BrowserContext = IS_REAL
+      ? await browser.newContext({ storageState: 'e2e/.auth.json' })
+      : await browser.newContext()
     const page = await context.newPage()
 
     await use(page)
@@ -33,221 +24,145 @@ const test = base.extend<Fixtures>({
   },
 })
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-// Navigate to route — session is handled by the mock registered before calling this.
 async function loginAndGoto(page: Page, _token: string, route: string) {
   await page.goto(route)
   await page.waitForLoadState('domcontentloaded')
   await page.waitForTimeout(1000)
 }
 
-// Mock all /api/proxy/favorites requests — GET and POST return the given products array.
 async function mockFavourites(page: Page, products: object[]) {
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
-
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-      })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
     } else if (url.includes('/favorites')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ products }),
-      })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products }) })
     } else {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: '{}',
-      })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     }
   })
 }
 
-// Mock all /api/proxy/cart requests — GET and POST return a cart with the given items.
 async function mockCart(page: Page, items: object[]) {
-  const cart = {
-    id: 'cart-1',
-    userId: 'u1',
-    items,
-    itemsQuantity: items.length,
-    itemsTotalPrice: 9.99,
-    productsQuantity: items.length,
-    createdAt: '',
-    closedAt: null,
-  }
+  const cart = { id: 'cart-1', userId: 'u1', items, itemsQuantity: items.length, itemsTotalPrice: 9.99, productsQuantity: items.length, createdAt: '', closedAt: null }
 
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
-
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
-      })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
     } else if (url.includes('/cart')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(cart),
-      })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cart) })
     } else {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: '{}',
-      })
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     }
   })
 }
 
 function makeFavProduct(id: string) {
-  return {
-    id,
-    name: 'Test Coffee',
-    price: 9.99,
-    productFileUrl: null,
-    brandName: null,
-    averageRating: null,
-    reviewsCount: 0,
-    quantity: 250,
-    description: null,
-  }
+  return { id, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: null, averageRating: null, reviewsCount: 0, quantity: 250, description: null }
 }
 
 function makeCartItem(productId: string) {
-  return {
-    id: 'item-1',
-    productInfo: makeFavProduct(productId),
-    productQuantity: 1,
-  }
+  return { id: 'item-1', productInfo: makeFavProduct(productId), productQuantity: 1 }
 }
 
-// ─── Favourites sync (fully mocked — no real backend calls) ───────────────────
+const FAKE_TOKEN = 'fake-token'
 
 test.describe('Favourites sync', () => {
   test.setTimeout(30000)
 
-  test('server favourites appear on fresh login', async ({
-    isolatedPage: page,
-  }) => {
-    // Mock GET /favorites to return one product — simulates server having a saved favourite
-    await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
-
-    // Use a fake token — all proxy calls are mocked so auth is never validated
-    await loginAndGoto(page, FAKE_TOKEN, '/favourites')
-    await expect(
-      page.locator('[data-testid="fav-element"]').first(),
-    ).toBeVisible({ timeout: 10000 })
+  test('server favourites appear on fresh login', async ({ isolatedPage: page }) => {
+    if (IS_REAL) {
+      await seedFavourite(page, REAL_PRODUCT_ID)
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+      await clearFavourites(page)
+    } else {
+      await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
+      await loginAndGoto(page, FAKE_TOKEN, '/favourites')
+      await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+    }
   })
 
-  test('empty state shown when server has no favourites', async ({
-    isolatedPage: page,
-  }) => {
-    await mockFavourites(page, [])
-
-    await loginAndGoto(page, FAKE_TOKEN, '/favourites')
-    await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({
-      timeout: 10000,
-    })
+  test('empty state shown when server has no favourites', async ({ isolatedPage: page }) => {
+    if (IS_REAL) {
+      await clearFavourites(page)
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 10000 })
+    } else {
+      await mockFavourites(page, [])
+      await loginAndGoto(page, FAKE_TOKEN, '/favourites')
+      await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 10000 })
+    }
   })
 
-  test('guest favourites merge with server favourites after login', async ({
-    isolatedPage: page,
-  }) => {
-    await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
-
-    await page.goto('http://localhost:3000')
-    await page.evaluate((id) => {
-      localStorage.setItem(
-        'fav-storage',
-        JSON.stringify({
-          state: { favouriteIds: [id], favourites: [] },
-          version: 0,
-        }),
-      )
-    }, FAKE_PRODUCT_ID)
-    await page.reload()
-
-    await page.goto('/favourites')
-    await expect(
-      page.locator('[data-testid="fav-element"]').first(),
-    ).toBeVisible({ timeout: 10000 })
+  test('guest favourites merge with server favourites after login', async ({ isolatedPage: page }) => {
+    if (IS_REAL) {
+      await seedFavourite(page, REAL_PRODUCT_ID)
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+      await clearFavourites(page)
+    } else {
+      await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
+      await page.goto('http://localhost:3000')
+      await page.evaluate((id) => {
+        localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: [id], favourites: [] }, version: 0 }))
+      }, FAKE_PRODUCT_ID)
+      await page.reload()
+      await page.goto('/favourites')
+      await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+    }
   })
 })
-
-// ─── Cart sync (mocked — immune to rate limiting) ────────────────────────────
 
 test.describe('Cart sync', () => {
   test.setTimeout(30000)
 
-  test('server cart items appear on fresh login', async ({
-    isolatedPage: page,
-  }) => {
-    const productId = FAKE_PRODUCT_ID
-
-    // Mock GET /cart to return a cart with one item — simulates server having a saved cart
-    await mockCart(page, [makeCartItem(productId)])
-
-    await loginAndGoto(page, FAKE_TOKEN, '/cart')
-    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
-      { timeout: 10000 },
-    )
+  test('server cart items appear on fresh login', async ({ isolatedPage: page }) => {
+    if (IS_REAL) {
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+      await clearCart(page)
+    } else {
+      await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
+      await loginAndGoto(page, FAKE_TOKEN, '/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+    }
   })
 
-  test('guest cart merges with server cart after login', async ({
-    isolatedPage: page,
-  }) => {
-    const productId = FAKE_PRODUCT_ID
-
-    await mockCart(page, [makeCartItem(productId)])
-
-    await page.goto('http://localhost:3000')
-    await page.evaluate((id) => {
-      localStorage.setItem(
-        'cart-storage',
-        JSON.stringify({
-          state: {
-            itemsIds: [{ productId: id, productQuantity: 1 }],
-            tempItems: [],
-            count: 1,
-            totalPrice: 0,
-            isSync: false,
-          },
-          version: 0,
-        }),
-      )
-    }, productId)
-    await page.reload()
-
-    await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
-      { timeout: 10000 },
-    )
+  test('guest cart merges with server cart after login', async ({ isolatedPage: page }) => {
+    if (IS_REAL) {
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+      await clearCart(page)
+    } else {
+      await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
+      await page.goto('http://localhost:3000')
+      await page.evaluate((id) => {
+        localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: [{ productId: id, productQuantity: 1 }], tempItems: [], count: 1, totalPrice: 0, isSync: false }, version: 0 }))
+      }, FAKE_PRODUCT_ID)
+      await page.reload()
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+    }
   })
 
-  test('cart persists after page reload when logged in', async ({
-    isolatedPage: page,
-  }) => {
-    const productId = FAKE_PRODUCT_ID
-
-    await mockCart(page, [makeCartItem(productId)])
-
-    await loginAndGoto(page, FAKE_TOKEN, '/cart')
-    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
-      { timeout: 10000 },
-    )
-
-    await page.reload()
-    // Cart hydrates from localStorage — no network call needed after reload
-    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible(
-      { timeout: 8000 },
-    )
+  test('cart persists after page reload when logged in', async ({ isolatedPage: page }) => {
+    if (IS_REAL) {
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+      await page.reload()
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 8000 })
+      await clearCart(page)
+    } else {
+      await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
+      await loginAndGoto(page, FAKE_TOKEN, '/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+      await page.reload()
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 8000 })
+    }
   })
 })
