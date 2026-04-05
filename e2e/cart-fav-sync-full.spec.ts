@@ -1,4 +1,4 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 /**
  * Cart & Favourites Sync — comprehensive spec coverage
  *
@@ -14,6 +14,9 @@ import {
   type Page,
   type BrowserContext,
 } from '@playwright/test'
+
+if (IS_REAL) base.use({ storageState: { cookies: [], origins: [] } })
+base.beforeEach(() => { base.skip(IS_REAL, 'mocked-only') })
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 

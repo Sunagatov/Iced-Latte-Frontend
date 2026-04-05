@@ -1,5 +1,7 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
+
+test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
 
 const FAKE_TOKEN = 'fake-token-for-mocked-test'
 

@@ -1,9 +1,11 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
+
+if (IS_REAL) test.use({ storageState: { cookies: [], origins: [] } })
+test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
 
 const product = {
   id: 'p1',
-  name: 'Test Coffee',
   price: 9.99,
   productFileUrl: null,
   brandName: 'Brand',

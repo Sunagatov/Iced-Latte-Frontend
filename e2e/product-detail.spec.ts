@@ -1,4 +1,4 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect } from '@playwright/test'
 
 const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'

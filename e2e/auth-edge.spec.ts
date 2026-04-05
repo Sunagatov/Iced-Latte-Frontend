@@ -1,5 +1,8 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect } from '@playwright/test'
+
+test.use({ storageState: { cookies: [], origins: [] } })
+test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
 
 test('forgot password form submits email and shows confirmation', async ({
   page,

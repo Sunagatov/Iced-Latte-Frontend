@@ -1,5 +1,8 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect } from '@playwright/test'
+
+if (IS_REAL) test.use({ storageState: { cookies: [], origins: [] } })
+test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
 
 test.beforeEach(async ({ page }) => {
   await mockRoute(page, '**/api/proxy/**', async (route) => {
