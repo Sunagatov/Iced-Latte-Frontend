@@ -14,4 +14,6 @@ export const deleteAddress = (id: string) =>
   api.delete(`/users/addresses/${id}`)
 
 export const setDefaultAddress = (id: string) =>
-  api.patch<DeliveryAddress>(`/users/addresses/${id}/default`).then((r) => r.data)
+  api
+    .patch<DeliveryAddress>(`/users/addresses/${id}/default`)
+    .then((r) => r.data)

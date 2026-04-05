@@ -14,8 +14,13 @@ export const getUserData = async (): Promise<UserData> => {
   return response.data
 }
 
-export const editUserProfile = async (updatedUserData: Partial<UserData>): Promise<UserData> => {
-  const response: AxiosResponse<UserData> = await api.put('/users', updatedUserData)
+export const editUserProfile = async (
+  updatedUserData: Partial<UserData>,
+): Promise<UserData> => {
+  const response: AxiosResponse<UserData> = await api.put(
+    '/users',
+    updatedUserData,
+  )
 
   return response.data
 }
@@ -27,20 +32,35 @@ export async function uploadImage(file: File): Promise<void> {
   await api.post('/users/avatar', formData)
 }
 
-export async function apiForgotPassword(email: ForgotPasswordCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post('/auth/password/forgot', email)
+export async function apiForgotPassword(
+  email: ForgotPasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/auth/password/forgot',
+    email,
+  )
 
   return response.data
 }
 
-export async function apiGuestResetPassword(credentials: GuestResetPasswordCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post('/auth/password/change', credentials)
+export async function apiGuestResetPassword(
+  credentials: GuestResetPasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.post(
+    '/auth/password/change',
+    credentials,
+  )
 
   return response.data
 }
 
-export async function apiAuthChangePassword(credentials: AuthChangePasswordCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.patch('/users', credentials)
+export async function apiAuthChangePassword(
+  credentials: AuthChangePasswordCredentials,
+): Promise<SuccessResponse> {
+  const response: AxiosResponse<SuccessResponse> = await api.patch(
+    '/users',
+    credentials,
+  )
 
   return response.data
 }

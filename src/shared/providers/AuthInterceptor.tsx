@@ -1,47 +1,67 @@
 'use client'
-import { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
-import { SuccessRefreshToken } from '@/features/auth/types'
-import { useAuthStore } from '@/features/auth/store'
-import { api } from '@/shared/api/client'
-import { useEffect } from 'react'
+
+import { useEffect, type ReactNode } from 'react'
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosCacheInstance } from 'axios-cache-interceptor'
 import { useLogout } from '@/features/auth/hooks'
+import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { getUserData } from '@/features/user/api'
+import { api } from '@/shared/api/client'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean
+  skipAuthRetry?: boolean
 }
 
-const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
-  const { token, refreshToken, authenticate } = useAuthStore()
+interface AuthInterceptorProps {
+  children: ReactNode
+}
+
+const apiClient = api as unknown as AxiosCacheInstance
+
+const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
+  const setAuthenticated = useAuthStore(
+    (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
+  )
+  const setAnonymous = useAuthStore(
+    (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
+  )
   const { logout } = useLogout()
 
   useEffect(() => {
-    const responseInterceptor = api.interceptors.response.use(
+    const responseInterceptor = apiClient.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as CustomAxiosRequestConfig
+        const originalRequest = error.config as
+          | CustomAxiosRequestConfig
+          | undefined
+
+        if (!originalRequest) {
+          throw error
+        }
 
         if (
           error.response?.status === 401 &&
           !originalRequest.isRetry &&
+          !originalRequest.skipAuthRetry &&
           !originalRequest.url?.includes('/auth/authenticate') &&
-          !originalRequest.url?.includes('/auth/refresh')
+          !originalRequest.url?.includes('/auth/refresh') &&
+          !originalRequest.url?.includes('/auth/logout') &&
+          !originalRequest.url?.includes('/users')
         ) {
           try {
             originalRequest.isRetry = true
-            const response: AxiosResponse<SuccessRefreshToken> = await api.post(
-              '/auth/refresh',
-              null,
-              { headers: { Authorization: `Bearer ${refreshToken}` } },
-            )
 
-            if (response) {
-              authenticate(response.data.token)
-              originalRequest.headers['Authorization'] = `Bearer ${response.data.token}`
-            }
+            await apiClient.post('/auth/refresh', null)
 
-            return api.request(originalRequest)
-          } catch (refreshError) {
-            if (refreshError) await logout()
+            const userData = await getUserData()
+
+            setAuthenticated(userData)
+
+            return apiClient.request(originalRequest)
+          } catch (refreshError: unknown) {
+            setAnonymous()
+            void logout()
             throw refreshError
           }
         }
@@ -51,9 +71,9 @@ const AuthInterceptor = ({ children }: { children: React.ReactNode }) => {
     )
 
     return () => {
-      api.interceptors.response.eject(responseInterceptor)
+      apiClient.interceptors.response.eject(responseInterceptor)
     }
-  }, [authenticate, refreshToken, token, logout])
+  }, [logout, setAnonymous, setAuthenticated])
 
   return <>{children}</>
 }

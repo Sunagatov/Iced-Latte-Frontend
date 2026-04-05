@@ -2,21 +2,22 @@
 
 Pick the setup that fits you:
 
-| Option | What runs where | Best for |
-|--------|----------------|----------|
-| **A** | Frontend in IDE + Backend & Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker | Active development, debugging |
-| **B** | Frontend + Backend + Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker | Quick smoke test, no IDE needed |
+| Option | What runs where                                                                                             | Best for                        |
+| ------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| **A**  | Frontend in IDE + Backend & Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker | Active development, debugging   |
+| **B**  | Frontend + Backend + Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker        | Quick smoke test, no IDE needed |
 
 ---
 
 ## 📋 Prerequisites
 
-| Tool | Version | Download |
-|------|---------|----------|
-| Node.js | 20+ | https://nodejs.org/ (Option A only) |
-| Docker Desktop | latest | https://www.docker.com/products/docker-desktop/ |
+| Tool           | Version | Download                                        |
+| -------------- | ------- | ----------------------------------------------- |
+| Node.js        | 20+     | https://nodejs.org/ (Option A only)             |
+| Docker Desktop | latest  | https://www.docker.com/products/docker-desktop/ |
 
 Verify your setup:
+
 ```bash
 node -v           # v20... or higher
 docker --version  # Docker version...
@@ -45,15 +46,18 @@ docker compose --profile backend up -d --build
 ```
 
 This starts:
+
 - `iced-latte-postgresdb` — PostgreSQL database on port `5432`
 - `iced-latte-redis` — Redis cache on port `6379`
 - `iced-latte-minio` — MinIO file storage on port `9000`
 - `iced-latte-backend` — Spring Boot API on port `8083`
 
 Verify all containers are running:
+
 ```bash
 docker ps
 ```
+
 ✅ You should see 4 containers with status `Up`: `iced-latte-postgresdb`, `iced-latte-redis`, `iced-latte-minio`, `iced-latte-backend`.
 
 ### Step 3 — Configure environment
@@ -90,6 +94,7 @@ Open http://localhost:3000 in your browser.
 ### Step 7 — Log in with a test user
 
 Use the login form at http://localhost:3000/signin:
+
 - Email: `olivia@example.com`
 - Password: `p@ss1logic11`
 
@@ -178,12 +183,12 @@ npm run tsc
 
 ## ⚙️ Environment variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable              | Description          | Default                        |
+| --------------------- | -------------------- | ------------------------------ |
 | `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:8083/api/v1` |
-| `PROTOCOL` | `http` or `https` | `http` |
-| `HOST` | Hostname | `localhost` |
-| `PORT` | Dev server port | `3001` |
+| `PROTOCOL`            | `http` or `https`    | `http`                         |
+| `HOST`                | Hostname             | `localhost`                    |
+| `PORT`                | Dev server port      | `3000`                         |
 
 ---
 
@@ -237,6 +242,7 @@ src/
 ```
 
 API docs:
+
 - 🖥️ Local: http://localhost:8083/api/docs/swagger-ui/index.html
 - 🌐 Production: https://iced-latte.uk/backend/api/docs/swagger-ui/index.html
 

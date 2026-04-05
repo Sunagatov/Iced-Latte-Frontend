@@ -1,9 +1,7 @@
-import SyncFav from '@/features/favorites/components/SyncFav/SyncFav'
+import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
 
 const FavPage = () => {
-  return (
-    <SyncFav />
-  )
+  return <FavouritesPage />
 }
 
 export default FavPage

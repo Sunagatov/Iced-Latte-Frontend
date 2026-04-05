@@ -5,11 +5,14 @@ describe('AIReviewSummary', () => {
   it('renders short summary without expand button', () => {
     render(<AIReviewSummary summary="Great coffee." reviewsCount={5} />)
     expect(screen.getByText('Great coffee.')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /more/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /more/i }),
+    ).not.toBeInTheDocument()
   })
 
   it('truncates long summary and shows more/less toggle', () => {
     const long = 'a'.repeat(200)
+
     render(<AIReviewSummary summary={long} reviewsCount={10} />)
     expect(screen.getByRole('button', { name: /more/i })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /more/i }))

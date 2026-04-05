@@ -14,14 +14,16 @@ interface IReviewsSorter {
   children?: React.ReactNode
 }
 
-const ReviewsSorter: React.FC<IReviewsSorter & { children?: React.ReactNode }> = ({
-  selectedOption,
-  selectOption = () => {},
-  userReview,
-  children,
-}) => {
+const ReviewsSorter: React.FC<
+  IReviewsSorter & { children?: React.ReactNode }
+> = ({ selectedOption, selectOption = () => {}, userReview, children }) => {
   return (
-    <div className={twMerge('flex items-center gap-2 border-b border-primary/40 pb-4 mb-6 mt-8', userReview ? 'xl:mt-10' : '')}>
+    <div
+      className={twMerge(
+        'border-primary/40 mt-8 mb-6 flex items-center gap-2 border-b pb-4',
+        userReview ? 'xl:mt-10' : '',
+      )}
+    >
       <Dropdown
         id="reviewsDropdown"
         onChange={selectOption}

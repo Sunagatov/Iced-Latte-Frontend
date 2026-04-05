@@ -23,7 +23,5 @@ export default async function Page({ params }: Readonly<ProductProps>) {
 
   if (!product) notFound()
 
-  return (
-    <ProductWithReviews product={product} />
-  )
+  return <ProductWithReviews product={product} />
 }

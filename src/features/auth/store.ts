@@ -1,30 +1,26 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { UserData } from '@/features/user/types'
 
+export type AuthStatus = 'loading' | 'anonymous' | 'authenticated'
+
 export interface AuthStore {
-  token: string | null
-  refreshToken: string | null
-  isLoggedIn: boolean
+  status: AuthStatus
   userData: UserData | null
-  authenticate: (token: string | null) => void
-  setRefreshToken: (refreshToken: string) => void
+  isLoggedIn: boolean
+  setAuthenticated: (userData: UserData | null) => void
+  setAnonymous: () => void
+  setLoading: () => void
   reset: () => void
   setUserData: (userData: UserData | null) => void
 }
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      token: null,
-      refreshToken: null,
-      isLoggedIn: false,
-      userData: null,
-      authenticate: (token) => set({ token, isLoggedIn: true }),
-      setRefreshToken: (refreshToken) => set({ refreshToken, isLoggedIn: true }),
-      reset: () => set({ token: null, refreshToken: null, userData: null, isLoggedIn: false }),
-      setUserData: (userData) => set({ userData }),
-    }),
-    { name: 'token' },
-  ),
-)
+export const useAuthStore = create<AuthStore>()((set) => ({
+  status: 'loading',
+  userData: null,
+  isLoggedIn: false,
+  setAuthenticated: (userData) => set({ status: 'authenticated', isLoggedIn: true, userData }),
+  setAnonymous: () => set({ status: 'anonymous', isLoggedIn: false, userData: null }),
+  setLoading: () => set({ status: 'loading' }),
+  reset: () => set({ status: 'anonymous', isLoggedIn: false, userData: null }),
+  setUserData: (userData) => set({ userData }),
+}))

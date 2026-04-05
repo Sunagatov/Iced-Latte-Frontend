@@ -26,8 +26,10 @@ const getSellers = cache(async () => {
 })
 
 export default async function Home() {
-  const productBrands = await getBrands()
-  const productSellers = await getSellers()
+  const [productBrands, productSellers] = await Promise.all([
+    getBrands(),
+    getSellers(),
+  ])
 
   return (
     <>

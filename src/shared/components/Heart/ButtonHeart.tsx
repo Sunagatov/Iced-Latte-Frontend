@@ -1,23 +1,41 @@
-import Image from 'next/image'
+import Image, { type StaticImageData } from 'next/image'
+import { twMerge } from 'tailwind-merge'
 import active_heart from '@/../public/active_heart.svg'
 import not_active_heart from '@/../public/not_active_heart.svg'
-import { twMerge } from 'tailwind-merge'
-interface ButtonHeartProps { active: boolean; onClick: () => void; className?: string }
+
+interface ButtonHeartProps {
+  active: boolean
+  onClick: () => void
+  className?: string
+  label?: string
+  disabled?: boolean
+}
 
 export default function ButtonHeart({
   active,
   onClick,
   className,
+  label,
+  disabled,
 }: Readonly<ButtonHeartProps>) {
-  const imageUrl = active ? active_heart : not_active_heart
+  const imageUrl: StaticImageData = active
+    ? (active_heart as unknown as StaticImageData)
+    : (not_active_heart as unknown as StaticImageData)
 
   return (
     <button
-      onClick={onClick}
+      type="button"
+      aria-busy={disabled}
+      aria-label={
+        label ?? (active ? 'Remove from favourites' : 'Add to favourites')
+      }
+      aria-pressed={active}
       className={twMerge(
-        'flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full bg-secondary transition-all duration-200 hover:bg-hover-heart hover:scale-110 active:scale-90 outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2',
+        'bg-secondary hover:bg-hover-heart focus-visible:ring-brand-solid flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full transition-all duration-200 outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-90 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
+      disabled={disabled}
+      onClick={onClick}
     >
       <Image src={imageUrl} alt={`heart ${active ? 'liked' : 'unliked'}`} />
     </button>

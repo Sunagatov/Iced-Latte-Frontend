@@ -145,7 +145,10 @@ const countries = [
   { value: 'Rwanda', label: 'Rwanda' },
   { value: 'Saint Kitts and Nevis', label: 'Saint Kitts and Nevis' },
   { value: 'Saint Lucia', label: 'Saint Lucia' },
-  { value: 'Saint Vincent and the Grenadines', label: 'Saint Vincent and the Grenadines' },
+  {
+    value: 'Saint Vincent and the Grenadines',
+    label: 'Saint Vincent and the Grenadines',
+  },
   { value: 'Samoa', label: 'Samoa' },
   { value: 'San Marino', label: 'San Marino' },
   { value: 'Sao Tome and Principe', label: 'Sao Tome and Principe' },
@@ -200,4 +203,3 @@ const countries = [
 ]
 
 export default countries
-
