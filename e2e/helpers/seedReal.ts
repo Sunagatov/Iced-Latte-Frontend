@@ -13,6 +13,10 @@ function req(page: Page) {
   return page.context().request
 }
 
+async function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
 export async function seedCart(
   page: Page,
   items: { productId: string; productQuantity: number }[],
@@ -46,6 +50,7 @@ export async function clearFavourites(page: Page): Promise<void> {
   const data = await res.json()
   const products: { id: string }[] = data.products ?? []
   for (const p of products) {
+    await sleep(300)
     await req(page).delete(`/api/proxy/favorites/${p.id}`)
   }
 }

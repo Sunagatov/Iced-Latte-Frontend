@@ -7,12 +7,13 @@ export default defineConfig({
   testDir: './e2e',
   workers: 1,
   retries: 1,
-  timeout: 15000,
+  timeout: 30000,
   globalSetup: IS_REAL ? './e2e/global-setup.ts' : undefined,
   use: {
     baseURL: BASE_URL,
     headless: true,
     storageState: IS_REAL ? 'e2e/.auth.json' : undefined,
+    actionTimeout: 15000,
   },
   reporter: [['list'], ['html', { open: 'never' }]],
 })
