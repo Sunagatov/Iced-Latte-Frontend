@@ -11,8 +11,14 @@ export async function GET(request: NextRequest) {
     return new NextResponse(null, { status: 400 })
   }
 
-  const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
-  const response = await fetch(backendUrl, { redirect: 'manual' })
+  const backendUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`)
+
+  if (next) {
+    const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
+    backendUrl.searchParams.set('redirectUrl', `${frontendUrl}${next}`)
+  }
+
+  const response = await fetch(backendUrl.toString(), { redirect: 'manual' })
   const location = response.headers.get('location')
 
   if (location) {
@@ -24,10 +30,6 @@ export async function GET(request: NextRequest) {
         !locationUrl.hostname.endsWith('.google.com')
       ) {
         return new NextResponse(null, { status: 502 })
-      }
-
-      if (next) {
-        locationUrl.searchParams.set('state', next)
       }
 
       return NextResponse.redirect(locationUrl.toString())

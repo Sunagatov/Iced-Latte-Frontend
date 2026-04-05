@@ -19,14 +19,10 @@ function GoogleCallbackInner() {
       return
     }
 
-    const next = searchParams.get('state')
-    const destination =
-      next && /^\/[a-zA-Z0-9/_-]*$/.test(next) ? next : '/'
-
     getUserData()
       .then((userData) => {
         setAuthenticated(userData)
-        router.replace(destination)
+        router.replace('/')
       })
       .catch(() => {
         router.replace('/signin?error=google_auth_failed')

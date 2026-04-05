@@ -46,6 +46,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
           !originalRequest.skipAuthRetry &&
           !originalRequest.url?.includes('/auth/authenticate') &&
           !originalRequest.url?.includes('/auth/refresh') &&
+          !originalRequest.url?.includes('/auth/logout') &&
           !originalRequest.url?.includes('/users')
         ) {
           try {

@@ -18,7 +18,7 @@ export function useLogout() {
       setIsLoading(true)
       await apiLogoutUser()
     } catch {
-      // ignore — logout clears state regardless
+      // ignore — cookies and state are cleared regardless
     } finally {
       await clearAuthCookies()
       reset()

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
+import { isTokenExpired } from '@/shared/utils/authToken'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
@@ -57,11 +58,12 @@ function forwardHeaders(request: NextRequest, path: string): HeadersInit {
   // /auth/refresh and /auth/logout need the refresh token as Bearer
   const isRefreshOrLogout =
     path === 'auth/refresh' || path === 'auth/logout'
-  const bearerToken = isRefreshOrLogout
+  const rawToken = isRefreshOrLogout
     ? request.cookies.get('refreshToken')?.value
     : request.cookies.get('token')?.value
 
-  if (bearerToken) headers['Authorization'] = `Bearer ${bearerToken}`
+  if (rawToken && !isTokenExpired(rawToken))
+    headers['Authorization'] = `Bearer ${rawToken}`
 
   return headers
 }
