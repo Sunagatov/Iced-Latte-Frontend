@@ -25,22 +25,67 @@ async function mockProxy(page: Page) {
   })
 }
 
-test.afterEach(async ({ page }) => {
-  await clearCart(page)
-})
+test.describe('authenticated', () => {
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
 
-test('empty cart shows empty state', async ({ page }) => {
-  if (!IS_REAL) await mockProxy(page)
-  if (IS_REAL) await clearCart(page)
-  await page.goto('/cart')
-  await page.waitForTimeout(500)
-  await expect(page.locator('main')).toBeVisible()
-})
+  test.afterEach(async ({ page }) => {
+    await clearCart(page)
+  })
 
-test('cart page does not redirect to signin when logged in', async ({ page }) => {
-  if (!IS_REAL) await mockProxy(page)
-  await page.goto('/cart')
-  await expect(page).not.toHaveURL(/signin/)
+  test('empty cart shows empty state', async ({ page }) => {
+    if (!IS_REAL) await mockProxy(page)
+    if (IS_REAL) await clearCart(page)
+    await page.goto('/cart')
+    await page.waitForTimeout(500)
+    await expect(page.locator('main')).toBeVisible()
+  })
+
+  test('cart page does not redirect to signin when logged in', async ({ page }) => {
+    if (!IS_REAL) await mockProxy(page)
+    await page.goto('/cart')
+    await expect(page).not.toHaveURL(/signin/)
+  })
+
+  test('add product to cart updates cart count', async ({ page }) => {
+    if (!IS_REAL) {
+      await mockProxy(page)
+      await page.goto('/')
+      await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      const addBtn = page.locator('button:has(img[src*="plus"])').first()
+      await addBtn.waitFor({ timeout: 10000 })
+      await addBtn.click()
+      await page.waitForTimeout(1000)
+      const badge = page.locator('[data-testid="cart-count"]')
+      if (await badge.isVisible()) {
+        expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
+      }
+    } else {
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/')
+      const badge = page.locator('[data-testid="cart-count"]')
+      await expect(badge).toBeVisible({ timeout: 5000 })
+      expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
+    }
+  })
+
+  test('cart page shows added item after adding to cart', async ({ page }) => {
+    if (!IS_REAL) {
+      await mockProxy(page)
+      await page.goto('/')
+      await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      const addBtn = page.locator('button:has(img[src*="plus"])').first()
+      await addBtn.waitFor({ timeout: 10000 })
+      await addBtn.click()
+      await page.waitForTimeout(1000)
+      await page.goto('/cart')
+      await page.waitForTimeout(500)
+      await expect(page.locator('main')).toBeVisible()
+    } else {
+      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await page.goto('/cart')
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+    }
+  })
 })
 
 test.describe('unauthenticated', () => {
@@ -50,45 +95,4 @@ test.describe('unauthenticated', () => {
     await page.goto('/cart')
     await expect(page.locator('main')).toBeVisible()
   })
-})
-
-test('add product to cart updates cart count', async ({ page }) => {
-  if (!IS_REAL) {
-    await mockProxy(page)
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
-    const addBtn = page.locator('button:has(img[src*="plus"])').first()
-    await addBtn.waitFor({ timeout: 10000 })
-    await addBtn.click()
-    await page.waitForTimeout(1000)
-    const badge = page.locator('[data-testid="cart-count"]')
-    if (await badge.isVisible()) {
-      expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
-    }
-  } else {
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
-    await page.goto('/')
-    const badge = page.locator('[data-testid="cart-count"]')
-    await expect(badge).toBeVisible({ timeout: 5000 })
-    expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
-  }
-})
-
-test('cart page shows added item after adding to cart', async ({ page }) => {
-  if (!IS_REAL) {
-    await mockProxy(page)
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
-    const addBtn = page.locator('button:has(img[src*="plus"])').first()
-    await addBtn.waitFor({ timeout: 10000 })
-    await addBtn.click()
-    await page.waitForTimeout(1000)
-    await page.goto('/cart')
-    await page.waitForTimeout(500)
-    await expect(page.locator('main')).toBeVisible()
-  } else {
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
-    await page.goto('/cart')
-    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
-  }
 })

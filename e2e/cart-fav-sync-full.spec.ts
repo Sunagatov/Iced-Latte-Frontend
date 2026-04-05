@@ -993,7 +993,7 @@ test.describe('Cart — multi-item merge', () => {
 
 test.describe('Real-mode: cart operations', () => {
   test.beforeEach(() => { test.skip(!IS_REAL, 'real-mode only') })
-  test.use({ storageState: 'e2e/.auth.json' })
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
 
   test('cart shows item after seeding', async ({ page }) => {
@@ -1022,7 +1022,7 @@ test.describe('Real-mode: cart operations', () => {
 
 test.describe('Real-mode: favourites operations', () => {
   test.beforeEach(() => { test.skip(!IS_REAL, 'real-mode only') })
-  test.use({ storageState: 'e2e/.auth.json' })
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
 
   test('favourites shows item after seeding', async ({ page }) => {

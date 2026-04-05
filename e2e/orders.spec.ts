@@ -1,6 +1,8 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
+test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+
 function makeOrder(id: string, status: string = 'CREATED') {
   return {
     id, status, createdAt: '2024-01-15T10:00:00Z',

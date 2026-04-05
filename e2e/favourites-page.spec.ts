@@ -22,76 +22,77 @@ async function mockFavouritesApi(page: Page, favProducts: object[]) {
   })
 }
 
-test.afterEach(async ({ page }) => {
-  await clearFavourites(page)
-})
+test.describe('authenticated', () => {
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
 
-test('favourites page shows saved products', async ({ page }) => {
-  if (IS_REAL) {
-    await seedFavourite(page, REAL_PRODUCT_ID)
+  test.afterEach(async ({ page }) => {
+    await clearFavourites(page)
+  })
+
+  test('favourites page shows saved products', async ({ page }) => {
+    if (IS_REAL) {
+      await seedFavourite(page, REAL_PRODUCT_ID)
+    } else {
+      await mockFavouritesApi(page, [product])
+    }
     await page.goto('/favourites')
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(500)
-  } else {
-    await mockFavouritesApi(page, [product])
-    await page.goto('/favourites')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(500)
-  }
-  await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 8000 })
-})
+    await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 8000 })
+  })
 
-test('removing a favourite updates the list', async ({ page }) => {
-  if (IS_REAL) {
-    await seedFavourite(page, REAL_PRODUCT_ID)
+  test('removing a favourite updates the list', async ({ page }) => {
+    if (IS_REAL) {
+      await seedFavourite(page, REAL_PRODUCT_ID)
+      await page.goto('/favourites')
+      await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
+      await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
+      await expect(page.locator('[data-testid="fav-element"]')).toHaveCount(0, { timeout: 8000 })
+      return
+    }
+    let removed = false
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
+      const url = route.request().url()
+      const method = route.request().method()
+      if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
+      else if (url.includes('/favorites') && method === 'DELETE') {
+        removed = true
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
+      } else if (url.includes('/favorites')) {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: removed ? [] : [product] }) })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      }
+    })
+    await page.goto('http://localhost:3000')
+    await page.evaluate((id) => {
+      localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: [id] }, version: 0 }))
+    }, PRODUCT_ID)
     await page.goto('/favourites')
     await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
     await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
     await expect(page.locator('[data-testid="fav-element"]')).toHaveCount(0, { timeout: 8000 })
-    return
-  }
-  let removed = false
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    const method = route.request().method()
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
-    else if (url.includes('/favorites') && method === 'DELETE') {
-      removed = true
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
-    } else if (url.includes('/favorites')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: removed ? [] : [product] }) })
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    }
   })
-  await page.goto('http://localhost:3000')
-  await page.evaluate((id) => {
-    localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: [id] }, version: 0 }))
-  }, PRODUCT_ID)
-  await page.goto('/favourites')
-  await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
-  await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
-  await expect(page.locator('[data-testid="fav-element"]')).toHaveCount(0, { timeout: 8000 })
-})
 
-test('empty state shown when no favourites', async ({ page }) => {
-  if (IS_REAL) await clearFavourites(page)
-  else await mockFavouritesApi(page, [])
-  await page.goto('/favourites')
-  await page.waitForLoadState('domcontentloaded')
-  await page.waitForTimeout(500)
-  await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
-})
+  test('empty state shown when no favourites', async ({ page }) => {
+    if (IS_REAL) await clearFavourites(page)
+    else await mockFavouritesApi(page, [])
+    await page.goto('/favourites')
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForTimeout(500)
+    await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
+  })
 
-test('clicking a favourite product navigates to product detail', async ({ page }) => {
-  if (IS_REAL) {
-    await seedFavourite(page, REAL_PRODUCT_ID)
-  } else {
-    await mockFavouritesApi(page, [product])
-  }
-  await page.goto('/favourites')
-  await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
-  await page.locator('[data-testid="fav-element"]').first().getByRole('link').first().click()
-  await expect(page).toHaveURL(new RegExp(`/product/${PRODUCT_ID}`), { timeout: 8000 })
+  test('clicking a favourite product navigates to product detail', async ({ page }) => {
+    if (IS_REAL) {
+      await seedFavourite(page, REAL_PRODUCT_ID)
+    } else {
+      await mockFavouritesApi(page, [product])
+    }
+    await page.goto('/favourites')
+    await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
+    await page.locator('[data-testid="fav-element"]').first().getByRole('link').first().click()
+    await expect(page).toHaveURL(new RegExp(`/product/${PRODUCT_ID}`), { timeout: 8000 })
+  })
 })

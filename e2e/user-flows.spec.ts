@@ -25,6 +25,8 @@ async function mockProxy(page: Page) {
   })
 }
 
+test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+
 test.beforeEach(async ({ page }) => {
   if (!IS_REAL) {
     await mockProxy(page)

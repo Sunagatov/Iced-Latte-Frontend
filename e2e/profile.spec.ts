@@ -9,6 +9,8 @@ const userData = {
   address: { country: 'GB', city: 'London', line: '123 Main St', postcode: 'SW1A 1AA' },
 }
 
+test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+
 async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: number } = {}) {
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()

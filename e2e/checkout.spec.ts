@@ -42,6 +42,8 @@ async function fillForm(page: Page) {
   await page.fill('#country', 'UK')
 }
 
+test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+
 test.afterEach(async ({ page }) => {
   await clearCart(page)
 })

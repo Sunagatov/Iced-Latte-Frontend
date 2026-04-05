@@ -2,6 +2,8 @@ import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { REAL_PRODUCT_ID_WITH_REVIEWS } from './helpers/realData'
 
+test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+
 const PRODUCT_ID = IS_REAL ? REAL_PRODUCT_ID_WITH_REVIEWS : 'd1a2b3c4-0001-4000-8000-000000000001'
 
 async function mockReviewCalls(page: Page, authenticated = false) {

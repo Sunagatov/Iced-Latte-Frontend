@@ -72,6 +72,7 @@ test.afterEach(async ({ page }) => {
 })
 
 test.describe('Logged-in: product card buttons on home page', () => {
+  test.use({ storageState: 'e2e/.auth.json' })
   test.setTimeout(30000)
 
   test('plus button adds item — counter appears', async ({ page }) => {
@@ -159,6 +160,7 @@ test.describe('Guest: product card buttons on home page', () => {
 })
 
 test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
+  test.use({ storageState: 'e2e/.auth.json' })
   test.setTimeout(30000)
 
   test('plus button increments quantity', async ({ page }) => {
@@ -264,6 +266,7 @@ test.describe('Guest: cart page plus / minus / trash buttons', () => {
 })
 
 test.describe('Logout clears cart and favourites state', () => {
+  test.use({ storageState: 'e2e/.auth.json' })
   test.setTimeout(30000)
 
   test('cart counter resets after logout', async ({ page }) => {
