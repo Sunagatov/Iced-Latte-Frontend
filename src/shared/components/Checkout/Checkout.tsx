@@ -49,6 +49,10 @@ export default function CheckoutForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!tempItems || tempItems.length === 0) {
+      setError('Your cart is empty. Add items before placing an order.')
+      return
+    }
     setLoading(true)
     try {
       await api.post('/orders', {

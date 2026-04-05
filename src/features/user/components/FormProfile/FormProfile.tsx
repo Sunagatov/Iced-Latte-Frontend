@@ -122,9 +122,7 @@ const FormProfile = ({
             {...register('address.country')}
             className="placeholder:text-placeholder' bg-secondary text-L text-primary outline-focus block h-[54px] w-full cursor-pointer appearance-none rounded-lg p-2.5"
           >
-            <option value="" disabled>
-              Select country
-            </option>
+            <option value="">Select country</option>
             {countries.map((country) => (
               <option key={country.value} value={country.value}>
                 {country.label}

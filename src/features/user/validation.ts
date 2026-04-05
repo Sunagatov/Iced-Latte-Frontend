@@ -39,7 +39,15 @@ export const validationSchema = yup.object().shape({
       excludeEmptyString: true,
     }),
   address: yup.object().shape({
-    country: yup.string().nullable(),
+    country: yup
+      .string()
+      .nullable()
+      .when(['city', 'line', 'postcode'], {
+        is: (city: string, line: string, postcode: string) =>
+          !!(city || line || postcode),
+        then: (schema) => schema.required('Country is required when filling in an address'),
+        otherwise: (schema) => schema.nullable(),
+      }),
     city: yup
       .string()
       .nullable()
