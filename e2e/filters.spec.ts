@@ -71,9 +71,9 @@ test('rating filter - selecting Any shows all products', async ({ page }) => {
 
 test('rating filter - only one rating option can be selected at a time', async ({ page }) => {
   await page.locator('#checkbox-4').click()
-  await page.waitForTimeout(300)
+  await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {})
   await page.locator('#checkbox-3').click()
-  await page.waitForTimeout(300)
+  await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {})
   await expect(page.locator('#checkbox-4')).not.toHaveClass(/bg-brand-solid/)
   await expect(page.locator('#checkbox-3')).toHaveClass(/bg-brand-solid/)
 })

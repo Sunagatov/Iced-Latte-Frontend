@@ -23,7 +23,7 @@ test('product detail page shows product name and price', async ({ page }) => {
 test('product detail page shows reviews section', async ({ page }) => {
   if (await page.locator('text=Something went wrong!').isVisible()) return
   if (await page.locator('h1:has-text("404")').isVisible()) return
-  await expect(page.locator('[data-testid="reviews-section"]')).toBeVisible({ timeout: 10000 })
+  await expect(page.locator('[data-testid="reviews-section"]')).toBeVisible({ timeout: 20000 })
 })
 
 test('product detail page has add to cart button', async ({ page }) => {

@@ -82,7 +82,8 @@ test.describe('authenticated', () => {
     else await mockFavouritesApi(page, [])
 
     // Clear persisted fav-storage so previous test's favouriteIds don't trigger sync
-    await page.goto('http://localhost:3000')
+    const baseUrl = process.env.BASE_URL ?? 'http://localhost:3000'
+    await page.goto(baseUrl)
     await page.evaluate(() => localStorage.removeItem('fav-storage'))
     await page.goto('/favourites')
     await page.waitForLoadState('domcontentloaded')

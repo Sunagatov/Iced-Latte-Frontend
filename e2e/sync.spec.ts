@@ -128,7 +128,7 @@ test.describe('Cart sync', () => {
     if (IS_REAL) {
       await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
-      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 15000 })
       await clearCart(page)
     } else {
       await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])

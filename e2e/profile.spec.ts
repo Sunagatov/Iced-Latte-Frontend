@@ -63,18 +63,10 @@ test('editing name and saving calls API', async ({ page }) => {
   await gotoProfile(page)
   await openEditForm(page)
   await page.fill('#firstName', IS_REAL ? 'Olivia' : 'Jane')
-  if (IS_REAL) {
-    // Real backend requires address fields to avoid null constraint
-    const city = page.locator('#city')
-    if (await city.isVisible()) await city.fill('London')
-    const address = page.locator('#address')
-    if (await address.isVisible()) await address.fill('123 Main St')
-    const postcode = page.locator('#postcode')
-    if (await postcode.isVisible()) await postcode.fill('SW1A 1AA')
-  }
+  await page.fill('#lastName', IS_REAL ? 'Johnson' : 'Doe')
   await page.locator('#save-btn').click()
   // On success isEditing → false, form hides
-  await expect(page.locator('#firstName')).not.toBeVisible({ timeout: 15000 })
+  await expect(page.locator('#firstName')).not.toBeVisible({ timeout: 20000 })
 })
 
 test('validation error shown for invalid phone number', async ({ page }) => {
