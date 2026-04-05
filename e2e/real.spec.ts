@@ -11,6 +11,7 @@
  */
 import { test, expect } from '@playwright/test'
 import { config } from 'dotenv'
+import { IS_REAL } from './helpers/mockRoute'
 
 config({ path: '.env.local' })
 
@@ -22,12 +23,16 @@ test('@real-only home page loads products', async ({ page }) => {
   await expect(page.locator('[data-testid="product-card"]').first()).toBeVisible({ timeout: 15000 })
 })
 
-test('@real-only sign in and redirect to home', async ({ page }) => {
-  await page.goto('/signin?next=/')
-  await page.fill('#email', EMAIL)
-  await page.fill('#password', PASSWORD)
-  await page.click('#login-btn')
-  await expect(page).not.toHaveURL(/\/signin/, { timeout: 15000 })
+test.describe('unauthenticated', () => {
+  test.use({ storageState: { cookies: [], origins: [] } })
+
+  test('@real-only sign in and redirect to home', async ({ page }) => {
+    await page.goto('/signin?next=/')
+    await page.fill('#email', EMAIL)
+    await page.fill('#password', PASSWORD)
+    await page.click('#login-btn')
+    await expect(page).not.toHaveURL(/\/signin/, { timeout: 15000 })
+  })
 })
 
 test('@real-only product detail page loads', async ({ page }) => {
