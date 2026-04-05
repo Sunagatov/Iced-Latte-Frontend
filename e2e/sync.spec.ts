@@ -1,4 +1,4 @@
-import { mockRoute } from './helpers/mockRoute'
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 /**
  * Sync tests — verifies that cart and favourites saved on the server
  * are correctly restored after login, across devices / fresh sessions.

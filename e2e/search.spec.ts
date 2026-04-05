@@ -1,6 +1,8 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
+test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
+
 const latteProduct = {
   id: '1',
   name: 'Latte Coffee',
