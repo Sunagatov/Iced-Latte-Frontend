@@ -24,7 +24,9 @@ interface Fixtures {
 
 const test = base.extend<Fixtures>({
   page: async ({ browser }, use) => {
-    const context: BrowserContext = await browser.newContext()
+    const context: BrowserContext = IS_REAL
+      ? await browser.newContext({ storageState: 'e2e/.auth.json' })
+      : await browser.newContext()
     const page = await context.newPage()
 
     await use(page)
@@ -185,6 +187,7 @@ async function mockProxy(
 // ─── §5 Header badges ─────────────────────────────────────────────────────────
 
 test.describe('Header badges', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('cart badge shows total product units from persisted count', async ({
     page,
   }) => {
@@ -246,6 +249,7 @@ test.describe('Header badges', () => {
 // ─── §3 Cart sync — stale state cleanup ──────────────────────────────────────
 
 test.describe('Cart sync — stale state cleanup', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('stale isSync=true with no token is reset on load', async ({ page }) => {
     // Spec §3: token=null, isSync=true → reset() clears cart
     await page.goto('http://localhost:3000')
@@ -269,6 +273,7 @@ test.describe('Cart sync — stale state cleanup', () => {
 // ─── §3 Cart sync — quantity operations (logged in) ──────────────────────────
 
 test.describe('Cart — quantity operations (logged in)', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('increasing quantity updates item count display', async ({ page }) => {
     // Spec §3 add: token set, item already in cart → PATCH, response updates qty
     let serverQty = 1
@@ -511,6 +516,7 @@ test.describe('Cart — quantity operations (logged in)', () => {
 // ─── §3 Cart sync — guest operations ─────────────────────────────────────────
 
 test.describe('Cart — guest operations', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('guest cart shows empty state when no items', async ({ page }) => {
     // Spec §6: CartEmpty shown when tempItems=0 and count=0
     await mockProxy(page, {})
@@ -597,6 +603,7 @@ test.describe('Cart — guest operations', () => {
 // ─── §4 Favourites sync ───────────────────────────────────────────────────────
 
 test.describe('Favourites sync', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('fav sync fires only once on login, not on subsequent add/remove', async ({
     page,
   }) => {
@@ -851,6 +858,7 @@ test.describe('Favourites sync', () => {
 // ─── §3+§4 Logout clears both stores ─────────────────────────────────────────
 
 test.describe('Logout clears cart and favourites', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('fresh session with no stored state shows empty cart', async ({
     page,
   }) => {
@@ -878,6 +886,7 @@ test.describe('Logout clears cart and favourites', () => {
 // ─── §3 Cart — multi-item merge ───────────────────────────────────────────────
 
 test.describe('Cart — multi-item merge', () => {
+  test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('guest cart with multiple items all appear after login sync', async ({
     page,
   }) => {
@@ -977,5 +986,64 @@ test.describe('Cart — multi-item merge', () => {
     await expect(
       page.locator('[data-testid="cart-item-qty"]').first(),
     ).toHaveText('3', { timeout: 8000 })
+  })
+})
+
+// ─── Real-mode behavioral equivalents ────────────────────────────────────────
+
+test.describe('Real-mode: cart operations', () => {
+  test.beforeEach(() => { test.skip(!IS_REAL, 'real-mode only') })
+  test.use({ storageState: 'e2e/.auth.json' })
+  test.setTimeout(30000)
+
+  test('cart shows item after seeding', async ({ page }) => {
+    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+    await page.goto('/cart')
+    await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
+    await clearCart(page)
+  })
+
+  test('cart shows empty state after clearing', async ({ page }) => {
+    await clearCart(page)
+    await page.goto('/cart')
+    await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 8000 })
+  })
+
+  test('cart with two products shows both items', async ({ page }) => {
+    await seedCart(page, [
+      { productId: REAL_PRODUCT_ID, productQuantity: 1 },
+      { productId: REAL_PRODUCT_ID_2, productQuantity: 2 },
+    ])
+    await page.goto('/cart')
+    await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(2, { timeout: 10000 })
+    await clearCart(page)
+  })
+})
+
+test.describe('Real-mode: favourites operations', () => {
+  test.beforeEach(() => { test.skip(!IS_REAL, 'real-mode only') })
+  test.use({ storageState: 'e2e/.auth.json' })
+  test.setTimeout(30000)
+
+  test('favourites shows item after seeding', async ({ page }) => {
+    await seedFavourite(page, REAL_PRODUCT_ID)
+    await page.goto('/favourites')
+    await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+    await clearFavourites(page)
+  })
+
+  test('favourites shows empty state after clearing', async ({ page }) => {
+    await clearFavourites(page)
+    await page.goto('/favourites')
+    await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 8000 })
+  })
+
+  test('add favourite updates header badge', async ({ page }) => {
+    await clearFavourites(page)
+    await seedFavourite(page, REAL_PRODUCT_ID)
+    await page.goto('/')
+    const badge = page.locator('a[href="/favourites"] div div').filter({ hasText: /^\d+$/ })
+    await expect(badge).toBeVisible({ timeout: 5000 })
+    await clearFavourites(page)
   })
 })
