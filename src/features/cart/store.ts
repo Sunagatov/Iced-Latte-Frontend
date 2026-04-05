@@ -87,19 +87,38 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
         const productCartSlotId = getProductCartSlotId(id, tempItems)
 
         if (!productCartSlotId) return
+        const optimisticIds = itemsIds.map((item) =>
+          item.productId === id
+            ? { ...item, productQuantity: item.productQuantity + 1 }
+            : item,
+        )
+        const optimisticTemps = tempItems.map((item) =>
+          item.productInfo.id === id
+            ? { ...item, productQuantity: item.productQuantity + 1 }
+            : item,
+        )
+
+        set((state) => ({
+          ...state,
+          itemsIds: optimisticIds,
+          tempItems: optimisticTemps,
+          count: getProductsCount(optimisticIds),
+          totalPrice: getTotalPrice(optimisticTemps),
+        }))
         setPending(set, id)
         updateCartItem({
           shoppingCartItemId: productCartSlotId,
           productQuantityChange: 1,
         })
-          .then(
-            () => {
-            /* no-op */
-            },
-            () => {
-            /* no-op */
-            },
-          )
+          .catch(() => {
+            set((state) => ({
+              ...state,
+              itemsIds,
+              tempItems,
+              count: getProductsCount(itemsIds),
+              totalPrice: getTotalPrice(tempItems),
+            }))
+          })
           .finally(() => clearPending(set, id))
       } else {
         setPending(set, id)
@@ -221,19 +240,38 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
 
         return
       }
+      const optimisticIds = itemsIds.map((item) =>
+        item.productId === id
+          ? { ...item, productQuantity: item.productQuantity - 1 }
+          : item,
+      )
+      const optimisticTemps = tempItems.map((item) =>
+        item.productInfo.id === id
+          ? { ...item, productQuantity: item.productQuantity - 1 }
+          : item,
+      )
+
+      set((state) => ({
+        ...state,
+        itemsIds: optimisticIds,
+        tempItems: optimisticTemps,
+        count: getProductsCount(optimisticIds),
+        totalPrice: getTotalPrice(optimisticTemps),
+      }))
       setPending(set, id)
       updateCartItem({
         shoppingCartItemId: productCartSlotId,
         productQuantityChange: -1,
       })
-        .then(
-          () => {
-            /* no-op */
-          },
-          () => {
-            /* no-op */
-          },
-        )
+        .catch(() => {
+          set((state) => ({
+            ...state,
+            itemsIds,
+            tempItems,
+            count: getProductsCount(itemsIds),
+            totalPrice: getTotalPrice(tempItems),
+          }))
+        })
         .finally(() => clearPending(set, id))
     } else {
       const updatedCart = removeItem(id, itemsIds)

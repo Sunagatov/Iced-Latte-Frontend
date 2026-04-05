@@ -44,6 +44,14 @@ export async function seedFavourite(page: Page, productId: string): Promise<void
   await req(page).post('/api/proxy/favorites', {
     data: { productIds: [productId] },
   })
+
+  // Poll until the backend confirms the item is present
+  for (let i = 0; i < 6; i++) {
+    await sleep(1000)
+    const check = await req(page).get('/api/proxy/favorites')
+    const body = await check.json()
+    if ((body.products ?? []).some((p: { id: string }) => p.id === productId)) return
+  }
 }
 
 export async function clearFavourites(page: Page): Promise<void> {

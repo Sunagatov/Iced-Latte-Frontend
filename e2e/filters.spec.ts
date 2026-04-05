@@ -90,7 +90,7 @@ test('brand filter - reset clears selection', async ({ page }) => {
   const firstBrandCheckbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
   if (!(await firstBrandCheckbox.isVisible())) return
   await firstBrandCheckbox.click()
-  await expect(firstBrandCheckbox).toBeChecked()
+  await expect(page.locator('#Brand-reset-btn')).toBeVisible({ timeout: 5000 })
   await page.locator('#Brand-reset-btn').click()
   await expect(firstBrandCheckbox).not.toBeChecked()
   await expect(page.locator('#Brand-reset-btn')).not.toBeVisible()
