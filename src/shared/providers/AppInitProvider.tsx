@@ -70,9 +70,9 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     }
 
     if (status === 'anonymous') {
-      const { isSync: currentIsSync } = useCartStore.getState()
+      const { isSync: cartIsSync } = useCartStore.getState()
 
-      if (currentIsSync) {
+      if (cartIsSync) {
         resetCart()
       }
 
@@ -89,31 +89,24 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
       return
     }
 
-    // status === 'authenticated' — run once on login
-    const { isSync: currentIsSync, itemsIds: currentItemsIds } =
-      useCartStore.getState()
+    // status === 'authenticated'
+    const { isSync: cartIsSync, itemsIds } = useCartStore.getState()
 
-    if (!currentIsSync && currentItemsIds.length > 0) {
+    if (!cartIsSync && itemsIds.length > 0) {
       void syncBackendCart().catch(() => {})
     } else {
       void loadAuthCart().catch(() => {})
     }
 
-    const syncFavourites = async (): Promise<void> => {
-      try {
-        const favouriteIds = useFavouritesStore.getState().favouriteIds
+    // Only push local→backend when the user had anonymous favourites
+    // that were never synced. In all other cases fetch from backend.
+    const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
 
-        if (favouriteIds.length > 0) {
-          await syncBackendFav()
-        } else {
-          await getFavouriteProducts()
-        }
-      } catch {
-        // ignore
-      }
+    if (!favIsSync && favouriteIds.length > 0) {
+      void syncBackendFav().catch(() => {})
+    } else {
+      void getFavouriteProducts().catch(() => {})
     }
-
-    void syncFavourites()
   }, [
     status,
     getCartItems,
