@@ -2,6 +2,7 @@ import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { seedFavourite, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
+import { ensureAuth } from './helpers/ensureAuth'
 
 const PRODUCT_ID = IS_REAL ? REAL_PRODUCT_ID : '00000000-0000-0000-0000-000000000001'
 
@@ -24,6 +25,7 @@ async function mockFavouritesApi(page: Page, favProducts: object[]) {
 
 test.describe('authenticated', () => {
   test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+  test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
   test.afterEach(async ({ page }) => {
     await clearFavourites(page)

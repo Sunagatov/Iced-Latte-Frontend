@@ -2,6 +2,7 @@ import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
+import { ensureAuth } from './helpers/ensureAuth'
 
 const FAKE_USER = { firstName: 'Test', lastName: 'User', email: 'test@example.com' }
 const PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
@@ -74,6 +75,7 @@ test.afterEach(async ({ page }) => {
 test.describe('Logged-in: product card buttons on home page', () => {
   test.use({ storageState: 'e2e/.auth.json' })
   test.setTimeout(30000)
+  test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
   test('plus button adds item — counter appears', async ({ page }) => {
     if (IS_REAL) {
@@ -162,6 +164,7 @@ test.describe('Guest: product card buttons on home page', () => {
 test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
   test.use({ storageState: 'e2e/.auth.json' })
   test.setTimeout(30000)
+  test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
   test('plus button increments quantity', async ({ page }) => {
     if (IS_REAL) {
@@ -268,6 +271,7 @@ test.describe('Guest: cart page plus / minus / trash buttons', () => {
 test.describe('Logout clears cart and favourites state', () => {
   test.use({ storageState: 'e2e/.auth.json' })
   test.setTimeout(30000)
+  test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
   test('cart counter resets after logout', async ({ page }) => {
     if (IS_REAL) {

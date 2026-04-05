@@ -1,7 +1,9 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
+import { ensureAuth } from './helpers/ensureAuth'
 
 test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
 function makeOrder(id: string, status: string = 'CREATED') {
   return {

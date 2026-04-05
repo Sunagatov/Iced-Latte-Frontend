@@ -54,10 +54,10 @@ function forwardHeaders(request: NextRequest): HeadersInit {
     if (value) headers[name] = value
   }
 
-  // Forward session cookie so the backend can authenticate the request
-  const cookie = request.headers.get('cookie')
+  // Extract token cookie and send as Bearer — backend only reads Authorization header
+  const token = request.cookies.get('token')?.value
 
-  if (cookie) headers.cookie = cookie
+  if (token) headers['Authorization'] = `Bearer ${token}`
 
   return headers
 }

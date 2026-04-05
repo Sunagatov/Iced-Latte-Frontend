@@ -2,6 +2,7 @@ import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { clearCart, seedCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
+import { ensureAuth } from './helpers/ensureAuth'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -28,6 +29,7 @@ async function mockProxy(page: Page) {
 test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
 
 test.beforeEach(async ({ page }) => {
+  await ensureAuth(page)
   if (!IS_REAL) {
     await mockProxy(page)
     await page.goto('http://localhost:3000')

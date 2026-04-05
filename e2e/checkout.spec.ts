@@ -2,6 +2,7 @@ import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { seedCart, clearCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
+import { ensureAuth } from './helpers/ensureAuth'
 
 const product = { id: 'p1', name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
 const cartWithItem = { id: 'c1', userId: 'u1', items: [{ id: 'ci1', productInfo: product, productQuantity: 1 }], itemsQuantity: 1, itemsTotalPrice: 9.99, productsQuantity: 1, createdAt: '', closedAt: null }
@@ -43,6 +44,7 @@ async function fillForm(page: Page) {
 }
 
 test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
 test.afterEach(async ({ page }) => {
   await clearCart(page)

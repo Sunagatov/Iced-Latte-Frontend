@@ -1,5 +1,6 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
+import { ensureAuth } from './helpers/ensureAuth'
 
 const VALID_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo0MTAyNDQ0ODAwfQ.fake-signature'
 
@@ -10,6 +11,7 @@ const userData = {
 }
 
 test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
 async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: number } = {}) {
   await mockRoute(page, '**/api/proxy/**', async (route) => {

@@ -7,6 +7,7 @@ import {
 } from '@playwright/test'
 import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
+import { ensureAuth } from './helpers/ensureAuth'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
