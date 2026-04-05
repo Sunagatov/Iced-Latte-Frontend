@@ -21,7 +21,7 @@ const selectRemoveFullProduct = (
 ): CartSliceStore['removeFullProduct'] => state.removeFullProduct
 const selectClearCart = (state: CartSliceStore): CartSliceStore['clearCart'] =>
   state.clearCart
-const selectIsLoggedIn = (state: AuthStore): boolean => state.isLoggedIn
+const selectIsLoggedIn = (state: AuthStore): boolean => state.status === 'authenticated'
 
 export default function CartFull() {
   const tempItems = useCartStore(selectTempItems)

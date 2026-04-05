@@ -42,7 +42,7 @@ function fetchWithTimeout(
   )
 }
 
-function forwardHeaders(request: NextRequest): HeadersInit {
+function forwardHeaders(request: NextRequest, path: string): HeadersInit {
   const headers: Record<string, string> = {}
   const contentType = request.headers.get('Content-Type')
 
@@ -54,10 +54,14 @@ function forwardHeaders(request: NextRequest): HeadersInit {
     if (value) headers[name] = value
   }
 
-  // Extract token cookie and send as Bearer — backend only reads Authorization header
-  const token = request.cookies.get('token')?.value
+  // /auth/refresh and /auth/logout need the refresh token as Bearer
+  const isRefreshOrLogout =
+    path === 'auth/refresh' || path === 'auth/logout'
+  const bearerToken = isRefreshOrLogout
+    ? request.cookies.get('refreshToken')?.value
+    : request.cookies.get('token')?.value
 
-  if (token) headers['Authorization'] = `Bearer ${token}`
+  if (bearerToken) headers['Authorization'] = `Bearer ${bearerToken}`
 
   return headers
 }
@@ -97,7 +101,7 @@ async function handleProxy(
   try {
     const response = await fetchWithTimeout(apiUrl, {
       method,
-      headers: forwardHeaders(request),
+      headers: forwardHeaders(request, safePath),
       body,
     })
     const contentType = response.headers.get('content-type') ?? ''

@@ -6,23 +6,21 @@ export type AuthStatus = 'loading' | 'anonymous' | 'authenticated'
 export interface AuthStore {
   status: AuthStatus
   userData: UserData | null
+  isLoggedIn: boolean
   setAuthenticated: (userData: UserData | null) => void
   setAnonymous: () => void
   setLoading: () => void
   reset: () => void
   setUserData: (userData: UserData | null) => void
-  isLoggedIn: boolean
 }
 
-export const useAuthStore = create<AuthStore>()((set, get: () => AuthStore) => ({
+export const useAuthStore = create<AuthStore>()((set) => ({
   status: 'loading',
   userData: null,
-  get isLoggedIn() {
-    return get().status === 'authenticated'
-  },
-  setAuthenticated: (userData) => set({ status: 'authenticated', userData }),
-  setAnonymous: () => set({ status: 'anonymous', userData: null }),
+  isLoggedIn: false,
+  setAuthenticated: (userData) => set({ status: 'authenticated', isLoggedIn: true, userData }),
+  setAnonymous: () => set({ status: 'anonymous', isLoggedIn: false, userData: null }),
   setLoading: () => set({ status: 'loading' }),
-  reset: () => set({ status: 'anonymous', userData: null }),
+  reset: () => set({ status: 'anonymous', isLoggedIn: false, userData: null }),
   setUserData: (userData) => set({ userData }),
 }))

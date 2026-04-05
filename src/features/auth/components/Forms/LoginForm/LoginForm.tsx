@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/features/auth/api'
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
-import { setCookie } from '@/shared/utils/cookieUtils'
+import { setAuthCookies } from '@/shared/utils/cookieUtils'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
 interface IFormValues {
@@ -35,9 +35,9 @@ export default function LoginForm() {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
-      const { token } = await apiLoginUser(formData)
+      const { token, refreshToken } = await apiLoginUser(formData)
 
-      await setCookie('token', token)
+      await setAuthCookies(token, refreshToken)
       const userData = await getUserData()
 
       setAuthenticated(userData)

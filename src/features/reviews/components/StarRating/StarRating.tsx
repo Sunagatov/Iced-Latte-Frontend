@@ -28,7 +28,7 @@ const StarRating = ({
 }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
   const { ratings, setRating } = useProductRatingStore()
-  const { isLoggedIn } = useAuthStore()
+  const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
   const router = useRouter()
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }

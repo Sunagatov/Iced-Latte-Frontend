@@ -8,7 +8,7 @@ import { useAuthStore } from '@/features/auth/store'
 
 export default function FavouritesEmpty() {
   const router = useRouter()
-  const { isLoggedIn } = useAuthStore()
+  const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
 
   return (
     <div

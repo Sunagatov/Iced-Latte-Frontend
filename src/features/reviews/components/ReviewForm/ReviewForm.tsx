@@ -26,7 +26,7 @@ const ReviewForm = ({
   const [reviewText, setReviewText] = useState('')
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
-  const { isLoggedIn } = useAuthStore()
+  const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
   const router = useRouter()
 
   const currentRating = (ratings[productId] || { rating: 0 }).rating

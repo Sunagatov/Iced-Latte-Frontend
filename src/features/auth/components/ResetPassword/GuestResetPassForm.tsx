@@ -3,8 +3,8 @@
 import Loader from '@/shared/components/Loader/Loader'
 import Button from '@/shared/components/Buttons/Button/Button'
 import FormInput from '@/shared/components/FormInput/FormInput'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useErrorHandler } from '@/shared/utils/apiError'
@@ -34,6 +34,7 @@ export default function GuestResetPassForm() {
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
   } = useForm<IChangeValues>({
     resolver: yupResolver(changePassSchema),
@@ -41,6 +42,12 @@ export default function GuestResetPassForm() {
     mode: 'onChange',
   })
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const token = searchParams.get('token')
+    if (token) setValue('code', token)
+  }, [searchParams, setValue])
 
   const onSubmit = async (values: IChangeValues) => {
     const { code, password } = values
@@ -110,15 +117,17 @@ export default function GuestResetPassForm() {
                   </div>
                 )}
 
-                <FormInput
-                  id="code"
-                  register={register}
-                  name="code"
-                  label="Code from email"
-                  type="text"
-                  placeholder="Enter the code you received"
-                  error={errors.code}
-                />
+                {!searchParams.get('token') && (
+                  <FormInput
+                    id="code"
+                    register={register}
+                    name="code"
+                    label="Code from email"
+                    type="text"
+                    placeholder="Enter the code you received"
+                    error={errors.code}
+                  />
+                )}
 
                 <div>
                   <FormInput

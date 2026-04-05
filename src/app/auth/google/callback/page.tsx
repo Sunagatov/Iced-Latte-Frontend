@@ -2,12 +2,13 @@
 
 import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuthStore } from '@/features/auth/store'
+import { getUserData } from '@/features/user/api'
 
-// The backend now sets the token as an HttpOnly cookie and redirects here
-// with ?auth=success. No tokens ever appear in the URL.
 function GoogleCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
 
   useEffect(() => {
     const error = searchParams.get('error')
@@ -22,8 +23,15 @@ function GoogleCallbackInner() {
     const destination =
       next && /^\/[a-zA-Z0-9/_-]*$/.test(next) ? next : '/'
 
-    router.replace(destination)
-  }, [searchParams, router])
+    getUserData()
+      .then((userData) => {
+        setAuthenticated(userData)
+        router.replace(destination)
+      })
+      .catch(() => {
+        router.replace('/signin?error=google_auth_failed')
+      })
+  }, [searchParams, router, setAuthenticated])
 
   return (
     <div className="flex min-h-screen items-center justify-center">

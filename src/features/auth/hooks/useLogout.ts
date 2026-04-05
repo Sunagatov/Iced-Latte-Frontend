@@ -3,6 +3,7 @@ import { useFavouritesStore, type FavStoreState } from '@/features/favorites/sto
 import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import { useRouter } from 'next/navigation'
 import { apiLogoutUser } from '../api'
+import { clearAuthCookies } from '@/shared/utils/cookieUtils'
 import { useCallback, useState } from 'react'
 
 export function useLogout() {
@@ -19,6 +20,7 @@ export function useLogout() {
     } catch {
       // ignore — logout clears state regardless
     } finally {
+      await clearAuthCookies()
       reset()
       resetFav()
       resetCart()
