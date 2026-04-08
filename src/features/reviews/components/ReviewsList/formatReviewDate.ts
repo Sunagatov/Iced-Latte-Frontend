@@ -1,15 +1,22 @@
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+})
+
+const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+})
+
 export const formatReviewDate = (dateString: string | null) => {
   if (!dateString) return { date: 'N/A', time: '' }
 
   const date = new Date(dateString)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0') // Months are zero-indexed
-  const year = date.getFullYear()
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
 
   return {
-    date: `${day}.${month}.${year}`,
-    time: `${hours}:${minutes}`,
+    date: dateFormatter.format(date),
+    time: timeFormatter.format(date),
   }
 }

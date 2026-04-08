@@ -1,144 +1,124 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useCartStore } from '@/features/cart/store'
-import { fetchCart } from '@/features/cart/api'
-import type { AuthStore } from '@/features/auth/store'
-import { useAuthStore } from '@/features/auth/store'
-import { useFavouritesStore } from '@/features/favorites/store'
-import RouteTracker from './RouteTracker'
+import { useEffect, type ReactNode } from 'react'
+import { getUserData } from '@/features/user/api'
+import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import {
-  getTokenFromBrowserCookie,
-  isTokenExpired,
-  removeTokenFromBrowserCookie,
-} from '@/shared/utils/authToken'
+  useFavouritesStore,
+  type FavStoreState,
+} from '@/features/favorites/store'
 
-/** Constant-time string comparison to prevent timing attacks. */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-
-  let result = 0
-
-  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-
-  return result === 0
+interface AppInitProviderProps {
+  children: ReactNode
 }
 
-const AppInitProvider = ({ children }: { children: React.ReactNode }) => {
-  const favouriteIdsCount = useFavouritesStore((state) => state.favouriteIds.length)
-  const { syncBackendFav } = useFavouritesStore()
+const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
+  const status = useAuthStore(
+    (state: AuthStore): AuthStore['status'] => state.status,
+  )
+  const setAuthenticated = useAuthStore(
+    (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
+  )
+  const setAnonymous = useAuthStore(
+    (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
+  )
+  const syncBackendFav = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['syncBackendFav'] =>
+      state.syncBackendFav,
+  )
+  const getFavouriteProducts = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['getFavouriteProducts'] =>
+      state.getFavouriteProducts,
+  )
+  const resetFav = useFavouritesStore(
+    (state: FavStoreState): FavStoreState['resetFav'] => state.resetFav,
+  )
 
-  const resetAuth = useAuthStore((state: AuthStore) => state.reset)
-
-  const authenticate = useAuthStore((state: AuthStore) => state.authenticate)
-
-  const token = useAuthStore((state: AuthStore) => state.token)
-
-  const itemsCount = useCartStore((state) => state.itemsIds.length)
-  const getCartItems = useCartStore((state) => state.getCartItems)
-  const syncBackendCart = useCartStore((state) => state.syncBackendCart)
-  const isSync = useCartStore((state) => state.isSync)
-  const reset = useCartStore((state) => state.resetCart)
-  const setTempItems = useCartStore((state) => state.setTempItems)
-
-  // Wait for both persisted stores to finish hydrating before running sync logic.
-  // Without this, the effect fires with stale initial values and may overwrite
-  // the guest cart with an empty server cart before localStorage has been read.
-  const [hydrated, setHydrated] = useState(false)
-  const [favSyncedForSession, setFavSyncedForSession] = useState<string | null>(null)
-
+  const syncBackendCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['syncBackendCart'] =>
+      state.syncBackendCart,
+  )
+  const resetCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['resetCart'] => state.resetCart,
+  )
+  const getCartItems = useCartStore(
+    (state: CartSliceStore): CartSliceStore['getCartItems'] =>
+      state.getCartItems,
+  )
+  const loadAuthCart = useCartStore(
+    (state: CartSliceStore): CartSliceStore['loadAuthCart'] =>
+      state.loadAuthCart,
+  )
   useEffect(() => {
-    let cartDone = useCartStore.persist.hasHydrated()
-    let authDone = useAuthStore.persist.hasHydrated()
-
-    if (cartDone && authDone) {
-      setHydrated(true)
-
-      return
-    }
-
-    const unsubCart = useCartStore.persist.onFinishHydration(() => {
-      cartDone = true
-      if (authDone) setHydrated(true)
-    })
-    const unsubAuth = useAuthStore.persist.onFinishHydration(() => {
-      authDone = true
-      if (cartDone) setHydrated(true)
-    })
-
-    return () => {
-      unsubCart()
-      unsubAuth()
-    }
-  }, [])
-
-  useEffect(() => {
-    const cookieToken = getTokenFromBrowserCookie()
-
-    if (!cookieToken) return
-
-    if (isTokenExpired(cookieToken)) {
-      removeTokenFromBrowserCookie()
-      resetAuth()
-
-      return
-    }
-
-    if (!token) {
-      authenticate(cookieToken)
-    }
-  }, [authenticate, resetAuth, token])
-
-  // Reset fav sync tracker when user logs out so next login triggers a fresh sync.
-  useEffect(() => {
-    if (!token) setFavSyncedForSession(null)
-  }, [token])
-
-  useEffect(() => {
-    if (!hydrated) return
-    if (!token) {
-      if (isSync) reset()
-      if (itemsCount) getCartItems().catch(() => {})
-    } else if (!isSync && itemsCount) {
-      syncBackendCart(token).catch(() => {})
-    } else if (token && (isSync || !itemsCount)) {
-      fetchCart()
-        .then((cart) => setTempItems(cart.items))
-        .catch(() => {})
-    }
-  }, [hydrated, token, itemsCount, isSync]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Track whether the initial fav sync for the current token has already run.
-  useEffect(() => {
-    if (!hydrated) return
-    if (!token) return
-    // Only run once per login session — not on every favouriteIdsCount change.
-    if (favSyncedForSession !== null && timingSafeEqual(favSyncedForSession, token)) return
-
-    const fetchData = async (): Promise<void> => {
+    const bootstrapSession = async (): Promise<void> => {
       try {
-        if (favouriteIdsCount) {
-          await syncBackendFav()
-        } else {
-          const { getFavouriteProducts } = useFavouritesStore.getState()
+        const userData = await getUserData()
 
-          await getFavouriteProducts(token)
-        }
-        setFavSyncedForSession(token)
-      } catch (error: unknown) {
-        if (
-          (error as { response?: { status?: number } })?.response?.status === 401 ||
-          (error as { status?: number })?.status === 401
-        ) {
-          resetAuth()
-        }
+        setAuthenticated(userData)
+      } catch {
+        setAnonymous()
       }
     }
 
-    void fetchData()
-  }, [hydrated, token, favSyncedForSession, favouriteIdsCount, syncBackendFav, resetAuth])
+    void bootstrapSession()
+  }, [setAnonymous, setAuthenticated])
 
-  return <RouteTracker>{children}</RouteTracker>
+  useEffect(() => {
+    if (status === 'loading') {
+      return
+    }
+
+    if (status === 'anonymous') {
+      const { isSync: cartIsSync } = useCartStore.getState()
+
+      if (cartIsSync) {
+        resetCart()
+      }
+
+      const count = useCartStore.getState().itemsIds.length
+
+      if (count > 0) {
+        void getCartItems().catch(() => {})
+      }
+
+      if (useFavouritesStore.getState().isSync) {
+        resetFav()
+      }
+
+      return
+    }
+
+    // status === 'authenticated'
+    const { isSync: cartIsSync, itemsIds } = useCartStore.getState()
+
+    if (!cartIsSync && itemsIds.length > 0) {
+      void syncBackendCart().catch(() => {})
+    } else {
+      void loadAuthCart().catch(() => {})
+    }
+
+    // Only push local→backend when the user had anonymous favourites
+    // that were never synced. In all other cases fetch from backend.
+    const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
+
+    if (!favIsSync && favouriteIds.length > 0) {
+      void syncBackendFav().catch(() => {})
+    } else {
+      void getFavouriteProducts().catch(() => {})
+    }
+  }, [
+    status,
+    getCartItems,
+    getFavouriteProducts,
+    loadAuthCart,
+    resetCart,
+    resetFav,
+    syncBackendCart,
+    syncBackendFav,
+  ])
+
+  return <>{children}</>
 }
 
 export default AppInitProvider

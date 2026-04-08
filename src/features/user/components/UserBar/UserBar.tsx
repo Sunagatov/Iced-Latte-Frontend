@@ -29,7 +29,7 @@ const UserBar = () => {
   return (
     <Button
       id="user-btn"
-      className=" flex h-12 w-12 items-center justify-center "
+      className="flex h-12 w-12 items-center justify-center"
     >
       {userName}
     </Button>

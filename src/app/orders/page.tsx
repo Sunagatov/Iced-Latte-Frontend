@@ -4,7 +4,13 @@ import Loader from '@/shared/components/Loader/Loader'
 
 export default function OrdersPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[50vh] items-center justify-center"><Loader /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Loader />
+        </div>
+      }
+    >
       <OrderHistory />
     </Suspense>
   )

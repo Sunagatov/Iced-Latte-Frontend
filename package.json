@@ -1,17 +1,20 @@
 {
-  "name": "online-store",
+  "name": "iced-latte",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "tsc": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e": "lsof -ti :3000 | xargs kill -9 2>/dev/null; PORT=3000 next dev & sleep 6 && playwright test; kill %1 2>/dev/null",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:prod": "BASE_URL=https://iced-latte.uk playwright test",
+    "test:e2e:local-real": "lsof -ti :3000 | xargs kill -9 2>/dev/null; PORT=3000 next dev & sleep 6 && BASE_URL=http://localhost:3000 playwright test; kill %1 2>/dev/null"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.0",
@@ -39,7 +42,6 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
     "@hookform/resolvers": "^5.2.2",
     "@next/eslint-plugin-next": "^15.3.4",
     "@playwright/test": "^1.58.2",

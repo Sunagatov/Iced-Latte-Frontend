@@ -18,13 +18,16 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testEnvironment: 'jest-environment-jsdom',
-  reporters: ['default',  ['jest-sonar', { outputName: 'jest-sonar-coverage-report.xml'}]],
+  reporters: [
+    'default',
+    ['jest-sonar', { outputName: 'jest-sonar-coverage-report.xml' }],
+  ],
   preset: 'ts-jest',
   collectCoverage: true,
   coverageReporters: ['lcov', 'clover'],
   clearMocks: true,
   globals: {
-      fetch
+    fetch,
   },
 }
 

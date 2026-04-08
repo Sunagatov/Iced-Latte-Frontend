@@ -20,7 +20,9 @@ const Dropdown = <T,>({
   id,
   hidePrefix,
   compact,
-}: Readonly<PropsDropdown<T> & { hidePrefix?: boolean; compact?: boolean }>) => {
+}: Readonly<
+  PropsDropdown<T> & { hidePrefix?: boolean; compact?: boolean }
+>) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -51,7 +53,7 @@ const Dropdown = <T,>({
       id={id}
       ref={ref}
       data-testid="sort-dropdown"
-      className={twMerge('relative w-max text-L text-primary', className)}
+      className={twMerge('text-L text-primary relative w-max', className)}
     >
       <button
         className={twMerge(
@@ -63,11 +65,33 @@ const Dropdown = <T,>({
         tabIndex={0}
       >
         {compact ? (
-          <Image src={'/open_select.svg'} alt="sort" width={17} height={10} className={twMerge('transition-transform duration-200', isOpen && 'rotate-180')} />
+          <Image
+            src={'/open_select.svg'}
+            alt="sort"
+            width={17}
+            height={10}
+            className={twMerge(
+              'transition-transform duration-200',
+              isOpen && 'rotate-180',
+            )}
+          />
         ) : (
           <>
-            <span>{hidePrefix ? selectedOption.label : `Sort by: ${selectedOption.label}`}</span>
-            <Image src={'/open_select.svg'} alt="open select icon" width={17} height={10} className={twMerge('transition-transform duration-200', isOpen && 'rotate-180')} />
+            <span>
+              {hidePrefix
+                ? selectedOption.label
+                : `Sort by: ${selectedOption.label}`}
+            </span>
+            <Image
+              src={'/open_select.svg'}
+              alt="open select icon"
+              width={17}
+              height={10}
+              className={twMerge(
+                'transition-transform duration-200',
+                isOpen && 'rotate-180',
+              )}
+            />
           </>
         )}
       </button>
@@ -80,7 +104,7 @@ const Dropdown = <T,>({
                 className={twMerge(
                   optionBtnStyles,
                   isSelected(selectedOption, option) &&
-                    'bg-secondary font-bold text-brand-solid',
+                    'bg-secondary text-brand-solid font-bold',
                 )}
                 onClick={handleChange(option)}
               >

@@ -1,11 +1,6 @@
-export type SuccessResponse = {
-  token: string
-  refreshToken: string
-}
-
-export type SuccessRefreshToken = {
-  token: string | null
-  refreshToken: string | null
+export type SessionResponse = {
+  authenticated: boolean
+  user: import('@/features/user/types').UserData | null
 }
 
 export type LoginCredentials = {
@@ -18,14 +13,6 @@ export type RegisterCredentials = {
   lastName: string
   email: string
   password: string
-}
-
-export interface ConfirmEmailResponse {
-  token: {
-    token: string
-    refreshToken: string
-  }
-  httpStatusCode: number
 }
 
 export interface ErrorResponse {
@@ -46,3 +33,6 @@ export interface GuestResetPasswordCredentials {
   password: string
 }
 
+export interface SuccessResponse {
+  message?: string
+}

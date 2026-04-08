@@ -1,11 +1,13 @@
 import { NextRequest } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
+import { isTokenExpired } from '@/shared/utils/authToken'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
 
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
-const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
+const ALLOWED_QUERY_PARAM_RE = /^[a-zA-Z0-9_.~:@!$&'()*+,;=%[\]-]*$/
+const FORWARDED_HEADERS = ['X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
@@ -13,14 +15,35 @@ function sanitizePath(segments: string[]): string | null {
   return ALLOWED_PATH_RE.test(joined) ? joined : null
 }
 
-function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+function sanitizeQueryString(params: URLSearchParams): string {
+  const safe = new URLSearchParams()
+
+  for (const [key, value] of params.entries()) {
+    if (
+      ALLOWED_QUERY_PARAM_RE.test(key) &&
+      ALLOWED_QUERY_PARAM_RE.test(value)
+    ) {
+      safe.append(key, value)
+    }
+  }
+  const qs = safe.toString()
+
+  return qs ? `?${qs}` : ''
+}
+
+function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+): Promise<Response> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer))
+  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  )
 }
 
-function forwardHeaders(request: NextRequest): HeadersInit {
+function forwardHeaders(request: NextRequest, path: string): HeadersInit {
   const headers: Record<string, string> = {}
   const contentType = request.headers.get('Content-Type')
 
@@ -31,6 +54,16 @@ function forwardHeaders(request: NextRequest): HeadersInit {
 
     if (value) headers[name] = value
   }
+
+  // /auth/refresh and /auth/logout need the refresh token as Bearer
+  const isRefreshOrLogout =
+    path === 'auth/refresh' || path === 'auth/logout'
+  const rawToken = isRefreshOrLogout
+    ? request.cookies.get('refreshToken')?.value
+    : request.cookies.get('token')?.value
+
+  if (rawToken && !isTokenExpired(rawToken))
+    headers['Authorization'] = `Bearer ${rawToken}`
 
   return headers
 }
@@ -53,7 +86,10 @@ async function handleProxy(
   const pathString = path.join('/')
 
   if (method === 'POST' && pathString.includes('telemetry')) {
-    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
+    return createCorsResponse(
+      { message: 'Telemetry endpoint not implemented' },
+      202,
+    )
   }
 
   const safePath = sanitizePath(path)
@@ -61,59 +97,80 @@ async function handleProxy(
   if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
 
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
+  const apiUrl = `${API_BASE_URL}/${safePath}${sanitizeQueryString(url.searchParams)}`
   const body = method === 'GET' ? undefined : await readBody(request)
 
   try {
     const response = await fetchWithTimeout(apiUrl, {
       method,
-      headers: forwardHeaders(request),
+      headers: forwardHeaders(request, safePath),
       body,
     })
     const contentType = response.headers.get('content-type') ?? ''
     const rawBody = await response.text()
 
-    const data: unknown = contentType.includes('application/json') && rawBody
-      ? (JSON.parse(rawBody) as unknown)
-      : rawBody
+    const data: unknown =
+      contentType.includes('application/json') && rawBody
+        ? (JSON.parse(rawBody) as unknown)
+        : rawBody
 
     if (!response.ok) return createCorsResponse(data, response.status)
 
-    return createCorsResponse(data)
+    const nextResponse = createCorsResponse(data)
+    const setCookie = response.headers.get('set-cookie')
+
+    if (setCookie) nextResponse.headers.set('set-cookie', setCookie)
+
+    return nextResponse
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)
   }
 }
 
-export async function OPTIONS() {
-  return handleOptions()
+export function OPTIONS(request: NextRequest) {
+  return handleOptions(request)
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'GET', path)
 }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'POST', path)
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'PUT', path)
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'PATCH', path)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'DELETE', path)

@@ -4,7 +4,11 @@ interface PasswordStrengthBarProps {
   color: string
 }
 
-export default function PasswordStrengthBar({ score, label, color }: Readonly<PasswordStrengthBarProps>) {
+export default function PasswordStrengthBar({
+  score,
+  label,
+  color,
+}: Readonly<PasswordStrengthBarProps>) {
   return (
     <div className="mt-2">
       <div className="flex gap-1">
@@ -15,7 +19,9 @@ export default function PasswordStrengthBar({ score, label, color }: Readonly<Pa
           />
         ))}
       </div>
-      <p className={`mt-1 text-xs font-medium ${score >= 3 ? 'text-positive' : score >= 2 ? 'text-yellow-500' : 'text-negative'}`}>
+      <p
+        className={`mt-1 text-xs font-medium ${score >= 3 ? 'text-positive' : score >= 2 ? 'text-yellow-500' : 'text-negative'}`}
+      >
         {label}
       </p>
     </div>

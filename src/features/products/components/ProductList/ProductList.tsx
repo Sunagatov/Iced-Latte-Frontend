@@ -2,7 +2,14 @@ import { IProduct } from '@/features/products/types'
 import ProductCard from '../ProductCard/ProductCard'
 import Loader from '@/shared/components/Loader/Loader'
 
-const SUGGESTIONS = ['Latte', 'Espresso', 'Mocha', 'Cold Brew', 'Cappuccino', 'Flat White']
+const SUGGESTIONS = [
+  'Latte',
+  'Espresso',
+  'Mocha',
+  'Cold Brew',
+  'Cappuccino',
+  'Flat White',
+]
 
 interface IProductListProps {
   products: IProduct[]
@@ -21,11 +28,13 @@ export default function ProductList({
   onResetFilters,
   onSuggestionClick,
 }: Readonly<IProductListProps>) {
-  if (error) {
+  if (error && products.length === 0) {
     return (
       <div className="flex grow flex-col items-center justify-center gap-4 py-24 text-center">
         <span className="text-5xl">⚠️</span>
-        <h3 className="text-2xl font-semibold text-primary">Something went wrong</h3>
+        <h3 className="text-primary text-2xl font-semibold">
+          Something went wrong
+        </h3>
         <p className="text-secondary">Please try refreshing the page.</p>
       </div>
     )
@@ -41,21 +50,27 @@ export default function ProductList({
 
   if (products.length === 0) {
     return (
-      <div data-testid="empty-state" className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center">
+      <div
+        data-testid="empty-state"
+        className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center"
+      >
         <span className="text-5xl">🔍</span>
         {searchQuery ? (
           <>
-            <h3 className="text-xl font-semibold text-primary">
-              No results for <span className="text-brand">&ldquo;{searchQuery}&rdquo;</span>
+            <h3 className="text-primary text-xl font-semibold">
+              No results for{' '}
+              <span className="text-brand">&ldquo;{searchQuery}&rdquo;</span>
             </h3>
-            <p className="text-sm text-secondary">Check the spelling or try a different search.</p>
+            <p className="text-secondary text-sm">
+              Check the spelling or try a different search.
+            </p>
             <div className="mt-1 flex flex-wrap justify-center gap-2">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   data-testid="suggestion-pill"
                   onClick={() => onSuggestionClick?.(s)}
-                  className="rounded-full border border-brand/30 px-4 py-1.5 text-sm font-medium text-brand transition hover:bg-brand/10"
+                  className="border-brand/30 text-brand hover:bg-brand/10 rounded-full border px-4 py-1.5 text-sm font-medium transition"
                 >
                   {s}
                 </button>
@@ -64,14 +79,18 @@ export default function ProductList({
           </>
         ) : (
           <>
-            <h3 className="text-xl font-semibold text-primary">No products found</h3>
-            <p className="max-w-xs text-sm text-secondary">Try adjusting your filters.</p>
+            <h3 className="text-primary text-xl font-semibold">
+              No products found
+            </h3>
+            <p className="text-secondary max-w-xs text-sm">
+              Try adjusting your filters.
+            </p>
           </>
         )}
         {onResetFilters && (
           <button
             onClick={onResetFilters}
-            className="mt-2 rounded-full bg-brand-solid px-6 py-2.5 text-sm font-medium text-white transition hover:bg-brand-solid-hover"
+            className="bg-brand-solid hover:bg-brand-solid-hover mt-2 rounded-full px-6 py-2.5 text-sm font-medium text-white transition"
           >
             Reset all filters
           </button>

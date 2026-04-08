@@ -1,5 +1,12 @@
 'use client'
-interface PropsBtn { onClick?: () => void; className?: string; type?: 'button' | 'submit' | 'reset'; disabled?: boolean; children?: React.ReactNode; id?: string }
+interface PropsBtn {
+  onClick?: () => void
+  className?: string
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
+  children?: React.ReactNode
+  id?: string
+}
 import { twMerge } from 'tailwind-merge'
 
 const defaultStyles =

@@ -11,18 +11,30 @@ import { AuthChangePasswordCredentials } from '@/features/auth/types'
 import { apiAuthChangePassword } from '@/features/user/api'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { authChangePassSchema } from '@/features/auth/validation'
-import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
+import {
+  RiLockPasswordLine,
+  RiCheckboxCircleLine,
+  RiArrowLeftLine,
+} from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
 
-interface IChangeAuthValues { oldPassword: string; newPassword: string }
+interface IChangeAuthValues {
+  oldPassword: string
+  newPassword: string
+}
 
 export default function AuthResetPassForm() {
   const [loading, setLoading] = useState(false)
   const [newPw, setNewPw] = useState('')
   const [changeSuccessful, setChangeSuccessful] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
-  const { handleSubmit, register, reset, formState: { errors } } = useForm<IChangeAuthValues>({
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<IChangeAuthValues>({
     resolver: yupResolver(authChangePassSchema),
     defaultValues: { oldPassword: '', newPassword: '' },
     mode: 'onChange',
@@ -30,7 +42,10 @@ export default function AuthResetPassForm() {
   const router = useRouter()
 
   const onSubmit = async (values: IChangeAuthValues) => {
-    const data: AuthChangePasswordCredentials = { newPassword: values.newPassword, oldPassword: values.oldPassword }
+    const data: AuthChangePasswordCredentials = {
+      newPassword: values.newPassword,
+      oldPassword: values.oldPassword,
+    }
 
     try {
       setLoading(true)
@@ -47,36 +62,49 @@ export default function AuthResetPassForm() {
   const strength = getPasswordStrength(newPw)
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-secondary px-4 py-12">
+    <div className="bg-secondary flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-
         {changeSuccessful ? (
-          <div className="rounded-2xl bg-primary p-8 shadow-sm ring-1 ring-black/5 text-center">
+          <div className="bg-primary rounded-2xl p-8 text-center shadow-sm ring-1 ring-black/5">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-              <RiCheckboxCircleLine className="h-8 w-8 text-positive" />
+              <RiCheckboxCircleLine className="text-positive h-8 w-8" />
             </div>
-            <h2 className="mb-2 text-2xl font-bold text-primary">Password updated!</h2>
-            <p className="mb-6 text-sm text-secondary">Your password has been changed successfully.</p>
-            <Button className="w-full justify-center" id="reset-pass-btn" onClick={() => { router.push('/profile') }}>
+            <h2 className="text-primary mb-2 text-2xl font-bold">
+              Password updated!
+            </h2>
+            <p className="text-secondary mb-6 text-sm">
+              Your password has been changed successfully.
+            </p>
+            <Button
+              className="w-full justify-center"
+              id="reset-pass-btn"
+              onClick={() => {
+                router.push('/profile')
+              }}
+            >
               Go to profile
             </Button>
           </div>
         ) : (
-          <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5 overflow-hidden">
+          <div className="bg-primary overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand to-brand-solid-hover px-6 py-8 text-center">
+            <div className="from-brand to-brand-solid-hover bg-gradient-to-r px-6 py-8 text-center">
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
                 <RiLockPasswordLine className="h-7 w-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">Change your password</h2>
-              <p className="mt-1 text-sm text-white/70">Minimum 8 characters, one letter, one digit</p>
+              <h2 className="text-2xl font-bold text-white">
+                Change your password
+              </h2>
+              <p className="mt-1 text-sm text-white/70">
+                Minimum 8 characters, one letter, one digit
+              </p>
             </div>
 
             {/* Form */}
             <div className="p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {errorMessage && (
-                  <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-negative">
+                  <div className="text-negative rounded-lg bg-red-50 px-4 py-3 text-sm">
                     {errorMessage}
                   </div>
                 )}
@@ -100,13 +128,15 @@ export default function AuthResetPassForm() {
                     type="password"
                     placeholder="Enter your new password"
                     error={errors.newPassword}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPw(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setNewPw(e.target.value)
+                    }
                   />
                   {newPw && <PasswordStrengthBar {...strength} />}
                 </div>
 
                 <Button
-                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
+                  className="hover:bg-brand-solid-hover mt-2 w-full justify-center"
                   id="reset-confirm-btn"
                   type="submit"
                 >
@@ -116,7 +146,7 @@ export default function AuthResetPassForm() {
 
               <button
                 onClick={() => router.back()}
-                className="mt-4 flex w-full items-center justify-center gap-1.5 text-sm text-secondary hover:text-primary transition-colors"
+                className="text-secondary hover:text-primary mt-4 flex w-full items-center justify-center gap-1.5 text-sm transition-colors"
               >
                 <RiArrowLeftLine className="h-4 w-4" />
                 Go back

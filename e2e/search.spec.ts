@@ -1,22 +1,33 @@
+import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 
-const latteProduct = { id: '1', name: 'Latte Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
+const latteProduct = {
+  id: '1', name: 'Latte Coffee', price: 9.99, productFileUrl: null,
+  brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5,
+  reviewsCount: 1, quantity: 250, description: 'desc', active: true,
+}
 
 async function setup(page: Page) {
-  await page.route('**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    if (url.includes('keyword=latte')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [latteProduct], page: 0, size: 5, totalElements: 1, totalPages: 1 }) })
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    }
-  })
+  if (!IS_REAL) {
+    await mockRoute(page, '**/api/proxy/**', async (route) => {
+      const url = route.request().url()
+      if (url.includes('keyword=latte')) {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [latteProduct], page: 0, size: 5, totalElements: 1, totalPages: 1 }) })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+      }
+    })
+  }
   await page.goto('/')
   await page.waitForSelector('#hero input[aria-label="Search products"]', { timeout: 10000 })
 }
 
 test('search bar is visible in header', async ({ page }) => {
-  await page.route('**/api/proxy/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }))
+  if (!IS_REAL) {
+    await mockRoute(page, '**/api/proxy/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+    )
+  }
   await page.goto('/')
   await expect(page.getByRole('textbox', { name: 'Search products' })).toBeVisible()
 })

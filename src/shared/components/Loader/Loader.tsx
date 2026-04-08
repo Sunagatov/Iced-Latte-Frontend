@@ -1,7 +1,7 @@
 export default function Loader() {
   return (
     <svg
-      className="animate-spin -ml-1 mr-3 h-8 w-8 text-red"
+      className="text-red mr-3 -ml-1 h-8 w-8 animate-spin"
       fill="none"
       viewBox="0 0 24 24"
     >

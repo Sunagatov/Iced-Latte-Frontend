@@ -7,12 +7,11 @@ import Header from '@/shared/components/Header/Header'
 import Footer from '@/shared/components/Footer/Footer'
 import AuthInterceptor from '@/shared/providers/AuthInterceptor'
 import AppInitProvider from '@/shared/providers/AppInitProvider'
-import PerformanceTracker from '@/shared/components/PerformanceTracker'
+import PerformanceTracker from '@/shared/providers/PerformanceTracker'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
- 
 export const metadata: Metadata = {
   title: 'Iced Latte',
   description: 'Iced Latte',
@@ -23,7 +22,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
-      <body suppressHydrationWarning className={inter.className + ' flex min-h-screen flex-col'}>
+      <body
+        suppressHydrationWarning
+        className={inter.className + ' flex min-h-screen flex-col'}
+      >
         <ToastContainer />
         <AuthInterceptor>
           <AppInitProvider>

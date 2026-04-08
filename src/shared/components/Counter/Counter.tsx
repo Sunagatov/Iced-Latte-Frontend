@@ -4,8 +4,16 @@ import plus from '@/../public/plus.svg'
 import plusDark from '@/../public/plus_dark.svg'
 import minus from '@/../public/minus.svg'
 import minusDark from '@/../public/minus_dark.svg'
-interface PropsCounter { theme: 'dark' | 'light'; className?: string; count: number; addProduct: () => void; removeProduct: () => void }
+import { useEffect, useRef } from 'react'
 import { debounce } from 'lodash'
+interface PropsCounter {
+  theme: 'dark' | 'light'
+  className?: string
+  count: number
+  disabled?: boolean
+  addProduct: () => void
+  removeProduct: () => void
+}
 
 const defaultStyles =
   'flex select-none items-center justify-center rounded-[40px] px-2 text-2XL font-medium transition ease-in-out'
@@ -14,6 +22,7 @@ const Counter = ({
   theme,
   className,
   count,
+  disabled = false,
   addProduct,
   removeProduct,
 }: Readonly<PropsCounter>) => {
@@ -27,26 +36,60 @@ const Counter = ({
       ? 'bg-inverted text-inverted'
       : 'bg-secondary text-primary')
 
-  const onPlus = debounce(() => {
-    const nextValue = count + 1
+  const addRef = useRef(addProduct)
+  const removeRef = useRef(removeProduct)
+  const countRef = useRef(count)
 
-    if (nextValue > 99) {
-      return
-    }
-    addProduct()
-  }, 300)
+  useEffect(() => {
+    addRef.current = addProduct
+  }, [addProduct])
+  useEffect(() => {
+    removeRef.current = removeProduct
+  }, [removeProduct])
+  useEffect(() => {
+    countRef.current = count
+  }, [count])
 
-  const onMinus = debounce(() => {
-    removeProduct()
-  }, 300)
+  const onPlus = useRef(
+    debounce(() => {
+      if (countRef.current + 1 > 99) return
+      addRef.current()
+    }, 300),
+  ).current
+
+  const onMinus = useRef(
+    debounce(() => {
+      removeRef.current()
+    }, 300),
+  ).current
+
+  useEffect(
+    () => () => {
+      onPlus.cancel()
+      onMinus.cancel()
+    },
+    [onPlus, onMinus],
+  )
 
   return (
     <div className={computedStyles}>
-      <button id="min-btn" data-testid="counter-minus-btn" onClick={onMinus} className="flex items-center justify-center p-1">
+      <button
+        id="min-btn"
+        data-testid="counter-minus-btn"
+        onClick={onMinus}
+        disabled={disabled}
+        className="flex items-center justify-center p-1 disabled:cursor-not-allowed disabled:opacity-40"
+      >
         <Image src={theme === 'dark' ? minus : minusDark} alt="minus" />
       </button>
       <span className={'block w-[31px] text-center'}>{count}</span>
-      <button id="plus-btn" data-testid="counter-plus-btn" onClick={onPlus} className="flex items-center justify-center p-1">
+      <button
+        id="plus-btn"
+        data-testid="counter-plus-btn"
+        onClick={onPlus}
+        disabled={disabled}
+        className="flex items-center justify-center p-1 disabled:cursor-not-allowed disabled:opacity-40"
+      >
         <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
       </button>
     </div>
