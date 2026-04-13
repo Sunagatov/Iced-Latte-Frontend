@@ -5,7 +5,7 @@ import {
   type Page,
   type BrowserContext,
 } from '@playwright/test'
-import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
+import { seedExactCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -121,7 +121,7 @@ test.describe('Cart sync', () => {
 
   test('server cart items appear on fresh login', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 15000 })
       await clearCart(page)
@@ -134,7 +134,7 @@ test.describe('Cart sync', () => {
 
   test('guest cart merges with server cart after login', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
       await clearCart(page)
@@ -150,7 +150,7 @@ test.describe('Cart sync', () => {
 
   test('cart persists after page reload when logged in', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
       await page.reload()

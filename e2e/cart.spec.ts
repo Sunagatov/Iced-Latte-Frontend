@@ -1,6 +1,6 @@
 import { strictMockProxy, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Route } from '@playwright/test'
-import { seedCart, clearCart } from './helpers/seedReal'
+import { seedExactCart, clearCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -83,10 +83,13 @@ test.describe('authenticated', () => {
       await expect(badge).toBeVisible({ timeout: 5000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     } else {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      // Real mode: perform the actual user action — click add-to-cart on the home page
+      await clearCart(page)
       await page.goto('/')
+      await page.waitForSelector('[data-testid="add-to-cart-circle-btn"]', { timeout: 10000 })
+      await page.locator('[data-testid="add-to-cart-circle-btn"]').first().click()
       const badge = page.locator('[data-testid="header-cart-badge"]')
-      await expect(badge).toBeVisible({ timeout: 8000 })
+      await expect(badge).toBeVisible({ timeout: 10000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     }
   })
@@ -107,7 +110,7 @@ test.describe('authenticated', () => {
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 8000 })
     } else {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
     }

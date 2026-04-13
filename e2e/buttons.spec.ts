@@ -1,6 +1,6 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
-import { seedCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
+import { seedExactCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -77,7 +77,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
 
   test('plus button adds item — counter appears', async ({ page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await expect(page.locator('[data-testid="counter-plus-btn"]').first()).toBeVisible({ timeout: 8000 })
@@ -91,7 +91,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
 
   test('minus button at qty=1 — circle add btn reappears', async ({ page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await page.locator('[data-testid="counter-minus-btn"]').first().waitFor({ timeout: 8000 })
@@ -159,7 +159,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
   test('plus button increments quantity', async ({ page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
@@ -181,7 +181,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
   test('minus button decrements quantity', async ({ page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 2 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 2 }])
       await page.goto('/cart')
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
@@ -201,7 +201,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
   test('trash button removes item from cart', async ({ page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       await page.locator('[data-testid="cart-trash-btn"]').first().click()
@@ -259,7 +259,7 @@ test.describe('Logout clears cart and favourites state', () => {
 
   test('cart counter resets after logout', async ({ page }) => {
     if (IS_REAL) {
-      await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+      await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await expect(page.locator('[data-testid="counter-plus-btn"]').first()).toBeVisible({ timeout: 8000 })

@@ -1,8 +1,9 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
-import { seedFavourite, clearFavourites } from './helpers/seedReal'
+import { seedExactFavourites, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
+import { gotoFavouritesAndWaitForCount } from './helpers/waits'
 
 const PRODUCT_ID = IS_REAL ? REAL_PRODUCT_ID : '00000000-0000-0000-0000-000000000001'
 
@@ -33,19 +34,17 @@ test.describe('authenticated', () => {
 
   test('favourites page shows saved products', async ({ page }) => {
     if (IS_REAL) {
-      await seedFavourite(page, REAL_PRODUCT_ID)
+      await seedExactFavourites(page, [REAL_PRODUCT_ID])
     } else {
       await mockFavouritesApi(page, [product])
     }
-    await page.goto('/favourites')
-    await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 8000 })
+    await gotoFavouritesAndWaitForCount(page, 1)
   })
 
   test('removing a favourite updates the list', async ({ page }) => {
     if (IS_REAL) {
-      await seedFavourite(page, REAL_PRODUCT_ID)
-      await page.goto('/favourites')
-      await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
+      await seedExactFavourites(page, [REAL_PRODUCT_ID])
+      await gotoFavouritesAndWaitForCount(page, 1)
       await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
       await expect(page.locator('[data-testid="fav-element"]')).toHaveCount(0, { timeout: 8000 })
       return
@@ -89,12 +88,11 @@ test.describe('authenticated', () => {
 
   test('clicking a favourite product navigates to product detail', async ({ page }) => {
     if (IS_REAL) {
-      await seedFavourite(page, REAL_PRODUCT_ID)
+      await seedExactFavourites(page, [REAL_PRODUCT_ID])
     } else {
       await mockFavouritesApi(page, [product])
     }
-    await page.goto('/favourites')
-    await page.waitForSelector('[data-testid="fav-element"]', { timeout: 8000 })
+    await gotoFavouritesAndWaitForCount(page, 1)
     await page.locator('[data-testid="fav-element"]').first().getByRole('link').first().click()
     await expect(page).toHaveURL(new RegExp(`/product/${PRODUCT_ID}`), { timeout: 8000 })
   })
