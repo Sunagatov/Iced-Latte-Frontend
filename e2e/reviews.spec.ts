@@ -1,4 +1,4 @@
-import {IS_REAL, mockRoute} from './helpers/mockRoute'
+import { IS_REAL, strictMockProxy } from './helpers/mockRoute'
 import {expect, type Page, test} from '@playwright/test'
 import {ensureAuth} from './helpers/ensureAuth'
 
@@ -11,27 +11,26 @@ const PRODUCT_ID = IS_REAL ? 'd1a2b3c4-0001-4000-8000-000000000007' : 'd1a2b3c4-
 async function mockReviewCalls(page: Page, authenticated = false) {
   const product = { id: PRODUCT_ID, name: 'Turkish Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
 
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    const method = route.request().method()
-
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-      await route.fulfill({ status: authenticated ? 200 : 401, contentType: 'application/json', body: authenticated ? JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) : JSON.stringify({ message: 'Unauthorized' }) })
-    } else if (url.includes('/reviews') && method === 'POST') {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }) })
-    } else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews')) {
-      await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
-    } else if (url.includes('/reviews/statistics')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }) })
-    } else if (url.includes('/reviews')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
-    } else if (url.includes(`/products/${PRODUCT_ID}`)) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) })
-    } else if (url.includes('/products')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    }
+  await strictMockProxy(page, {
+    '/users': async (route) => route.fulfill({
+      status: authenticated ? 200 : 401,
+      contentType: 'application/json',
+      body: authenticated
+        ? JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null })
+        : JSON.stringify({ message: 'Unauthorized' }),
+    }),
+    '/reviews/statistics': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }) }),
+    '/reviews': async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }) })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
+      }
+    },
+    [`/products/${PRODUCT_ID}/review`]: async (route) => route.fulfill({ status: 404, contentType: 'application/json', body: '{}' }),
+    [`/products/${PRODUCT_ID}`]: async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) }),
+    '/products': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) }),
+    '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
   })
 }
 
