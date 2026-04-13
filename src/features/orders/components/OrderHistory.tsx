@@ -173,18 +173,27 @@ export default function OrderHistory() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('')
   const [error, setError] = useState(false)
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
+    const controller = new AbortController()
+
     setLoading(true)
     setError(false)
     const url = filter ? `/orders?status=${filter}` : '/orders'
 
     api
-      .get<Order[]>(url)
+      .get<Order[]>(url, { signal: controller.signal })
       .then((res) => setOrders(res.data))
-      .catch(() => setError(true))
+      .catch((err) => {
+        if (err?.code !== 'ERR_CANCELED') setError(true)
+      })
       .finally(() => setLoading(false))
-  }, [filter])
+
+    return () => {
+      controller.abort()
+    }
+  }, [filter, retryKey])
 
   return (
     <div className="mx-auto w-full max-w-[800px] px-4 py-8">
@@ -228,7 +237,7 @@ export default function OrderHistory() {
             Could not load orders. Please try again.
           </p>
           <button
-            onClick={() => setFilter(filter)}
+            onClick={() => setRetryKey((k) => k + 1)}
             className="bg-brand hover:bg-brand-solid-hover rounded-lg px-5 py-2 text-sm font-medium text-white"
           >
             Retry

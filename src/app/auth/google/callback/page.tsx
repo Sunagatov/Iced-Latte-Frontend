@@ -12,6 +12,7 @@ function GoogleCallbackInner() {
 
   useEffect(() => {
     const error = searchParams.get('error')
+    const next = searchParams.get('next') ?? '/'
 
     if (error) {
       router.replace('/signin?error=google_auth_failed')
@@ -22,7 +23,7 @@ function GoogleCallbackInner() {
     getUserData()
       .then((userData) => {
         setAuthenticated(userData)
-        router.replace('/')
+        router.replace(next)
       })
       .catch(() => {
         router.replace('/signin?error=google_auth_failed')

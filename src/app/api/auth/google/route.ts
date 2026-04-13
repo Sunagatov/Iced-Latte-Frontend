@@ -13,10 +13,14 @@ export async function GET(request: NextRequest) {
 
   const backendUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`)
 
+  const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
+  const callbackUrl = new URL(`${frontendUrl}/auth/google/callback`)
+
   if (next) {
-    const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
-    backendUrl.searchParams.set('redirectUrl', `${frontendUrl}${next}`)
+    callbackUrl.searchParams.set('next', next)
   }
+
+  backendUrl.searchParams.set('redirectUrl', callbackUrl.toString())
 
   const response = await fetch(backendUrl.toString(), { redirect: 'manual' })
   const location = response.headers.get('location')

@@ -95,7 +95,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
         itemsIds: updatedCart,
         tempItems: updatedTempItems,
         count: getProductsCount(updatedCart),
-        totalPrice: getTotalPrice(updatedTempItems),
+        totalPrice: cartItem ? getTotalPrice(updatedTempItems) : get().totalPrice,
       })
       get().getCartItems().catch(() => {})
     }

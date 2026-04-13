@@ -55,7 +55,7 @@ const ReviewForm = ({
     if (isLoggedIn) {
       setShowForm(true)
     } else {
-      router.push('/signin')
+      router.push(`/signin?next=/product/${productId}`)
     }
   }
 

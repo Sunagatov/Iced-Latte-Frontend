@@ -34,21 +34,31 @@ export default function OrderSuccess() {
 
     setLoading(true)
 
-    if (isLoggedIn) {
-      api
-        .get<PaymentSessionStatus>(`/payment/order?sessionId=${sessionId}`)
-        .then(
-          (
-            res: CacheAxiosResponse<PaymentSessionStatus>,
-          ): PaymentSessionStatus => res.data,
-        )
-        .then((data: PaymentSessionStatus) => {
-          setCustomerEmail(data.customerEmail)
-          resetCart()
-          setLoading(false)
-        })
-        .catch(() => setLoading(false))
+    if (!isLoggedIn) {
+      setLoading(false)
+
+      return
     }
+
+    if (!sessionId) {
+      setLoading(false)
+
+      return
+    }
+
+    api
+      .get<PaymentSessionStatus>(`/payment/order?sessionId=${sessionId}`)
+      .then(
+        (
+          res: CacheAxiosResponse<PaymentSessionStatus>,
+        ): PaymentSessionStatus => res.data,
+      )
+      .then((data: PaymentSessionStatus) => {
+        setCustomerEmail(data.customerEmail)
+        resetCart()
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [isLoggedIn, resetCart, urlParams])
 
   if (loading) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
@@ -26,6 +26,22 @@ export default function CheckoutForm() {
     line: userData?.address?.line ?? '',
     postcode: userData?.address?.postcode ?? '',
   })
+
+  useEffect(() => {
+    if (!userData) {
+      return
+    }
+
+    setForm((prev) => ({
+      recipientName: prev.recipientName || userData.firstName || '',
+      recipientSurname: prev.recipientSurname || userData.lastName || '',
+      recipientPhone: prev.recipientPhone || userData.phoneNumber || '',
+      country: prev.country || userData.address?.country || '',
+      city: prev.city || userData.address?.city || '',
+      line: prev.line || userData.address?.line || '',
+      postcode: prev.postcode || userData.address?.postcode || '',
+    }))
+  }, [userData])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
