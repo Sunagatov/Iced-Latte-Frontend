@@ -265,17 +265,30 @@ export async function seedExactFavourites(
   // POST all IDs — retry each on 429, fail fast on other errors
   for (const id of productIds) {
     let lastRes: Awaited<ReturnType<ReturnType<typeof req>['get']>> | null = null
+    let hitRateLimit = false
 
     for (let attempt = 0; attempt < 5; attempt++) {
       const r = await req(page).post('/api/proxy/favorites', { data: { productIds: [id] } })
 
       lastRes = r
 
-      if (r.status() !== 429) break
-      await sleep(2000 * (attempt + 1))
+      if (r.status() === 429) {
+        hitRateLimit = true
+        await sleep(2000 * (attempt + 1))
+        continue
+      }
+
+      hitRateLimit = false
+      break
     }
 
-    if (lastRes) await assertOk(lastRes, `POST /favorites (${id})`)
+    if (hitRateLimit) {
+      const body = await lastRes!.text().catch(() => '(unreadable)')
+
+      throw new Error(`seedReal: POST /favorites (${id}) hit rate limit after 5 attempts\n${body}`)
+    }
+
+    await assertOk(lastRes!, `POST /favorites (${id})`)
     // Small gap between sequential POSTs to avoid rate limiting
     await sleep(300)
   }

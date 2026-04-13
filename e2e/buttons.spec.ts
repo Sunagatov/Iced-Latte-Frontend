@@ -3,6 +3,7 @@ import { test, expect, type Page } from '@playwright/test'
 import { seedExactCart, clearCart, seedExactFavourites, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
+import { openCatalogAndWaitReady } from './helpers/waits'
 
 const FAKE_USER = { firstName: 'Test', lastName: 'User', email: 'test@example.com' }
 const PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
@@ -305,7 +306,7 @@ test.describe('Logout clears cart and favourites state', () => {
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await page.evaluate(() => { localStorage.removeItem('fav-storage') })
       await page.goto('/')
-      await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+      await openCatalogAndWaitReady(page)
       await expect(page.locator('[data-testid="favourite-btn"]').first()).toHaveAttribute('data-active', 'false', { timeout: 5000 })
     } else {
       await mockWithCart(page, 0, [product], true)

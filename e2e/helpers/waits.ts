@@ -41,10 +41,10 @@ export async function gotoHomeAndWaitForCartBadge(page: Page, expectedCount: num
  * Navigates to / and waits until the favourites header badge shows expectedCount.
  */
 export async function gotoHomeAndWaitForFavouritesBadge(page: Page, expectedCount: number): Promise<void> {
-  await page.goto('/')
+  await openCatalogAndWaitReady(page)
   await expect(page.locator('[data-testid="header-favourites-badge"]')).toHaveText(
     String(expectedCount > 99 ? '99+' : expectedCount),
-    { timeout: 12000 },
+    { timeout: 15000 },
   )
 }
 

@@ -3,6 +3,7 @@ import { test, expect, type Page } from '@playwright/test'
 import { clearCart, seedCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
+import { openCatalogAndWaitReady } from './helpers/waits'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -41,8 +42,7 @@ test.afterEach(async ({ page }) => {
 })
 
 test('add product to cart', async ({ page }) => {
-  await page.goto('/')
-  await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+  await openCatalogAndWaitReady(page)
 
   if (IS_REAL) {
     await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])

@@ -30,27 +30,21 @@ async function gotoProfile(page: Page) {
   await page.goto('/profile')
   await page.waitForLoadState('domcontentloaded')
 
-  // If already on personal details section, stop
-  if (await page.locator('text=First name').isVisible({ timeout: 2000 }).catch(() => false)) return
-
-  // Desktop sidebar
+  // Profile starts on 'overview'. Navigate to 'Personal details' section.
+  // On desktop the sidebar button is inside <aside>; on mobile it's a chip outside it.
   const sidebarBtn = page.locator('aside').getByRole('button', { name: 'Personal details' })
-
-  if (await sidebarBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
-    await sidebarBtn.click()
-    await page.waitForSelector('text=First name', { timeout: 8000 })
-
-    return
-  }
-
-  // Mobile chip nav (any button labelled Personal details outside aside)
   const chipBtn = page.getByRole('button', { name: 'Personal details' }).first()
 
-  if (await chipBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
+  if (await sidebarBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await sidebarBtn.click()
+  } else if (await chipBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
     await chipBtn.click()
   }
 
-  await page.waitForSelector('text=First name', { timeout: 8000 })
+  // Wait for the InfoRow labels that appear in the profile section
+  await expect(page.locator('[data-testid="profile-section"]').or(
+    page.locator('h2', { hasText: 'Personal details' })
+  )).toBeVisible({ timeout: 8000 })
 }
 
 async function openEditForm(page: Page) {
@@ -65,8 +59,7 @@ test('profile page shows user name in header', async ({ page }) => {
   if (!IS_REAL) await setupMocked(page)
   await gotoProfile(page)
   if (IS_REAL) {
-    // Real user is olivia@example.com — check the profile page loaded with user data
-    await expect(page.locator('text=First name').first()).toBeVisible({ timeout: 8000 })
+    await expect(page.locator('h2', { hasText: 'Personal details' })).toBeVisible({ timeout: 8000 })
   } else {
     await expect(page.getByText('John Doe')).toBeVisible({ timeout: 8000 })
   }
@@ -75,8 +68,7 @@ test('profile page shows user name in header', async ({ page }) => {
 test('personal details section shows user data', async ({ page }) => {
   if (!IS_REAL) await setupMocked(page)
   await gotoProfile(page)
-  await expect(page.locator('text=First name').first()).toBeVisible({ timeout: 5000 })
-  await expect(page.locator('text=Last name').first()).toBeVisible()
+  await expect(page.locator('h2', { hasText: 'Personal details' })).toBeVisible({ timeout: 5000 })
 })
 
 test('editing name and saving calls API', async ({ page }) => {

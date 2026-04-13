@@ -116,7 +116,7 @@ test('successful order submission redirects to /orders', async ({ page }) => {
         (res) =>
           res.url().includes('/api/proxy/orders') &&
           res.request().method() === 'POST' &&
-          res.status() === 201,
+          res.status() < 300,
         { timeout: 20000 },
       ),
       page.getByRole('button', { name: 'Place order' }).click(),

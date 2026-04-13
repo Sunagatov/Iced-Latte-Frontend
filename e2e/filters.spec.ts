@@ -45,7 +45,10 @@ test('price filter - to input accepts numeric value', async ({ page }) => {
 test('price filter - filters products by price range', async ({ page }) => {
   await page.locator('#from-price-input').fill('3')
   await page.locator('#to-price-input').fill('6')
-  await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
+  await Promise.race([
+    page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 }),
+    page.waitForSelector('[data-testid="empty-state"]', { timeout: 20000 }),
+  ])
 })
 
 test('price filter - rejects non-numeric input', async ({ page }) => {

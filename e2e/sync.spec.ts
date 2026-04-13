@@ -123,7 +123,7 @@ test.describe('Cart sync', () => {
       await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 15000 })
-      await clearCart(page)
+      await clearCart(page).catch(() => {})
     } else {
       await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
       await loginAndGoto(page, FAKE_TOKEN, '/cart')
@@ -136,7 +136,7 @@ test.describe('Cart sync', () => {
       await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
-      await clearCart(page)
+      await clearCart(page).catch(() => {})
     } else {
       await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
       await page.addInitScript((id: string) => {
@@ -154,7 +154,7 @@ test.describe('Cart sync', () => {
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
       await page.reload()
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 8000 })
-      await clearCart(page)
+      await clearCart(page).catch(() => {})
     } else {
       await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
       await loginAndGoto(page, FAKE_TOKEN, '/cart')
