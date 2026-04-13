@@ -311,7 +311,9 @@ test.describe('Cart — quantity operations (logged in)', () => {
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
       await page.locator('[data-testid="cart-plus-btn"]').first().click()
-      await page.waitForTimeout(800)
+      await page.waitForResponse(
+        (res) => res.url().includes('/api/proxy/cart/items') && res.request().method() === 'PATCH',
+      )
       await expect(page.locator('[data-testid="cart-item-qty"]').first()).toHaveText('2', { timeout: 10000 })
     }
   })
@@ -359,7 +361,6 @@ test.describe('Cart — quantity operations (logged in)', () => {
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({ timeout: 8000 })
       await page.locator('[data-testid="cart-minus-btn"]').first().click()
-      await page.waitForTimeout(400)
       await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 8000 })
     }
   })
@@ -456,8 +457,7 @@ test.describe('Cart — guest operations', () => {
     )
     await mockProxy(page, { '/products/ids': [makeProduct(PRODUCT_A)] })
     await page.reload()
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(1000)
+    await page.waitForLoadState('networkidle')
     await page.goto('/cart')
     await expect(page.locator('[data-testid="cart-item"]')).toBeVisible({
       timeout: 8000,
@@ -645,12 +645,13 @@ test.describe('Favourites sync', () => {
     await page.goto('http://localhost:3000')
     await setFavStorage(page, [PRODUCT_A])
     await page.reload()
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(500)
+    await page.waitForLoadState('networkidle')
     await page.goto('/favourites')
     await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
     await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
-    await page.waitForTimeout(1000)
+    await page.waitForResponse(
+      (res) => res.url().includes('/api/proxy/favorites') && res.request().method() === 'DELETE',
+    )
     expect(deleteWasCalled).toBe(true)
   })
 
@@ -685,7 +686,9 @@ test.describe('Favourites sync', () => {
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await page.locator('[data-testid="favourite-btn"]').first().click()
-      await page.waitForTimeout(1000)
+      await page.waitForResponse(
+        (res) => res.url().includes('/api/proxy/products/ids') && res.request().method() === 'GET',
+      )
       await page.goto('/favourites')
       await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
     }
@@ -726,8 +729,7 @@ test.describe('Favourites sync', () => {
       await setFavStorage(page, [PRODUCT_A])
       await mockProxy(page, { '/products/ids': [product] })
       await page.reload()
-      await page.waitForLoadState('domcontentloaded')
-      await page.waitForTimeout(500)
+      await page.waitForLoadState('networkidle')
       await page.goto('/favourites')
       await expect(page.locator('[data-testid="fav-element"]')).toBeVisible({ timeout: 8000 })
     }
