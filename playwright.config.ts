@@ -2,13 +2,16 @@ import { defineConfig } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
 const IS_REAL = !!process.env.BASE_URL
+const IS_PROD = IS_REAL && !BASE_URL.includes('localhost') && !BASE_URL.includes('127.0.0.1')
 
 export default defineConfig({
   testDir: './e2e',
   retries: 1,
   timeout: 30000,
   globalSetup: IS_REAL ? './e2e/global-setup.ts' : undefined,
-  webServer: IS_REAL ? undefined : {
+  // webServer starts the dev server for mocked and local-real runs.
+  // Prod smoke points at an already-running host — no webServer needed.
+  webServer: IS_PROD ? undefined : {
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
@@ -32,6 +35,7 @@ export default defineConfig({
     },
     {
       // Real integration — requires BASE_URL + running backend, can mutate state
+      // Only safe against localhost or an explicit staging host
       name: 'real',
       workers: 1,
       testIgnore: ['**/real.spec.ts', '**/debug-*.spec.ts'],

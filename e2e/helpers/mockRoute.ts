@@ -4,6 +4,26 @@ import type { Page, Route } from '@playwright/test'
 export const IS_REAL = !!process.env.BASE_URL
 
 /**
+ * Throws if the current BASE_URL is a production host and ALLOW_MUTATING_E2E
+ * is not set. Call this at the top of any helper that mutates backend state.
+ */
+export function assertMutableTestEnvironment(): void {
+  const url = process.env.BASE_URL ?? ''
+  const isSafe =
+    !url ||
+    url.includes('localhost') ||
+    url.includes('127.0.0.1') ||
+    process.env.ALLOW_MUTATING_E2E === 'true'
+
+  if (!isSafe) {
+    throw new Error(
+      `Mutating real tests must not run against ${url}. ` +
+      'Use localhost, a staging host, or set ALLOW_MUTATING_E2E=true.',
+    )
+  }
+}
+
+/**
  * Registers a route mock only in mocked mode.
  * When BASE_URL is set (real mode), this is a no-op — real API calls go through.
  */

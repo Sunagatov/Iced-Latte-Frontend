@@ -73,7 +73,7 @@ test.afterEach(async ({ page }) => {
 })
 
 test.describe('Logged-in: product card buttons on home page', () => {
-  test.use({ storageState: 'e2e/.auth.json' })
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
   test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
@@ -163,7 +163,7 @@ test.describe('Guest: product card buttons on home page', () => {
 })
 
 test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
-  test.use({ storageState: 'e2e/.auth.json' })
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
   test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
@@ -267,7 +267,7 @@ test.describe('Guest: cart page plus / minus / trash buttons', () => {
 })
 
 test.describe('Logout clears cart and favourites state', () => {
-  test.use({ storageState: 'e2e/.auth.json' })
+  test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
   test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 

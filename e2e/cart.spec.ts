@@ -38,8 +38,7 @@ test.describe('authenticated', () => {
     if (!IS_REAL) await mockProxy(page)
     if (IS_REAL) await clearCart(page)
     await page.goto('/cart')
-    await page.waitForTimeout(500)
-    await expect(page.locator('main')).toBeVisible()
+    await expect(page.locator('[data-testid="cart-empty"]')).toBeVisible({ timeout: 8000 })
   })
 
   test('cart page does not redirect to signin when logged in', async ({ page }) => {
@@ -50,22 +49,33 @@ test.describe('authenticated', () => {
 
   test('add product to cart updates cart count', async ({ page }) => {
     if (!IS_REAL) {
-      await mockProxy(page)
+      let cartQty = 0
+      await mockRoute(page, '**/api/proxy/**', async (route) => {
+        const url = route.request().url()
+        const method = route.request().method()
+        if (url.includes('/products') && !url.includes('/ids')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [makeProduct(FAKE_PRODUCT_ID)], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
+        } else if (url.includes('/cart/items') && method === 'POST') {
+          cartQty = 1
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'c1', userId: 'u1', items: [{ id: 'ci1', productInfo: makeProduct(FAKE_PRODUCT_ID), productQuantity: 1 }], itemsQuantity: 1, itemsTotalPrice: 9.99, productsQuantity: 1, createdAt: '', closedAt: null }) })
+        } else if (url.includes('/cart')) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'c1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: cartQty, createdAt: '', closedAt: null }) })
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+        }
+      })
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
-      const addBtn = page.locator('button:has(img[src*="plus"])').first()
-      await addBtn.waitFor({ timeout: 10000 })
-      await addBtn.click()
-      await page.waitForTimeout(1000)
-      const badge = page.locator('[data-testid="cart-count"]')
-      if (await badge.isVisible()) {
-        expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
-      }
+      await page.locator('[data-testid="add-to-cart-circle-btn"]').first().click()
+      await page.waitForResponse(
+        (res) => res.url().includes('/api/proxy/cart/items') && res.request().method() === 'POST',
+      )
+      const badge = page.locator('a[href="/cart"] div div').filter({ hasText: /^\d+$/ })
+      await expect(badge).toBeVisible({ timeout: 5000 })
+      expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     } else {
       await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/')
-      await page.waitForLoadState('domcontentloaded')
-      await page.waitForTimeout(1500)
       const badge = page.locator('a[href="/cart"] div div').filter({ hasText: /^\d+$/ })
       await expect(badge).toBeVisible({ timeout: 8000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
@@ -77,13 +87,9 @@ test.describe('authenticated', () => {
       await mockProxy(page)
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
-      const addBtn = page.locator('button:has(img[src*="plus"])').first()
-      await addBtn.waitFor({ timeout: 10000 })
-      await addBtn.click()
-      await page.waitForTimeout(1000)
+      await page.locator('[data-testid="add-to-cart-circle-btn"]').first().click()
       await page.goto('/cart')
-      await page.waitForTimeout(500)
-      await expect(page.locator('main')).toBeVisible()
+      await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 8000 })
     } else {
       await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
       await page.goto('/cart')
