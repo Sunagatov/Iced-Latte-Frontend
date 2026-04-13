@@ -12,7 +12,6 @@ interface IProductFiltersStore {
   selectedBrandOptions: string[]
   selectedSellerOptions: string[]
   selectedSortOption: IOption<ISortParams>
-  sortingOptions: Array<IOption<ISortParams>>
   ratingFilter: StarsType | null
   searchQuery: string
   selectBrandOption: (value: string) => void
@@ -28,7 +27,6 @@ interface IProductFiltersStore {
         | 'selectSellerOption'
         | 'removeSellerOption'
         | 'updateProductFiltersStore'
-        | 'sortingOptions'
       >
     >,
   ) => void
@@ -50,7 +48,6 @@ export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
   searchQuery: '',
   selectedBrandOptions: [],
   selectedSellerOptions: [],
-  sortingOptions: sortOptions,
   selectedSortOption: getDefaultSortOption(sortOptions),
   selectBrandOption: (value) =>
     set((state) => ({

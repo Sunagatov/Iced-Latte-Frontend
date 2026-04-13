@@ -1,14 +1,10 @@
 'use client'
-import { useAuthRedirect } from '@/features/auth/hooks'
 import Button from '@/shared/components/Buttons/Button/Button'
 import FormInput from '@/shared/components/FormInput/FormInput'
 import Loader from '@/shared/components/Loader/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/features/auth/api'
-import { useAuthStore } from '@/features/auth/store'
-import { getUserData } from '@/features/user/api'
-import { setAuthCookies } from '@/shared/utils/cookieUtils'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
 interface IFormValues {
@@ -16,11 +12,11 @@ interface IFormValues {
   password: string
 }
 import { useErrorHandler } from '@/shared/utils/apiError'
+import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
-  const { setAuthenticated } = useAuthStore()
-  const { handleRedirectForAuth } = useAuthRedirect()
+  const { completeAuthSession } = useCompleteAuthSession()
   const { errorMessage, handleError } = useErrorHandler()
   const {
     register,
@@ -37,12 +33,8 @@ export default function LoginForm() {
       setLoading(true)
       const { token, refreshToken } = await apiLoginUser(formData)
 
-      await setAuthCookies(token, refreshToken)
-      const userData = await getUserData()
-
-      setAuthenticated(userData)
+      await completeAuthSession(token, refreshToken)
       reset()
-      handleRedirectForAuth()
     } catch (error) {
       handleError(error)
     } finally {

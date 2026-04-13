@@ -3,10 +3,11 @@
 import { useEffect, type ReactNode } from 'react'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import type { AxiosCacheInstance } from 'axios-cache-interceptor'
-import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
 import { api } from '@/shared/api/client'
+import { clearClientSession } from '@/features/session/clearClientSession'
+import { useRouter } from 'next/navigation'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean
@@ -23,10 +24,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
   const setAuthenticated = useAuthStore(
     (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
   )
-  const setAnonymous = useAuthStore(
-    (state: AuthStore): AuthStore['setAnonymous'] => state.setAnonymous,
-  )
-  const { logout } = useLogout()
+  const router = useRouter()
 
   useEffect(() => {
     const responseInterceptor = apiClient.interceptors.response.use(
@@ -51,17 +49,15 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
         ) {
           try {
             originalRequest.isRetry = true
-
             await apiClient.post('/auth/refresh', null)
-
             const userData = await getUserData()
 
             setAuthenticated(userData)
 
             return apiClient.request(originalRequest)
           } catch (refreshError: unknown) {
-            setAnonymous()
-            void logout()
+            await clearClientSession()
+            router.push('/signin')
             throw refreshError
           }
         }
@@ -73,7 +69,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
     return () => {
       apiClient.interceptors.response.eject(responseInterceptor)
     }
-  }, [logout, setAnonymous, setAuthenticated])
+  }, [router, setAuthenticated])
 
   return <>{children}</>
 }

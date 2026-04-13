@@ -2,7 +2,6 @@
 import FormInput from '@/shared/components/FormInput/FormInput'
 import Button from '@/shared/components/Buttons/Button/Button'
 import Loader from '@/shared/components/Loader/Loader'
-import { useAuthStore } from '@/features/auth/store'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -12,15 +11,12 @@ interface IFormValues {
   verificationCode: string
 }
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { useAuthRedirect } from '@/features/auth/hooks'
-import { getUserData } from '@/features/user/api'
-import { setAuthCookies } from '@/shared/utils/cookieUtils'
+import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 const VerifyEmailCodeForm = () => {
   const [loading, setLoading] = useState(false)
-  const { setAuthenticated } = useAuthStore()
+  const { completeAuthSession } = useCompleteAuthSession()
   const { errorMessage, handleError } = useErrorHandler()
-  const { handleRedirectForAuth } = useAuthRedirect()
 
   const {
     register,
@@ -37,12 +33,8 @@ const VerifyEmailCodeForm = () => {
       setLoading(true)
       const { token, refreshToken } = await verifyEmailCode(values.verificationCode)
 
-      await setAuthCookies(token, refreshToken)
-      const userData = await getUserData()
-
-      setAuthenticated(userData)
+      await completeAuthSession(token, refreshToken)
       reset()
-      handleRedirectForAuth()
     } catch (error) {
       handleError(error)
     } finally {
