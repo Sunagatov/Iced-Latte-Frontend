@@ -55,50 +55,54 @@ export default memo(function ProductCard({
   return (
     <li
       data-testid="product-card"
-      className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl border border-black/6 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:min-w-[190px]"
+      className="group relative flex w-full max-w-[240px] flex-col justify-self-center rounded-2xl border border-black/6 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:min-w-[190px]"
     >
-      {/* Heart button — outside Link to avoid nested interactive elements */}
-      <button
-        aria-busy={isPending}
-        aria-label={
-          isFavourited ? 'Remove from favourites' : 'Add to favourites'
-        }
-        aria-pressed={isFavourited}
-        className={`focus-visible:ring-brand-solid absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
-          isFavourited
-            ? 'bg-red-500/90 text-white'
-            : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
-        }`}
-        data-active={isFavourited ? 'true' : 'false'}
-        data-testid="favourite-btn"
-        disabled={isPending}
-        onClick={handleButtonClick}
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill={isFavourited ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      </button>
-
-      {/* Image */}
-      <Link href={`/product/${id}`} className="flex flex-1 flex-col">
-        <div className="relative h-[200px] w-full bg-[#F7F7F9] sm:h-[220px]">
-          <Image
-            src={getImgUrl(productFileUrl, productImg)}
-            alt={name}
-            style={{ objectFit: 'contain', padding: '16px' }}
-            fill={true}
-            sizes="(max-width: 768px) 50vw, 25vw"
-            priority={priority}
-          />
+      {/* Heart button — inside image container so it stays within card bounds */}
+      <div className="relative">
+        <div className="relative h-[200px] w-full overflow-hidden rounded-t-2xl bg-[#F7F7F9] sm:h-[220px]">
+          <Link href={`/product/${id}`} className="block h-full w-full">
+            <Image
+              src={getImgUrl(productFileUrl, productImg)}
+              alt={name}
+              style={{ objectFit: 'contain', padding: '16px' }}
+              fill={true}
+              sizes="(max-width: 768px) 50vw, 25vw"
+              priority={priority}
+            />
+          </Link>
         </div>
 
+        <button
+          aria-busy={isPending}
+          aria-label={
+            isFavourited ? 'Remove from favourites' : 'Add to favourites'
+          }
+          aria-pressed={isFavourited}
+          className={`focus-visible:ring-brand-solid absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
+            isFavourited
+              ? 'bg-red-500/90 text-white'
+              : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
+          }`}
+          data-active={isFavourited ? 'true' : 'false'}
+          data-testid="favourite-btn"
+          disabled={isPending}
+          onClick={handleButtonClick}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill={isFavourited ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Info + price */}
+      <Link href={`/product/${id}`} className="flex flex-1 flex-col">
         {/* Info */}
         <div className="flex flex-1 flex-col gap-2 px-3 pt-3 pb-3">
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
