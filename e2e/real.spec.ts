@@ -1,12 +1,12 @@
 /**
- * @real
- * Real E2E tests — no mocks, runs against a live backend.
+ * @prod-smoke
+ * Read-only smoke tests — no mocks, no mutations, safe against production.
  *
  * Usage:
- *   Against prod:   npm run test:e2e:prod
+ *   Against prod:   npm run test:e2e:prod-smoke
  *   Against local:  npm run test:e2e:local-real
  *
- * Requires the backend to be running and seeded.
+ * Requires the backend to be running.
  * Test credentials: olivia@example.com / p@ss1logic11
  */
 import { test, expect } from '@playwright/test'

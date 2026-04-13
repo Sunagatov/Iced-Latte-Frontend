@@ -37,6 +37,15 @@ test('sign in with valid credentials redirects away from /signin', async ({
 })
 
 test('sign in with invalid credentials shows error', async ({ page }) => {
+  if (!IS_REAL) {
+    await mockRoute(page, '**/api/proxy/auth/login', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Invalid credentials' }),
+      })
+    })
+  }
   await page.goto('/signin')
   await page.fill('#email', 'wrong@example.com')
   await page.fill('#password', 'WrongPass1!')

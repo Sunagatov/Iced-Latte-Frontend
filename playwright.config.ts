@@ -5,7 +5,6 @@ const IS_REAL = !!process.env.BASE_URL
 
 export default defineConfig({
   testDir: './e2e',
-  workers: 1,
   retries: 1,
   timeout: 30000,
   globalSetup: IS_REAL ? './e2e/global-setup.ts' : undefined,
@@ -23,24 +22,27 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   projects: [
     {
-      // Default: fully mocked, no real backend, runs on every push
+      // Fully mocked — no real backend, runs on every push, safe to parallelize
       name: 'mocked',
-      testIgnore: ['**/real.spec.ts'],
+      workers: 4,
+      testIgnore: ['**/real.spec.ts', '**/debug-*.spec.ts'],
       use: {
         storageState: { cookies: [], origins: [] },
       },
     },
     {
-      // Real integration: requires BASE_URL + running backend, can mutate state
+      // Real integration — requires BASE_URL + running backend, can mutate state
       name: 'real',
-      testMatch: ['**/*.spec.ts'],
+      workers: 1,
+      testIgnore: ['**/real.spec.ts', '**/debug-*.spec.ts'],
       use: {
         storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
       },
     },
     {
-      // Prod smoke: read-only, safe to run against production
+      // Prod smoke — read-only, safe against production, no mutations
       name: 'prod-smoke',
+      workers: 1,
       testMatch: ['**/real.spec.ts'],
       use: {
         storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
