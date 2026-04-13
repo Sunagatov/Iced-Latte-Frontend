@@ -9,7 +9,9 @@ import {
 } from '@/features/auth/types'
 
 export const getUserData = async (): Promise<UserData> => {
-  const response: AxiosResponse<UserData> = await api.get('/users')
+  const response: AxiosResponse<UserData> = await api.get('/users', {
+    cache: false,
+  })
 
   return response.data
 }

@@ -18,9 +18,9 @@ export async function removeFavourite(id: string): Promise<void> {
   await api.delete(`/favorites/${id}`)
 }
 
-export async function fetchFavourites(): Promise<IProduct[]> {
+export async function fetchFavourites(signal?: AbortSignal): Promise<IProduct[]> {
   const response: AxiosResponse<{ products: IProduct[] }> =
-    await api.get('/favorites')
+    await api.get('/favorites', { signal })
 
   return response.data?.products || []
 }

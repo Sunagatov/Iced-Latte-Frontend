@@ -50,18 +50,31 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
     (state: CartSliceStore): CartSliceStore['loadAuthCart'] =>
       state.loadAuthCart,
   )
-  useEffect(() => {
+
+useEffect(() => {
+    let cancelled = false
+    const controller = new AbortController()
+
     const bootstrapSession = async (): Promise<void> => {
       try {
         const userData = await getUserData()
 
-        setAuthenticated(userData)
+        if (!cancelled) {
+          setAuthenticated(userData)
+        }
       } catch {
-        setAnonymous()
+        if (!cancelled) {
+          setAnonymous()
+        }
       }
     }
 
     void bootstrapSession()
+
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
   }, [setAnonymous, setAuthenticated])
 
   useEffect(() => {
@@ -69,43 +82,81 @@ const AppInitProvider = ({ children }: Readonly<AppInitProviderProps>) => {
       return
     }
 
-    if (status === 'anonymous') {
-      const { isSync: cartIsSync } = useCartStore.getState()
+    const controller = new AbortController()
+    const { signal } = controller
 
-      if (cartIsSync) {
-        resetCart()
+    const runSync = () => {
+      if (status === 'anonymous') {
+        const { isSync: cartIsSync } = useCartStore.getState()
+
+        if (cartIsSync) {
+          resetCart()
+        }
+
+        const count = useCartStore.getState().itemsIds.length
+
+        if (count > 0) {
+          void getCartItems().catch(() => {})
+        }
+
+        if (useFavouritesStore.getState().isSync) {
+          resetFav()
+        }
+
+        return
       }
 
-      const count = useCartStore.getState().itemsIds.length
+      // status === 'authenticated'
+      const { isSync: cartIsSync, itemsIds } = useCartStore.getState()
+      const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
 
-      if (count > 0) {
-        void getCartItems().catch(() => {})
+      if (!cartIsSync && itemsIds.length > 0) {
+        void syncBackendCart().catch(() => {})
+      } else {
+        void loadAuthCart(signal).catch(() => {})
       }
 
-      if (useFavouritesStore.getState().isSync) {
-        resetFav()
+      if (!favIsSync && favouriteIds.length > 0) {
+        void syncBackendFav().catch(() => {})
+      } else {
+        void getFavouriteProducts(signal).catch(() => {})
       }
-
-      return
     }
 
-    // status === 'authenticated'
-    const { isSync: cartIsSync, itemsIds } = useCartStore.getState()
+    // If stores are already hydrated, run immediately.
+    // Otherwise wait for hydration to complete.
+    const cartHydrated = useCartStore.persist?.hasHydrated?.() ?? true
+    const favHydrated = useFavouritesStore.persist?.hasHydrated?.() ?? true
 
-    if (!cartIsSync && itemsIds.length > 0) {
-      void syncBackendCart().catch(() => {})
-    } else {
-      void loadAuthCart().catch(() => {})
+    if (cartHydrated && favHydrated) {
+      runSync()
+
+      return () => {
+        controller.abort()
+      }
     }
 
-    // Only push local→backend when the user had anonymous favourites
-    // that were never synced. In all other cases fetch from backend.
-    const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
+    // Subscribe to hydration completion
+    let done = false
+    const tryRun = () => {
+      if (done) return
+      if (
+        (useCartStore.persist?.hasHydrated?.() ?? true) &&
+        (useFavouritesStore.persist?.hasHydrated?.() ?? true)
+      ) {
+        done = true
+        runSync()
+      }
+    }
 
-    if (!favIsSync && favouriteIds.length > 0) {
-      void syncBackendFav().catch(() => {})
-    } else {
-      void getFavouriteProducts().catch(() => {})
+    const unsubCart = useCartStore.persist?.onFinishHydration?.(tryRun) ?? (() => {})
+    const unsubFav = useFavouritesStore.persist?.onFinishHydration?.(tryRun) ?? (() => {})
+
+    return () => {
+      done = true
+      controller.abort()
+      unsubCart()
+      unsubFav()
     }
   }, [
     status,

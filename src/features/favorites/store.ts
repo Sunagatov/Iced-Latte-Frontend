@@ -18,7 +18,7 @@ interface FavSliceState {
 
 interface FavSliceActions {
   toggleFavourite: (id: string) => Promise<void>
-  getFavouriteProducts: () => Promise<void>
+  getFavouriteProducts: (signal?: AbortSignal) => Promise<void>
   syncBackendFav: () => Promise<void>
   resetFav: () => void
 }
@@ -169,14 +169,14 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
     }
   },
 
-  getFavouriteProducts: async () => {
+  getFavouriteProducts: async (signal?: AbortSignal) => {
     const isAuthenticated = useAuthStore.getState().status === 'authenticated'
 
     set({ status: 'syncing' })
 
     try {
       if (isAuthenticated) {
-        const products = await fetchFavourites()
+        const products = await fetchFavourites(signal)
 
         set({ ...setProducts(products), status: 'ready', isSync: true })
 
@@ -194,7 +194,11 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       const products = await getProductByIds(productIds)
 
       set({ ...setProducts(products), status: 'ready' })
-    } catch {
+    } catch (err) {
+      if ((err as { name?: string }).name === 'AbortError' || (err as { name?: string }).name === 'CanceledError') {
+        return
+      }
+
       set({ status: 'error' })
     }
   },

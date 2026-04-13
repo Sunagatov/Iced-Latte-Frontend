@@ -34,7 +34,7 @@ interface CartSliceActions {
   add: (id: string) => void
   remove: (id: string) => void
   getCartItems: () => Promise<void>
-  loadAuthCart: () => Promise<void>
+  loadAuthCart: (signal?: AbortSignal) => Promise<void>
   syncBackendCart: () => Promise<void>
   removeFullProduct: (id: string) => void
   resetCart: () => void
@@ -196,10 +196,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
 
     await createCart({ items: itemsIds })
   },
-  loadAuthCart: async () => {
+  loadAuthCart: async (signal?: AbortSignal) => {
     set({ status: 'loading', lastError: null })
     try {
-      const cart = await fetchCart()
+      const cart = await fetchCart(signal)
 
       set((state) => ({
         ...state,
@@ -212,6 +212,10 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
         lastError: null,
       }))
     } catch (err) {
+      if ((err as { name?: string }).name === 'AbortError' || (err as { name?: string }).name === 'CanceledError') {
+        return
+      }
+
       const message = err instanceof Error ? err.message : 'Failed to load cart'
 
       set({ status: 'error', lastError: message })
