@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import OrderHistory from '@/shared/components/OrderHistory/OrderHistory'
+import OrderHistory from '@/features/orders/components/OrderHistory'
 import Loader from '@/shared/components/Loader/Loader'
 
 export default function OrdersPage() {
