@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const backendUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`)
 
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
-  const callbackUrl = new URL(`${frontendUrl}/auth/google/callback`)
+  const callbackUrl = new URL(`${frontendUrl}/api/auth/google/callback`)
 
   if (next) {
     callbackUrl.searchParams.set('next', next)
