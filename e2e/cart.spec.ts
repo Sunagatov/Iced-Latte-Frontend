@@ -86,7 +86,7 @@ test.describe('authenticated', () => {
       // Real mode: navigate to product detail page for a deterministic add-to-cart target
       await clearCart(page)
       await page.goto(`/product/${REAL_PRODUCT_ID}`)
-      await page.waitForSelector('[data-testid="product-detail"]', { timeout: 15000 })
+      await page.waitForSelector('[data-testid="add-to-cart-btn"]', { timeout: 15000 })
       await Promise.all([
         page.waitForResponse(
           (res) => res.url().includes('/api/proxy/cart/items') && res.request().method() === 'POST',

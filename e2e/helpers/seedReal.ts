@@ -16,6 +16,65 @@ async function assertOk(res: Awaited<ReturnType<ReturnType<typeof req>['get']>>,
   }
 }
 
+/**
+ * Extracts the retry delay in ms from a 429 response.
+ * Reads retryAfter from JSON body first, then Retry-After header.
+ */
+async function get429DelayMs(res: Awaited<ReturnType<ReturnType<typeof req>['get']>>): Promise<number> {
+  try {
+    const body = await res.json()
+
+    if (typeof body?.retryAfter === 'number') {
+      return body.retryAfter * 1000
+    }
+  } catch {
+    // ignore parse error
+  }
+
+  const header = res.headers()['retry-after']
+
+  if (header) {
+    const seconds = parseInt(header, 10)
+
+    if (!isNaN(seconds)) return seconds * 1000
+  }
+
+  return 5000 // safe default
+}
+
+/**
+ * Executes a cart mutation with 429-aware retry/backoff.
+ * Fails immediately on any non-429 error.
+ */
+async function cartRequest(
+  label: string,
+  fn: () => Promise<Awaited<ReturnType<ReturnType<typeof req>['get']>>>,
+  maxRetries = 4,
+): Promise<Awaited<ReturnType<ReturnType<typeof req>['get']>>> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fn()
+
+    if (res.status() === 429) {
+      if (attempt === maxRetries) {
+        const body = await res.text().catch(() => '(unreadable)')
+
+        throw new Error(`seedReal: ${label} hit rate limit after ${maxRetries + 1} attempts\n${body}`)
+      }
+
+      const delay = await get429DelayMs(res)
+
+      await sleep(delay + 500)
+      continue
+    }
+
+    await assertOk(res, label)
+
+    return res
+  }
+
+  throw new Error(`seedReal: ${label} exhausted retries`)
+}
+
 export async function seedCart(
   page: Page,
   items: { productId: string; productQuantity: number }[],
@@ -24,9 +83,10 @@ export async function seedCart(
   assertMutableTestEnvironment()
 
   for (const item of items) {
-    const r = await req(page).post('/api/proxy/cart/items', { data: { items: [item] } })
-
-    await assertOk(r, `POST /cart/items (${item.productId})`)
+    await cartRequest(
+      `POST /cart/items (${item.productId})`,
+      () => req(page).post('/api/proxy/cart/items', { data: { items: [item] } }),
+    )
     await sleep(200)
   }
 
@@ -62,9 +122,10 @@ export async function seedExactCart(
 
   // Seed one item at a time — bulk POST is not reliably atomic
   for (const item of items) {
-    const r = await req(page).post('/api/proxy/cart/items', { data: { items: [item] } })
-
-    await assertOk(r, `POST /cart/items (${item.productId})`)
+    await cartRequest(
+      `POST /cart/items (${item.productId})`,
+      () => req(page).post('/api/proxy/cart/items', { data: { items: [item] } }),
+    )
     await sleep(200)
   }
 
@@ -80,11 +141,12 @@ export async function seedExactCart(
     const unexpected = cartItems.filter((ci) => !expectedQtyMap.has(ci.productInfo.id))
 
     if (unexpected.length > 0) {
-      const dr = await req(page).delete('/api/proxy/cart/items', {
-        data: { shoppingCartItemIds: unexpected.map((ci) => ci.id) },
-      })
-
-      await assertOk(dr, 'DELETE /cart/items (unexpected)')
+      await cartRequest(
+        'DELETE /cart/items (unexpected)',
+        () => req(page).delete('/api/proxy/cart/items', {
+          data: { shoppingCartItemIds: unexpected.map((ci) => ci.id) },
+        }),
+      )
       continue
     }
 
@@ -95,11 +157,12 @@ export async function seedExactCart(
 
       if (!found) {
         // Missing product — add it
-        const pr = await req(page).post('/api/proxy/cart/items', {
-          data: { items: [{ productId, productQuantity: expectedQty }] },
-        })
-
-        await assertOk(pr, `POST /cart/items reconcile (${productId})`)
+        await cartRequest(
+          `POST /cart/items reconcile (${productId})`,
+          () => req(page).post('/api/proxy/cart/items', {
+            data: { items: [{ productId, productQuantity: expectedQty }] },
+          }),
+        )
         needsReconcile = true
         break
       }
@@ -107,11 +170,12 @@ export async function seedExactCart(
       const delta = expectedQty - found.productQuantity
 
       if (delta !== 0) {
-        const par = await req(page).patch('/api/proxy/cart/items', {
-          data: { shoppingCartItemId: found.id, productQuantityChange: delta },
-        })
-
-        await assertOk(par, `PATCH /cart/items (${found.id})`)
+        await cartRequest(
+          `PATCH /cart/items (${found.id})`,
+          () => req(page).patch('/api/proxy/cart/items', {
+            data: { shoppingCartItemId: found.id, productQuantityChange: delta },
+          }),
+        )
         needsReconcile = true
         break
       }
@@ -148,9 +212,12 @@ export async function clearCart(page: Page): Promise<void> {
   const ids: string[] = (cart.items ?? []).map((i: { id: string }) => i.id)
 
   if (ids.length > 0) {
-    await req(page).delete('/api/proxy/cart/items', {
-      data: { shoppingCartItemIds: ids },
-    })
+    await cartRequest(
+      'DELETE /cart/items (clear)',
+      () => req(page).delete('/api/proxy/cart/items', {
+        data: { shoppingCartItemIds: ids },
+      }),
+    )
   }
 
   // Poll until cart is confirmed empty

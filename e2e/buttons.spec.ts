@@ -1,6 +1,6 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
-import { seedExactCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
+import { seedExactCart, clearCart, seedExactFavourites, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -65,15 +65,13 @@ async function loginAndGoto(page: Page, route: string, cartQty = 0) {
   await page.waitForLoadState('domcontentloaded')
 }
 
-test.afterEach(async ({ page }) => {
-  await clearCart(page)
-  await clearFavourites(page)
-})
-
 test.describe('Logged-in: product card buttons on home page', () => {
   test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
   test.beforeEach(async ({ page }) => { await ensureAuth(page) })
+  test.afterEach(async ({ page }) => {
+    await clearCart(page)
+  })
 
   test('plus button adds item — counter appears', async ({ page }) => {
     if (IS_REAL) {
@@ -156,6 +154,9 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
   test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
   test.beforeEach(async ({ page }) => { await ensureAuth(page) })
+  test.afterEach(async ({ page }) => {
+    await clearCart(page)
+  })
 
   test('plus button increments quantity', async ({ page }) => {
     if (IS_REAL) {
@@ -256,6 +257,10 @@ test.describe('Logout clears cart and favourites state', () => {
   test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
   test.setTimeout(30000)
   test.beforeEach(async ({ page }) => { await ensureAuth(page) })
+  test.afterEach(async ({ page }) => {
+    await clearCart(page)
+    await clearFavourites(page)
+  })
 
   test('cart counter resets after logout', async ({ page }) => {
     if (IS_REAL) {
@@ -295,7 +300,7 @@ test.describe('Logout clears cart and favourites state', () => {
 
   test('heart resets to inactive after logout', async ({ page }) => {
     if (IS_REAL) {
-      await seedFavourite(page, REAL_PRODUCT_ID)
+      await seedExactFavourites(page, [REAL_PRODUCT_ID])
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await page.evaluate(() => { localStorage.removeItem('fav-storage') })

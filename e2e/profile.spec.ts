@@ -30,35 +30,33 @@ async function gotoProfile(page: Page) {
   await page.goto('/profile')
   await page.waitForLoadState('domcontentloaded')
 
-  if (await page.locator('#edit-btn').isVisible({ timeout: 2000 }).catch(() => false)) return
+  // If already on personal details section, stop
+  if (await page.locator('text=First name').isVisible({ timeout: 2000 }).catch(() => false)) return
 
-  // Try account-summary / quick-action Edit button first (most visible path)
-  const quickEdit = page.getByRole('button', { name: 'Edit' }).first()
-
-  if (await quickEdit.isVisible({ timeout: 1500 }).catch(() => false)) {
-    await quickEdit.click()
-    if (await page.locator('#edit-btn').isVisible({ timeout: 3000 }).catch(() => false)) return
-  }
-
-  // Fallback: desktop sidebar
+  // Desktop sidebar
   const sidebarBtn = page.locator('aside').getByRole('button', { name: 'Personal details' })
 
   if (await sidebarBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
     await sidebarBtn.click()
-    if (await page.locator('#edit-btn').isVisible({ timeout: 5000 }).catch(() => false)) return
+    await page.waitForSelector('text=First name', { timeout: 8000 })
+
+    return
   }
 
-  // Fallback: mobile chip nav
-  const chipBtn = page.locator('[data-testid="profile-chip-nav"]').getByRole('button', { name: 'Personal details' })
+  // Mobile chip nav (any button labelled Personal details outside aside)
+  const chipBtn = page.getByRole('button', { name: 'Personal details' }).first()
 
   if (await chipBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
     await chipBtn.click()
   }
 
-  await page.waitForSelector('#edit-btn', { timeout: 8000 })
+  await page.waitForSelector('text=First name', { timeout: 8000 })
 }
 
 async function openEditForm(page: Page) {
+  // If the form is already open, stop
+  if (await page.locator('#firstName').isVisible({ timeout: 1000 }).catch(() => false)) return
+
   await page.locator('#edit-btn').click()
   await page.waitForSelector('#firstName', { timeout: 5000 })
 }

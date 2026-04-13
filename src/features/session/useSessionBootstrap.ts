@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { getUserData } from '@/features/user/api'
 import { useAuthStore } from '@/features/auth/store'
-import { api } from '@/shared/api/client'
 import { useCartStore } from '@/features/cart/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 
@@ -27,11 +26,6 @@ export function useSessionBootstrap(): void {
 
     const bootstrapAuthState = async (): Promise<void> => {
       try {
-        // Proactively refresh so /users never hits the interceptor exclusion
-        // with an expired access token. Ignore failure — refresh cookie may
-        // simply not exist for anonymous visitors.
-        await api.post('/auth/refresh', null).catch(() => {})
-
         const userData = await getUserData()
 
         if (!cancelled) {

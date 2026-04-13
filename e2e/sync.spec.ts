@@ -16,9 +16,9 @@ type Fixtures = { isolatedPage: Page }
 
 const test = base.extend<Fixtures>({
   isolatedPage: async ({ browser }, use) => {
-    const context: BrowserContext = IS_REAL
-      ? await browser.newContext({ storageState: 'e2e/.auth.json' })
-      : await browser.newContext()
+    // Always create a fresh context — never reuse .auth.json across contexts.
+    // Rotating refresh tokens make stale storage state trigger replay detection.
+    const context: BrowserContext = await browser.newContext()
     const page = await context.newPage()
 
     await ensureAuth(page)

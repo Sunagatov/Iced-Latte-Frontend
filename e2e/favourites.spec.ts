@@ -2,6 +2,7 @@ import { strictMockProxy, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Route } from '@playwright/test'
 import { clearFavourites } from './helpers/seedReal'
 import { ensureAuth } from './helpers/ensureAuth'
+import { openCatalogAndWaitReady } from './helpers/waits'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -53,8 +54,7 @@ test.describe('authenticated', () => {
         '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
       })
     }
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+    await openCatalogAndWaitReady(page)
     await expect(page.locator('[data-testid="favourite-btn"]').first()).toBeVisible()
   })
 
@@ -79,11 +79,12 @@ test.describe('authenticated', () => {
         '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
       })
     }
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
+    await openCatalogAndWaitReady(page)
     const heartBtn = page.locator('[data-testid="favourite-btn"]').first()
+
     await heartBtn.waitFor({ timeout: 10000 })
     const before = await heartBtn.getAttribute('data-active')
+
     await heartBtn.click()
     await expect(heartBtn).toHaveAttribute('data-active', before === 'true' ? 'false' : 'true', { timeout: 5000 })
   })
