@@ -18,7 +18,6 @@ async function mockProducts(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  if (IS_REAL) await page.waitForTimeout(1000)
   if (!IS_REAL) await mockProducts(page)
   await page.goto('/')
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
@@ -46,7 +45,6 @@ test('price filter - to input accepts numeric value', async ({ page }) => {
 test('price filter - filters products by price range', async ({ page }) => {
   await page.locator('#from-price-input').fill('3')
   await page.locator('#to-price-input').fill('6')
-  await page.waitForTimeout(1500)
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
 })
 
@@ -58,7 +56,6 @@ test('price filter - rejects non-numeric input', async ({ page }) => {
 
 test('rating filter - selecting 4 stars filters products', async ({ page }) => {
   await page.locator('#checkbox-4').click()
-  await page.waitForTimeout(500)
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
   await expect(page.locator('#checkbox-4')).toHaveClass(/bg-brand-solid/)
 })
@@ -126,7 +123,6 @@ test('combined filters - brand + price narrows results', async ({ page }) => {
   const firstBrandCheckbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
   if (await firstBrandCheckbox.isVisible()) await firstBrandCheckbox.click()
   await page.locator('#from-price-input').fill('3')
-  await page.waitForTimeout(1500)
   await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
   expect(await page.locator('[data-testid="product-card"]').count()).toBeGreaterThan(0)
 })

@@ -56,15 +56,13 @@ async function mockWithCart(page: Page, initialQty: number, favProducts: object[
 
 async function loginAndGoto(page: Page, route: string, cartQty = 0) {
   if (!IS_REAL && cartQty > 0) {
-    await page.goto('http://localhost:3000')
-    await page.evaluate((qty) => {
+    await page.addInitScript((qty: number) => {
       const productId = '00000000-0000-0000-0000-000000000001'
       localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: [{ productId, productQuantity: qty }], tempItems: [{ id: 'ci1', productInfo: { id: productId, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }, productQuantity: qty }], count: qty, totalPrice: +(9.99 * qty).toFixed(2), isSync: true }, version: 0 }))
     }, cartQty)
   }
   await page.goto(route)
   await page.waitForLoadState('domcontentloaded')
-  await page.waitForTimeout(1000)
 }
 
 test.afterEach(async ({ page }) => {
@@ -97,18 +95,14 @@ test.describe('Logged-in: product card buttons on home page', () => {
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await page.locator('[data-testid="counter-minus-btn"]').first().waitFor({ timeout: 8000 })
-      await page.waitForTimeout(400)
       await page.locator('[data-testid="counter-minus-btn"]').first().click()
-      await page.waitForTimeout(1000)
       await expect(page.locator('[data-testid="add-to-cart-circle-btn"]').first()).toBeVisible({ timeout: 10000 })
     } else {
       await mockWithCart(page, 1, [], true)
       await loginAndGoto(page, '/', 1)
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
       await page.locator('[data-testid="counter-minus-btn"]').first().waitFor({ timeout: 8000 })
-      await page.waitForTimeout(400)
       await page.locator('[data-testid="counter-minus-btn"]').first().click()
-      await page.waitForTimeout(1000)
       await expect(page.locator('[data-testid="add-to-cart-circle-btn"]').first()).toBeVisible({ timeout: 10000 })
     }
   })
@@ -120,14 +114,13 @@ test.describe('Logged-in: product card buttons on home page', () => {
     const heart = page.locator('[data-testid="favourite-btn"]').first()
     const before = await heart.getAttribute('data-active')
     await heart.click()
-    await page.waitForTimeout(500)
     expect(await heart.getAttribute('data-active')).not.toBe(before)
   })
 })
 
 test.describe('Guest: product card buttons on home page', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
-  test.beforeEach(async ({ page }) => { if (IS_REAL) await page.waitForTimeout(1000) })
+  test.beforeEach(async ({ page }) => { if (IS_REAL) await page.waitForLoadState('domcontentloaded') })
 
   test('plus button adds item — counter appears', async ({ page }) => {
     if (!IS_REAL) await mockWithCart(page, 0)
@@ -143,9 +136,7 @@ test.describe('Guest: product card buttons on home page', () => {
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     await page.locator('[data-testid="add-to-cart-circle-btn"]').first().click()
     await page.locator('[data-testid="counter-minus-btn"]').first().waitFor({ timeout: 5000 })
-    await page.waitForTimeout(400)
     await page.locator('[data-testid="counter-minus-btn"]').first().click()
-    await page.waitForTimeout(600)
     await expect(page.locator('[data-testid="add-to-cart-circle-btn"]').first()).toBeVisible({ timeout: 8000 })
   })
 
@@ -157,7 +148,6 @@ test.describe('Guest: product card buttons on home page', () => {
     const heart = page.locator('[data-testid="favourite-btn"]').first()
     const before = await heart.getAttribute('data-active')
     await heart.click()
-    await page.waitForTimeout(500)
     expect(await heart.getAttribute('data-active')).not.toBe(before)
   })
 })
@@ -183,9 +173,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
       const before = Number(await qty.textContent())
-      await page.waitForTimeout(400)
       await page.locator('[data-testid="cart-plus-btn"]').first().click()
-      await page.waitForTimeout(400)
       await expect(qty).not.toHaveText(String(before), { timeout: 5000 })
       expect(Number(await qty.textContent())).toBeGreaterThan(before)
     }
@@ -206,9 +194,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
       await expect(qty).toHaveText('2', { timeout: 5000 })
-      await page.waitForTimeout(400)
       await page.locator('[data-testid="cart-minus-btn"]').first().click()
-      await page.waitForTimeout(400)
       await expect(qty).toHaveText('1', { timeout: 8000 })
     }
   })

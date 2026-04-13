@@ -191,7 +191,7 @@ test.describe('Header badges', () => {
       ])
       await page.goto('/')
     } else {
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
       await setCartStorage(page, [
         { productId: PRODUCT_A, productQuantity: 3 },
         { productId: PRODUCT_B, productQuantity: 2 },
@@ -213,7 +213,7 @@ test.describe('Header badges', () => {
       await seedFavourite(page, REAL_PRODUCT_ID_2)
       await page.goto('/')
     } else {
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
       await setFavStorage(page, [PRODUCT_A, PRODUCT_B])
       await mockProxy(page, { '/favorites': { products: [] } })
       await page.reload()
@@ -231,7 +231,7 @@ test.describe('Header badges', () => {
       await page.goto('/')
     } else {
       await mockProxy(page, {})
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
     }
     const badge = page
       .locator('a[href="/cart"] div div')
@@ -245,7 +245,7 @@ test.describe('Header badges', () => {
       await page.goto('/')
     } else {
       await mockProxy(page, {})
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
     }
     const badge = page
       .locator('a[href="/favourites"] div div')
@@ -260,7 +260,7 @@ test.describe('Cart sync — stale state cleanup', () => {
   test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
   test('stale isSync=true with no token is reset on load', async ({ page }) => {
     // Spec §3: token=null, isSync=true → reset() clears cart
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
     await setCartStorage(
       page,
       [{ productId: PRODUCT_A, productQuantity: 1 }],
@@ -448,7 +448,7 @@ test.describe('Cart — guest operations', () => {
 
   test('guest cart with persisted items shows CartFull', async ({ page }) => {
     // Spec §6: CartFull shown when count>0
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
     await setCartStorage(
       page,
       [{ productId: PRODUCT_A, productQuantity: 1 }],
@@ -526,7 +526,7 @@ test.describe('Cart — guest operations', () => {
         res.request().method() === 'POST',
     )
 
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
 
     await mergeResponse
     expect(mergeCallMade).toBe(true)
@@ -572,7 +572,7 @@ test.describe('Favourites sync', () => {
         res.request().method() === 'POST',
     )
 
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
 
     await syncResponse
     expect(syncCallCount).toBe(1)
@@ -593,7 +593,7 @@ test.describe('Favourites sync', () => {
     } else {
       const product = makeProduct(PRODUCT_A)
       // Clear any persisted fav-storage from previous tests
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
       await page.evaluate(() => localStorage.removeItem('fav-storage'))
       await mockRoute(page, '**/api/proxy/**', async (route) => {
         const url = route.request().url()
@@ -610,7 +610,7 @@ test.describe('Favourites sync', () => {
           await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
         }
       })
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
       await page.waitForLoadState('domcontentloaded')
       await page.goto('/')
       await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
@@ -642,7 +642,7 @@ test.describe('Favourites sync', () => {
         await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       }
     })
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
     await setFavStorage(page, [PRODUCT_A])
     await page.reload()
     await page.waitForLoadState('networkidle')
@@ -725,7 +725,7 @@ test.describe('Favourites sync', () => {
       await ctx.close()
     } else {
       const product = makeProduct(PRODUCT_A)
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
       await setFavStorage(page, [PRODUCT_A])
       await mockProxy(page, { '/products/ids': [product] })
       await page.reload()
@@ -763,7 +763,7 @@ test.describe('Logout clears cart and favourites', () => {
     } else {
       await mockProxy(page, {})
       // Clear persisted fav-storage to avoid state from previous tests
-      await page.goto('http://localhost:3000')
+      await page.goto('/')
       await page.evaluate(() => localStorage.removeItem('fav-storage'))
       await page.goto('/favourites')
     }
@@ -786,7 +786,7 @@ test.describe('Cart — multi-item merge', () => {
       makeCartItem(PRODUCT_B, CART_SLOT_B, 3),
     ])
 
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
     await setCartStorage(
       page,
       [
@@ -837,7 +837,7 @@ test.describe('Cart — multi-item merge', () => {
     // Guest had qty=2, server had qty=1 → merged qty=3
     const mergedCart = makeCart([makeCartItem(PRODUCT_A, CART_SLOT_A, 3)])
 
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
     await setCartStorage(
       page,
       [{ productId: PRODUCT_A, productQuantity: 2 }],

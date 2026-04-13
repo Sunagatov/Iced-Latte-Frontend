@@ -1,7 +1,5 @@
-import { mockRoute, IS_REAL } from './helpers/mockRoute'
+import { mockRoute } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
-
-test.beforeEach(() => { test.skip(IS_REAL, 'mocked-only') })
 
 /**
  * Password Reset & Change — Playwright Tests
@@ -56,7 +54,6 @@ async function mockAll200Authenticated(page: Page) {
 async function loginAs(page: Page) {
   await page.goto('/')
   await page.waitForLoadState('domcontentloaded')
-  await page.waitForTimeout(500)
   await page.goto('/resetpass')
   await page.waitForLoadState('domcontentloaded')
 }
