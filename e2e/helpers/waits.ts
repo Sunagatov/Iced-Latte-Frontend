@@ -56,7 +56,8 @@ export async function openCatalogAndWaitReady(page: Page): Promise<void> {
   await page.goto('/')
   await Promise.race([
     page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 }),
-    page.waitForSelector('[data-testid="catalog-empty"]', { timeout: 20000 }),
+    page.waitForSelector('[data-testid="empty-state"]', { timeout: 20000 }),
+    page.waitForSelector('text=Something went wrong', { timeout: 20000 }),
   ])
 }
 

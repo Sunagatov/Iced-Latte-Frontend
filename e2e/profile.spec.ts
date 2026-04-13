@@ -29,14 +29,13 @@ async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: numb
 async function gotoProfile(page: Page) {
   await page.goto('/profile')
   await page.waitForLoadState('domcontentloaded')
-  // Click 'Personal details' only if the button is present and needed
-  const btn = page.getByRole('button', { name: 'Personal details' }).first()
-  const editBtn = page.locator('#edit-btn')
 
-  if (await editBtn.isVisible({ timeout: 2000 }).catch(() => false)) return
-  if (await btn.isVisible({ timeout: 5000 }).catch(() => false)) {
-    await btn.click()
-  }
+  // #edit-btn only exists when activeSection === 'profile' and not editing.
+  // Default section is 'overview', so we may need to click the sidebar nav item.
+  if (await page.locator('#edit-btn').isVisible({ timeout: 2000 }).catch(() => false)) return
+
+  // Scope to aside to avoid hitting the mobile chip with the same label
+  await page.locator('aside').getByRole('button', { name: 'Personal details' }).click()
   await page.waitForSelector('#edit-btn', { timeout: 8000 })
 }
 

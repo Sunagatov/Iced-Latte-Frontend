@@ -96,7 +96,8 @@ test('clicking product name in expanded order navigates to product page', async 
     await expect(page.locator('text=My Orders')).toBeVisible({ timeout: 8000 })
     await expect(page.locator('button', { hasText: /Order #/ }).first()).toBeVisible({ timeout: 8000 })
     await page.locator('button', { hasText: /Order #/ }).first().click()
-    await page.getByRole('link').filter({ hasText: /coffee|latte|brew|espresso/i }).first().click()
+    await expect(page.locator('[data-testid="order-product-link"]').first()).toBeVisible({ timeout: 5000 })
+    await page.locator('[data-testid="order-product-link"]').first().click()
     await expect(page).toHaveURL(/\/product\//, { timeout: 8000 })
     return
   }

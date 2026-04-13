@@ -110,9 +110,21 @@ test('successful order submission redirects to /orders', async ({ page }) => {
     await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
     await waitForCheckoutReady(page)
-  } else {
-    await setupMocked(page)
+    await fillForm(page)
+    await Promise.all([
+      page.waitForResponse(
+        (res) =>
+          res.url().includes('/api/proxy/orders') &&
+          res.request().method() === 'POST' &&
+          res.status() === 201,
+        { timeout: 20000 },
+      ),
+      page.getByRole('button', { name: 'Place order' }).click(),
+    ])
+    await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
+    return
   }
+  await setupMocked(page)
   await fillForm(page)
   await Promise.all([
     page.waitForURL(/\/orders/, { timeout: 20000 }),

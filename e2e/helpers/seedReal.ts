@@ -30,8 +30,9 @@ export async function seedCart(
 }
 
 /**
- * Seeds the cart to an exact known state: clears first, then posts items,
- * then polls until exact productId→quantity map and total productsQuantity match.
+ * Seeds the cart to an exact known state using a reconciliation loop.
+ * Clears first, then POSTs all items, then reconciles actual vs expected
+ * using PATCH for wrong quantities and DELETE for unexpected items.
  * Throws with diagnostics if state does not converge within the poll window.
  */
 export async function seedExactCart(
@@ -44,27 +45,64 @@ export async function seedExactCart(
   await req(page).post('/api/proxy/cart/items', { data: { items } })
 
   const expectedQtyMap = new Map(items.map((i) => [i.productId, i.productQuantity]))
-  const expectedTotal = items.reduce((s, i) => s + i.productQuantity, 0)
 
-  for (let i = 0; i < 20; i++) {
+  for (let attempt = 0; attempt < 20; attempt++) {
     await sleep(500)
     const res = await req(page).get('/api/proxy/cart')
     const cart = await res.json()
-    const cartItems: { productInfo: { id: string }; productQuantity: number }[] = cart.items ?? []
+    const cartItems: { id: string; productInfo: { id: string }; productQuantity: number }[] = cart.items ?? []
+
+    // Check for unexpected items to delete
+    const unexpected = cartItems.filter((ci) => !expectedQtyMap.has(ci.productInfo.id))
+
+    if (unexpected.length > 0) {
+      await req(page).delete('/api/proxy/cart/items', {
+        data: { shoppingCartItemIds: unexpected.map((ci) => ci.id) },
+      })
+      continue
+    }
+
+    let needsReconcile = false
+
+    for (const [productId, expectedQty] of expectedQtyMap) {
+      const found = cartItems.find((ci) => ci.productInfo.id === productId)
+
+      if (!found) {
+        // Missing product — add it
+        await req(page).post('/api/proxy/cart/items', {
+          data: { items: [{ productId, productQuantity: expectedQty }] },
+        })
+        needsReconcile = true
+        break
+      }
+
+      const delta = expectedQty - found.productQuantity
+
+      if (delta !== 0) {
+        await req(page).patch('/api/proxy/cart/items', {
+          data: { shoppingCartItemId: found.id, productQuantityChange: delta },
+        })
+        needsReconcile = true
+        break
+      }
+    }
+
+    if (needsReconcile) continue
+
+    // Verify exact total count
+    const expectedTotal = items.reduce((s, i) => s + i.productQuantity, 0)
     const actualTotal: number = cart.productsQuantity ?? cartItems.reduce((s: number, ci) => s + ci.productQuantity, 0)
 
-    const allMatch = [...expectedQtyMap.entries()].every(([id, qty]) => {
-      const found = cartItems.find((ci) => ci.productInfo.id === id)
-
-      return found?.productQuantity === qty
-    })
-
-    if (allMatch && actualTotal === expectedTotal) return
+    if (actualTotal === expectedTotal && cartItems.length === expectedQtyMap.size) return
   }
 
+  const finalRes = await req(page).get('/api/proxy/cart')
+  const finalCart = await finalRes.json()
+
   throw new Error(
-    `seedExactCart: cart did not converge to expected state after 10s. ` +
-    `Expected: ${JSON.stringify(items)}`,
+    `seedExactCart: cart did not converge to expected state after 10s.\n` +
+    `Expected: ${JSON.stringify(items)}\n` +
+    `Actual: ${JSON.stringify(finalCart.items ?? [])}`,
   )
 }
 

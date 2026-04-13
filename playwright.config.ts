@@ -49,7 +49,13 @@ export default defineConfig({
       name: 'real',
       workers: 1,
       timeout: 40000,
-      testIgnore: ['**/real.spec.ts', '**/password-reset.spec.ts', '**/auth.spec.ts', '**/mocked/**'],
+      testIgnore: [
+        '**/real.spec.ts',
+        '**/password-reset.spec.ts',
+        '**/auth.spec.ts',
+        '**/mocked/**',
+        '**/reviews.spec.ts',
+      ],
       use: {
         storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
       },

@@ -126,6 +126,7 @@ function OrderCard({ order }: { order: Order }) {
               <div className="min-w-0">
                 <Link
                   href={`/product/${item.productId}`}
+                  data-testid="order-product-link"
                   className="text-primary hover:text-brand block truncate text-sm font-medium"
                 >
                   {item.productName}
