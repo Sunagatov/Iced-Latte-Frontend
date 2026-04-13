@@ -33,9 +33,20 @@ export function useSessionBootstrap(): void {
           setAuthenticated(userData)
         }
       } catch {
-        // /users returned 401. Try one silent refresh before declaring anonymous.
-        // We call /auth/refresh directly here rather than relying on the interceptor,
-        // because the interceptor excludes /users from its retry path.
+        // /users returned 401. Try one silent refresh before declaring anonymous,
+        // but only when we are NOT arriving from an OAuth callback — in that case
+        // the new session cookies are already set and a refresh with the old
+        // stale token would trigger replay detection and revoke the new session.
+        const skip = useAuthStore.getState().skipBootstrapRefresh
+
+        if (skip) {
+          // Clear the flag and declare anonymous — the callback page handles auth itself.
+          useAuthStore.getState().setSkipBootstrapRefresh(false)
+          if (!cancelled) setAnonymous()
+
+          return
+        }
+
         try {
           await api.post('/auth/refresh', null, { skipAuthRetry: true } as object)
           const userData = await getUserData()

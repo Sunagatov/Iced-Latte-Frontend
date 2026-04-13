@@ -5,25 +5,23 @@ const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get('token')
   const refreshToken = request.nextUrl.searchParams.get('refreshToken')
+  const next = request.nextUrl.searchParams.get('next') ?? '/'
 
   if (!token || !refreshToken) {
     const errorUrl = FRONTEND_URL
       ? new URL('/signin?error=auth_failed', FRONTEND_URL)
       : new URL('/signin?error=auth_failed', request.url)
+
     return NextResponse.redirect(errorUrl, { status: 302 })
   }
 
-  const home = FRONTEND_URL
-    ? new URL('/', FRONTEND_URL).toString()
-    : new URL('/', request.url).toString()
+  // Redirect to the frontend callback page (not directly to /) so the page can
+  // set skipBootstrapRefresh before useSessionBootstrap mounts and fires a
+  // stale refresh with the old rotated token.
+  const base = FRONTEND_URL || new URL('/', request.url).origin
+  const callbackPage = new URL('/auth/google/callback', base)
 
-  const html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Signing in…</title></head>
-<body>
-<script>window.location.replace(${JSON.stringify(home)})</script>
-</body>
-</html>`
+  callbackPage.searchParams.set('next', next)
 
   const cookieOptions = {
     httpOnly: true,
@@ -33,10 +31,7 @@ export async function GET(request: NextRequest) {
     maxAge: 60 * 60 * 24,
   }
 
-  const response = new NextResponse(html, {
-    status: 200,
-    headers: { 'Content-Type': 'text/html' },
-  })
+  const response = NextResponse.redirect(callbackPage.toString(), { status: 302 })
 
   response.cookies.set('token', token, cookieOptions)
   response.cookies.set('refreshToken', refreshToken, cookieOptions)
