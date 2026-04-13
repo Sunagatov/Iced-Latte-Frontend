@@ -123,9 +123,9 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
 
           set(setProducts(response.products))
         } else {
-          const response = await removeFavourite(id)
-
-          set(setProducts(response.products))
+          await removeFavourite(id)
+          // Backend DELETE returns 200 with no body — optimistic state
+          // (item already removed above) is the correct final state.
         }
 
         return

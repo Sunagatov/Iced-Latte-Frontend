@@ -6,13 +6,15 @@ import { useAuthStore } from '@/features/auth/store'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { verifyEmailCode, apiGetSession } from '@/features/auth/api'
+import { verifyEmailCode } from '@/features/auth/api'
 import { verifyEmailCodeSchema } from '@/features/auth/validation'
 interface IFormValues {
   verificationCode: string
 }
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthRedirect } from '@/features/auth/hooks'
+import { getUserData } from '@/features/user/api'
+import { setAuthCookies } from '@/shared/utils/cookieUtils'
 
 const VerifyEmailCodeForm = () => {
   const [loading, setLoading] = useState(false)
@@ -33,11 +35,12 @@ const VerifyEmailCodeForm = () => {
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
       setLoading(true)
-      await verifyEmailCode(values.verificationCode)
-      const session = await apiGetSession()
+      const { token, refreshToken } = await verifyEmailCode(values.verificationCode)
 
-      if (!session.authenticated) throw new Error('Verification failed')
-      setAuthenticated(session.user)
+      await setAuthCookies(token, refreshToken)
+      const userData = await getUserData()
+
+      setAuthenticated(userData)
       reset()
       handleRedirectForAuth()
     } catch (error) {

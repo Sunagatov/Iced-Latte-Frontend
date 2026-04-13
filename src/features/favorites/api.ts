@@ -14,12 +14,8 @@ export async function syncFavourites(
   return response.data
 }
 
-export async function removeFavourite(id: string): Promise<FavouritesResponse> {
-  const response: AxiosResponse<FavouritesResponse> = await api.delete(
-    `/favorites/${id}`,
-  )
-
-  return response.data
+export async function removeFavourite(id: string): Promise<void> {
+  await api.delete(`/favorites/${id}`)
 }
 
 export async function fetchFavourites(): Promise<IProduct[]> {

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios'
 import { api } from '@/shared/api/client'
-import { SessionResponse, LoginCredentials, RegisterCredentials } from './types'
+import { LoginCredentials, RegisterCredentials } from './types'
 
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
@@ -13,10 +13,15 @@ export async function apiRegisterUser(
   return response.data
 }
 
-/** Sends the email verification code. Backend sets session cookie on success. */
-export async function verifyEmailCode(code: string): Promise<void> {
+export async function verifyEmailCode(
+  code: string,
+): Promise<{ token: string; refreshToken: string }> {
   if (!code) throw new Error('Verification code is required')
-  await api.post('/auth/confirm', { token: code })
+  const response = await api.post<{ token: string; refreshToken: string }>(
+    '/auth/confirm',
+    { token: code },
+  )
+  return response.data
 }
 
 export interface LoginResponse {
@@ -37,11 +42,4 @@ export async function apiLoginUser(
 
 export async function apiLogoutUser(): Promise<void> {
   await api.post('/auth/logout')
-}
-
-export async function apiGetSession(): Promise<SessionResponse> {
-  const response: AxiosResponse<SessionResponse> =
-    await api.get('/auth/session')
-
-  return response.data
 }

@@ -1,0 +1,80 @@
+version: '3'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Iced Latte Frontend — Local Development Tasks
+# Run from project root: task <task>
+#
+# QUICK START
+#   task install     # install dependencies
+#   task run         # start dev server with hot reload  →  http://localhost:3000
+#   task build       # production build
+#   task test        # run unit tests
+#   task lint        # run ESLint
+#
+# E2E
+#   task e2e         # run Playwright e2e tests
+#   task e2e-ui      # open Playwright UI
+#
+# MAINTAINER (prod deploy) → see maintaner/Taskfile.yml
+#   task -t maintaner/Taskfile.yml prod:ship
+# ─────────────────────────────────────────────────────────────────────────────
+
+tasks:
+
+  install:
+    desc: "Install npm dependencies"
+    cmds:
+      - npm install
+
+  run:
+    desc: "Start dev server with hot reload → http://localhost:3000"
+    cmds:
+      - npm run dev
+
+  build:
+    desc: "Production build"
+    cmds:
+      - npm run build
+
+  test:
+    desc: "Run unit tests"
+    cmds:
+      - npm test
+
+  test-coverage:
+    desc: "Run unit tests with coverage report"
+    cmds:
+      - npm run test:coverage
+
+  lint:
+    desc: "Run ESLint"
+    cmds:
+      - npm run lint
+
+  lint-fix:
+    desc: "Run ESLint with auto-fix"
+    cmds:
+      - npm run lint:fix
+
+  format:
+    desc: "Run Prettier"
+    cmds:
+      - npm run format
+
+  e2e:
+    desc: "Run Playwright e2e tests"
+    cmds:
+      - npx playwright test
+
+  e2e-ui:
+    desc: "Open Playwright UI"
+    cmds:
+      - npx playwright test --ui
+
+  urls:
+    silent: true
+    desc: "Print useful local URLs"
+    cmds:
+      - echo "🔗 Local URLs:"
+      - 'echo "  Dev server:  http://localhost:3000"'
+      - 'echo "  Backend API: https://api.iced-latte.uk/api/v1  (prod)"'

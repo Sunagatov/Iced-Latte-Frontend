@@ -54,7 +54,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   }
 
   const displayName =
-    [review.userName, review.userLastName].filter(Boolean).join(' ') ||
+    [review.userName, review.userLastname].filter(Boolean).join(' ') ||
     'Anonymous'
 
   return (

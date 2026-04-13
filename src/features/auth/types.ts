@@ -1,8 +1,3 @@
-export type SessionResponse = {
-  authenticated: boolean
-  user: import('@/features/user/types').UserData | null
-}
-
 export type LoginCredentials = {
   email: string
   password: string
