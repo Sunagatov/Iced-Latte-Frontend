@@ -1,4 +1,4 @@
-import { mockRoute, IS_REAL, skipIfNotMutableEnvironment } from './helpers/mockRoute'
+import { strictMockProxy, IS_REAL, skipIfNotMutableEnvironment } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { seedCart, clearCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
@@ -8,21 +8,17 @@ const product = { id: 'p1', name: 'Test Coffee', price: 9.99, productFileUrl: nu
 const cartWithItem = { id: 'c1', userId: 'u1', items: [{ id: 'ci1', productInfo: product, productQuantity: 1 }], itemsQuantity: 1, itemsTotalPrice: 9.99, productsQuantity: 1, createdAt: '', closedAt: null }
 
 async function setupMocked(page: Page, { orderStatus = 200 }: { orderStatus?: number } = {}) {
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    const method = route.request().method()
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
-    else if (url.includes('/orders') && method === 'POST')
-      await route.fulfill({ status: orderStatus, contentType: 'application/json', body: JSON.stringify(orderStatus === 200 ? { id: 'order-1' } : { message: 'error' }) })
-    else if (url.includes('/orders'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
-    else if (url.includes('/cart'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cartWithItem) })
-    else if (url.includes('/addresses'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
-    else
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+  await strictMockProxy(page, {
+    '/users': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) }),
+    '/orders': async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ status: orderStatus, contentType: 'application/json', body: JSON.stringify(orderStatus === 200 ? { id: 'order-1' } : { message: 'error' }) })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
+      }
+    },
+    '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cartWithItem) }),
+    '/addresses': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
   })
   await page.addInitScript((c: typeof cartWithItem) => {
     localStorage.setItem('cart-storage', JSON.stringify({
@@ -58,8 +54,10 @@ test.afterEach(async ({ page }) => {
 
 test('guest visiting /checkout sees the page', async ({ page }) => {
   if (!IS_REAL) {
-    await mockRoute(page, '**/api/proxy/**', async (route) => {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+    await strictMockProxy(page, {
+      '/users': async (route) => route.fulfill({ status: 401, contentType: 'application/json', body: '{}' }),
+      '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+      '/addresses': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
     })
   }
   await page.goto('/checkout')
@@ -149,22 +147,19 @@ test('cart is cleared after successful order — cart-count badge gone', async (
     return
   }
   let orderPlaced = false
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    const method = route.request().method()
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
-    else if (url.includes('/orders') && method === 'POST') {
-      orderPlaced = true
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'order-1' }) })
-    } else if (url.includes('/orders'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
-    else if (url.includes('/cart'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(orderPlaced ? { id: 'c1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null } : cartWithItem) })
-    else if (url.includes('/addresses'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
-    else
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+
+  await strictMockProxy(page, {
+    '/users': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) }),
+    '/orders': async (route) => {
+      if (route.request().method() === 'POST') {
+        orderPlaced = true
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'order-1' }) })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
+      }
+    },
+    '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(orderPlaced ? { id: 'c1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null } : cartWithItem) }),
+    '/addresses': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
   })
   await page.addInitScript((c: typeof cartWithItem) => {
     localStorage.setItem('cart-storage', JSON.stringify({

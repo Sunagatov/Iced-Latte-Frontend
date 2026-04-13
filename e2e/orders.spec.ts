@@ -1,4 +1,4 @@
-import { mockRoute, IS_REAL } from './helpers/mockRoute'
+import { strictMockProxy, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -15,13 +15,14 @@ function makeOrder(id: string, status: string = 'CREATED') {
 }
 
 async function mockOrders(page: Page, orders: object[], status = 200) {
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    if (url.includes('/orders')) {
-      await route.fulfill({ status, contentType: 'application/json', body: status === 200 ? JSON.stringify(orders) : JSON.stringify({ message: 'error' }) })
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    }
+  await strictMockProxy(page, {
+    '/orders': async (route) => route.fulfill({
+      status,
+      contentType: 'application/json',
+      body: status === 200 ? JSON.stringify(orders) : JSON.stringify({ message: 'error' }),
+    }),
+    '/users': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+    '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
   })
 }
 
