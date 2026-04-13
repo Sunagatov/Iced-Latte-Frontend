@@ -53,11 +53,9 @@ test('clicking order card expands item details', async ({ page }) => {
   if (IS_REAL) {
     await page.goto('/orders')
     await expect(page.locator('text=My Orders')).toBeVisible({ timeout: 8000 })
-    const orderBtn = page.locator('button', { hasText: /Order #/ }).first()
-    if (await orderBtn.isVisible()) {
-      await orderBtn.click()
-      await expect(page.locator('[data-testid="order-item"], [class*="order"]').first()).toBeVisible({ timeout: 5000 })
-    }
+    await expect(page.locator('button', { hasText: /Order #/ }).first()).toBeVisible({ timeout: 8000 })
+    await page.locator('button', { hasText: /Order #/ }).first().click()
+    await expect(page.locator('[data-testid="order-item"], [class*="order"]').first()).toBeVisible({ timeout: 5000 })
     return
   }
   await mockOrders(page, [makeOrder('order-abc123')])
@@ -73,14 +71,11 @@ test('status filter tabs filter orders correctly', async ({ page }) => {
   }
   await page.goto('/orders')
   await expect(page.getByText('My Orders')).toBeVisible({ timeout: 8000 })
-  const filterBar = page.locator('div.mb-5')
-
-  await expect(filterBar.getByRole('button', { name: 'All' })).toBeVisible()
-  await expect(filterBar.getByRole('button', { name: 'Placed' })).toBeVisible()
-  await expect(filterBar.getByRole('button', { name: 'Delivered' })).toBeVisible()
-  await filterBar.getByRole('button', { name: 'Placed' }).click()
-  await page.waitForTimeout(300)
-  await expect(filterBar.getByRole('button', { name: 'Placed' })).toHaveClass(/bg-brand/, { timeout: 3000 })
+  await expect(page.getByRole('button', { name: 'All' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Placed' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Delivered' })).toBeVisible()
+  await page.getByRole('button', { name: 'Placed' }).click()
+  await expect(page.getByRole('button', { name: 'Placed' })).toHaveClass(/bg-brand/, { timeout: 3000 })
 })
 
 test('API error shows retry button', async ({ page }) => {
@@ -98,15 +93,10 @@ test('clicking product name in expanded order navigates to product page', async 
   if (IS_REAL) {
     await page.goto('/orders')
     await expect(page.locator('text=My Orders')).toBeVisible({ timeout: 8000 })
-    const orderBtn = page.locator('button', { hasText: /Order #/ }).first()
-    if (await orderBtn.isVisible()) {
-      await orderBtn.click()
-      const productLink = page.getByRole('link').filter({ hasText: /coffee|latte|brew|espresso/i }).first()
-      if (await productLink.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await productLink.click()
-        await expect(page).toHaveURL(/\/product\//, { timeout: 8000 })
-      }
-    }
+    await expect(page.locator('button', { hasText: /Order #/ }).first()).toBeVisible({ timeout: 8000 })
+    await page.locator('button', { hasText: /Order #/ }).first().click()
+    await page.getByRole('link').filter({ hasText: /coffee|latte|brew|espresso/i }).first().click()
+    await expect(page).toHaveURL(/\/product\//, { timeout: 8000 })
     return
   }
   await mockOrders(page, [makeOrder('order-abc123')])

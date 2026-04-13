@@ -2,8 +2,6 @@ import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { ensureAuth } from './helpers/ensureAuth'
 
-const VALID_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo0MTAyNDQ0ODAwfQ.fake-signature'
-
 const userData = {
   id: 'u1', firstName: 'John', lastName: 'Doe', email: 'john@example.com',
   phoneNumber: '+1234567890', birthDate: null,
@@ -26,7 +24,6 @@ async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: numb
     else
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
-  await page.context().addCookies([{ name: 'token', value: VALID_JWT, url: 'http://localhost:3000' }])
 }
 
 async function gotoProfile(page: Page) {

@@ -38,8 +38,6 @@ const test = base.extend<Fixtures>({
 test.setTimeout(30000)
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const FAKE_TOKEN = 'fake-token-for-mocked-test'
 const PRODUCT_A = '00000000-0000-0000-0000-000000000001'
 const PRODUCT_B = '00000000-0000-0000-0000-000000000002'
 const CART_SLOT_A = 'slot-aaaa-0000-0000-0000-000000000001'
@@ -90,12 +88,6 @@ function makeCart(items: object[]) {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function setToken(page: Page, _token = FAKE_TOKEN) {
-  // Token-based auth is not used — session is cookie-based.
-  // This function is kept for call-site compatibility but is now a no-op.
-  void _token
-}
 
 async function setCartStorage(
   page: Page,
@@ -475,15 +467,24 @@ test.describe('Cart — guest operations', () => {
   test('guest cart merge: POST /cart/items called on login', async ({
     page,
   }) => {
-    // Spec §3: token set, isSync=false, itemsCount>0 → POST /cart/items
+    // Spec §3: isSync=false, itemsCount>0, authenticated → POST /cart/items
     let mergeCallMade = false
 
-    await page.goto('http://localhost:3000')
-    await setCartStorage(
-      page,
-      [{ productId: PRODUCT_A, productQuantity: 2 }],
-      false,
-    )
+    await page.addInitScript(([productId]: string[]) => {
+      localStorage.setItem(
+        'cart-storage',
+        JSON.stringify({
+          state: {
+            itemsIds: [{ productId, productQuantity: 2 }],
+            tempItems: [],
+            count: 2,
+            totalPrice: 0,
+            isSync: false,
+          },
+          version: 0,
+        }),
+      )
+    }, [PRODUCT_A])
 
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
@@ -508,7 +509,7 @@ test.describe('Cart — guest operations', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"test@example.com","phoneNumber":null,"birthDate":null,"address":null}),
+          body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }),
         })
       } else {
         await route.fulfill({
@@ -519,10 +520,15 @@ test.describe('Cart — guest operations', () => {
       }
     })
 
-    await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(3000)
+    const mergeRequest = page.waitForRequest(
+      (req) =>
+        req.url().includes('/api/proxy/cart/items') &&
+        req.method() === 'POST',
+    )
 
+    await page.goto('http://localhost:3000')
+
+    await mergeRequest
     expect(mergeCallMade).toBe(true)
   })
 })
@@ -530,28 +536,45 @@ test.describe('Cart — guest operations', () => {
 // ─── §4 Favourites sync ───────────────────────────────────────────────────────
 
 test.describe('Favourites sync', () => {
-  test('fav sync fires only once on login, not on subsequent add/remove', async ({
+  test('bootstrap favourite sync fires once for persisted guest favourites', async ({
     page,
   }) => {
     test.skip(IS_REAL, 'mocked-only: call-count assertion not possible against real API')
     let syncCallCount = 0
-    await page.goto('http://localhost:3000')
-    await setFavStorage(page, [PRODUCT_A])
+
+    await page.addInitScript(([productId]: string[]) => {
+      localStorage.setItem(
+        'fav-storage',
+        JSON.stringify({
+          state: { favouriteIds: [productId], isSync: false },
+          version: 0,
+        }),
+      )
+    }, [PRODUCT_A])
+
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/favorites') && method === 'POST') {
         syncCallCount++
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [makeProduct(PRODUCT_A)] }) })
       } else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({id:'u1',firstName:'Test',lastName:'User',email:'test@example.com',phoneNumber:null,birthDate:null,address:null}) })
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
       } else {
         await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       }
     })
+
+    const syncRequest = page.waitForRequest(
+      (req) =>
+        req.url().includes('/api/proxy/favorites') &&
+        req.method() === 'POST',
+    )
+
     await page.goto('http://localhost:3000')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(2000)
+
+    await syncRequest
     expect(syncCallCount).toBe(1)
   })
 

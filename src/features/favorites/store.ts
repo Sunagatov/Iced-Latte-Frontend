@@ -178,7 +178,22 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       if (isAuthenticated) {
         const products = await fetchFavourites(signal)
 
-        set({ ...setProducts(products), status: 'ready', isSync: true })
+        if (signal?.aborted) {
+          return
+        }
+
+        const incoming = normalizeProducts(products)
+        const currentIds = get().favouriteIds
+
+        // If backend returns empty but we have unsynced local items, preserve them
+        if (incoming.length === 0 && currentIds.length > 0 && !get().isSync) {
+          set({ status: 'ready' })
+
+          return
+        }
+
+        // Only mark isSync:true when we actually received data from backend
+        set({ ...setProducts(products), status: 'ready', isSync: incoming.length > 0 })
 
         return
       }

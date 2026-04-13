@@ -201,13 +201,27 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
     try {
       const cart = await fetchCart(signal)
 
+      if (signal?.aborted) {
+        return
+      }
+
+      const currentIds = get().itemsIds
+
+      // Don't overwrite local guest data with an empty backend response
+      if (cart.items.length === 0 && currentIds.length > 0 && !get().isSync) {
+        set({ status: 'ready', lastError: null })
+
+        return
+      }
+
+      // Only mark isSync:true when we actually received cart data from backend
       set((state) => ({
         ...state,
         itemsIds: createItemsIdsFromCart(cart.items),
         tempItems: cart.items,
         count: cart.productsQuantity,
         totalPrice: cart.itemsTotalPrice,
-        isSync: true,
+        isSync: cart.items.length > 0,
         status: 'ready',
         lastError: null,
       }))

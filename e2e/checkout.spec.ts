@@ -24,13 +24,19 @@ async function setupMocked(page: Page, { orderStatus = 200 }: { orderStatus?: nu
     else
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
-  await page.goto('http://localhost:3000')
-  await page.evaluate((c) => {
-    localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: c.items.map((i: { productInfo: { id: string }; productQuantity: number }) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })), tempItems: c.items, count: c.itemsQuantity, totalPrice: c.itemsTotalPrice, isSync: true }, version: 0 }))
+  await page.addInitScript((c: typeof cartWithItem) => {
+    localStorage.setItem('cart-storage', JSON.stringify({
+      state: {
+        itemsIds: c.items.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })),
+        tempItems: c.items,
+        count: c.itemsQuantity,
+        totalPrice: c.itemsTotalPrice,
+        isSync: true,
+      },
+      version: 0,
+    }))
   }, cartWithItem)
   await page.goto('/checkout')
-  await page.waitForLoadState('domcontentloaded')
-  await page.waitForTimeout(500)
   await page.waitForSelector('h1', { timeout: 8000 })
 }
 
@@ -156,16 +162,23 @@ test('cart is cleared after successful order — cart-count badge gone', async (
     else
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
   })
-  await page.goto('http://localhost:3000')
-  await page.evaluate((c) => {
-    localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: c.items.map((i: { productInfo: { id: string }; productQuantity: number }) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })), tempItems: c.items, count: c.itemsQuantity, totalPrice: c.itemsTotalPrice, isSync: true }, version: 0 }))
+  await page.addInitScript((c: typeof cartWithItem) => {
+    localStorage.setItem('cart-storage', JSON.stringify({
+      state: {
+        itemsIds: c.items.map((i) => ({ productId: i.productInfo.id, productQuantity: i.productQuantity })),
+        tempItems: c.items,
+        count: c.itemsQuantity,
+        totalPrice: c.itemsTotalPrice,
+        isSync: true,
+      },
+      version: 0,
+    }))
   }, cartWithItem)
   await page.goto('/checkout')
   await page.waitForSelector('h1', { timeout: 8000 })
   await fillForm(page)
   await page.getByRole('button', { name: 'Place order' }).click()
   await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
-  await page.waitForTimeout(500)
   const stored = await page.evaluate(() => localStorage.getItem('cart-storage'))
   const parsed = JSON.parse(stored ?? '{}')
   expect(parsed?.state?.itemsIds?.length ?? 0).toBe(0)

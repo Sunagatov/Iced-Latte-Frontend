@@ -13,9 +13,25 @@ const EXISTING_PASSWORD = process.env.E2E_EXISTING_PASSWORD!
 test('sign in with valid credentials redirects away from /signin', async ({
   page,
 }) => {
+  if (!IS_REAL) {
+    await mockRoute(page, '**/api/proxy/auth/login', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'ok' }),
+      })
+    })
+    await mockRoute(page, '**/api/proxy/users', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }),
+      })
+    })
+  }
   await page.goto('/signin?next=/')
-  await page.fill('#email', EXISTING_EMAIL)
-  await page.fill('#password', EXISTING_PASSWORD)
+  await page.fill('#email', IS_REAL ? EXISTING_EMAIL : 'test@example.com')
+  await page.fill('#password', IS_REAL ? EXISTING_PASSWORD : 'ValidPass1@')
   await page.click('#login-btn')
   await expect(page).not.toHaveURL(/\/signin/, { timeout: 15000 })
 })
