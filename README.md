@@ -50,8 +50,6 @@ npm run dev
 
 > ⚠️ The backend must be running for products and login to work. See [Getting Started](docs/getting-started.md) Option A to start it with one Docker command.
 
-**🔐 Test login:** `olivia@example.com` / `p@ss1logic11` (15 seed users, all share this password)
-
 > 💡 See [Getting Started](docs/getting-started.md) for Docker setup, E2E tests, and troubleshooting.
 
 **🧪 Run the tests:**
