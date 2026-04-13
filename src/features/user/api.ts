@@ -19,10 +19,15 @@ export const getUserData = async (): Promise<UserData> => {
 export const editUserProfile = async (
   updatedUserData: Partial<UserData>,
 ): Promise<UserData> => {
-  const response: AxiosResponse<UserData> = await api.put(
-    '/users',
-    updatedUserData,
-  )
+  const address = updatedUserData.address
+  const isEmptyAddress =
+    !address ||
+    (!address.country && !address.city && !address.line && !address.postcode)
+  const payload = {
+    ...updatedUserData,
+    address: isEmptyAddress ? null : address,
+  }
+  const response: AxiosResponse<UserData> = await api.put('/users', payload)
 
   return response.data
 }

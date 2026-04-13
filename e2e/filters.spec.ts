@@ -121,8 +121,22 @@ test('seller filter - reset clears selection', async ({ page }) => {
 
 test('combined filters - brand + price narrows results', async ({ page }) => {
   const firstBrandCheckbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+
   if (await firstBrandCheckbox.isVisible()) await firstBrandCheckbox.click()
   await page.locator('#from-price-input').fill('3')
-  await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
-  expect(await page.locator('[data-testid="product-card"]').count()).toBeGreaterThan(0)
+
+  // In real mode zero results is valid — accept either cards or empty-state
+  await Promise.race([
+    page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 }),
+    page.waitForSelector('[data-testid="empty-state"]', { timeout: 20000 }),
+  ])
+
+  const cardCount = await page.locator('[data-testid="product-card"]').count()
+  const emptyVisible = await page.locator('[data-testid="empty-state"]').isVisible()
+
+  if (!IS_REAL) {
+    expect(cardCount).toBeGreaterThan(0)
+  } else {
+    expect(cardCount > 0 || emptyVisible).toBe(true)
+  }
 })

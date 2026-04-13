@@ -5,9 +5,10 @@ import {
   type Page,
   type BrowserContext,
 } from '@playwright/test'
-import { seedExactCart, clearCart, seedFavourite, clearFavourites } from './helpers/seedReal'
+import { seedExactCart, clearCart, seedExactFavourites, clearFavourites } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
+import { gotoFavouritesAndWaitForCount } from './helpers/waits'
 
 const FAKE_PRODUCT_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -74,9 +75,8 @@ test.describe('Favourites sync', () => {
 
   test('server favourites appear on fresh login', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
-      await seedFavourite(page, REAL_PRODUCT_ID)
-      await page.goto('/favourites')
-      await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+      await seedExactFavourites(page, [REAL_PRODUCT_ID])
+      await gotoFavouritesAndWaitForCount(page, 1)
       await clearFavourites(page)
     } else {
       await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
@@ -101,9 +101,8 @@ test.describe('Favourites sync', () => {
 
   test('guest favourites merge with server favourites after login', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
-      await seedFavourite(page, REAL_PRODUCT_ID)
-      await page.goto('/favourites')
-      await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
+      await seedExactFavourites(page, [REAL_PRODUCT_ID])
+      await gotoFavouritesAndWaitForCount(page, 1)
       await clearFavourites(page)
     } else {
       await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])

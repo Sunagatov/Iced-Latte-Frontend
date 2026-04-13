@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { IS_REAL, assertMutableTestEnvironment } from './mockRoute'
+import { ensureAuth } from './ensureAuth'
 
 function req(page: Page) {
   return page.context().request
@@ -7,20 +8,35 @@ function req(page: Page) {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+async function assertOk(res: Awaited<ReturnType<ReturnType<typeof req>['get']>>, label: string): Promise<void> {
+  if (!res.ok()) {
+    const body = await res.text().catch(() => '(unreadable)')
+
+    throw new Error(`seedReal: ${label} failed — HTTP ${res.status()}\n${body}`)
+  }
+}
+
 export async function seedCart(
   page: Page,
   items: { productId: string; productQuantity: number }[],
 ): Promise<void> {
   if (!IS_REAL) return
   assertMutableTestEnvironment()
-  await req(page).post('/api/proxy/cart/items', { data: { items } })
 
-  // Poll until all seeded items appear in the cart
+  for (const item of items) {
+    const r = await req(page).post('/api/proxy/cart/items', { data: { items: [item] } })
+
+    await assertOk(r, `POST /cart/items (${item.productId})`)
+    await sleep(200)
+  }
+
   const expectedIds = new Set(items.map((i) => i.productId))
 
   for (let i = 0; i < 10; i++) {
     await sleep(500)
     const res = await req(page).get('/api/proxy/cart')
+
+    await assertOk(res, 'GET /cart')
     const cart = await res.json()
     const presentIds = new Set((cart.items ?? []).map((ci: { productInfo: { id: string } }) => ci.productInfo.id))
     const allPresent = [...expectedIds].every((id) => presentIds.has(id))
@@ -41,8 +57,16 @@ export async function seedExactCart(
 ): Promise<void> {
   if (!IS_REAL) return
   assertMutableTestEnvironment()
+  await ensureAuth(page)
   await clearCart(page)
-  await req(page).post('/api/proxy/cart/items', { data: { items } })
+
+  // Seed one item at a time — bulk POST is not reliably atomic
+  for (const item of items) {
+    const r = await req(page).post('/api/proxy/cart/items', { data: { items: [item] } })
+
+    await assertOk(r, `POST /cart/items (${item.productId})`)
+    await sleep(200)
+  }
 
   const expectedQtyMap = new Map(items.map((i) => [i.productId, i.productQuantity]))
 
@@ -56,9 +80,11 @@ export async function seedExactCart(
     const unexpected = cartItems.filter((ci) => !expectedQtyMap.has(ci.productInfo.id))
 
     if (unexpected.length > 0) {
-      await req(page).delete('/api/proxy/cart/items', {
+      const dr = await req(page).delete('/api/proxy/cart/items', {
         data: { shoppingCartItemIds: unexpected.map((ci) => ci.id) },
       })
+
+      await assertOk(dr, 'DELETE /cart/items (unexpected)')
       continue
     }
 
@@ -69,9 +95,11 @@ export async function seedExactCart(
 
       if (!found) {
         // Missing product — add it
-        await req(page).post('/api/proxy/cart/items', {
+        const pr = await req(page).post('/api/proxy/cart/items', {
           data: { items: [{ productId, productQuantity: expectedQty }] },
         })
+
+        await assertOk(pr, `POST /cart/items reconcile (${productId})`)
         needsReconcile = true
         break
       }
@@ -79,9 +107,11 @@ export async function seedExactCart(
       const delta = expectedQty - found.productQuantity
 
       if (delta !== 0) {
-        await req(page).patch('/api/proxy/cart/items', {
+        const par = await req(page).patch('/api/proxy/cart/items', {
           data: { shoppingCartItemId: found.id, productQuantityChange: delta },
         })
+
+        await assertOk(par, `PATCH /cart/items (${found.id})`)
         needsReconcile = true
         break
       }
@@ -98,11 +128,13 @@ export async function seedExactCart(
 
   const finalRes = await req(page).get('/api/proxy/cart')
   const finalCart = await finalRes.json()
+  const lastStatus = finalRes.status()
 
   throw new Error(
     `seedExactCart: cart did not converge to expected state after 10s.\n` +
     `Expected: ${JSON.stringify(items)}\n` +
-    `Actual: ${JSON.stringify(finalCart.items ?? [])}`,
+    `Actual: ${JSON.stringify(finalCart.items ?? [])}\n` +
+    `Last GET /cart status: ${lastStatus}`,
   )
 }
 
@@ -110,6 +142,8 @@ export async function clearCart(page: Page): Promise<void> {
   if (!IS_REAL) return
   assertMutableTestEnvironment()
   const res = await req(page).get('/api/proxy/cart')
+
+  if (!res.ok()) return // cart unreadable — skip clear
   const cart = await res.json()
   const ids: string[] = (cart.items ?? []).map((i: { id: string }) => i.id)
 
@@ -123,6 +157,8 @@ export async function clearCart(page: Page): Promise<void> {
   for (let i = 0; i < 10; i++) {
     await sleep(500)
     const check = await req(page).get('/api/proxy/cart')
+
+    if (!check.ok()) continue
     const body = await check.json()
 
     if ((body.items ?? []).length === 0) return

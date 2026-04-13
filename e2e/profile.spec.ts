@@ -30,12 +30,31 @@ async function gotoProfile(page: Page) {
   await page.goto('/profile')
   await page.waitForLoadState('domcontentloaded')
 
-  // #edit-btn only exists when activeSection === 'profile' and not editing.
-  // Default section is 'overview', so we may need to click the sidebar nav item.
   if (await page.locator('#edit-btn').isVisible({ timeout: 2000 }).catch(() => false)) return
 
-  // Scope to aside to avoid hitting the mobile chip with the same label
-  await page.locator('aside').getByRole('button', { name: 'Personal details' }).click()
+  // Try account-summary / quick-action Edit button first (most visible path)
+  const quickEdit = page.getByRole('button', { name: 'Edit' }).first()
+
+  if (await quickEdit.isVisible({ timeout: 1500 }).catch(() => false)) {
+    await quickEdit.click()
+    if (await page.locator('#edit-btn').isVisible({ timeout: 3000 }).catch(() => false)) return
+  }
+
+  // Fallback: desktop sidebar
+  const sidebarBtn = page.locator('aside').getByRole('button', { name: 'Personal details' })
+
+  if (await sidebarBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
+    await sidebarBtn.click()
+    if (await page.locator('#edit-btn').isVisible({ timeout: 5000 }).catch(() => false)) return
+  }
+
+  // Fallback: mobile chip nav
+  const chipBtn = page.locator('[data-testid="profile-chip-nav"]').getByRole('button', { name: 'Personal details' })
+
+  if (await chipBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
+    await chipBtn.click()
+  }
+
   await page.waitForSelector('#edit-btn', { timeout: 8000 })
 }
 

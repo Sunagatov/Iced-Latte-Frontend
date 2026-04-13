@@ -83,12 +83,19 @@ test.describe('authenticated', () => {
       await expect(badge).toBeVisible({ timeout: 5000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     } else {
-      // Real mode: perform the actual user action — click add-to-cart on the home page
+      // Real mode: navigate to product detail page for a deterministic add-to-cart target
       await clearCart(page)
-      await page.goto('/')
-      await page.waitForSelector('[data-testid="add-to-cart-circle-btn"]', { timeout: 10000 })
-      await page.locator('[data-testid="add-to-cart-circle-btn"]').first().click()
+      await page.goto(`/product/${REAL_PRODUCT_ID}`)
+      await page.waitForSelector('[data-testid="product-detail"]', { timeout: 15000 })
+      await Promise.all([
+        page.waitForResponse(
+          (res) => res.url().includes('/api/proxy/cart/items') && res.request().method() === 'POST',
+          { timeout: 15000 },
+        ),
+        page.locator('[data-testid="add-to-cart-btn"]').click(),
+      ])
       const badge = page.locator('[data-testid="header-cart-badge"]')
+
       await expect(badge).toBeVisible({ timeout: 10000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     }
