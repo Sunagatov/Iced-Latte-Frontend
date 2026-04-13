@@ -1,4 +1,4 @@
-import { mockRoute, IS_REAL } from './helpers/mockRoute'
+import { mockRoute, IS_REAL, skipIfNotMutableEnvironment } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { seedCart, clearCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
@@ -107,11 +107,10 @@ test('Place order button is present', async ({ page }) => {
 
 test('successful order submission redirects to /orders', async ({ page }) => {
   if (IS_REAL) {
+    skipIfNotMutableEnvironment(test)
     await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
-    await page.waitForTimeout(1500)
     await page.goto('/checkout')
     await page.waitForSelector('h1', { timeout: 8000 })
-    // Wait for cart item to appear in order summary before submitting
     await page.waitForSelector('text=×1', { timeout: 8000 }).catch(() => {})
   } else {
     await setupMocked(page)
@@ -136,6 +135,7 @@ test('API error on submit shows error message', async ({ page }) => {
 
 test('cart is cleared after successful order — cart-count badge gone', async ({ page }) => {
   if (IS_REAL) {
+    skipIfNotMutableEnvironment(test)
     await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
     await page.waitForSelector('h1', { timeout: 8000 })

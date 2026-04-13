@@ -1,4 +1,4 @@
-import { mockRoute, IS_REAL } from './helpers/mockRoute'
+import { mockRoute, IS_REAL, skipIfNotMutableEnvironment } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -56,6 +56,7 @@ test('personal details section shows user data', async ({ page }) => {
 })
 
 test('editing name and saving calls API', async ({ page }) => {
+  if (IS_REAL) skipIfNotMutableEnvironment(test)
   if (!IS_REAL) await setupMocked(page)
   await gotoProfile(page)
   await openEditForm(page)

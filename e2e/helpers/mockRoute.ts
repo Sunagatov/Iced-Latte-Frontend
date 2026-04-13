@@ -24,6 +24,21 @@ export function assertMutableTestEnvironment(): void {
 }
 
 /**
+ * Skips the current test if BASE_URL is not a local/safe host.
+ * Use this at the top of destructive real-mode test bodies (checkout, profile save, signup).
+ */
+export function skipIfNotMutableEnvironment(test: { skip: (condition: boolean, reason: string) => void }): void {
+  const url = process.env.BASE_URL ?? ''
+  const isSafe =
+    !url ||
+    url.includes('localhost') ||
+    url.includes('127.0.0.1') ||
+    process.env.ALLOW_MUTATING_E2E === 'true'
+
+  test.skip(!isSafe, `Destructive test skipped: BASE_URL=${url} is not a local/staging host`)
+}
+
+/**
  * Registers a route mock only in mocked mode.
  * When BASE_URL is set (real mode), this is a no-op — real API calls go through.
  */

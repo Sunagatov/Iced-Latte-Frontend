@@ -4,6 +4,12 @@ const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
 const IS_REAL = !!process.env.BASE_URL
 const IS_PROD = IS_REAL && !BASE_URL.includes('localhost') && !BASE_URL.includes('127.0.0.1')
 
+if (IS_REAL && IS_PROD && process.env.npm_lifecycle_event?.includes('local-real')) {
+  throw new Error(
+    `test:e2e:local-real must not target ${BASE_URL}. Use localhost or 127.0.0.1.`,
+  )
+}
+
 export default defineConfig({
   testDir: './e2e',
   retries: 1,

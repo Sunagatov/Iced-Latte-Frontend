@@ -19,15 +19,13 @@ const TOKEN_TTL_MS = 12 * 60 * 1000 // re-auth if within 3 min of 15-min expiry
 export async function ensureAuth(page: Page): Promise<void> {
   if (!IS_REAL) return
 
-  // Pause between tests to avoid rate limiting
-  await new Promise((r) => setTimeout(r, 1000))
-
   const now = Date.now()
   if (now - lastAuthMs < TOKEN_TTL_MS) return // token still fresh
 
   const res = await page.context().request.get('/api/proxy/users')
   if (res.status() === 200) {
     lastAuthMs = now
+
     return
   }
 

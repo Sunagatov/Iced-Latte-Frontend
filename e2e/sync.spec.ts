@@ -29,7 +29,6 @@ const test = base.extend<Fixtures>({
 async function loginAndGoto(page: Page, _token: string, route: string) {
   await page.goto(route)
   await page.waitForLoadState('domcontentloaded')
-  await page.waitForTimeout(1000)
 }
 
 async function mockFavourites(page: Page, products: object[]) {
@@ -89,14 +88,12 @@ test.describe('Favourites sync', () => {
   test('empty state shown when server has no favourites', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
       await clearFavourites(page)
-      await page.waitForTimeout(1000)
       await page.goto('/favourites')
       await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 10000 })
     } else {
       await mockFavourites(page, [])
       // Clear any persisted fav-storage from previous tests
-      await page.goto('http://localhost:3000')
-      await page.evaluate(() => localStorage.removeItem('fav-storage'))
+      await page.addInitScript(() => localStorage.removeItem('fav-storage'))
       await loginAndGoto(page, FAKE_TOKEN, '/favourites')
       await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 10000 })
     }
@@ -110,11 +107,9 @@ test.describe('Favourites sync', () => {
       await clearFavourites(page)
     } else {
       await mockFavourites(page, [makeFavProduct(FAKE_PRODUCT_ID)])
-      await page.goto('http://localhost:3000')
-      await page.evaluate((id) => {
+      await page.addInitScript((id: string) => {
         localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: [id], favourites: [] }, version: 0 }))
       }, FAKE_PRODUCT_ID)
-      await page.reload()
       await page.goto('/favourites')
       await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 10000 })
     }
@@ -145,11 +140,9 @@ test.describe('Cart sync', () => {
       await clearCart(page)
     } else {
       await mockCart(page, [makeCartItem(FAKE_PRODUCT_ID)])
-      await page.goto('http://localhost:3000')
-      await page.evaluate((id) => {
+      await page.addInitScript((id: string) => {
         localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: [{ productId: id, productQuantity: 1 }], tempItems: [], count: 1, totalPrice: 0, isSync: false }, version: 0 }))
       }, FAKE_PRODUCT_ID)
-      await page.reload()
       await page.goto('/cart')
       await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
     }

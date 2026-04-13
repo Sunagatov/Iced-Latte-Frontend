@@ -38,8 +38,6 @@ test.describe('authenticated', () => {
       await mockFavouritesApi(page, [product])
     }
     await page.goto('/favourites')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(500)
     await expect(page.locator('[data-testid="fav-element"]').first()).toBeVisible({ timeout: 8000 })
   })
 
@@ -67,8 +65,7 @@ test.describe('authenticated', () => {
         await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
       }
     })
-    await page.goto('http://localhost:3000')
-    await page.evaluate((id) => {
+    await page.addInitScript((id: string) => {
       localStorage.setItem('fav-storage', JSON.stringify({ state: { favouriteIds: [id] }, version: 0 }))
     }, PRODUCT_ID)
     await page.goto('/favourites')
@@ -78,16 +75,15 @@ test.describe('authenticated', () => {
   })
 
   test('empty state shown when no favourites', async ({ page }) => {
-    if (IS_REAL) await clearFavourites(page)
-    else await mockFavouritesApi(page, [])
-
-    // Clear persisted fav-storage so previous test's favouriteIds don't trigger sync
-    const baseUrl = process.env.BASE_URL ?? 'http://localhost:3000'
-    await page.goto(baseUrl)
-    await page.evaluate(() => localStorage.removeItem('fav-storage'))
+    const baseUrl = process.env.BASE_URL ?? ''
+    if (!IS_REAL) await mockFavouritesApi(page, [])
+    if (!IS_REAL) {
+      await page.addInitScript(() => localStorage.removeItem('fav-storage'))
+    } else {
+      await page.goto(baseUrl || '/')
+      await page.evaluate(() => localStorage.removeItem('fav-storage'))
+    }
     await page.goto('/favourites')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(500)
     await expect(page.locator('[data-testid="favourites-empty"]')).toBeVisible({ timeout: 12000 })
   })
 
