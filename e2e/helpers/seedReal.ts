@@ -262,14 +262,20 @@ export async function seedExactFavourites(
   assertMutableTestEnvironment()
   await clearFavourites(page)
 
-  // POST all IDs — retry each on 429
+  // POST all IDs — retry each on 429, fail fast on other errors
   for (const id of productIds) {
+    let lastRes: Awaited<ReturnType<ReturnType<typeof req>['get']>> | null = null
+
     for (let attempt = 0; attempt < 5; attempt++) {
       const r = await req(page).post('/api/proxy/favorites', { data: { productIds: [id] } })
+
+      lastRes = r
 
       if (r.status() !== 429) break
       await sleep(2000 * (attempt + 1))
     }
+
+    if (lastRes) await assertOk(lastRes, `POST /favorites (${id})`)
     // Small gap between sequential POSTs to avoid rate limiting
     await sleep(300)
   }

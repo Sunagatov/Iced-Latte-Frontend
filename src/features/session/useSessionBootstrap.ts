@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { getUserData } from '@/features/user/api'
 import { useAuthStore } from '@/features/auth/store'
+import { api } from '@/shared/api/client'
 import { useCartStore } from '@/features/cart/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 
@@ -32,8 +33,20 @@ export function useSessionBootstrap(): void {
           setAuthenticated(userData)
         }
       } catch {
-        if (!cancelled) {
-          setAnonymous()
+        // /users returned 401. Try one silent refresh before declaring anonymous.
+        // We call /auth/refresh directly here rather than relying on the interceptor,
+        // because the interceptor excludes /users from its retry path.
+        try {
+          await api.post('/auth/refresh', null, { skipAuthRetry: true } as object)
+          const userData = await getUserData()
+
+          if (!cancelled) {
+            setAuthenticated(userData)
+          }
+        } catch {
+          if (!cancelled) {
+            setAnonymous()
+          }
         }
       }
     }
