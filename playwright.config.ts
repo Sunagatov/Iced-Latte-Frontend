@@ -18,8 +18,33 @@ export default defineConfig({
   use: {
     baseURL: BASE_URL,
     headless: true,
-    storageState: IS_REAL ? 'e2e/.auth.json' : undefined,
     actionTimeout: 15000,
   },
   reporter: [['list'], ['html', { open: 'never' }]],
+  projects: [
+    {
+      // Default: fully mocked, no real backend, runs on every push
+      name: 'mocked',
+      testIgnore: ['**/real.spec.ts'],
+      use: {
+        storageState: { cookies: [], origins: [] },
+      },
+    },
+    {
+      // Real integration: requires BASE_URL + running backend, can mutate state
+      name: 'real',
+      testMatch: ['**/*.spec.ts'],
+      use: {
+        storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
+      },
+    },
+    {
+      // Prod smoke: read-only, safe to run against production
+      name: 'prod-smoke',
+      testMatch: ['**/real.spec.ts'],
+      use: {
+        storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
+      },
+    },
+  ],
 })

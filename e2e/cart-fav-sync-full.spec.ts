@@ -470,22 +470,6 @@ test.describe('Cart — guest operations', () => {
     // Spec §3: isSync=false, itemsCount>0, authenticated → POST /cart/items
     let mergeCallMade = false
 
-    await page.addInitScript(([productId]: string[]) => {
-      localStorage.setItem(
-        'cart-storage',
-        JSON.stringify({
-          state: {
-            itemsIds: [{ productId, productQuantity: 2 }],
-            tempItems: [],
-            count: 2,
-            totalPrice: 0,
-            isSync: false,
-          },
-          version: 0,
-        }),
-      )
-    }, [PRODUCT_A])
-
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
@@ -520,15 +504,31 @@ test.describe('Cart — guest operations', () => {
       }
     })
 
-    const mergeRequest = page.waitForRequest(
-      (req) =>
-        req.url().includes('/api/proxy/cart/items') &&
-        req.method() === 'POST',
+    await page.addInitScript(([productId]: string[]) => {
+      localStorage.setItem(
+        'cart-storage',
+        JSON.stringify({
+          state: {
+            itemsIds: [{ productId, productQuantity: 2 }],
+            tempItems: [],
+            count: 2,
+            totalPrice: 0,
+            isSync: false,
+          },
+          version: 0,
+        }),
+      )
+    }, [PRODUCT_A])
+
+    const mergeResponse = page.waitForResponse(
+      (res) =>
+        res.url().includes('/api/proxy/cart/items') &&
+        res.request().method() === 'POST',
     )
 
     await page.goto('http://localhost:3000')
 
-    await mergeRequest
+    await mergeResponse
     expect(mergeCallMade).toBe(true)
   })
 })
@@ -541,16 +541,6 @@ test.describe('Favourites sync', () => {
   }) => {
     test.skip(IS_REAL, 'mocked-only: call-count assertion not possible against real API')
     let syncCallCount = 0
-
-    await page.addInitScript(([productId]: string[]) => {
-      localStorage.setItem(
-        'fav-storage',
-        JSON.stringify({
-          state: { favouriteIds: [productId], isSync: false },
-          version: 0,
-        }),
-      )
-    }, [PRODUCT_A])
 
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
@@ -566,15 +556,25 @@ test.describe('Favourites sync', () => {
       }
     })
 
-    const syncRequest = page.waitForRequest(
-      (req) =>
-        req.url().includes('/api/proxy/favorites') &&
-        req.method() === 'POST',
+    await page.addInitScript(([productId]: string[]) => {
+      localStorage.setItem(
+        'fav-storage',
+        JSON.stringify({
+          state: { favouriteIds: [productId], isSync: false },
+          version: 0,
+        }),
+      )
+    }, [PRODUCT_A])
+
+    const syncResponse = page.waitForResponse(
+      (res) =>
+        res.url().includes('/api/proxy/favorites') &&
+        res.request().method() === 'POST',
     )
 
     await page.goto('http://localhost:3000')
 
-    await syncRequest
+    await syncResponse
     expect(syncCallCount).toBe(1)
   })
 
