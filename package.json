@@ -14,7 +14,7 @@
     "test:e2e": "playwright test --project=mocked",
     "test:e2e:report": "playwright show-report",
     "test:e2e:local-real": "BASE_URL=http://localhost:3000 playwright test --project=real",
-    "test:e2e:prod-smoke": "BASE_URL=https://iced-latte.uk playwright test --project=prod-smoke"
+    "test:e2e:prod-smoke": "PLAYWRIGHT_MODE=prod-smoke BASE_URL=https://iced-latte.uk playwright test --project=prod-smoke"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.0",

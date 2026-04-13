@@ -4,7 +4,11 @@ const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
 const IS_REAL = !!process.env.BASE_URL
 const IS_PROD = IS_REAL && !BASE_URL.includes('localhost') && !BASE_URL.includes('127.0.0.1')
 
-if (IS_REAL && IS_PROD && process.env.ALLOW_MUTATING_E2E !== 'true') {
+// Block mutating real runs against production unless explicitly allowed.
+// prod-smoke is intentionally read-only and is always allowed on prod.
+const IS_PROD_SMOKE = process.env.PLAYWRIGHT_MODE === 'prod-smoke'
+
+if (IS_REAL && IS_PROD && !IS_PROD_SMOKE && process.env.ALLOW_MUTATING_E2E !== 'true') {
   throw new Error(
     `The 'real' project must not target ${BASE_URL}. Use localhost, 127.0.0.1, or set ALLOW_MUTATING_E2E=true.`,
   )
