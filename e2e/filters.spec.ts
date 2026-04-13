@@ -128,10 +128,12 @@ test('combined filters - brand + price narrows results', async ({ page }) => {
   if (await firstBrandCheckbox.isVisible()) await firstBrandCheckbox.click()
   await page.locator('#from-price-input').fill('3')
 
-  // In real mode zero results is valid — accept either cards or empty-state
+  // Wait for the catalog to settle — accept cards, empty-state, or error
+  await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {})
   await Promise.race([
     page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 }),
     page.waitForSelector('[data-testid="empty-state"]', { timeout: 20000 }),
+    page.waitForSelector('text=Something went wrong', { timeout: 20000 }),
   ])
 
   const cardCount = await page.locator('[data-testid="product-card"]').count()

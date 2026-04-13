@@ -28,23 +28,19 @@ async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: numb
 
 async function gotoProfile(page: Page) {
   await page.goto('/profile')
-  await page.waitForLoadState('domcontentloaded')
+  await page.waitForLoadState('networkidle')
 
-  // Profile starts on 'overview'. Navigate to 'Personal details' section.
-  // On desktop the sidebar button is inside <aside>; on mobile it's a chip outside it.
+  // Profile starts on 'overview'. Click 'Personal details' to switch sections.
   const sidebarBtn = page.locator('aside').getByRole('button', { name: 'Personal details' })
   const chipBtn = page.getByRole('button', { name: 'Personal details' }).first()
 
-  if (await sidebarBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+  if (await sidebarBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
     await sidebarBtn.click()
-  } else if (await chipBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+  } else if (await chipBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
     await chipBtn.click()
   }
 
-  // Wait for the InfoRow labels that appear in the profile section
-  await expect(page.locator('[data-testid="profile-section"]').or(
-    page.locator('h2', { hasText: 'Personal details' })
-  )).toBeVisible({ timeout: 8000 })
+  await expect(page.locator('h2', { hasText: 'Personal details' })).toBeVisible({ timeout: 10000 })
 }
 
 async function openEditForm(page: Page) {

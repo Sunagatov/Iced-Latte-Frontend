@@ -262,7 +262,7 @@ export async function seedExactFavourites(
   assertMutableTestEnvironment()
   await clearFavourites(page)
 
-  // POST all IDs — retry each on 429, fail fast on other errors
+  // POST all IDs — retry each on 429 using server-provided delay, fail fast on other errors
   for (const id of productIds) {
     let lastRes: Awaited<ReturnType<ReturnType<typeof req>['get']>> | null = null
     let hitRateLimit = false
@@ -274,7 +274,9 @@ export async function seedExactFavourites(
 
       if (r.status() === 429) {
         hitRateLimit = true
-        await sleep(2000 * (attempt + 1))
+        const delay = await get429DelayMs(r)
+
+        await sleep(delay + 500)
         continue
       }
 

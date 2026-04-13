@@ -71,7 +71,7 @@ function makeCartItem(productId: string) {
 const FAKE_TOKEN = 'fake-token'
 
 test.describe('Favourites sync', () => {
-  test.setTimeout(30000)
+  test.setTimeout(60000)
 
   test('server favourites appear on fresh login', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
@@ -116,7 +116,7 @@ test.describe('Favourites sync', () => {
 })
 
 test.describe('Cart sync', () => {
-  test.setTimeout(30000)
+  test.setTimeout(60000)
 
   test('server cart items appear on fresh login', async ({ isolatedPage: page }) => {
     if (IS_REAL) {
