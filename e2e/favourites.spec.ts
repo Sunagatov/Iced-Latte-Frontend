@@ -1,5 +1,5 @@
-import { mockRoute, IS_REAL } from './helpers/mockRoute'
-import { test, expect, type Page } from '@playwright/test'
+import { strictMockProxy, IS_REAL } from './helpers/mockRoute'
+import { test, expect, type Route } from '@playwright/test'
 import { clearFavourites } from './helpers/seedReal'
 import { ensureAuth } from './helpers/ensureAuth'
 
@@ -9,18 +9,16 @@ function makeProduct(id: string) {
   return { id, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
 }
 
-async function mockProxy(page: Page, authenticated = false) {
-  const product = makeProduct(FAKE_PRODUCT_ID)
-  await mockRoute(page, '**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-      await route.fulfill({ status: authenticated ? 200 : 401, contentType: 'application/json', body: authenticated ? JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) : JSON.stringify({ message: 'Unauthorized' }) })
-    } else if (url.includes('/products') && !url.includes('/ids')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    }
-  })
+function userHandler(authenticated: boolean): (route: Route) => Promise<void> {
+  return async (route) => {
+    await route.fulfill({
+      status: authenticated ? 200 : 401,
+      contentType: 'application/json',
+      body: authenticated
+        ? JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null })
+        : JSON.stringify({ message: 'Unauthorized' }),
+    })
+  }
 }
 
 test.describe('authenticated', () => {
@@ -32,49 +30,61 @@ test.describe('authenticated', () => {
   })
 
   test('favourites page is accessible when logged in', async ({ page }) => {
-    if (!IS_REAL) await mockProxy(page, true)
+    if (!IS_REAL) {
+      await strictMockProxy(page, {
+        '/users': userHandler(true),
+        '/favorites': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) }),
+        '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+      })
+    }
     await page.goto('/favourites')
     await expect(page).not.toHaveURL(/signin/, { timeout: 10000 })
     await expect(page.locator('main')).toBeVisible({ timeout: 10000 })
   })
 
   test('heart icon on product card is visible', async ({ page }) => {
-    if (!IS_REAL) await mockProxy(page, true)
+    const product = makeProduct(FAKE_PRODUCT_ID)
+
+    if (!IS_REAL) {
+      await strictMockProxy(page, {
+        '/users': userHandler(true),
+        '/products': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) }),
+        '/favorites': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) }),
+        '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+      })
+    }
     await page.goto('/')
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     await expect(page.locator('[data-testid="favourite-btn"]').first()).toBeVisible()
   })
 
   test('clicking heart toggles favourite state', async ({ page }) => {
+    const product = makeProduct(FAKE_PRODUCT_ID)
+
     if (!IS_REAL) {
-      const product = makeProduct(FAKE_PRODUCT_ID)
-      await mockRoute(page, '**/api/proxy/**', async (route) => {
-        const url = route.request().url()
-        const method = route.request().method()
-        if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
-          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
-        } else if (url.includes('/products') && !url.includes('/ids')) {
-          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
-        } else if (url.includes('/favorites') && method === 'POST') {
-          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product] }) })
-        } else if (url.includes('/favorites') && method === 'DELETE') {
-          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
-        } else if (url.includes('/favorites')) {
-          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
-        } else {
-          await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-        }
+      await strictMockProxy(page, {
+        '/users': userHandler(true),
+        '/products': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) }),
+        '/favorites': async (route) => {
+          const method = route.request().method()
+
+          if (method === 'POST') {
+            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product] }) })
+          } else if (method === 'DELETE') {
+            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
+          } else {
+            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
+          }
+        },
+        '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
       })
     }
     await page.goto('/')
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     const heartBtn = page.locator('[data-testid="favourite-btn"]').first()
     await heartBtn.waitFor({ timeout: 10000 })
-    await page.waitForTimeout(500)
     const before = await heartBtn.getAttribute('data-active')
     await heartBtn.click()
-    await page.waitForTimeout(500)
     await expect(heartBtn).toHaveAttribute('data-active', before === 'true' ? 'false' : 'true', { timeout: 5000 })
-    expect(await heartBtn.getAttribute('data-active')).not.toBe(before)
   })
 })

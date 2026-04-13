@@ -44,7 +44,7 @@ export default defineConfig({
       // Only safe against localhost or an explicit staging host
       name: 'real',
       workers: 1,
-      testIgnore: ['**/real.spec.ts', '**/password-reset.spec.ts', '**/mocked/**'],
+      testIgnore: ['**/real.spec.ts', '**/password-reset.spec.ts', '**/auth.spec.ts', '**/mocked/**'],
       use: {
         storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
       },
