@@ -1,8 +1,9 @@
 import { strictMockProxy, IS_REAL, skipIfNotMutableEnvironment } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
-import { seedCart, clearCart } from './helpers/seedReal'
+import { seedExactCart, clearCart } from './helpers/seedReal'
 import { REAL_PRODUCT_ID } from './helpers/realData'
 import { ensureAuth } from './helpers/ensureAuth'
+import { waitForCheckoutReady } from './helpers/waits'
 
 const product = { id: 'p1', name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
 const cartWithItem = { id: 'c1', userId: 'u1', items: [{ id: 'ci1', productInfo: product, productQuantity: 1 }], itemsQuantity: 1, itemsTotalPrice: 9.99, productsQuantity: 1, createdAt: '', closedAt: null }
@@ -66,9 +67,9 @@ test('guest visiting /checkout sees the page', async ({ page }) => {
 
 test('checkout form renders with required fields', async ({ page }) => {
   if (IS_REAL) {
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+    await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
-    await page.waitForSelector('h1', { timeout: 8000 })
+    await waitForCheckoutReady(page)
   } else {
     await setupMocked(page)
   }
@@ -79,16 +80,12 @@ test('checkout form renders with required fields', async ({ page }) => {
 
 test('order summary shows cart item and total', async ({ page }) => {
   if (IS_REAL) {
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+    await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
-    await page.waitForSelector('h1', { timeout: 8000 })
-    // Real mode: verify the order summary shows the seeded item and a price
-    await expect(page.locator('h1', { hasText: 'Checkout' })).toBeVisible({ timeout: 8000 })
-    await expect(page.locator('[data-testid="checkout-summary"], main')).toBeVisible()
-    // At least one price value must be visible in the summary
-    await expect(page.locator('text=/\$[\d]+\.[\d]{2}/').first()).toBeVisible({ timeout: 8000 })
-    // The quantity indicator must be visible (e.g. ×1)
-    await expect(page.locator('text=/×\d+/').first()).toBeVisible({ timeout: 8000 })
+    await waitForCheckoutReady(page)
+    // Summary must show a price and a quantity indicator
+    await expect(page.getByText(/\$\d+\.\d{2}/).first()).toBeVisible({ timeout: 8000 })
+    await expect(page.getByText(/×\d+/).first()).toBeVisible({ timeout: 8000 })
   } else {
     await setupMocked(page)
     await expect(page.getByText('Test Coffee')).toBeVisible({ timeout: 8000 })
@@ -98,9 +95,9 @@ test('order summary shows cart item and total', async ({ page }) => {
 
 test('Place order button is present', async ({ page }) => {
   if (IS_REAL) {
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+    await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
-    await page.waitForSelector('h1', { timeout: 8000 })
+    await waitForCheckoutReady(page)
   } else {
     await setupMocked(page)
   }
@@ -110,21 +107,21 @@ test('Place order button is present', async ({ page }) => {
 test('successful order submission redirects to /orders', async ({ page }) => {
   if (IS_REAL) {
     skipIfNotMutableEnvironment(test)
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+    await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
-    await page.waitForSelector('h1', { timeout: 8000 })
-    await page.waitForSelector('text=×1', { timeout: 8000 }).catch(() => {})
+    await waitForCheckoutReady(page)
   } else {
     await setupMocked(page)
   }
   await fillForm(page)
-  await page.getByRole('button', { name: 'Place order' }).click()
-  await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
+  await Promise.all([
+    page.waitForURL(/\/orders/, { timeout: 20000 }),
+    page.getByRole('button', { name: 'Place order' }).click(),
+  ])
 })
 
 test('API error on submit shows error message', async ({ page }) => {
   if (IS_REAL) {
-    // Can't force API errors in real mode
     test.skip(true, 'cannot force API errors in real mode')
     return
   }
@@ -138,12 +135,15 @@ test('API error on submit shows error message', async ({ page }) => {
 test('cart is cleared after successful order — cart-count badge gone', async ({ page }) => {
   if (IS_REAL) {
     skipIfNotMutableEnvironment(test)
-    await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
+    await seedExactCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
-    await page.waitForSelector('h1', { timeout: 8000 })
+    await waitForCheckoutReady(page)
     await fillForm(page)
-    await page.getByRole('button', { name: 'Place order' }).click()
-    await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
+    await Promise.all([
+      page.waitForURL(/\/orders/, { timeout: 20000 }),
+      page.getByRole('button', { name: 'Place order' }).click(),
+    ])
+
     return
   }
   let orderPlaced = false
@@ -176,8 +176,10 @@ test('cart is cleared after successful order — cart-count badge gone', async (
   await page.goto('/checkout')
   await page.waitForSelector('h1', { timeout: 8000 })
   await fillForm(page)
-  await page.getByRole('button', { name: 'Place order' }).click()
-  await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
+  await Promise.all([
+    page.waitForURL(/\/orders/, { timeout: 20000 }),
+    page.getByRole('button', { name: 'Place order' }).click(),
+  ])
   const stored = await page.evaluate(() => localStorage.getItem('cart-storage'))
   const parsed = JSON.parse(stored ?? '{}')
   expect(parsed?.state?.itemsIds?.length ?? 0).toBe(0)

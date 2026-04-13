@@ -44,7 +44,11 @@ async function mockProductDetailApi(page: Parameters<typeof mockRoute>[0]) {
 test.beforeEach(async ({ page }) => {
   if (!IS_REAL) await mockProductDetailApi(page)
   await page.goto(`/product/${PRODUCT_ID}`)
-  await page.waitForLoadState('networkidle')
+  // Wait for either the product name or a known error state
+  await Promise.race([
+    page.waitForSelector('[data-testid="product-name"]', { timeout: 20000 }),
+    page.waitForSelector('text=Failed to load', { timeout: 20000 }),
+  ]).catch(() => {})
 })
 
 test('clicking product card navigates to product detail page', async ({ page }) => {
@@ -57,7 +61,12 @@ test('product detail page shows product name and price', async ({ page }) => {
 })
 
 test('product detail page shows reviews section', async ({ page }) => {
-  await expect(page.locator('[data-testid="reviews-section"]')).toBeVisible({ timeout: 20000 })
+  // Wait for reviews/statistics fetch to complete before asserting section visibility
+  await Promise.race([
+    page.waitForResponse((res) => res.url().includes('/reviews/statistics'), { timeout: 15000 }),
+    page.waitForSelector('[data-testid="reviews-section"]', { timeout: 15000 }),
+  ]).catch(() => {})
+  await expect(page.locator('[data-testid="reviews-section"]')).toBeVisible({ timeout: 10000 })
 })
 
 test('product detail page has add to cart button', async ({ page }) => {

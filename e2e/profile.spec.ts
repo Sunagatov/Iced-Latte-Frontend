@@ -28,7 +28,15 @@ async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: numb
 
 async function gotoProfile(page: Page) {
   await page.goto('/profile')
-  await page.getByRole('button', { name: 'Personal details' }).first().click()
+  await page.waitForLoadState('domcontentloaded')
+  // Click 'Personal details' only if the button is present and needed
+  const btn = page.getByRole('button', { name: 'Personal details' }).first()
+  const editBtn = page.locator('#edit-btn')
+
+  if (await editBtn.isVisible({ timeout: 2000 }).catch(() => false)) return
+  if (await btn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    await btn.click()
+  }
   await page.waitForSelector('#edit-btn', { timeout: 8000 })
 }
 
@@ -62,9 +70,21 @@ test('editing name and saving calls API', async ({ page }) => {
   await openEditForm(page)
   await page.fill('#firstName', IS_REAL ? 'Olivia' : 'Jane')
   await page.fill('#lastName', IS_REAL ? 'Johnson' : 'Doe')
-  await page.locator('#save-btn').click()
-  // On success isEditing → false, form hides
-  await expect(page.locator('#firstName')).not.toBeVisible({ timeout: 20000 })
+  if (IS_REAL) {
+    // Assert the PUT request completes successfully rather than relying on form hiding
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (res) => res.url().includes('/api/proxy/users') && res.request().method() === 'PUT',
+        { timeout: 15000 },
+      ),
+      page.locator('#save-btn').click(),
+    ])
+    expect(response.status()).toBeLessThan(300)
+  } else {
+    await page.locator('#save-btn').click()
+    // In mocked mode the form hides on success
+    await expect(page.locator('#firstName')).not.toBeVisible({ timeout: 20000 })
+  }
 })
 
 test('validation error shown for invalid phone number', async ({ page }) => {

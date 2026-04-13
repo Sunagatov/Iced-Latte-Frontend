@@ -1,5 +1,6 @@
 import { mockRoute, IS_REAL } from './helpers/mockRoute'
 import { test, expect, type Page } from '@playwright/test'
+import { openCatalogAndWaitReady } from './helpers/waits'
 
 function makeProduct(id: string) {
   return { id, name: 'Test Coffee', price: 5.99, productFileUrl: null, brandName: 'Dunkin-Donuts', sellerName: 'BeanBrewers', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
@@ -19,8 +20,7 @@ async function mockProducts(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   if (!IS_REAL) await mockProducts(page)
-  await page.goto('/')
-  await page.waitForSelector('[data-testid="product-card"]', { timeout: 20000 })
+  await openCatalogAndWaitReady(page)
 })
 
 test('filter sidebar is visible with all sections', async ({ page }) => {
