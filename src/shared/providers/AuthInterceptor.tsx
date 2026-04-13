@@ -2,7 +2,6 @@
 
 import { useEffect, type ReactNode } from 'react'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import type { AxiosCacheInstance } from 'axios-cache-interceptor'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
 import { api } from '@/shared/api/client'
@@ -18,7 +17,7 @@ interface AuthInterceptorProps {
   children: ReactNode
 }
 
-const apiClient = api as unknown as AxiosCacheInstance
+const apiClient = api
 
 const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
   const setAuthenticated = useAuthStore(

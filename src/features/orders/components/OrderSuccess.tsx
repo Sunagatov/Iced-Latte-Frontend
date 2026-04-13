@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
-import type {
-  AxiosCacheInstance,
-  CacheAxiosResponse,
-} from 'axios-cache-interceptor'
+import type { CacheAxiosResponse } from 'axios-cache-interceptor'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import { api } from '@/shared/api/client'
@@ -20,9 +17,7 @@ interface PaymentSessionStatus {
   customerEmail: string
 }
 
-const apiClient = api as unknown as AxiosCacheInstance
-
-export default function OrdersForm() {
+export default function OrderSuccess() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -40,7 +35,7 @@ export default function OrdersForm() {
     setLoading(true)
 
     if (isLoggedIn) {
-      apiClient
+      api
         .get<PaymentSessionStatus>(`/payment/order?sessionId=${sessionId}`)
         .then(
           (

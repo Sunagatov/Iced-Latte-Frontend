@@ -34,7 +34,7 @@ export default defineConfig({
       // Fully mocked — no real backend, runs on every push, safe to parallelize
       name: 'mocked',
       workers: 4,
-      testIgnore: ['**/real.spec.ts', '**/debug-*.spec.ts'],
+      testIgnore: ['**/real.spec.ts'],
       use: {
         storageState: { cookies: [], origins: [] },
       },
@@ -44,7 +44,7 @@ export default defineConfig({
       // Only safe against localhost or an explicit staging host
       name: 'real',
       workers: 1,
-      testIgnore: ['**/real.spec.ts', '**/debug-*.spec.ts'],
+      testIgnore: ['**/real.spec.ts'],
       use: {
         storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
       },
