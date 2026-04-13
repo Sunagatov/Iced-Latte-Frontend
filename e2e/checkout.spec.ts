@@ -84,9 +84,13 @@ test('order summary shows cart item and total', async ({ page }) => {
     await seedCart(page, [{ productId: REAL_PRODUCT_ID, productQuantity: 1 }])
     await page.goto('/checkout')
     await page.waitForSelector('h1', { timeout: 8000 })
-    // Real mode: verify the order summary section is visible
+    // Real mode: verify the order summary shows the seeded item and a price
     await expect(page.locator('h1', { hasText: 'Checkout' })).toBeVisible({ timeout: 8000 })
-    await expect(page.locator('main')).toBeVisible()
+    await expect(page.locator('[data-testid="checkout-summary"], main')).toBeVisible()
+    // At least one price value must be visible in the summary
+    await expect(page.locator('text=/\$[\d]+\.[\d]{2}/').first()).toBeVisible({ timeout: 8000 })
+    // The quantity indicator must be visible (e.g. ×1)
+    await expect(page.locator('text=/×\d+/').first()).toBeVisible({ timeout: 8000 })
   } else {
     await setupMocked(page)
     await expect(page.getByText('Test Coffee')).toBeVisible({ timeout: 8000 })

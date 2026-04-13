@@ -204,6 +204,8 @@ export default function OrderHistory() {
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
+            data-testid={`order-filter-${f.label.toLowerCase().replace(/\s+/g, '-')}`}
+            aria-pressed={filter === f.value}
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition ${
               filter === f.value
                 ? 'bg-brand text-white'

@@ -75,7 +75,7 @@ test('status filter tabs filter orders correctly', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Placed' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Delivered' })).toBeVisible()
   await page.getByRole('button', { name: 'Placed' }).click()
-  await expect(page.getByRole('button', { name: 'Placed' })).toHaveClass(/bg-brand/, { timeout: 3000 })
+  await expect(page.getByRole('button', { name: 'Placed' })).toHaveAttribute('aria-pressed', 'true', { timeout: 3000 })
 })
 
 test('API error shows retry button', async ({ page }) => {

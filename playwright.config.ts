@@ -4,10 +4,7 @@ const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
 const IS_REAL = !!process.env.BASE_URL
 const IS_PROD = IS_REAL && !BASE_URL.includes('localhost') && !BASE_URL.includes('127.0.0.1')
 
-if (IS_REAL && IS_PROD && (
-  process.env.npm_lifecycle_event?.includes('local-real') ||
-  process.env.PLAYWRIGHT_PROJECT === 'real'
-)) {
+if (IS_REAL && IS_PROD && process.env.ALLOW_MUTATING_E2E !== 'true') {
   throw new Error(
     `The 'real' project must not target ${BASE_URL}. Use localhost, 127.0.0.1, or set ALLOW_MUTATING_E2E=true.`,
   )
@@ -37,7 +34,7 @@ export default defineConfig({
       // Fully mocked — no real backend, runs on every push, safe to parallelize
       name: 'mocked',
       workers: 4,
-      testIgnore: ['**/real.spec.ts'],
+      testIgnore: ['**/real.spec.ts', '**/real-local/**'],
       use: {
         storageState: { cookies: [], origins: [] },
       },
@@ -47,7 +44,7 @@ export default defineConfig({
       // Only safe against localhost or an explicit staging host
       name: 'real',
       workers: 1,
-      testIgnore: ['**/real.spec.ts', '**/password-reset.spec.ts'],
+      testIgnore: ['**/real.spec.ts', '**/password-reset.spec.ts', '**/mocked/**'],
       use: {
         storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] },
       },

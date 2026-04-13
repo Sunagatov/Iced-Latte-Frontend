@@ -21,7 +21,7 @@ export default function HeaderHeart() {
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
         {!!favouriteIds.length && (
-          <div className="bg-brand-solid absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white">
+          <div data-testid="header-favourites-badge" className="bg-brand-solid absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white">
             {favouriteIds.length > 99 ? '99+' : favouriteIds.length}
           </div>
         )}
