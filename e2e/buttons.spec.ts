@@ -218,7 +218,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
 
 test.describe('Guest: cart page plus / minus / trash buttons', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
-  test.beforeEach(async ({ page }) => { if (IS_REAL) await page.waitForTimeout(1500) })
+  test.beforeEach(async ({ page }) => { if (IS_REAL) await page.waitForLoadState('domcontentloaded') })
 
   test('plus and minus buttons work on cart page', async ({ page }) => {
     if (!IS_REAL) await mockWithCart(page, 0)
