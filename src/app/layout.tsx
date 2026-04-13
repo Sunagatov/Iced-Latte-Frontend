@@ -7,7 +7,6 @@ import Header from '@/shared/components/Header/Header'
 import Footer from '@/shared/components/Footer/Footer'
 import AuthInterceptor from '@/shared/providers/AuthInterceptor'
 import AppInitProvider from '@/shared/providers/AppInitProvider'
-import PerformanceTracker from '@/shared/providers/PerformanceTracker'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -29,11 +28,9 @@ export default function RootLayout({
         <ToastContainer />
         <AuthInterceptor>
           <AppInitProvider>
-            <PerformanceTracker>
-              <Header />
-              <main className={'min-w-[360px] grow'}>{children}</main>
-              <Footer />
-            </PerformanceTracker>
+            <Header />
+            <main className={'min-w-[360px] grow'}>{children}</main>
+            <Footer />
           </AppInitProvider>
         </AuthInterceptor>
       </body>

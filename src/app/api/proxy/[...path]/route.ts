@@ -83,15 +83,6 @@ async function handleProxy(
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string[],
 ) {
-  const pathString = path.join('/')
-
-  if (method === 'POST' && pathString.includes('telemetry')) {
-    return createCorsResponse(
-      { message: 'Telemetry endpoint not implemented' },
-      202,
-    )
-  }
-
   const safePath = sanitizePath(path)
 
   if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
