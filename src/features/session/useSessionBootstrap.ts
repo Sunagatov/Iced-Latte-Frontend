@@ -26,6 +26,15 @@ export function useSessionBootstrap(): void {
     let cancelled = false
 
     const bootstrapAuthState = async (): Promise<void> => {
+      // If we are on the OAuth callback page, do not attempt any refresh.
+      // The callback page handles auth itself after the new cookies are set.
+      // Firing a refresh here would use the old stale rotated token and trigger
+      // replay detection on the backend, revoking the brand-new session.
+      const isOAuthCallback = typeof window !== 'undefined' &&
+        window.location.pathname.startsWith('/auth/google/callback')
+
+      if (isOAuthCallback) return
+
       try {
         const userData = await getUserData()
 
@@ -33,14 +42,12 @@ export function useSessionBootstrap(): void {
           setAuthenticated(userData)
         }
       } catch {
-        // /users returned 401. Try one silent refresh before declaring anonymous,
-        // but only when we are NOT arriving from an OAuth callback — in that case
-        // the new session cookies are already set and a refresh with the old
-        // stale token would trigger replay detection and revoke the new session.
+        // /users returned 401. Try one silent refresh before declaring anonymous.
+        // The interceptor excludes /users from its retry path, so we call
+        // /auth/refresh directly here with skipAuthRetry to avoid a loop.
         const skip = useAuthStore.getState().skipBootstrapRefresh
 
         if (skip) {
-          // Clear the flag and declare anonymous — the callback page handles auth itself.
           useAuthStore.getState().setSkipBootstrapRefresh(false)
           if (!cancelled) setAnonymous()
 

@@ -15,9 +15,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(errorUrl, { status: 302 })
   }
 
-  // Redirect to the frontend callback page (not directly to /) so the page can
-  // set skipBootstrapRefresh before useSessionBootstrap mounts and fires a
-  // stale refresh with the old rotated token.
   const base = FRONTEND_URL || new URL('/', request.url).origin
   const callbackPage = new URL('/auth/google/callback', base)
 
@@ -32,6 +29,23 @@ export async function GET(request: NextRequest) {
   }
 
   const response = NextResponse.redirect(callbackPage.toString(), { status: 302 })
+
+  // Expire the old token cookies first. The browser processes Set-Cookie headers
+  // in order — the new values below will overwrite these in the same response.
+  // This prevents the old refreshToken (possibly from a different user) from
+  // being sent on any request that fires before the redirect completes.
+  response.headers.append(
+    'Set-Cookie',
+    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
+      process.env.NODE_ENV === 'production' ? '; Secure' : ''
+    }`,
+  )
+  response.headers.append(
+    'Set-Cookie',
+    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
+      process.env.NODE_ENV === 'production' ? '; Secure' : ''
+    }`,
+  )
 
   response.cookies.set('token', token, cookieOptions)
   response.cookies.set('refreshToken', refreshToken, cookieOptions)

@@ -9,7 +9,6 @@ function GoogleCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
-  const setSkipBootstrapRefresh = useAuthStore((s) => s.setSkipBootstrapRefresh)
 
   useEffect(() => {
     const error = searchParams.get('error')
@@ -21,23 +20,18 @@ function GoogleCallbackInner() {
       return
     }
 
-    // Block useSessionBootstrap from firing a stale refresh with the old token.
-    // The new session cookies are already set by the API route that redirected here.
-    // Any refresh attempt before getUserData() succeeds would use the old rotated
-    // refreshToken, trigger replay detection, and revoke the brand-new session.
-    setSkipBootstrapRefresh(true)
-
+    // useSessionBootstrap is suppressed on this page via the pathname check.
+    // Call getUserData directly — the new session cookies are already set
+    // by the API route that redirected here.
     getUserData()
       .then((userData) => {
-        setSkipBootstrapRefresh(false)
         setAuthenticated(userData)
         router.replace(next)
       })
       .catch(() => {
-        setSkipBootstrapRefresh(false)
         router.replace('/signin?error=google_auth_failed')
       })
-  }, [searchParams, router, setAuthenticated, setSkipBootstrapRefresh])
+  }, [searchParams, router, setAuthenticated])
 
   return (
     <div className="flex min-h-screen items-center justify-center">
