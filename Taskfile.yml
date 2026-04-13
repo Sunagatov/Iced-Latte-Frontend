@@ -62,14 +62,24 @@ tasks:
       - npm run format
 
   e2e:
-    desc: "Run Playwright e2e tests"
+    desc: "Run Playwright mocked e2e tests (no backend needed)"
     cmds:
-      - npx playwright test
+      - npx playwright test --project=mocked
+
+  e2e-real:
+    desc: "Run Playwright real-local e2e tests against localhost backend"
+    cmds:
+      - npm run test:e2e:local-real
 
   e2e-ui:
-    desc: "Open Playwright UI"
+    desc: "Open Playwright UI (mocked mode)"
     cmds:
-      - npx playwright test --ui
+      - npx playwright test --project=mocked --ui
+
+  e2e-ui-real:
+    desc: "Open Playwright UI against localhost backend"
+    cmds:
+      - BASE_URL=http://localhost:3000 npx playwright test --project=real --ui
 
   urls:
     silent: true
