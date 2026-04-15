@@ -52,6 +52,8 @@ yarn-error.log*
 
 # misc
 .amazonq/
+/Taskfile.yml
+/PLAYWRIGHT_FIX_HANDOFF.md
 
 ##############################
 ## Deployment
