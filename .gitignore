@@ -53,7 +53,6 @@ yarn-error.log*
 # misc
 .amazonq/
 /Taskfile.yml
-/iced-latte-avatar.jpg
 /PLAYWRIGHT_FIX_HANDOFF.md
 
 ##############################
