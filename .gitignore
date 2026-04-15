@@ -53,6 +53,7 @@ yarn-error.log*
 # misc
 .amazonq/
 /Taskfile.yml
+/iced-latte-avatar.jpg
 /PLAYWRIGHT_FIX_HANDOFF.md
 
 ##############################
@@ -60,7 +61,6 @@ yarn-error.log*
 ##############################
 /docker-compose.prod.yml
 /.env.prod
-/ops/scripts/
-/ops/deployment-internal/
+/ops/
 maintaner/
 e2e/.auth.json
