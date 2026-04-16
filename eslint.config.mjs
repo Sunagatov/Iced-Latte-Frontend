@@ -1,56 +1,29 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
+import prettier from 'eslint-config-prettier/flat'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+export default defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  prettier,
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
-export default [
   {
-    ignores: [
-      '.next/**',
-      'node_modules/**',
-      'coverage/**',
-      'playwright-report/**',
-      'test-results/**',
-      'jest.config.js',
-      'jest.setup.js',
-      'lint-staged.config.js',
-      'eslint.config.mjs',
-    ],
-  },
-
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
-
-  ...compat.config({
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      project: './tsconfig.json',
-      ecmaFeatures: { jsx: true },
-      sourceType: 'module',
-    },
-    plugins: ['@typescript-eslint'],
-    settings: {
-      react: { version: 'detect' },
-    },
+    files: ['**/*.{js,jsx,ts,tsx}'],
     rules: {
       'indent': ['error', 2],
       'quotes': ['error', 'single', { allowTemplateLiterals: true }],
       'semi': ['error', 'never'],
-      'func-style': 0,
-      'max-len': 0,
-      'no-magic-numbers': 0,
-      'max-lines-per-function': 0,
+      'func-style': 'off',
+      'max-len': 'off',
+      'no-magic-numbers': 'off',
+      'max-lines-per-function': 'off',
       'space-before-function-paren': [
         'error',
         { anonymous: 'never', named: 'never', asyncArrow: 'always' },
       ],
-      'function-call-argument-newline': 0,
-      'padded-blocks': 0,
+      'function-call-argument-newline': 'off',
+      'padded-blocks': 'off',
       'padding-line-between-statements': [
         'error',
         { blankLine: 'always', prev: '*', next: 'return' },
@@ -63,30 +36,46 @@ export default [
       ],
       'object-curly-spacing': ['error', 'always'],
       'one-var': ['error', 'never'],
-      'quote-props': 0,
+      'quote-props': 'off',
+    },
+  },
+
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-misused-promises': [
-        2,
-        { checksVoidReturn: { attributes: false } },
-      ],
     },
-    overrides: [
-      {
-        files: ['e2e/**'],
-        rules: {
-          'react-hooks/rules-of-hooks': 'off',
-        },
-      },
-      {
-        files: ['**/*.d.ts'],
-        rules: {
-          '@typescript-eslint/triple-slash-reference': 'off',
-        },
-      },
-    ],
-  }),
-]
+  },
+
+  {
+    files: ['e2e/**'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+    },
+  },
+
+  {
+    files: ['**/*.d.ts'],
+    rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
+    },
+  },
+
+  globalIgnores([
+    '.next/**',
+    'out/**',
+    'build/**',
+    'coverage/**',
+    'playwright-report/**',
+    'test-results/**',
+    'next-env.d.ts',
+    'node_modules/**',
+    'jest.config.js',
+    'jest.setup.js',
+    'lint-staged.config.js',
+  ]),
+])
