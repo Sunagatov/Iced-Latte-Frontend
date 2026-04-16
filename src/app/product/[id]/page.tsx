@@ -14,7 +14,7 @@ async function getProductById(id: string): Promise<IProduct> {
   try {
     return await getProduct(id)
   } catch (err) {
-    if (isAxiosError(err) && err.response?.status === 404) {
+    if (isAxiosError(err) && [400, 404].includes(err.response?.status ?? 0)) {
       notFound()
     }
 
