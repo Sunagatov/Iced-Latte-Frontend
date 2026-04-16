@@ -1,31 +1,42 @@
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import tsPlugin from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
 })
 
 export default [
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
   {
-    plugins: { '@typescript-eslint': tsPlugin },
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module',
-      },
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'coverage/**',
+      'playwright-report/**',
+      'test-results/**',
+      'jest.config.js',
+      'jest.setup.js',
+      'lint-staged.config.js',
+      'eslint.config.mjs',
+    ],
+  },
+
+  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
+
+  ...compat.config({
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+      project: './tsconfig.json',
+      ecmaFeatures: { jsx: true },
+      sourceType: 'module',
     },
-    settings: { react: { version: 'detect' } },
+    plugins: ['@typescript-eslint'],
+    settings: {
+      react: { version: 'detect' },
+    },
     rules: {
       'indent': ['error', 2],
       'quotes': ['error', 'single', { allowTemplateLiterals: true }],
@@ -63,28 +74,19 @@ export default [
         { checksVoidReturn: { attributes: false } },
       ],
     },
-  },
-  {
-    files: ['e2e/**'],
-    rules: {
-      'react-hooks/rules-of-hooks': 'off',
-    },
-  },
-  {
-    files: ['**/*.d.ts'],
-    rules: {
-      '@typescript-eslint/triple-slash-reference': 'off',
-    },
-  },
-  {
-    ignores: [
-      '.next/**',
-      'node_modules/**',
-      'coverage/**',
-      'jest.config.js',
-      'jest.setup.js',
-      'lint-staged.config.js',
-      'eslint.config.mjs',
+    overrides: [
+      {
+        files: ['e2e/**'],
+        rules: {
+          'react-hooks/rules-of-hooks': 'off',
+        },
+      },
+      {
+        files: ['**/*.d.ts'],
+        rules: {
+          '@typescript-eslint/triple-slash-reference': 'off',
+        },
+      },
     ],
-  },
+  }),
 ]
