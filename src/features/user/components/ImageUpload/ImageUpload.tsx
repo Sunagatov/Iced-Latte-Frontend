@@ -10,7 +10,7 @@ import { RiCameraLine } from 'react-icons/ri'
 const ImageUpload = () => {
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
-  const [inputKey, setInputKey] = useState(Date.now())
+  const [inputKey, setInputKey] = useState(0)
   const { handleError } = useErrorHandler()
   const userData = useAuthStore((s) => s.userData)
   const setUserData = useAuthStore((s) => s.setUserData)
@@ -26,13 +26,14 @@ const ImageUpload = () => {
     const file = e.target.files?.[0]
 
     if (!file) return
-    setInputKey(Date.now())
+    setInputKey((current) => current + 1)
 
     if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
     const objectUrl = URL.createObjectURL(file)
 
     prevPreviewRef.current = objectUrl
     setPreview(objectUrl)
+
     try {
       setLoading(true)
       await uploadImage(file)
@@ -52,6 +53,7 @@ const ImageUpload = () => {
     (userData?.avatarLink && userData.avatarLink !== 'default file'
       ? userData.avatarLink
       : undefined)
+
   const hasAvatar =
     src && userData?.avatarLink && userData.avatarLink !== 'default file'
 
