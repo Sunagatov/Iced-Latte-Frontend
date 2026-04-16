@@ -122,6 +122,7 @@ test('successful order submission redirects to /orders', async ({ page }) => {
       page.getByRole('button', { name: 'Place order' }).click(),
     ])
     await expect(page).toHaveURL(/\/orders/, { timeout: 20000 })
+
     return
   }
   await setupMocked(page)
@@ -135,6 +136,7 @@ test('successful order submission redirects to /orders', async ({ page }) => {
 test('API error on submit shows error message', async ({ page }) => {
   if (IS_REAL) {
     test.skip(true, 'cannot force API errors in real mode')
+
     return
   }
   await setupMocked(page, { orderStatus: 500 })
@@ -201,5 +203,6 @@ test('cart is cleared after successful order — cart-count badge gone', async (
   ])
   const stored = await page.evaluate(() => localStorage.getItem('cart-storage'))
   const parsed = JSON.parse(stored ?? '{}')
+
   expect(parsed?.state?.itemsIds?.length ?? 0).toBe(0)
 })

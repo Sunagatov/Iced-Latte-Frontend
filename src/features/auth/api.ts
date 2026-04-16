@@ -21,6 +21,7 @@ export async function verifyEmailCode(
     '/auth/confirm',
     { token: code },
   )
+
   return response.data
 }
 

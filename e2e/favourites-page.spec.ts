@@ -16,6 +16,7 @@ const product = {
 async function mockFavouritesApi(page: Page, favProducts: object[]) {
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
     else if (url.includes('/favorites'))
@@ -47,12 +48,15 @@ test.describe('authenticated', () => {
       await gotoFavouritesAndWaitForCount(page, 1)
       await page.locator('[data-testid="fav-element"]').first().locator('button[aria-label="Remove from favourites"]').click()
       await expect(page.locator('[data-testid="fav-element"]')).toHaveCount(0, { timeout: 8000 })
+
       return
     }
     let removed = false
+
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
       const method = route.request().method()
+
       if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null }) })
       else if (url.includes('/favorites') && method === 'DELETE') {
@@ -75,6 +79,7 @@ test.describe('authenticated', () => {
 
   test('empty state shown when no favourites', async ({ page }) => {
     const baseUrl = process.env.BASE_URL ?? ''
+
     if (!IS_REAL) await mockFavouritesApi(page, [])
     if (!IS_REAL) {
       await page.addInitScript(() => localStorage.removeItem('fav-storage'))

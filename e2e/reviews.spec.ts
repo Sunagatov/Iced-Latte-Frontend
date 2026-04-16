@@ -1,6 +1,6 @@
 import { IS_REAL, strictMockProxy } from './helpers/mockRoute'
-import {expect, type Page, test} from '@playwright/test'
-import {ensureAuth} from './helpers/ensureAuth'
+import { expect, type Page, test } from '@playwright/test'
+import { ensureAuth } from './helpers/ensureAuth'
 
 test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
 test.beforeEach(async ({ page }) => { await ensureAuth(page) })
@@ -50,10 +50,12 @@ async function gotoProductPage(page: Page) {
   if (await page.locator('text=Failed to load reviews.').isVisible()) return false
   if (await page.locator('h1:has-text("404")').isVisible()) return false
   const visible = await page.locator('[data-testid="reviews-section"]').waitFor({ timeout: 20000 }).then(() => true).catch(() => false)
+
   if (!visible) return false
   await page.waitForLoadState('networkidle')
   const btn = page.locator('#add-review-btn')
-  return await btn.isVisible({timeout: 3000}).catch(() => false);
+
+  return await btn.isVisible({ timeout: 3000 }).catch(() => false)
 
 
 }
@@ -61,6 +63,7 @@ async function gotoProductPage(page: Page) {
 test('"Write a review" button redirects guest to /signin', async ({ page }) => {
   if (IS_REAL) {
     test.skip(true, 'logged in via global-setup — guest redirect not testable')
+
     return
   }
   await mockReviewCalls(page, false)
@@ -72,6 +75,7 @@ test('"Write a review" button redirects guest to /signin', async ({ page }) => {
 test('logged-in user sees review form after clicking "Write a review"', async ({ page }) => {
   if (IS_REAL) {
     test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
     return
   }
   await mockReviewCalls(page, true)
@@ -84,6 +88,7 @@ test('logged-in user sees review form after clicking "Write a review"', async ({
 test('submit button disabled until rating + text both filled', async ({ page }) => {
   if (IS_REAL) {
     test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
     return
   }
   await mockReviewCalls(page, true)
@@ -99,6 +104,7 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
 test('cancel button hides form and resets fields', async ({ page }) => {
   if (IS_REAL) {
     test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
     return
   }
   await mockReviewCalls(page, true)
@@ -115,6 +121,7 @@ test('cancel button hides form and resets fields', async ({ page }) => {
 test('character counter updates as user types', async ({ page }) => {
   if (IS_REAL) {
     test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
     return
   }
   await mockReviewCalls(page, true)

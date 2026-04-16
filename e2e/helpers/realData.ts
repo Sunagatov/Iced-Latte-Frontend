@@ -17,5 +17,6 @@ export async function getFirstRealProductId(page: Page): Promise<string> {
   if (!IS_REAL) return REAL_PRODUCT_ID
   const res = await page.request.get('/api/proxy/products?page=0&size=1&sort_attribute=averageRating&sort_direction=desc')
   const data = await res.json()
+
   return data.products[0].id
 }

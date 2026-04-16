@@ -12,6 +12,7 @@ const PASSWORD = process.env.E2E_EXISTING_PASSWORD ?? 'p@ss1logic11'
  */
 export async function loginIfReal(page: Page): Promise<void> {
   const { IS_REAL } = await import('./mockRoute')
+
   if (!IS_REAL) return
 
   await page.goto('/signin?next=/')

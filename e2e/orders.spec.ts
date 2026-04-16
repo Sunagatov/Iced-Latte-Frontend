@@ -42,6 +42,7 @@ test('empty state shown when no orders', async ({ page }) => {
     // In real mode just verify the page loads — we can't guarantee empty orders
     await page.goto('/orders')
     await expect(page.locator('main')).toBeVisible({ timeout: 8000 })
+
     return
   }
   await mockOrders(page, [])
@@ -57,6 +58,7 @@ test('clicking order card expands item details', async ({ page }) => {
     await expect(page.locator('button', { hasText: /Order #/ }).first()).toBeVisible({ timeout: 8000 })
     await page.locator('button', { hasText: /Order #/ }).first().click()
     await expect(page.locator('[data-testid="order-item"], [class*="order"]').first()).toBeVisible({ timeout: 5000 })
+
     return
   }
   await mockOrders(page, [makeOrder('order-abc123')])
@@ -83,6 +85,7 @@ test('API error shows retry button', async ({ page }) => {
   if (IS_REAL) {
     // Can't force API errors in real mode — skip this assertion
     test.skip(true, 'cannot force API errors in real mode')
+
     return
   }
   await mockOrders(page, [], 500)
@@ -99,6 +102,7 @@ test('clicking product name in expanded order navigates to product page', async 
     await expect(page.locator('[data-testid="order-product-link"]').first()).toBeVisible({ timeout: 5000 })
     await page.locator('[data-testid="order-product-link"]').first().click()
     await expect(page).toHaveURL(/\/product\//, { timeout: 8000 })
+
     return
   }
   await mockOrders(page, [makeOrder('order-abc123')])

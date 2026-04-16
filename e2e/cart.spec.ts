@@ -80,6 +80,7 @@ test.describe('authenticated', () => {
         (res) => res.url().includes('/api/proxy/cart/items') && res.request().method() === 'POST',
       )
       const badge = page.locator('[data-testid="header-cart-badge"]')
+
       await expect(badge).toBeVisible({ timeout: 5000 })
       expect(parseInt((await badge.textContent()) ?? '0')).toBeGreaterThan(0)
     } else {

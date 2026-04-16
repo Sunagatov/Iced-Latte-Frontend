@@ -67,6 +67,7 @@ export default function CheckoutForm() {
     setError('')
     if (!tempItems || tempItems.length === 0) {
       setError('Your cart is empty. Add items before placing an order.')
+
       return
     }
     setLoading(true)

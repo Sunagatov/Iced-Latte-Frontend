@@ -15,6 +15,7 @@ async function setupMocked(page: Page, { saveStatus = 200 }: { saveStatus?: numb
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     if (url.includes('/users') && method === 'PUT' && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
       await route.fulfill({ status: saveStatus, contentType: 'application/json', body: JSON.stringify(saveStatus === 200 ? userData : { message: 'error' }) })
     else if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders'))
@@ -83,6 +84,7 @@ test('editing name and saving calls API', async ({ page }) => {
       ),
       page.locator('#save-btn').click(),
     ])
+
     expect(response.status()).toBeLessThan(300)
   } else {
     await page.locator('#save-btn').click()

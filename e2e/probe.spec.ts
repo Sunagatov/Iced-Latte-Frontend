@@ -15,6 +15,7 @@ test('probe: what URL does the POST actually have?', async ({ page }) => {
   await page.route('**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     posts.push(`${method} ${url}`)
     if (url.includes('/cart') && method === 'POST') {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart([{ id: 'slot1', productInfo: makeProduct(PRODUCT_A), productQuantity: 2 }])) })

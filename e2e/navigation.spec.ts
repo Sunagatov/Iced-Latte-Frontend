@@ -12,6 +12,7 @@ function makeProduct(id: string) {
 async function mockProducts(page: Page) {
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [makeProduct('00000000-0000-0000-0000-000000000001')], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
     } else {
@@ -52,6 +53,7 @@ test('product cards are visible on home page', async ({ page }) => {
     ])
     const count = await page.locator('[data-testid="product-card"]').count()
     const emptyVisible = await page.locator('[data-testid="empty-state"]').isVisible()
+
     expect(count > 0 || emptyVisible).toBe(true)
   } else {
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
@@ -64,6 +66,7 @@ test('profile page is accessible when logged in', async ({ page }) => {
     // In mocked mode, no session — expect redirect to signin
     await page.goto('/profile')
     await expect(page).toHaveURL(/signin/, { timeout: 5000 })
+
     return
   }
   await page.goto('/profile')

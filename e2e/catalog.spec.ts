@@ -6,6 +6,7 @@ test.beforeEach(async ({ page }) => {
   if (!IS_REAL) {
     await mockRoute(page, '**/api/proxy/**', async (route) => {
       const url = route.request().url()
+
       if (url.includes('/products')) {
         const hasKeyword = url.includes('keyword=')
         const products = hasKeyword ? [] : Array.from({ length: 6 }, (_, i) => ({
@@ -13,6 +14,7 @@ test.beforeEach(async ({ page }) => {
           brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5,
           reviewsCount: 1, quantity: 250, description: 'desc', active: true,
         }))
+
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products, page: 0, size: 6, totalElements: products.length, totalPages: hasKeyword ? 0 : 1 }) })
       } else {
         await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
@@ -42,6 +44,7 @@ test('changing sort order re-renders product list', async ({ page }) => {
 
 test('search with no results shows empty state message', async ({ page }) => {
   const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
+
   await input.fill('zzznoresultsxxx')
   await input.press('Enter')
   await expect(page.locator('[data-testid="empty-state"]')).toBeVisible({ timeout: 8000 })
@@ -49,6 +52,7 @@ test('search with no results shows empty state message', async ({ page }) => {
 
 test('empty state shows suggestion pills', async ({ page }) => {
   const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
+
   await input.fill('zzznoresultsxxx')
   await input.press('Enter')
   await expect(page.locator('[data-testid="suggestion-pill"]').first()).toBeVisible({ timeout: 8000 })
@@ -56,11 +60,14 @@ test('empty state shows suggestion pills', async ({ page }) => {
 
 test('clicking suggestion pill updates search', async ({ page }) => {
   const input = page.locator('#hero').getByRole('textbox', { name: 'Search products' })
+
   await input.fill('zzznoresultsxxx')
   await input.press('Enter')
   const pill = page.locator('[data-testid="suggestion-pill"]').first()
+
   await pill.waitFor({ timeout: 8000 })
   const pillText = await pill.textContent()
+
   await pill.click()
   await expect(page.locator('#catalog')).toBeInViewport()
   expect(pillText).toBeTruthy()

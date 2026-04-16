@@ -17,6 +17,7 @@ async function mockProxy(page: Page) {
 
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
     } else if (url.includes('/cart')) {
@@ -50,6 +51,7 @@ test('add product to cart', async ({ page }) => {
     await expect(page.locator('[data-testid="cart-item"]').first()).toBeVisible({ timeout: 10000 })
   } else {
     const addToCart = page.locator('[data-testid="add-to-cart-circle-btn"]').first()
+
     await addToCart.waitFor({ timeout: 10000 })
     await addToCart.click()
     await page.goto('/cart')

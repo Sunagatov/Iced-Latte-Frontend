@@ -38,7 +38,7 @@ async function mockAll200Authenticated(page: Page) {
       void route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({"id":"u1","firstName":"Test","lastName":"User","email":"olivia@example.com","phoneNumber":null,"birthDate":null,"address":null}),
+        body: JSON.stringify({ 'id':'u1','firstName':'Test','lastName':'User','email':'olivia@example.com','phoneNumber':null,'birthDate':null,'address':null }),
       })
     } else {
       void route.fulfill({

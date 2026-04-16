@@ -46,6 +46,7 @@ export default function GuestResetPassForm() {
 
   useEffect(() => {
     const token = searchParams.get('token')
+
     if (token) setValue('code', token)
   }, [searchParams, setValue])
 

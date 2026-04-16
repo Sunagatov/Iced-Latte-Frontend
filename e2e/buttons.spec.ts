@@ -13,6 +13,7 @@ const productsList = { products: [product], page: 0, size: 6, totalElements: 1, 
 
 function makeCart(qty: number) {
   if (qty === 0) return { id: 'c1', userId: 'u1', items: [], itemsQuantity: 0, itemsTotalPrice: 0, productsQuantity: 0, createdAt: '', closedAt: null }
+
   return { id: 'c1', userId: 'u1', items: [{ id: 'ci1', productInfo: product, productQuantity: qty }], itemsQuantity: 1, itemsTotalPrice: +(product.price * qty).toFixed(2), productsQuantity: qty, createdAt: '', closedAt: null }
 }
 
@@ -23,6 +24,7 @@ async function mockWithCart(page: Page, initialQty: number, favProducts: object[
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
     const method = route.request().method()
+
     if (url.includes('/products/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
     } else if (url.includes('/products')) {
@@ -32,6 +34,7 @@ async function mockWithCart(page: Page, initialQty: number, favProducts: object[
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart(0)) })
     } else if (url.includes('/cart/items') && method === 'PATCH') {
       const body = JSON.parse(route.request().postData() ?? '{}')
+
       serverQty = Math.max(0, serverQty + (body.productQuantityChange ?? 0))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(makeCart(serverQty)) })
     } else if (url.includes('/cart/items') && method === 'POST') {
@@ -59,6 +62,7 @@ async function loginAndGoto(page: Page, route: string, cartQty = 0) {
   if (!IS_REAL && cartQty > 0) {
     await page.addInitScript((qty: number) => {
       const productId = '00000000-0000-0000-0000-000000000001'
+
       localStorage.setItem('cart-storage', JSON.stringify({ state: { itemsIds: [{ productId, productQuantity: qty }], tempItems: [{ id: 'ci1', productInfo: { id: productId, name: 'Test Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }, productQuantity: qty }], count: qty, totalPrice: +(9.99 * qty).toFixed(2), isSync: true }, version: 0 }))
     }, cartQty)
   }
@@ -112,6 +116,7 @@ test.describe('Logged-in: product card buttons on home page', () => {
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     const heart = page.locator('[data-testid="favourite-btn"]').first()
     const before = await heart.getAttribute('data-active')
+
     await heart.click()
     expect(await heart.getAttribute('data-active')).not.toBe(before)
   })
@@ -146,6 +151,7 @@ test.describe('Guest: product card buttons on home page', () => {
     await page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 })
     const heart = page.locator('[data-testid="favourite-btn"]').first()
     const before = await heart.getAttribute('data-active')
+
     await heart.click()
     expect(await heart.getAttribute('data-active')).not.toBe(before)
   })
@@ -166,6 +172,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
       const before = Number(await qty.textContent())
+
       await page.locator('[data-testid="cart-plus-btn"]').first().click()
       await expect(qty).not.toHaveText(String(before), { timeout: 10000 })
       expect(Number(await qty.textContent())).toBeGreaterThan(before)
@@ -175,6 +182,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
       const before = Number(await qty.textContent())
+
       await page.locator('[data-testid="cart-plus-btn"]').first().click()
       await expect(qty).not.toHaveText(String(before), { timeout: 5000 })
       expect(Number(await qty.textContent())).toBeGreaterThan(before)
@@ -187,6 +195,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
       await page.goto('/cart')
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
+
       await expect(qty).toHaveText('2', { timeout: 10000 })
       await page.locator('[data-testid="cart-minus-btn"]').first().click()
       await expect(qty).toHaveText('1', { timeout: 10000 })
@@ -195,6 +204,7 @@ test.describe('Logged-in: cart page plus / minus / trash buttons', () => {
       await loginAndGoto(page, '/cart', 2)
       await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
       const qty = page.locator('[data-testid="cart-item-qty"]').first()
+
       await expect(qty).toHaveText('2', { timeout: 5000 })
       await page.locator('[data-testid="cart-minus-btn"]').first().click()
       await expect(qty).toHaveText('1', { timeout: 8000 })
@@ -232,10 +242,12 @@ test.describe('Guest: cart page plus / minus / trash buttons', () => {
     await page.waitForSelector('[data-testid="cart-item"]', { timeout: 10000 })
     const qty = page.locator('[data-testid="cart-item-qty"]').first()
     const before = Number(await qty.textContent())
+
     await page.locator('[data-testid="cart-plus-btn"]').first().click()
     await expect(qty).not.toHaveText(String(before), { timeout: 5000 })
     expect(Number(await qty.textContent())).toBeGreaterThan(before)
     const after = Number(await qty.textContent())
+
     await page.locator('[data-testid="cart-minus-btn"]').first().click()
     await expect(qty).not.toHaveText(String(after), { timeout: 5000 })
     expect(Number(await qty.textContent())).toBeLessThan(after)
@@ -283,6 +295,7 @@ test.describe('Logout clears cart and favourites state', () => {
       await page.unrouteAll()
       await mockRoute(page, '**/api/proxy/**', async (route) => {
         const url = route.request().url()
+
         if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
           await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Unauthorized' }) })
         } else if (url.includes('/products')) {
@@ -315,6 +328,7 @@ test.describe('Logout clears cart and favourites state', () => {
       await page.unrouteAll()
       await mockRoute(page, '**/api/proxy/**', async (route) => {
         const url = route.request().url()
+
         if (url.includes('/users') && !url.includes('/addresses') && !url.includes('/reviews') && !url.includes('/avatar') && !url.includes('/orders')) {
           await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Unauthorized' }) })
         } else if (url.includes('/products')) {

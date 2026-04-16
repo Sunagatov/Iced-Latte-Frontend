@@ -8,8 +8,10 @@ function makeProduct(id: string) {
 
 async function mockProducts(page: Page) {
   const products = Array.from({ length: 6 }, (_, i) => makeProduct(`0000000${i}-0000-0000-0000-000000000001`))
+
   await mockRoute(page, '**/api/proxy/**', async (route) => {
     const url = route.request().url()
+
     if (url.includes('/products') && !url.includes('/ids')) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products, page: 0, size: 6, totalElements: 6, totalPages: 1 }) })
     } else {
@@ -32,12 +34,14 @@ test('filter sidebar is visible with all sections', async ({ page }) => {
 
 test('price filter - from input accepts numeric value', async ({ page }) => {
   const fromInput = page.locator('#from-price-input')
+
   await fromInput.fill('3')
   await expect(fromInput).toHaveValue('3')
 })
 
 test('price filter - to input accepts numeric value', async ({ page }) => {
   const toInput = page.locator('#to-price-input')
+
   await toInput.fill('6')
   await expect(toInput).toHaveValue('6')
 })
@@ -53,6 +57,7 @@ test('price filter - filters products by price range', async ({ page }) => {
 
 test('price filter - rejects non-numeric input', async ({ page }) => {
   const fromInput = page.locator('#from-price-input')
+
   await fromInput.fill('abc')
   await expect(fromInput).toHaveValue('')
 })
@@ -80,6 +85,7 @@ test('rating filter - only one rating option can be selected at a time', async (
 
 test('brand filter - checkbox toggles on click', async ({ page }) => {
   const firstBrandCheckbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+
   if (!(await firstBrandCheckbox.isVisible())) return
   await firstBrandCheckbox.click()
   await expect(firstBrandCheckbox).toBeChecked()
@@ -88,6 +94,7 @@ test('brand filter - checkbox toggles on click', async ({ page }) => {
 
 test('brand filter - reset clears selection', async ({ page }) => {
   const firstBrandCheckbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+
   if (!(await firstBrandCheckbox.isVisible())) return
   await firstBrandCheckbox.click()
   await expect(page.locator('#Brand-reset-btn')).toBeVisible({ timeout: 5000 })
@@ -98,16 +105,20 @@ test('brand filter - reset clears selection', async ({ page }) => {
 
 test('brand filter - show more expands list beyond 5 items', async ({ page }) => {
   const showMoreBtn = page.locator('#Brand-filter-btn')
+
   if (!(await showMoreBtn.isVisible())) return
   const brandGroup = page.locator('[data-testid="filter-group-brand"]')
   const beforeCount = await brandGroup.locator('input[type="checkbox"]').count()
+
   await showMoreBtn.click()
   const afterCount = await brandGroup.locator('input[type="checkbox"]').count()
+
   expect(afterCount).toBeGreaterThan(beforeCount)
 })
 
 test('seller filter - checkbox toggles on click', async ({ page }) => {
   const sellerCheckbox = page.locator('[data-testid="filter-group-seller"] input[type="checkbox"]').first()
+
   if (!(await sellerCheckbox.isVisible())) return
   await sellerCheckbox.click()
   await expect(sellerCheckbox).toBeChecked()
@@ -116,6 +127,7 @@ test('seller filter - checkbox toggles on click', async ({ page }) => {
 
 test('seller filter - reset clears selection', async ({ page }) => {
   const sellerCheckbox = page.locator('[data-testid="filter-group-seller"] input[type="checkbox"]').first()
+
   if (!(await sellerCheckbox.isVisible())) return
   await sellerCheckbox.click()
   await page.locator('#Seller-reset-btn').click()

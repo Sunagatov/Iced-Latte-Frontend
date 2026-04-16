@@ -19,7 +19,9 @@ const EMAIL = process.env.E2E_EXISTING_EMAIL ?? 'olivia@example.com'
 const PASSWORD = process.env.E2E_EXISTING_PASSWORD ?? 'p@ss1logic11'
 
 test('@real-only home page loads products', async ({ page }) => {
-  if (!IS_REAL) { test.skip(true, 'real-only test'); return }
+  if (!IS_REAL) { test.skip(true, 'real-only test')
+
+    return }
   await page.goto('/')
   await expect(page.locator('[data-testid="product-card"]').first()).toBeVisible({ timeout: 15000 })
 })
@@ -28,7 +30,9 @@ test.describe('unauthenticated', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
 
   test('@real-only sign in and redirect to home', async ({ page }) => {
-    if (!IS_REAL) { test.skip(true, 'real-only test'); return }
+    if (!IS_REAL) { test.skip(true, 'real-only test')
+
+      return }
     await page.goto('/signin?next=/')
     await page.fill('#email', EMAIL)
     await page.fill('#password', PASSWORD)
@@ -38,7 +42,9 @@ test.describe('unauthenticated', () => {
 })
 
 test('@real-only product detail page loads', async ({ page }) => {
-  if (!IS_REAL) { test.skip(true, 'real-only test'); return }
+  if (!IS_REAL) { test.skip(true, 'real-only test')
+
+    return }
   await page.goto('/')
   await expect(page.locator('[data-testid="product-card"]').first()).toBeVisible({ timeout: 15000 })
   await page.locator('[data-testid="product-card"]').first().click()
@@ -47,13 +53,17 @@ test('@real-only product detail page loads', async ({ page }) => {
 })
 
 test('@real-only cart page accessible when not logged in', async ({ page }) => {
-  if (!IS_REAL) { test.skip(true, 'real-only test'); return }
+  if (!IS_REAL) { test.skip(true, 'real-only test')
+
+    return }
   await page.goto('/cart')
   await expect(page.locator('main')).toBeVisible({ timeout: 10000 })
 })
 
 test('@real-only favourites page accessible', async ({ page }) => {
-  if (!IS_REAL) { test.skip(true, 'real-only test'); return }
+  if (!IS_REAL) { test.skip(true, 'real-only test')
+
+    return }
   await page.goto('/favourites')
   await expect(page.locator('main')).toBeVisible({ timeout: 10000 })
 })
