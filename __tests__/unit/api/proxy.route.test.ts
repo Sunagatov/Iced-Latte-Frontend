@@ -8,7 +8,7 @@ import {
   PATCH,
   DELETE,
   OPTIONS,
-} from '../../../src/app/api/proxy/[...path]/route'
+} from '@/app/api/proxy/[...path]/route'
 import { NextRequest } from 'next/server'
 
 process.env.NEXT_PUBLIC_API_URL = 'http://backend'
@@ -55,6 +55,7 @@ describe('proxy route', () => {
 
   it('GET proxies request and returns data', async () => {
     mockFetch(200, { products: [] })
+
     const res = await GET(makeRequest('GET', 'products'), {
       params: Promise.resolve({ path: ['products'] }),
     })
@@ -75,6 +76,7 @@ describe('proxy route', () => {
     ;(global as { fetch: unknown }).fetch = jest
       .fn()
       .mockRejectedValue(new Error('network'))
+
     const res = await GET(makeRequest('GET', 'products'), {
       params: Promise.resolve({ path: ['products'] }),
     })
@@ -84,6 +86,7 @@ describe('proxy route', () => {
 
   it('returns error status from backend', async () => {
     mockFetch(404, { message: 'Not found' })
+
     const res = await GET(makeRequest('GET', 'products'), {
       params: Promise.resolve({ path: ['products'] }),
     })
@@ -91,18 +94,23 @@ describe('proxy route', () => {
     expect(res.status).toBe(404)
   })
 
-  it('POST telemetry returns 202 without forwarding', async () => {
-    ;(global as { fetch: unknown }).fetch = jest.fn()
-    const res = await POST(makeRequest('POST', 'telemetry'), {
-      params: Promise.resolve({ path: ['telemetry'] }),
-    })
+  it('POST proxies request', async () => {
+    mockFetch(200, { ok: true })
 
-    expect(res.status).toBe(202)
-    expect(global.fetch).not.toHaveBeenCalled()
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(200)
+    expect(global.fetch).toHaveBeenCalled()
   })
 
   it('PUT proxies request', async () => {
     mockFetch(200, { ok: true })
+
     const res = await PUT(makeRequest('PUT', 'users'), {
       params: Promise.resolve({ path: ['users'] }),
     })
@@ -112,6 +120,7 @@ describe('proxy route', () => {
 
   it('PATCH proxies request', async () => {
     mockFetch(200, { ok: true })
+
     const res = await PATCH(makeRequest('PATCH', 'users'), {
       params: Promise.resolve({ path: ['users'] }),
     })
@@ -121,6 +130,7 @@ describe('proxy route', () => {
 
   it('DELETE proxies request', async () => {
     mockFetch(200, {})
+
     const res = await DELETE(makeRequest('DELETE', 'cart/1'), {
       params: Promise.resolve({ path: ['cart', '1'] }),
     })
@@ -137,6 +147,7 @@ describe('proxy route', () => {
       },
       text: () => Promise.resolve('ok'),
     })
+
     const res = await GET(makeRequest('GET', 'health'), {
       params: Promise.resolve({ path: ['health'] }),
     })

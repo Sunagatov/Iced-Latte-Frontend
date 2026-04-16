@@ -1,5 +1,5 @@
 import { test as base } from '@playwright/test'
-import { IS_REAL } from './mockRoute'
+import { IS_REAL } from './helpers/mockRoute'
 
 /**
  * Extended test fixture that adds a pause between tests in real mode
