@@ -3,7 +3,7 @@
 # =============================================================================
 FROM node:22.17.0-alpine3.22 AS build
 
-ARG NEXT_PUBLIC_API_URL=https://iced-latte.uk/backend/api/v1
+ARG NEXT_PUBLIC_API_URL=https://api.iced-latte.uk/api/v1
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 WORKDIR /app
