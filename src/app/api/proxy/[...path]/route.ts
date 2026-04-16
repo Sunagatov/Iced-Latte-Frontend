@@ -55,9 +55,7 @@ function forwardHeaders(request: NextRequest, path: string): HeadersInit {
     if (value) headers[name] = value
   }
 
-  // /auth/refresh and /auth/logout need the refresh token as Bearer
-  const isRefreshOrLogout =
-    path === 'auth/refresh' || path === 'auth/logout'
+  const isRefreshOrLogout = path === 'auth/refresh' || path === 'auth/logout'
   const rawToken = isRefreshOrLogout
     ? request.cookies.get('refreshToken')?.value
     : request.cookies.get('token')?.value
