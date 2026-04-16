@@ -38,9 +38,8 @@ export default defineConfig([
       'one-var': ['error', 'never'],
       'quote-props': 'off',
 
-      // New React compiler-style rules from the updated stack.
-      // They currently force large refactors across working UI code.
-      // Keep them off for now so lint matches real project needs.
+      // Disable new strict React compiler-style rules for this project.
+      // They currently force large refactors across working code.
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/static-components': 'off',
       'react-hooks/refs': 'off',
