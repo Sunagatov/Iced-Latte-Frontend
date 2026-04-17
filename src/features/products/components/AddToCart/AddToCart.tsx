@@ -4,7 +4,9 @@ import Button from '@/shared/components/Buttons/Button/Button'
 import Counter from '@/shared/components/Counter/Counter'
 import { useCartStore } from '@/features/cart/store'
 import { IProduct } from '@/features/products/types'
-interface Props { product: IProduct }
+interface Props {
+  product: IProduct
+}
 
 export default function AddToCartButton({ product }: Readonly<Props>) {
   const add = useCartStore((state) => state.add)
@@ -34,7 +36,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
         <div data-testid="add-to-cart-btn">
           <Button
             id="add-btn"
-            className="h-[42px] w-full px-4 font-semibold shadow-md hover:brightness-110 hover:shadow-lg md:h-[54px] md:w-[280px]"
+            className="h-[42px] w-full px-4 font-semibold shadow-md hover:shadow-lg hover:brightness-110 md:h-[54px] md:w-[280px]"
             onClick={addProduct}
           >
             Add to cart · ${product.price}
@@ -50,7 +52,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
             addProduct={addProduct}
             removeProduct={removeProduct}
           />
-          <div className="flex h-[42px] w-auto min-w-[72px] cursor-default items-center justify-center rounded-[48px] bg-brand-solid px-4 font-semibold text-inverted shadow-md md:h-[54px] md:min-w-[110px]">
+          <div className="bg-brand-solid text-inverted flex h-[42px] w-auto min-w-[72px] cursor-default items-center justify-center rounded-[48px] px-4 font-semibold shadow-md md:h-[54px] md:min-w-[110px]">
             ${product.price}
           </div>
         </div>

@@ -20,20 +20,26 @@ const labels: Record<number, string> = {
   5: 'Excellent',
 }
 
-const StarRating = ({ productId, count, activeColor = '#682EFF', size = 'lg' }: StarRatingProps) => {
+const StarRating = ({
+  productId,
+  count,
+  activeColor = '#682EFF',
+  size = 'lg',
+}: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
   const { ratings, setRating } = useProductRatingStore()
-  const { token } = useAuthStore()
+  const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
   const router = useRouter()
 
   const productRatingData = ratings[productId] || { id: productId, rating: 0 }
   const { rating: currentRating } = productRatingData
   const displayRating = hoverItem >= 0 ? hoverItem + 1 : currentRating
 
-  const sizeClass = size === 'lg' ? 'h-9 w-9' : size === 'md' ? 'h-6 w-6' : 'h-4 w-4'
+  const sizeClass =
+    size === 'lg' ? 'h-9 w-9' : size === 'md' ? 'h-6 w-6' : 'h-4 w-4'
 
   const handleRatingClick = (index: number) => {
-    if (token) {
+    if (isLoggedIn) {
       setRating(productId, index + 1)
     } else {
       router.push('/signin')
@@ -43,28 +49,32 @@ const StarRating = ({ productId, count, activeColor = '#682EFF', size = 'lg' }: 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1.5">
-        {Array(count).fill(0).map((_, index) => {
-          const isActive = index < displayRating
+        {Array(count)
+          .fill(0)
+          .map((_, index) => {
+            const isActive = index < displayRating
 
-          return (
-            <button
-              key={index}
-              type="button"
-              onClick={() => handleRatingClick(index)}
-              onMouseEnter={() => setHoverItem(index)}
-              onMouseLeave={() => setHoverItem(-1)}
-              className="transition-transform hover:scale-110 active:scale-95"
-              aria-label={`Rate ${index + 1} stars`}
-            >
-              <FaStar
-                className={sizeClass}
-                style={{ color: isActive ? activeColor : 'rgba(4,18,27,0.15)' }}
-              />
-            </button>
-          )
-        })}
+            return (
+              <button
+                key={index}
+                type="button"
+                onClick={() => handleRatingClick(index)}
+                onMouseEnter={() => setHoverItem(index)}
+                onMouseLeave={() => setHoverItem(-1)}
+                className="transition-transform hover:scale-110 active:scale-95"
+                aria-label={`Rate ${index + 1} stars`}
+              >
+                <FaStar
+                  className={sizeClass}
+                  style={{
+                    color: isActive ? activeColor : 'rgba(4,18,27,0.15)',
+                  }}
+                />
+              </button>
+            )
+          })}
         {displayRating > 0 && (
-          <span className="ml-2 text-sm font-medium text-secondary">
+          <span className="text-secondary ml-2 text-sm font-medium">
             {labels[displayRating]}
           </span>
         )}

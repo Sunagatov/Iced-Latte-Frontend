@@ -1,22 +1,22 @@
 'use client'
-import { useAuthRedirect } from '@/features/auth/hooks'
 import Button from '@/shared/components/Buttons/Button/Button'
 import FormInput from '@/shared/components/FormInput/FormInput'
 import Loader from '@/shared/components/Loader/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/features/auth/api'
-import { useAuthStore } from '@/features/auth/store'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
-interface IFormValues { email: string; password: string }
+interface IFormValues {
+  email: string
+  password: string
+}
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { setCookie } from '@/shared/utils/cookieUtils'
+import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
-  const { authenticate, setRefreshToken } = useAuthStore()
-  const { handleRedirectForAuth } = useAuthRedirect()
+  const { completeAuthSession } = useCompleteAuthSession()
   const { errorMessage, handleError } = useErrorHandler()
   const {
     register,
@@ -25,24 +25,16 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm<IFormValues>({
     resolver: yupResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   })
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
-      const data = await apiLoginUser(formData)
+      const { token, refreshToken } = await apiLoginUser(formData)
 
-      if (data) {
-        await setCookie('token', data.token, { path: '/' })
-        authenticate(data.token)
-        setRefreshToken(data.refreshToken)
-        reset()
-        handleRedirectForAuth()
-      }
+      await completeAuthSession(token, refreshToken)
+      reset()
     } catch (error) {
       handleError(error)
     } finally {
@@ -52,7 +44,7 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
+      {errorMessage && <div className="text-negative mt-4">{errorMessage}</div>}
       <FormInput
         id="email"
         register={register}
@@ -74,7 +66,7 @@ export default function LoginForm() {
       <Button
         id="login-btn"
         type="submit"
-        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover"
+        className="hover:bg-brand-solid-hover mt-6 flex w-full items-center justify-center"
       >
         {loading ? <Loader /> : 'Login'}
       </Button>

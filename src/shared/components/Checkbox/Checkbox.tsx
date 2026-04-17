@@ -1,11 +1,21 @@
 'use client'
-interface CheckboxPropsType { label?: string; id?: string; isChecked?: boolean; onChange?: (_e: React.ChangeEvent<HTMLInputElement>) => void; labelClassName?: string; inputClassName?: string; ariaLabel?: string; [key: string]: unknown }
+interface CheckboxPropsType {
+  label?: string
+  id?: string
+  isChecked?: boolean
+  onChange?: (_e: React.ChangeEvent<HTMLInputElement>) => void
+  labelClassName?: string
+  inputClassName?: string
+  ariaLabel?: string
+  [key: string]: unknown
+}
 
 const Checkbox = ({
   label,
   id,
   isChecked = false,
-  onChange = () => {},  labelClassName = '',
+  onChange = () => {},
+  labelClassName = '',
   inputClassName = '',
   ariaLabel = '',
   ...restProps
@@ -19,7 +29,7 @@ const Checkbox = ({
       <input
         type="checkbox"
         id={id}
-        className={`h-6 w-6 cursor-pointer appearance-none rounded-[4px] border-2 border-[#D1D5DB] bg-white bg-center bg-no-repeat checked:border-brand-solid checked:bg-brand-solid checked:bg-[url(/checkbox_icon.svg)] checked:bg-[length:14px_14px] ${inputClassName}`}
+        className={`checked:border-brand-solid checked:bg-brand-solid h-6 w-6 cursor-pointer appearance-none rounded-[4px] border-2 border-[#D1D5DB] bg-white bg-center bg-no-repeat checked:bg-[url(/checkbox_icon.svg)] checked:bg-[length:14px_14px] ${inputClassName}`}
         checked={isChecked}
         aria-checked={isChecked}
         aria-label={ariaLabel}
@@ -28,7 +38,7 @@ const Checkbox = ({
       />
       {label && (
         <span
-          className={`ml-[16px] text-L font-medium text-primary ${labelClassName}`}
+          className={`text-L text-primary ml-[16px] font-medium ${labelClassName}`}
         >
           {label}
         </span>

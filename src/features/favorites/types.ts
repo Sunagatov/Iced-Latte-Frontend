@@ -1,10 +1,10 @@
 import { IProduct } from '@/features/products/types'
 
-export interface FavResponse {
+export interface FavouritesResponse {
   products: IProduct[]
 }
 
-export interface IFavPushItems {
+export interface SyncFavouritesRequest {
   productIds: string[]
 }
 

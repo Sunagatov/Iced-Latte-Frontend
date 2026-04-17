@@ -8,13 +8,17 @@ import { apiRegisterUser } from '@/features/auth/api'
 import { useState } from 'react'
 import { registrationSchema } from '@/features/auth/validation'
 import { useRouter } from 'next/navigation'
-interface IFormValues { firstName: string; lastName: string; email: string; password: string }
+interface IFormValues {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+}
 import { useErrorHandler } from '@/shared/utils/apiError'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-
 
   const {
     register,
@@ -40,7 +44,6 @@ export default function RegistrationForm() {
 
       if (data) {
         router.push('/confirm_registration')
-
       }
     } catch (error) {
       handleError(error)
@@ -51,7 +54,7 @@ export default function RegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && <div className="mt-4 text-negative">{errorMessage}</div>}
+      {errorMessage && <div className="text-negative mt-4">{errorMessage}</div>}
       <FormInput
         id="firstName"
         register={register}
@@ -92,7 +95,7 @@ export default function RegistrationForm() {
         id="register-btn"
         disabled={false}
         type="submit"
-        className="mt-6 flex w-full items-center justify-center hover:bg-brand-solid-hover "
+        className="hover:bg-brand-solid-hover mt-6 flex w-full items-center justify-center"
       >
         {loading ? <Loader /> : 'Register'}
       </Button>

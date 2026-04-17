@@ -1,4 +1,6 @@
-interface PriceProps { amount: number }
+interface PriceProps {
+  amount: number
+}
 
 export default function Price({ amount }: Readonly<PriceProps>) {
   const formattedPrice = new Intl.NumberFormat('en-US', {

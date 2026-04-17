@@ -17,6 +17,7 @@ dist/
 coverage/
 playwright-report/
 test-results/
+jest-sonar-coverage-report.xml
 
 # env
 .env
@@ -28,7 +29,6 @@ test-results/
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # os
 .DS_Store
@@ -52,3 +52,14 @@ yarn-error.log*
 
 # misc
 .amazonq/
+/Taskfile.yml
+/PLAYWRIGHT_FIX_HANDOFF.md
+
+##############################
+## Deployment
+##############################
+/docker-compose.prod.yml
+/.env.prod
+/ops/
+maintaner/
+e2e/.auth.json

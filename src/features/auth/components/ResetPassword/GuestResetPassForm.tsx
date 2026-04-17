@@ -3,19 +3,27 @@
 import Loader from '@/shared/components/Loader/Loader'
 import Button from '@/shared/components/Buttons/Button/Button'
 import FormInput from '@/shared/components/FormInput/FormInput'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiGuestResetPassword } from '@/features/user/api'
 import { useForm } from 'react-hook-form'
 import { GuestResetPasswordCredentials } from '@/features/auth/types'
-import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
+import {
+  RiLockPasswordLine,
+  RiCheckboxCircleLine,
+  RiArrowLeftLine,
+} from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
 
-interface IChangeValues { code: string; password: string; confirmPassword: string }
+interface IChangeValues {
+  code: string
+  password: string
+  confirmPassword: string
+}
 
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
@@ -23,12 +31,24 @@ export default function GuestResetPassForm() {
   const [resetSuccessful, setResetSuccessful] = useState(false)
   const { errorMessage, handleError } = useErrorHandler()
 
-  const { handleSubmit, register, formState: { errors } } = useForm<IChangeValues>({
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    formState: { errors },
+  } = useForm<IChangeValues>({
     resolver: yupResolver(changePassSchema),
     defaultValues: { code: '', password: '', confirmPassword: '' },
     mode: 'onChange',
   })
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const token = searchParams.get('token')
+
+    if (token) setValue('code', token)
+  }, [searchParams, setValue])
 
   const onSubmit = async (values: IChangeValues) => {
     const { code, password } = values
@@ -52,49 +72,63 @@ export default function GuestResetPassForm() {
   const strength = getPasswordStrength(newPw)
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-secondary px-4 py-12">
+    <div className="bg-secondary flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-
         {resetSuccessful ? (
-          <div className="rounded-2xl bg-primary p-8 shadow-sm ring-1 ring-black/5 text-center">
+          <div className="bg-primary rounded-2xl p-8 text-center shadow-sm ring-1 ring-black/5">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-              <RiCheckboxCircleLine className="h-8 w-8 text-positive" />
+              <RiCheckboxCircleLine className="text-positive h-8 w-8" />
             </div>
-            <h2 className="mb-2 text-2xl font-bold text-primary">Password updated!</h2>
-            <p className="mb-6 text-sm text-secondary">Your password has been changed successfully. You can now sign in with your new password.</p>
-            <Button id="return-btn" onClick={handleReturnHome} className="w-full justify-center">
+            <h2 className="text-primary mb-2 text-2xl font-bold">
+              Password updated!
+            </h2>
+            <p className="text-secondary mb-6 text-sm">
+              Your password has been changed successfully. You can now sign in
+              with your new password.
+            </p>
+            <Button
+              id="return-btn"
+              onClick={handleReturnHome}
+              className="w-full justify-center"
+            >
               Sign in
             </Button>
           </div>
         ) : (
-          <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5 overflow-hidden">
+          <div className="bg-primary overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand to-brand-solid-hover px-6 py-8 text-center">
+            <div className="from-brand to-brand-solid-hover bg-gradient-to-r px-6 py-8 text-center">
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
                 <RiLockPasswordLine className="h-7 w-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">Reset your password</h2>
-              <p className="mt-1 text-sm text-white/70">Enter the code from your email and choose a new password</p>
+              <h2 className="text-2xl font-bold text-white">
+                Reset your password
+              </h2>
+              <p className="mt-1 text-sm text-white/70">
+                Enter the code from your email and choose a new password
+              </p>
             </div>
 
             {/* Form */}
             <div className="p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {errorMessage && (
-                  <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-negative">
+                  <div className="text-negative rounded-lg bg-red-50 px-4 py-3 text-sm">
                     {errorMessage}
                   </div>
                 )}
 
-                <FormInput
-                  id="code"
-                  register={register}
-                  name="code"
-                  label="Code from email"
-                  type="text"
-                  placeholder="Enter the code you received"
-                  error={errors.code}
-                />
+                {!searchParams.get('token') && (
+                  <FormInput
+                    id="code"
+                    register={register}
+                    name="code"
+                    label="Code from email"
+                    type="text"
+                    placeholder="Enter the code you received"
+                    error={errors.code}
+                  />
+                )}
 
                 <div>
                   <FormInput
@@ -105,7 +139,9 @@ export default function GuestResetPassForm() {
                     type="password"
                     placeholder="Minimum 8 characters, one letter, one digit"
                     error={errors.password}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPw(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setNewPw(e.target.value)
+                    }
                   />
                   {newPw && <PasswordStrengthBar {...strength} />}
                 </div>
@@ -123,7 +159,7 @@ export default function GuestResetPassForm() {
                 <Button
                   id="reset-btn"
                   type="submit"
-                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
+                  className="hover:bg-brand-solid-hover mt-2 w-full justify-center"
                 >
                   {loading ? <Loader /> : 'Reset password'}
                 </Button>
@@ -131,7 +167,7 @@ export default function GuestResetPassForm() {
 
               <button
                 onClick={() => router.back()}
-                className="mt-4 flex w-full items-center justify-center gap-1.5 text-sm text-secondary hover:text-primary transition-colors"
+                className="text-secondary hover:text-primary mt-4 flex w-full items-center justify-center gap-1.5 text-sm transition-colors"
               >
                 <RiArrowLeftLine className="h-4 w-4" />
                 Go back

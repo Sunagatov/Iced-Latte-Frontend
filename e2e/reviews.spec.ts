@@ -1,77 +1,99 @@
-import { test, expect, type Page } from '@playwright/test'
+import { IS_REAL, strictMockProxy } from './helpers/mockRoute'
+import { expect, type Page, test } from '@playwright/test'
+import { ensureAuth } from './helpers/ensureAuth'
 
-const FAKE_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjo5OTk5OTk5OTk5fQ.fake-sig'
-const PRODUCT_ID = 'd1a2b3c4-0001-4000-8000-000000000001'
+test.use({ storageState: IS_REAL ? 'e2e/.auth.json' : { cookies: [], origins: [] } })
+test.beforeEach(async ({ page }) => { await ensureAuth(page) })
 
-async function mockReviewCalls(page: Page) {
+// Use a product less likely to have been reviewed by olivia
+const PRODUCT_ID = IS_REAL ? 'd1a2b3c4-0001-4000-8000-000000000007' : 'd1a2b3c4-0001-4000-8000-000000000001' // Coconut Cold Brew
+
+async function mockReviewCalls(page: Page, authenticated = false) {
   const product = { id: PRODUCT_ID, name: 'Turkish Coffee', price: 9.99, productFileUrl: null, brandName: 'Brand', sellerName: 'Seller', averageRating: 4.5, reviewsCount: 1, quantity: 250, description: 'desc', active: true }
-  await page.route('**/api/proxy/**', async (route) => {
-    const url = route.request().url()
-    const method = route.request().method()
-    if (url.includes('/reviews') && method === 'POST')
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }) })
-    else if (url.includes(`/products/${PRODUCT_ID}/review`) && !url.includes('/reviews'))
-      await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
-    else if (url.includes('/reviews/statistics'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, averageRating: 0, ratingsMap: {} }) })
-    else if (url.includes('/reviews'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
-    else if (url.includes('/products/ids'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([product]) })
-    else if (url.includes(`/products/${PRODUCT_ID}`))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) })
-    else if (url.includes('/products'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) })
-    else if (url.includes('/auth/refresh'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ token: FAKE_TOKEN }) })
-    else if (url.includes('/auth/logout') || url.includes('/users'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    else if (url.includes('/cart'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ items: [], totalPrice: 0 }) })
-    else if (url.includes('/wishlist') || url.includes('/favourites'))
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [] }) })
-    else
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
+
+  await strictMockProxy(page, {
+    '/users': async (route) => route.fulfill({
+      status: authenticated ? 200 : 401,
+      contentType: 'application/json',
+      body: authenticated
+        ? JSON.stringify({ id: 'u1', firstName: 'Test', lastName: 'User', email: 'test@example.com', phoneNumber: null, birthDate: null, address: null })
+        : JSON.stringify({ message: 'Unauthorized' }),
+    }),
+    '/reviews/statistics': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsCount: 0, avgRating: 0, ratingMap: { star5: 0, star4: 0, star3: 0, star2: 0, star1: 0 } }) }),
+    '/reviews': async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ productReviewId: 'r1', text: 'Great!', createdAt: new Date().toISOString() }) })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ reviewsWithRatings: [], page: 0, totalPages: 1, totalElements: 0, size: 3 }) })
+      }
+    },
+    [`/products/${PRODUCT_ID}/review`]: async (route) => route.fulfill({ status: 404, contentType: 'application/json', body: '{}' }),
+    [`/products/${PRODUCT_ID}`]: async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(product) }),
+    '/products': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product], page: 0, size: 6, totalElements: 1, totalPages: 1 }) }),
+    '/cart': async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
   })
 }
 
 async function gotoProductPage(page: Page) {
   await page.goto(`/product/${PRODUCT_ID}`)
-  await page.waitForLoadState('networkidle')
-  if (await page.locator('text=Something went wrong!').isVisible()) return false
+  await page.waitForLoadState('domcontentloaded')
+
+  if (!IS_REAL) {
+    // In mocked mode the page must always render — fail hard if it doesn't
+    await expect(page.locator('[data-testid="reviews-section"]')).toBeVisible({ timeout: 20000 })
+    await page.waitForLoadState('networkidle')
+
+    return true
+  }
+
+  // Real mode: page state is not deterministic — skip gracefully
+  if (await page.locator('text=Failed to load reviews.').isVisible()) return false
   if (await page.locator('h1:has-text("404")').isVisible()) return false
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
-  return true
+  const visible = await page.locator('[data-testid="reviews-section"]').waitFor({ timeout: 20000 }).then(() => true).catch(() => false)
+
+  if (!visible) return false
+  await page.waitForLoadState('networkidle')
+  const btn = page.locator('#add-review-btn')
+
+  return await btn.isVisible({ timeout: 3000 }).catch(() => false)
+
+
 }
 
 test('"Write a review" button redirects guest to /signin', async ({ page }) => {
-  await mockReviewCalls(page)
-  const ok = await gotoProductPage(page)
-  if (!ok) return
+  if (IS_REAL) {
+    test.skip(true, 'logged in via global-setup — guest redirect not testable')
+
+    return
+  }
+  await mockReviewCalls(page, false)
+  await gotoProductPage(page)
   await page.locator('#add-review-btn').click()
   await expect(page).toHaveURL(/\/signin/, { timeout: 8000 })
 })
 
 test('logged-in user sees review form after clicking "Write a review"', async ({ page }) => {
-  await mockReviewCalls(page)
-  const ok = await gotoProductPage(page)
-  if (!ok) return
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
+  if (IS_REAL) {
+    test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
+    return
+  }
+  await mockReviewCalls(page, true)
+  await gotoProductPage(page)
+  await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
 })
 
 test('submit button disabled until rating + text both filled', async ({ page }) => {
-  await mockReviewCalls(page)
-  const ok = await gotoProductPage(page)
-  if (!ok) return
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
+  if (IS_REAL) {
+    test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
+    return
+  }
+  await mockReviewCalls(page, true)
+  await gotoProductPage(page)
+  await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await expect(page.locator('#submit-review-btn')).toBeDisabled()
@@ -80,13 +102,14 @@ test('submit button disabled until rating + text both filled', async ({ page }) 
 })
 
 test('cancel button hides form and resets fields', async ({ page }) => {
-  await mockReviewCalls(page)
-  const ok = await gotoProductPage(page)
-  if (!ok) return
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
+  if (IS_REAL) {
+    test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
+    return
+  }
+  await mockReviewCalls(page, true)
+  await gotoProductPage(page)
+  await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Some text')
@@ -96,13 +119,14 @@ test('cancel button hides form and resets fields', async ({ page }) => {
 })
 
 test('character counter updates as user types', async ({ page }) => {
-  await mockReviewCalls(page)
-  const ok = await gotoProductPage(page)
-  if (!ok) return
-  await page.evaluate((t) => localStorage.setItem('token', JSON.stringify({ state: { token: t, refreshToken: null, isLoggedIn: true }, version: 0 })), FAKE_TOKEN)
-  await page.context().addCookies([{ name: 'token', value: FAKE_TOKEN, url: 'http://localhost:3000' }])
-  await page.reload()
-  await page.waitForSelector('[data-testid="reviews-section"]', { timeout: 20000 })
+  if (IS_REAL) {
+    test.skip(true, 'write-review flow covered in mocked mode only — real state is non-deterministic')
+
+    return
+  }
+  await mockReviewCalls(page, true)
+  await gotoProductPage(page)
+  await page.waitForSelector('a[href="/signin"]:has-text("Log in")', { state: 'detached', timeout: 5000 }).catch(() => {})
   await page.locator('#add-review-btn').click()
   await expect(page.locator('#review-textarea')).toBeVisible({ timeout: 5000 })
   await page.fill('#review-textarea', 'Hello')

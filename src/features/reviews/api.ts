@@ -16,15 +16,7 @@ export interface SubmittedReviewInfo {
   createdAt: string
 }
 
-export async function apiGetProductReviews(productId: string, page = 0, size = 3): Promise<IReviews> {
-  const response: AxiosResponse<IReviews> = await api.get(
-    `/products/${productId}/reviews?page=${page}${size ? '&size=' + size : ''}`,
-  )
-
-  return response.data
-}
-
-export async function apiGetAllReviews(url: string) {
+export async function apiGetAllReviews(url: string): Promise<IReviews> {
   const response: AxiosResponse<IReviews> = await api.get(url, { cache: false })
 
   return response.data
@@ -43,25 +35,37 @@ export async function apiAddProductReview(
   return response.data
 }
 
-export async function apiDeleteProductReview(productReviewId: string, productId: string): Promise<void> {
+export async function apiDeleteProductReview(
+  productReviewId: string,
+  productId: string,
+): Promise<void> {
   await api.delete(`/products/${productId}/reviews/${productReviewId}`)
 }
 
-export async function apiGetProductUserReview(productId: string): Promise<Review> {
-  const response: AxiosResponse<Review> = await api.get(`/products/${productId}/review`)
+export async function apiGetProductUserReview(
+  productId: string,
+): Promise<Review> {
+  const response: AxiosResponse<Review> = await api.get(
+    `/products/${productId}/review`,
+    { cache: false },
+  )
 
   return response.data
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
-  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> = await api.get('/users/reviews', { cache: false })
+  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> =
+    await api.get('/users/reviews', { cache: false })
 
   return response.data.reviewsWithRatings
 }
 
-export async function apiGetProductReviewsStatistics(productId: string) {
+export async function apiGetProductReviewsStatistics(
+  productId: string,
+): Promise<IProductReviewsStatistics> {
   const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
     `/products/${productId}/reviews/statistics`,
+    { cache: false },
   )
 
   return response.data
@@ -79,4 +83,3 @@ export async function apiRateProductReview(
 
   return response.data
 }
-

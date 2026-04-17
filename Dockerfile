@@ -3,7 +3,7 @@
 # =============================================================================
 FROM node:22.17.0-alpine3.22 AS build
 
-ARG NEXT_PUBLIC_API_URL=https://iced-latte.uk/backend/api/v1
+ARG NEXT_PUBLIC_API_URL=https://api.iced-latte.uk/api/v1
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 WORKDIR /app
@@ -30,10 +30,12 @@ ENV NODE_ENV=production \
     PORT=3000 \
     HOSTNAME=0.0.0.0
 
-# Standalone server — dependencies change rarely, app layer changes every build
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next/static ./.next/static
-COPY --from=build /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/.next/standalone ./
+
+RUN mkdir -p /app/.next/cache \
+ && chown -R node:node /app
 
 EXPOSE 3000
 
