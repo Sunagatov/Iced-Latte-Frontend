@@ -8,6 +8,11 @@ const FETCH_TIMEOUT_MS = 30000
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
 const ALLOWED_QUERY_PARAM_RE = /^[a-zA-Z0-9_.~:@!$&'()*+,;=%[\]-]*$/
 const FORWARDED_HEADERS = ['X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
+const PROXY_FORWARD_HEADERS: Array<[string, string]> = [
+  ['x-forwarded-for', 'X-Forwarded-For'],
+  ['x-forwarded-proto', 'X-Forwarded-Proto'],
+  ['x-real-ip', 'X-Real-IP'],
+]
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
@@ -53,6 +58,12 @@ function forwardHeaders(request: NextRequest, path: string): HeadersInit {
     const value = request.headers.get(name)
 
     if (value) headers[name] = value
+  }
+
+  for (const [sourceName, targetName] of PROXY_FORWARD_HEADERS) {
+    const value = request.headers.get(sourceName)
+
+    if (value) headers[targetName] = value
   }
 
   const isRefreshOrLogout = path === 'auth/refresh' || path === 'auth/logout'
