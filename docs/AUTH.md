@@ -85,9 +85,10 @@ Handled automatically by `AuthInterceptor`:
 ## Google OAuth Flow
 
 1. User clicks "Sign in with Google" → redirected to backend OAuth endpoint
-2. Backend handles OAuth, sets `HttpOnly` session cookie, redirects to `/auth/google/callback`
-3. Callback page checks for `?error=` param; on success redirects to `/`
-4. `AppInitProvider` session bootstrap picks up the new session
+2. Backend handles OAuth and redirects to `/auth/google/callback#token=...&refreshToken=...`
+3. Callback page reads `window.location.hash`, posts the tokens to `/api/auth/google/callback`
+4. That API route sets the `HttpOnly` session cookies
+5. Callback page fetches the current user and redirects to `?next=` or `/`
 
 **File:** `app/auth/google/callback/page.tsx`
 
