@@ -1,13 +1,12 @@
 import { redirect } from 'next/navigation'
-import { getCookie } from '@/shared/utils/cookieUtils'
-import { isTokenExpired } from '@/shared/utils/authToken'
+import { getCookie, getRefreshCookie } from '@/shared/utils/cookieUtils'
+import { hasRecoverableSession } from '@/shared/utils/authToken'
 
 const RestrictRoute = async ({ children }: { children: React.ReactNode }) => {
   const token = await getCookie()
+  const refreshToken = await getRefreshCookie()
 
-  if (!token) return <>{children}</>
-
-  if (isTokenExpired(token)) return <>{children}</>
+  if (!hasRecoverableSession(token, refreshToken)) return <>{children}</>
 
   redirect('/')
 }

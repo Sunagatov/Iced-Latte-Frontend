@@ -74,4 +74,17 @@ describe('google callback route', () => {
       'https://iced-latte.uk/signin?error=auth_failed',
     )
   })
+
+  it('preserves a safe next value when legacy GET callback is missing tokens', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/auth/google/callback?next=%2Fcheckout%3Fcoupon%3DSAVE10',
+    )
+
+    const response = await getRoute().GET(request)
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe(
+      'https://iced-latte.uk/signin?error=auth_failed&next=%2Fcheckout%3Fcoupon%3DSAVE10',
+    )
+  })
 })

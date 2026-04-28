@@ -30,7 +30,7 @@
 
 ## 🚀 Quick Start
 
-**📋 Prerequisites:** Node.js 20+, Docker Desktop
+**📋 Prerequisites:** Node.js 20+ and npm, Docker Desktop for backend-backed local runs
 
 ```bash
 # 1. 📥 Clone
@@ -56,6 +56,13 @@ npm run dev
 
 ```bash
 npm test
+```
+
+**🔍 Lint and type-check:**
+
+```bash
+npm run lint
+npm run tsc -- --noEmit
 ```
 
 ---
@@ -102,7 +109,7 @@ Iced Latte has earned recognition from the broader tech community.
 
 | 📂 Category      | 🔧 Technology                           |
 | ---------------- | --------------------------------------- |
-| 💻 Core          | Next.js 15 + TypeScript 5 + React 19    |
+| 💻 Core          | Next.js 16 + TypeScript 5 + React 19    |
 | 🗃️ State Manager | Zustand                                 |
 | 🎨 CSS Framework | TailwindCSS 4                           |
 | 📡 Data Fetching | Axios + SWR                             |
@@ -116,23 +123,31 @@ Iced Latte has earned recognition from the broader tech community.
 
 ```text
 src/
-├── 📁 app/                # Next.js App Router pages
-│   ├── 📁 api/            # API proxy route (avoids CORS)
+├── 📁 app/                # Next.js App Router pages and route handlers
+│   ├── 📁 api/            # Auth/proxy handlers
+│   ├── 📁 auth/           # OAuth callback pages
 │   ├── 📁 cart/           # Cart page
 │   ├── 📁 checkout/       # Checkout page
+│   ├── 📁 confirm_registration/
 │   ├── 📁 favourites/     # Favourites page
+│   ├── 📁 forgotpass/
 │   ├── 📁 orders/         # Orders page
 │   ├── 📁 product/        # Product detail page
 │   ├── 📁 profile/        # User profile page
-│   ├── 📁 signin/signup/  # Auth pages
+│   ├── 📁 resetpass/
+│   ├── 📁 signin/         # Sign-in page
+│   ├── 📁 signup/         # Sign-up page
 │   └── 📄 layout.tsx      # Root layout
 ├── 📁 features/           # Feature-based modules
 │   ├── 📁 addresses/      # Delivery addresses
 │   ├── 📁 auth/           # Auth (login, register)
 │   ├── 📁 cart/           # Shopping cart
+│   ├── 📁 checkout/       # Checkout flow
 │   ├── 📁 favorites/      # Favourites
+│   ├── 📁 orders/         # Orders
 │   ├── 📁 products/       # Product catalog
 │   ├── 📁 reviews/        # Product reviews
+│   ├── 📁 session/        # Session state/helpers
 │   └── 📁 user/           # User profile
 └── 📁 shared/             # Cross-feature shared code
     ├── 📁 api/            # Axios client
@@ -146,11 +161,11 @@ src/
 
 ## 🚢 Deployment
 
-🚫 No Kubernetes, no cloud-managed services — the app ships as a Docker container directly via SSH.
+🚫 No Kubernetes, no cloud-managed services. This repo builds and publishes a Docker image; the broader runtime wiring lives in the backend/Vault deployment setup.
 
-The full production setup is in the [backend docker-compose.yml](https://github.com/Sunagatov/Iced-Latte/blob/development/docker-compose.yml). On every merge to `master`, [GitHub Actions](.github/workflows/cd.yml) builds and pushes a Docker image to production automatically. CI runs on every push and PR to `development`. Only maintainers can merge to `master`.
+The full production setup is in the [backend docker-compose.yml](https://github.com/Sunagatov/Iced-Latte/blob/development/docker-compose.yml). On every push to `master`, [GitHub Actions](.github/workflows/cd.yml) builds and pushes the frontend Docker image. CI runs on every push to `development` and on pull requests targeting `development`.
 
-🔍 Explore the [`.github/`](.github/workflows/) folder for the full CI/CD pipeline.
+🔍 Explore the [GitHub workflows](./.github/workflows) folder for the full CI/CD pipeline.
 
 ---
 
@@ -185,7 +200,7 @@ The full production setup is in the [backend docker-compose.yml](https://github.
 ### 🔄 Pull requests
 
 - 🎯 Keep PRs focused — one concern per PR
-- ✅ Make sure `npm run test` passes locally before pushing
+- ✅ Make sure `npm run lint`, `npm run tsc -- --noEmit`, and `npm test` pass locally before pushing
 - 🔗 Reference the issue number in your PR description
 
 ### 🍴 Forking

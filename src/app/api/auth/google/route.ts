@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-function isSafePath(value: string): boolean {
-  return /^\/[a-zA-Z0-9/_-]*$/.test(value)
-}
+import { getSafeNext } from '@/shared/utils/navigation'
 
 export async function GET(request: NextRequest) {
-  const next = request.nextUrl.searchParams.get('next') ?? ''
+  const requestedNext = request.nextUrl.searchParams.get('next')
+  const next = getSafeNext(requestedNext)
 
-  if (next && !isSafePath(next)) {
+  if (requestedNext && !next) {
     return new NextResponse(null, { status: 400 })
   }
 

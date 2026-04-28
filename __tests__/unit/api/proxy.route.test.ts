@@ -194,6 +194,24 @@ describe('proxy route', () => {
     expect(res.status).toBe(200)
   })
 
+  it('preserves backend 204 no-content responses without forcing JSON', async () => {
+    ;(global as { fetch: unknown }).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 204,
+      headers: {
+        get: () => null,
+      },
+      text: () => Promise.resolve(''),
+    })
+
+    const res = await DELETE(makeRequest('DELETE', 'users/addresses/123'), {
+      params: Promise.resolve({ path: ['users', 'addresses', '123'] }),
+    })
+
+    expect(res.status).toBe(204)
+    expect(await res.text()).toBe('')
+  })
+
   it('handles plain text response', async () => {
     ;(global as { fetch: unknown }).fetch = jest.fn().mockResolvedValue({
       ok: true,

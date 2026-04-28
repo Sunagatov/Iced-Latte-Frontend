@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_APP_URL ?? ''
+const NO_BODY_STATUSES = new Set([204, 205, 304])
 
 export const corsHeaders = {
   // Restrict to same app origin — no wildcard for a same-origin proxy
@@ -12,7 +13,14 @@ export const corsHeaders = {
 }
 
 export function createCorsResponse(data?: unknown, status = 200): NextResponse {
-  return NextResponse.json(data || {}, { status, headers: corsHeaders })
+  if (NO_BODY_STATUSES.has(status)) {
+    return new NextResponse(null, { status, headers: corsHeaders })
+  }
+
+  return NextResponse.json(data === undefined ? {} : data, {
+    status,
+    headers: corsHeaders,
+  })
 }
 
 export function handleOptions(request: NextRequest): NextResponse {

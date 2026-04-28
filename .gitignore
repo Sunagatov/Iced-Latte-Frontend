@@ -61,5 +61,4 @@ yarn-error.log*
 /docker-compose.prod.yml
 /.env.prod
 /ops/
-maintaner/
 e2e/.auth.json

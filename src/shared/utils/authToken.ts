@@ -31,3 +31,14 @@ export function isTokenExpired(token?: string | null): boolean {
 
   return exp * 1000 <= Date.now()
 }
+
+export function isTokenUsable(token?: string | null): boolean {
+  return Boolean(token) && !isTokenExpired(token)
+}
+
+export function hasRecoverableSession(
+  accessToken?: string | null,
+  refreshToken?: string | null,
+): boolean {
+  return isTokenUsable(accessToken) || isTokenUsable(refreshToken)
+}

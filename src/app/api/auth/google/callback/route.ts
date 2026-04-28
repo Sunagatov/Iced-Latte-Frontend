@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getSafeNext } from '@/shared/utils/navigation'
 
 const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
 const COOKIE_OPTIONS = {
@@ -10,9 +11,16 @@ const COOKIE_OPTIONS = {
 }
 
 function buildErrorRedirect(request: NextRequest) {
-  return FRONTEND_URL
+  const base = FRONTEND_URL
     ? new URL('/signin?error=auth_failed', FRONTEND_URL)
     : new URL('/signin?error=auth_failed', request.url)
+  const next = getSafeNext(request.nextUrl.searchParams.get('next'))
+
+  if (next) {
+    base.searchParams.set('next', next)
+  }
+
+  return base
 }
 
 function createSessionCookieResponse(token: string, refreshToken: string) {

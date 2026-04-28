@@ -4,6 +4,7 @@ import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
+import { getSafeNext } from '@/shared/utils/navigation'
 
 function getTokensFromHash() {
   const hash = window.location.hash.startsWith('#')
@@ -24,7 +25,7 @@ function GoogleCallbackInner() {
 
   useEffect(() => {
     const error = searchParams.get('error')
-    const next = searchParams.get('next') ?? '/'
+    const next = getSafeNext(searchParams.get('next')) ?? '/'
     const signInUrl = `/signin?error=google_auth_failed${
       next !== '/' ? `&next=${encodeURIComponent(next)}` : ''
     }`

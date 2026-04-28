@@ -25,7 +25,8 @@
     ],
     "types": [
       "react",
-      "node"
+      "node",
+      "jest"
     ],
     "plugins": [
       {

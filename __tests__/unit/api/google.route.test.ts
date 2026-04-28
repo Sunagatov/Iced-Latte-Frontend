@@ -34,6 +34,19 @@ describe('google auth route', () => {
     expect(res.status).toBe(400)
   })
 
+  it('allows safe next values with query strings', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      status: 302,
+      headers: new Headers({
+        location: 'https://accounts.google.com/o/oauth2/auth?foo=bar',
+      }),
+    })
+
+    const res = await getRoute()(makeRequest('/checkout?coupon=SAVE10'))
+
+    expect(res.status).toBe(307)
+  })
+
   it('redirects to google when backend returns google location', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 302,
