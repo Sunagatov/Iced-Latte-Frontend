@@ -23,6 +23,21 @@ const apiClient = api
 // Concurrent 401s await the same promise instead of each triggering a new refresh.
 let refreshPromise: Promise<void> | null = null
 
+export function isBootstrapUserProfileRequest(url?: string): boolean {
+  if (!url) return false
+
+  try {
+    const parsed = new URL(url, 'http://localhost')
+    const normalizedPath = parsed.pathname
+      .replace(/^\/api\/proxy/, '')
+      .replace(/^\/api\/v1/, '')
+
+    return normalizedPath === '/users'
+  } catch {
+    return false
+  }
+}
+
 const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
   const setAuthenticated = useAuthStore(
     (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
@@ -50,7 +65,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
           !originalRequest.url?.includes('/auth/authenticate') &&
           !originalRequest.url?.includes('/auth/refresh') &&
           !originalRequest.url?.includes('/auth/logout') &&
-          !originalRequest.url?.includes('/users') &&
+          !isBootstrapUserProfileRequest(originalRequest.url) &&
           // Skip refresh when we know the visitor is anonymous
           authStatus !== 'anonymous'
 

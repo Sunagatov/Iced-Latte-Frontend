@@ -69,7 +69,7 @@ npm run tsc -- --noEmit
 
 ## 📸 Preview
 
-![Iced Latte Frontend](iced-latte-avatar.jpg)
+![Iced Latte Frontend](public/assets/images/iced-latte-avatar.jpg)
 
 _Live application interface: [iced-latte.uk](https://iced-latte.uk/)_
 
