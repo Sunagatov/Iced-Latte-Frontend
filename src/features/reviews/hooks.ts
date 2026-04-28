@@ -26,7 +26,7 @@ export function useReviews({
     const productRatingQuery =
       ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''
 
-    return `/products/${productId}/reviews?page=${pageIndex}&size=3&sortAttribute=${sortAttribute}&sortDirection=${sortDirection}${productRatingQuery}`
+    return `/products/${productId}/reviews?page=${pageIndex}&size=3&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${productRatingQuery}`
   }
 
   const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite<

@@ -186,4 +186,31 @@ describe('useReviews', () => {
 
     expect(key).toContain('productRatings=4,5')
   })
+
+  it('uses backend review sort parameter names in SWR key', () => {
+    let capturedGetKey: ((_i: number, prev: unknown) => string | null) | null =
+      null
+
+    jest.spyOn(SWRInfinite, 'default').mockImplementation((getKey) => {
+      capturedGetKey = getKey as typeof capturedGetKey
+
+      return defaultSWRReturn as never
+    })
+
+    renderHook(() =>
+      useReviews({
+        productId: 'p1',
+        userReview: null,
+        sortOption,
+        ratingFilter: [],
+      }),
+    )
+
+    const key = capturedGetKey!(0, null)
+
+    expect(key).toContain('sort_attribute=createdAt')
+    expect(key).toContain('sort_direction=desc')
+    expect(key).not.toContain('sortAttribute=')
+    expect(key).not.toContain('sortDirection=')
+  })
 })
