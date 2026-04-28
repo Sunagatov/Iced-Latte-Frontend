@@ -120,6 +120,20 @@ describe('proxy route', () => {
     expect(global.fetch).toHaveBeenCalled()
   })
 
+  it('preserves backend 201 created responses', async () => {
+    mockFetch(201, { id: 'created-id' })
+
+    const res = await POST(
+      makeRequest('POST', 'users/addresses', { city: 'London' }),
+      {
+        params: Promise.resolve({ path: ['users', 'addresses'] }),
+      },
+    )
+
+    expect(res.status).toBe(201)
+    expect(await res.json()).toEqual({ id: 'created-id' })
+  })
+
   it('refresh persists rotated auth cookies from response body', async () => {
     mockFetch(200, { token: 'new-access', refreshToken: 'new-refresh' })
 
