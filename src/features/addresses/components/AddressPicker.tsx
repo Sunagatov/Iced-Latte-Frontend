@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useAddressStore } from '../store'
 import { DeliveryAddress } from '../types'
 import { RiMapPinLine, RiCheckLine, RiAddLine } from 'react-icons/ri'
@@ -15,7 +15,7 @@ export default function AddressPicker({ onSelect, selected }: Props) {
   const [mode, setMode] = useState<'saved' | 'new'>('saved')
 
   useEffect(() => {
-    fetch()
+    void fetch()
   }, [fetch])
 
   useEffect(() => {
@@ -114,7 +114,7 @@ function ModeBtn({
 }: {
   active: boolean
   onClick: () => void
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <button

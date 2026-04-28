@@ -14,7 +14,7 @@ export default function AddressManager() {
   const [editing, setEditing] = useState<DeliveryAddress | null>(null)
 
   useEffect(() => {
-    fetch()
+    void fetch()
   }, [fetch])
 
   const openAdd = () => {
@@ -59,7 +59,7 @@ export default function AddressManager() {
           <p className="text-negative font-medium">{error}</p>
           <button
             className="bg-brand hover:bg-brand-solid-hover rounded-xl px-5 py-2 text-sm font-semibold text-white transition"
-            onClick={() => fetch()}
+            onClick={() => void fetch()}
           >
             Try again
           </button>

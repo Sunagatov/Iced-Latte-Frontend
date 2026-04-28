@@ -55,7 +55,7 @@ export function useReviews({
 
   const removeReviewFromCache = useCallback(
     (productReviewId: string) => {
-      mutate(
+      void mutate(
         (pages) =>
           pages?.map((page) => ({
             ...page,
@@ -71,7 +71,7 @@ export function useReviews({
 
   const updateReviewInCache = useCallback(
     (updated: Review) => {
-      mutate(
+      void mutate(
         (pages) =>
           pages?.map((page) => ({
             ...page,

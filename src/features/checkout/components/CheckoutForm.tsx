@@ -1,6 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import {
+  useState,
+  useEffect,
+  type ChangeEvent,
+  type SyntheticEvent,
+} from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
@@ -45,7 +50,7 @@ export default function CheckoutForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const set = (field: string) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }))
 
   const address = selectedAddress
@@ -62,7 +67,7 @@ export default function CheckoutForm() {
       postcode: form.postcode,
     }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
     if (!tempItems || tempItems.length === 0) {
@@ -222,7 +227,7 @@ function Field({
   id: string
   label: string
   value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
   required?: boolean
   type?: string
 }) {

@@ -62,7 +62,7 @@ const ReviewsSection = ({
 
       return
     }
-    refreshUserReview()
+    void refreshUserReview()
   }, [productId, isLoggedIn, refreshUserReview])
 
   const {
@@ -143,8 +143,8 @@ const ReviewsSection = ({
               showForm={showForm}
               setShowForm={setShowForm}
               onReviewSubmitted={() => {
-                refreshUserReview()
-                refreshReviews()
+                void refreshUserReview()
+                void refreshReviews()
                 void refreshStatistics()
               }}
             />
