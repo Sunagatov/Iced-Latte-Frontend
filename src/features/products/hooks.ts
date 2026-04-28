@@ -23,7 +23,7 @@ export function useProducts(
   const productSize = isMediaQuery ? 8 : 6
 
   const getKey = (pageIndex: number, previousData: IProductsList) => {
-    if (previousData && previousData.totalPages - 1 == previousData.page)
+    if (previousData && previousData.totalPages - 1 === previousData.page)
       return null
 
     const ratingQuery = ratingFilter

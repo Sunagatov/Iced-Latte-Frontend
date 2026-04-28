@@ -18,6 +18,7 @@ import {
 } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
+import { clearClientSession } from '@/features/session/clearClientSession'
 
 interface IChangeAuthValues {
   oldPassword: string
@@ -50,6 +51,7 @@ export default function AuthResetPassForm() {
     try {
       setLoading(true)
       await apiAuthChangePassword(data)
+      await clearClientSession()
       setChangeSuccessful(true)
       reset()
     } catch (error) {
@@ -73,16 +75,16 @@ export default function AuthResetPassForm() {
               Password updated!
             </h2>
             <p className="text-secondary mb-6 text-sm">
-              Your password has been changed successfully.
+              Your password has been changed successfully. Please sign in again.
             </p>
             <Button
               className="w-full justify-center"
               id="reset-pass-btn"
               onClick={() => {
-                router.push('/profile')
+                router.push('/signin')
               }}
             >
-              Go to profile
+              Sign in again
             </Button>
           </div>
         ) : (

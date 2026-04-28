@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 import { isTokenExpired } from '@/shared/utils/authToken'
 
@@ -13,6 +13,18 @@ const PROXY_FORWARD_HEADERS: Array<[string, string]> = [
   ['x-forwarded-proto', 'X-Forwarded-Proto'],
   ['x-real-ip', 'X-Real-IP'],
 ]
+const AUTH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: 60 * 60 * 24,
+}
+
+type TokenPair = {
+  token: string
+  refreshToken: string
+}
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
@@ -66,13 +78,24 @@ function forwardHeaders(request: NextRequest, path: string): HeadersInit {
     if (value) headers[targetName] = value
   }
 
-  const isRefreshOrLogout = path === 'auth/refresh' || path === 'auth/logout'
-  const rawToken = isRefreshOrLogout
-    ? request.cookies.get('refreshToken')?.value
-    : request.cookies.get('token')?.value
+  const accessToken = request.cookies.get('token')?.value
+  const refreshToken = request.cookies.get('refreshToken')?.value
 
-  if (rawToken && !isTokenExpired(rawToken))
-    headers['Authorization'] = `Bearer ${rawToken}`
+  if (path === 'auth/refresh') {
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      headers['Authorization'] = `Bearer ${refreshToken}`
+    }
+
+    return headers
+  }
+
+  if (accessToken && !isTokenExpired(accessToken)) {
+    headers['Authorization'] = `Bearer ${accessToken}`
+  }
+
+  if (path === 'auth/logout' && refreshToken) {
+    headers['X-Refresh-Token'] = refreshToken
+  }
 
   return headers
 }
@@ -85,6 +108,44 @@ async function readBody(request: NextRequest): Promise<BodyInit | undefined> {
   } catch {
     return undefined
   }
+}
+
+function isTokenPair(data: unknown): data is TokenPair {
+  if (typeof data !== 'object' || data === null) return false
+  const d = data as Record<string, unknown>
+
+  return typeof d['token'] === 'string' && typeof d['refreshToken'] === 'string'
+}
+
+function setAuthCookies(
+  response: Response,
+  nextResponse: NextResponse,
+  data: unknown,
+  path: string,
+): void {
+  if (path !== 'auth/refresh' || !isTokenPair(data)) {
+    const setCookie = response.headers.get('set-cookie')
+
+    if (setCookie) nextResponse.headers.set('set-cookie', setCookie)
+
+    return
+  }
+
+  nextResponse.headers.append(
+    'Set-Cookie',
+    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
+      process.env.NODE_ENV === 'production' ? '; Secure' : ''
+    }`,
+  )
+  nextResponse.headers.append(
+    'Set-Cookie',
+    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
+      process.env.NODE_ENV === 'production' ? '; Secure' : ''
+    }`,
+  )
+
+  nextResponse.cookies.set('token', data.token, AUTH_COOKIE_OPTIONS)
+  nextResponse.cookies.set('refreshToken', data.refreshToken, AUTH_COOKIE_OPTIONS)
 }
 
 async function handleProxy(
@@ -117,9 +178,8 @@ async function handleProxy(
     if (!response.ok) return createCorsResponse(data, response.status)
 
     const nextResponse = createCorsResponse(data)
-    const setCookie = response.headers.get('set-cookie')
 
-    if (setCookie) nextResponse.headers.set('set-cookie', setCookie)
+    setAuthCookies(response, nextResponse, data, safePath)
 
     return nextResponse
   } catch {

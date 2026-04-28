@@ -25,9 +25,12 @@ function GoogleCallbackInner() {
   useEffect(() => {
     const error = searchParams.get('error')
     const next = searchParams.get('next') ?? '/'
+    const signInUrl = `/signin?error=google_auth_failed${
+      next !== '/' ? `&next=${encodeURIComponent(next)}` : ''
+    }`
 
     if (error) {
-      router.replace('/signin?error=google_auth_failed')
+      router.replace(signInUrl)
 
       return
     }
@@ -35,7 +38,7 @@ function GoogleCallbackInner() {
     const { token, refreshToken } = getTokensFromHash()
 
     if (!token || !refreshToken) {
-      router.replace('/signin?error=google_auth_failed')
+      router.replace(signInUrl)
 
       return
     }
@@ -61,7 +64,7 @@ function GoogleCallbackInner() {
         router.replace(next)
       })
       .catch(() => {
-        router.replace('/signin?error=google_auth_failed')
+        router.replace(signInUrl)
       })
   }, [searchParams, router, setAuthenticated])
 

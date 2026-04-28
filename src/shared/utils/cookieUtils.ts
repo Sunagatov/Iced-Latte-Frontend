@@ -26,6 +26,12 @@ export async function getCookie(): Promise<string | undefined> {
   return cookieStore.get('token')?.value
 }
 
+export async function getRefreshCookie(): Promise<string | undefined> {
+  const cookieStore = await cookies()
+
+  return cookieStore.get('refreshToken')?.value
+}
+
 export async function setAuthCookies(token: string, refreshToken: string) {
   const cookieStore = await cookies()
 

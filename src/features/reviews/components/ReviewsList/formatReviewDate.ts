@@ -15,6 +15,8 @@ export const formatReviewDate = (dateString: string | null) => {
 
   const date = new Date(dateString)
 
+  if (isNaN(date.getTime())) return { date: 'N/A', time: '' }
+
   return {
     date: dateFormatter.format(date),
     time: timeFormatter.format(date),

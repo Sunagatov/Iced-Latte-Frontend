@@ -21,7 +21,7 @@ export function useReviews({
   const { sortAttribute, sortDirection } = sortOption.value
 
   const getKey = (pageIndex: number, previousData: IReviews) => {
-    if (previousData && previousData.totalPages - 1 == previousData.page)
+    if (previousData && previousData.totalPages - 1 === previousData.page)
       return null
     const productRatingQuery =
       ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''

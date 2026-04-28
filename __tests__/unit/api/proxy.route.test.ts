@@ -13,17 +13,29 @@ import { NextRequest } from 'next/server'
 
 process.env.NEXT_PUBLIC_API_URL = 'http://backend'
 
+function makeJwt(expOffsetSeconds = 3600): string {
+  const payload = Buffer.from(
+    JSON.stringify({ exp: Math.floor(Date.now() / 1000) + expOffsetSeconds }),
+  ).toString('base64url')
+
+  return `header.${payload}.signature`
+}
+
 function makeRequest(
   method: string,
   path: string,
   body?: unknown,
+  headers?: Record<string, string>,
 ): NextRequest {
   const url = `http://localhost/api/proxy/${path}`
 
   return new NextRequest(url, {
     method,
     body: body ? JSON.stringify(body) : undefined,
-    headers: body ? { 'Content-Type': 'application/json' } : {},
+    headers: {
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(headers ?? {}),
+    },
   })
 }
 
@@ -106,6 +118,50 @@ describe('proxy route', () => {
 
     expect(res.status).toBe(200)
     expect(global.fetch).toHaveBeenCalled()
+  })
+
+  it('refresh persists rotated auth cookies from response body', async () => {
+    mockFetch(200, { token: 'new-access', refreshToken: 'new-refresh' })
+
+    const res = await POST(makeRequest('POST', 'auth/refresh'), {
+      params: Promise.resolve({ path: ['auth', 'refresh'] }),
+    })
+
+    const setCookie = res.headers.getSetCookie()
+
+    expect(res.status).toBe(200)
+    expect(setCookie.some((value) => value.includes('token=new-access'))).toBe(
+      true,
+    )
+    expect(
+      setCookie.some((value) => value.includes('refreshToken=new-refresh')),
+    ).toBe(true)
+  })
+
+  it('logout forwards access token as bearer auth and refresh token in X-Refresh-Token', async () => {
+    mockFetch(200, {})
+    const accessToken = makeJwt()
+
+    const res = await POST(
+      makeRequest('POST', 'auth/logout', undefined, {
+        cookie: `token=${accessToken}; refreshToken=refresh.jwt.value`,
+      }),
+      {
+        params: Promise.resolve({ path: ['auth', 'logout'] }),
+      },
+    )
+
+    expect(res.status).toBe(200)
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          Authorization: `Bearer ${accessToken}`,
+          'X-Refresh-Token': 'refresh.jwt.value',
+        }),
+      }),
+    )
   })
 
   it('PUT proxies request', async () => {

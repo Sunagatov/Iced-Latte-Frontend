@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import { Review } from './types'
 
 export const checkIfUserReviewExists = (review: Review | null): boolean => {
-  return !!review && !Object.values(review).every((prop) => prop === null)
+  return !!review?.productReviewId
 }
 
 interface ProductRatingStore {
