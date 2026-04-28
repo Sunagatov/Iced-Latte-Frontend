@@ -177,7 +177,7 @@ async function handleProxy(
 
     if (!response.ok) return createCorsResponse(data, response.status)
 
-    const nextResponse = createCorsResponse(data)
+    const nextResponse = createCorsResponse(data, response.status)
 
     setAuthCookies(response, nextResponse, data, safePath)
 
