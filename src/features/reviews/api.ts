@@ -54,10 +54,35 @@ export async function apiGetProductUserReview(
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
-  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> =
-    await api.get('/users/reviews', { cache: false })
+  const firstPageResponse: AxiosResponse<IReviews> = await api.get(
+    '/users/reviews?page=0',
+    { cache: false },
+  )
+  const firstPage = firstPageResponse.data
 
-  return response.data.reviewsWithRatings
+  if (!firstPage.totalPages || firstPage.totalPages <= 1) {
+    return firstPage.reviewsWithRatings
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: firstPage.totalPages - 1 }, async (_, index) => {
+      const page = index + 1
+      const params = new URLSearchParams({ page: String(page) })
+
+      if (firstPage.size) {
+        params.set('size', String(firstPage.size))
+      }
+
+      const response = await api.get<IReviews>(
+        `/users/reviews?${params.toString()}`,
+        { cache: false },
+      )
+
+      return response.data
+    }),
+  )
+
+  return [firstPage, ...remainingPages].flatMap((page) => page.reviewsWithRatings)
 }
 
 export async function apiGetProductReviewsStatistics(

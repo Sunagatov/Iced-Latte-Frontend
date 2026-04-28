@@ -21,6 +21,21 @@ describe('user api', () => {
     expect(result.firstName).toBe('John')
   })
 
+  it('getUserData normalizes nullable backend address to an empty object', async () => {
+    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        address: null,
+      },
+    })
+
+    const result = await userApi.getUserData()
+
+    expect(result.address).toEqual({})
+  })
+
   it('editUserProfile calls PUT /users and normalizes empty address to null', async () => {
     ;(mockedApi.put as jest.Mock).mockResolvedValue({
       data: { firstName: 'Jane' },
@@ -59,6 +74,21 @@ describe('user api', () => {
         postcode: 'NW1',
       },
     })
+  })
+
+  it('editUserProfile normalizes nullable backend address in the response', async () => {
+    ;(mockedApi.put as jest.Mock).mockResolvedValue({
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        address: null,
+      },
+    })
+
+    const result = await userApi.editUserProfile({ firstName: 'Jane' })
+
+    expect(result.address).toEqual({})
   })
 
   it('apiForgotPassword posts to /auth/password/forgot', async () => {

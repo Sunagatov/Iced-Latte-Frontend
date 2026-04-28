@@ -50,11 +50,54 @@ describe('reviews api', () => {
 
   it('apiGetUserReviews returns array', async () => {
     ;(mockedApi.get as jest.Mock).mockResolvedValue({
-      data: { reviewsWithRatings: [{ productReviewId: 'r1' }] },
+      data: {
+        reviewsWithRatings: [{ productReviewId: 'r1' }],
+        page: 0,
+        totalPages: 1,
+        totalElements: 1,
+        size: 10,
+      },
     })
     const result = await reviewsApi.apiGetUserReviews()
 
+    expect(mockedApi.get).toHaveBeenCalledWith('/users/reviews?page=0', {
+      cache: false,
+    })
     expect(result).toHaveLength(1)
+  })
+
+  it('apiGetUserReviews loads all pages from the paginated backend response', async () => {
+    ;(mockedApi.get as jest.Mock)
+      .mockResolvedValueOnce({
+        data: {
+          reviewsWithRatings: [{ productReviewId: 'r1' }],
+          page: 0,
+          totalPages: 2,
+          totalElements: 2,
+          size: 10,
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          reviewsWithRatings: [{ productReviewId: 'r2' }],
+          page: 1,
+          totalPages: 2,
+          totalElements: 2,
+          size: 10,
+        },
+      })
+
+    const result = await reviewsApi.apiGetUserReviews()
+
+    expect(mockedApi.get).toHaveBeenNthCalledWith(1, '/users/reviews?page=0', {
+      cache: false,
+    })
+    expect(mockedApi.get).toHaveBeenNthCalledWith(
+      2,
+      '/users/reviews?page=1&size=10',
+      { cache: false },
+    )
+    expect(result.map((review) => review.productReviewId)).toEqual(['r1', 'r2'])
   })
 
   it('apiGetProductReviewsStatistics returns stats with correct shape', async () => {

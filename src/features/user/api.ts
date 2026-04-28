@@ -8,12 +8,19 @@ import {
   AuthChangePasswordCredentials,
 } from '@/features/auth/types'
 
+function normalizeUserData(data: UserData): UserData {
+  return {
+    ...data,
+    address: data.address ?? {},
+  }
+}
+
 export const getUserData = async (): Promise<UserData> => {
   const response: AxiosResponse<UserData> = await api.get('/users', {
     cache: false,
   })
 
-  return response.data
+  return normalizeUserData(response.data)
 }
 
 export const editUserProfile = async (
@@ -29,7 +36,7 @@ export const editUserProfile = async (
   }
   const response: AxiosResponse<UserData> = await api.put('/users', payload)
 
-  return response.data
+  return normalizeUserData(response.data)
 }
 
 export async function uploadImage(file: File): Promise<void> {
