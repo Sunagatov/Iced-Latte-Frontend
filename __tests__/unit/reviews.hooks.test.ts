@@ -29,7 +29,7 @@ function makeReview(id: string): Review {
     text: 'ok',
     createdAt: '',
     userName: 'User',
-    userLastName: 'Last',
+    userLastname: 'Last',
     likesCount: 0,
     dislikesCount: 0,
   }

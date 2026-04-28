@@ -139,7 +139,7 @@ describe('favourites store — toggleFavourite (remove)', () => {
       favourites: [makeProduct('p1')],
       status: 'ready',
     })
-    mockedRemoveFavourite.mockResolvedValue({ products: [] })
+    mockedRemoveFavourite.mockResolvedValue(undefined)
 
     await getFavState().toggleFavourite('p1')
 
