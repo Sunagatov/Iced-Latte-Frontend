@@ -20,6 +20,7 @@ interface PaymentSessionStatus {
 export default function OrderSuccess() {
   const [customerEmail, setCustomerEmail] = useState('')
   const [loading, setLoading] = useState(true)
+  const [invalidSession, setInvalidSession] = useState(false)
 
   const isLoggedIn = useAuthStore(
     (state: AuthStore): boolean => state.isLoggedIn,
@@ -41,6 +42,7 @@ export default function OrderSuccess() {
     }
 
     if (!sessionId) {
+      setInvalidSession(true)
       setLoading(false)
 
       return
@@ -56,9 +58,13 @@ export default function OrderSuccess() {
       .then((data: PaymentSessionStatus) => {
         setCustomerEmail(data.customerEmail)
         resetCart()
+        setInvalidSession(false)
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch(() => {
+        setInvalidSession(true)
+        setLoading(false)
+      })
   }, [isLoggedIn, resetCart, urlParams])
 
   if (loading) {
@@ -66,6 +72,22 @@ export default function OrderSuccess() {
       <div className="flex min-h-[100vh] w-full items-center justify-center">
         <Loader />
       </div>
+    )
+  }
+
+  if (invalidSession) {
+    return (
+      <section className="flex min-h-[100vh] flex-col items-center justify-center gap-4 p-4 text-center">
+        <p className="text-base text-[#64748B]">
+          We couldn&apos;t verify this order confirmation.
+        </p>
+        <Button
+          id="order-history-btn"
+          className="h-14 w-full max-w-[240px] text-lg font-medium"
+        >
+          <Link href="/orders">View my orders</Link>
+        </Button>
+      </section>
     )
   }
 
