@@ -184,7 +184,7 @@ export default function OrderHistory() {
     const url = filter ? `/orders?status=${filter}` : '/orders'
 
     api
-      .get<Order[]>(url, { signal: controller.signal })
+      .get<Order[]>(url, { cache: false, signal: controller.signal })
       .then((res) => setOrders(res.data))
       .catch((err) => {
         if (err?.code !== 'ERR_CANCELED') setError(true)

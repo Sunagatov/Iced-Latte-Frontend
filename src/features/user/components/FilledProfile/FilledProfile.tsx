@@ -103,7 +103,9 @@ const FilledProfile = () => {
 
     const loadOrderCount = async (): Promise<void> => {
       try {
-        const response = await typedApi.get<{ id: string }[]>('/orders')
+        const response = await typedApi.get<{ id: string }[]>('/orders', {
+          cache: false,
+        })
 
         setOrderCount(response.data.length)
       } catch {

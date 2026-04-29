@@ -20,7 +20,7 @@ export async function removeFavourite(id: string): Promise<void> {
 
 export async function fetchFavourites(signal?: AbortSignal): Promise<IProduct[]> {
   const response: AxiosResponse<{ products: IProduct[] }> =
-    await api.get('/favorites', { signal })
+    await api.get('/favorites', { cache: false, signal })
 
   return response.data?.products || []
 }
