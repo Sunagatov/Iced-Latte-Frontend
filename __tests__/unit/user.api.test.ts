@@ -40,6 +40,9 @@ describe('user api', () => {
     ;(mockedApi.put as jest.Mock).mockResolvedValue({
       data: { firstName: 'Jane' },
     })
+    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+      data: { firstName: 'Jane' },
+    })
 
     const result = await userApi.editUserProfile({ firstName: 'Jane' })
 
@@ -47,11 +50,15 @@ describe('user api', () => {
       firstName: 'Jane',
       address: null,
     })
+    expect(mockedApi.get).toHaveBeenCalledWith('/users', { cache: false })
     expect(result.firstName).toBe('Jane')
   })
 
   it('editUserProfile keeps non-empty address', async () => {
     ;(mockedApi.put as jest.Mock).mockResolvedValue({
+      data: { firstName: 'Jane' },
+    })
+    ;(mockedApi.get as jest.Mock).mockResolvedValue({
       data: { firstName: 'Jane' },
     })
 
@@ -78,6 +85,9 @@ describe('user api', () => {
 
   it('editUserProfile normalizes nullable backend address in the response', async () => {
     ;(mockedApi.put as jest.Mock).mockResolvedValue({
+      data: { firstName: 'Jane' },
+    })
+    ;(mockedApi.get as jest.Mock).mockResolvedValue({
       data: {
         firstName: 'Jane',
         lastName: 'Doe',
@@ -89,6 +99,28 @@ describe('user api', () => {
     const result = await userApi.editUserProfile({ firstName: 'Jane' })
 
     expect(result.address).toEqual({})
+  })
+
+  it('editUserProfile returns refreshed user data with avatarLink from GET /users', async () => {
+    ;(mockedApi.put as jest.Mock).mockResolvedValue({
+      data: {
+        firstName: 'Jane',
+        avatarLink: null,
+      },
+    })
+    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        address: null,
+        avatarLink: 'https://cdn.example.com/avatar.jpg',
+      },
+    })
+
+    const result = await userApi.editUserProfile({ firstName: 'Jane' })
+
+    expect(result.avatarLink).toBe('https://cdn.example.com/avatar.jpg')
   })
 
   it('apiForgotPassword posts to /auth/password/forgot', async () => {

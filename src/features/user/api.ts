@@ -34,9 +34,10 @@ export const editUserProfile = async (
     ...updatedUserData,
     address: isEmptyAddress ? null : address,
   }
-  const response: AxiosResponse<UserData> = await api.put('/users', payload)
 
-  return normalizeUserData(response.data)
+  await api.put('/users', payload)
+
+  return getUserData()
 }
 
 export async function uploadImage(file: File): Promise<void> {
