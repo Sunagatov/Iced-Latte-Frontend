@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react'
 import CartEmpty from '@/features/cart/components/CartEmpty/CartEmpty'
 import CartFull from '@/features/cart/components/CartFull/CartFull'
-import { type CartSliceStore, useCartStore } from '@/features/cart/store'
-import type { ICartItem } from '@/features/cart/types'
+import {
+  type CartSliceStore,
+  type ICartItem,
+  useCartStore,
+} from '@/features/cart/public'
 import Loader from '@/shared/ui/Loader/Loader'
 
 const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems

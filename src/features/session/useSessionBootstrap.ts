@@ -4,10 +4,12 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store'
 import {
   applySessionResolution,
-  onSessionStoresHydrated,
   resolveSession,
+} from '@/features/session/sessionAuth'
+import {
+  onSessionStoresHydrated,
   syncSessionState,
-} from '@/features/session/sessionController'
+} from '@/features/session/sessionSync'
 
 export function useSessionBootstrap(): void {
   const status = useAuthStore((s) => s.status)

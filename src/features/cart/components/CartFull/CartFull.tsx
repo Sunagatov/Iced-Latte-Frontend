@@ -2,8 +2,11 @@
 
 import { useRouter } from 'next/navigation'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
-import { useCartStore, type CartSliceStore } from '@/features/cart/store'
-import type { ICartItem } from '@/features/cart/types'
+import {
+  type CartSliceStore,
+  type ICartItem,
+  useCartStore,
+} from '@/features/cart/public'
 import CartElement from '../CartElement/CartElement'
 
 const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems

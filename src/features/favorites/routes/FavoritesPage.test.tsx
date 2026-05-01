@@ -1,6 +1,6 @@
 import { render, screen, act } from '@testing-library/react'
 import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
-import { useFavouritesStore } from '@/features/favorites/store'
+import { useFavouritesStore } from '@/features/favorites/public'
 import { useAuthStore } from '@/features/auth/store'
 
 jest.mock(

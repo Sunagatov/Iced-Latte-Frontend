@@ -1,6 +1,6 @@
 'use client'
 import ButtonHeart from '@/shared/ui/Heart/ButtonHeart'
-import { useFavouritesStore } from '@/features/favorites/store'
+import { useFavouritesStore } from '@/features/favorites/public'
 interface ButtonHeartProps {
   id: string
   className?: string

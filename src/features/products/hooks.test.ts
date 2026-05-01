@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react'
-import { useProducts } from '@/features/products/hooks'
+import { useProducts } from '@/features/products/hooks/useProducts'
 import * as SWRInfinite from 'swr/infinite'
 import * as useHooks from 'usehooks-ts'
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { AxiosCacheInstance } from 'axios-cache-interceptor'
 import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
-import { useFavouritesStore } from '@/features/favorites/store'
+import { useFavouritesStore } from '@/features/favorites/public'
 import type { UserData } from '@/features/user/types'
 import { api } from '@/shared/api/client'
 

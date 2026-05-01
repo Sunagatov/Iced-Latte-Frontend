@@ -2,123 +2,34 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  RiAddLine,
-  RiDeleteBinLine,
-  RiHeartFill,
-  RiHeartLine,
-  RiSubtractLine,
-} from 'react-icons/ri'
 import productImg from '@/../public/coffee.png'
 import star from '@/../public/star.png'
-import { useCartStore, type CartSliceStore } from '@/features/cart/store'
-import {
-  useFavouritesStore,
-  type FavStoreState,
-} from '@/features/favorites/state/favoritesStore'
-import type { FavElementProps } from '@/features/favorites/types/favoritesTypes'
+import type { FavElementProps } from '@/features/favorites/public'
+import FavoriteCartStepper from '@/features/favorites/components/FavoriteCartStepper/FavoriteCartStepper'
+import FavoriteToggleButton from '@/features/favorites/components/FavoriteToggleButton/FavoriteToggleButton'
+import { useFavoriteProductActions } from '@/features/favorites/hooks/useFavoriteProductActions'
 import getImgUrl from '@/shared/utils/getImgUrl'
 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
 export default function FavElement({ product, view = 'list' }: Props) {
-  const toggleFavourite = useFavouritesStore(
-    (state: FavStoreState): FavStoreState['toggleFavourite'] =>
-      state.toggleFavourite,
-  )
-  const favouriteIds = useFavouritesStore(
-    (state: FavStoreState): string[] => state.favouriteIds,
-  )
-  const pendingIds = useFavouritesStore(
-    (state: FavStoreState): Set<string> => state.pendingIds,
-  )
-
-  const add = useCartStore(
-    (state: CartSliceStore): CartSliceStore['add'] => state.add,
-  )
-  const remove = useCartStore(
-    (state: CartSliceStore): CartSliceStore['remove'] => state.remove,
-  )
-  const removeFullProduct = useCartStore(
-    (state: CartSliceStore): CartSliceStore['removeFullProduct'] =>
-      state.removeFullProduct,
-  )
-  const items = useCartStore(
-    (state: CartSliceStore): CartSliceStore['itemsIds'] => state.itemsIds,
-  )
-
-  const qty =
-    items.find((item) => item.productId === product.id)?.productQuantity ?? 0
-  const isFavourited = favouriteIds.includes(product.id)
-  const isPending = pendingIds.has(product.id)
-
-  const handleHeart = (): void => {
-    if (!isPending) {
-      void toggleFavourite(product.id)
-    }
-  }
+  const {
+    addToCart,
+    decreaseCartQuantity,
+    handleToggleFavourite,
+    isFavourited,
+    isPending,
+    quantity,
+    removeFromCart,
+  } = useFavoriteProductActions(product.id)
 
   const handleGridHeartClick = (
     event: React.MouseEvent<HTMLButtonElement>,
   ): void => {
     event.preventDefault()
     event.stopPropagation()
-    handleHeart()
+    handleToggleFavourite()
   }
-
-  const HeartBtn = () => (
-    <button
-      aria-busy={isPending}
-      aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
-      aria-pressed={isFavourited}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-red-50 disabled:opacity-50"
-      disabled={isPending}
-      onClick={handleHeart}
-    >
-      {isFavourited ? (
-        <RiHeartFill className="text-negative h-5 w-5" />
-      ) : (
-        <RiHeartLine className="text-secondary h-5 w-5" />
-      )}
-    </button>
-  )
-
-  const Stepper = () => (
-    <div className="flex h-9 items-center">
-      {qty > 0 ? (
-        <div className="bg-inverted inline-flex items-center gap-1 rounded-full px-1 py-1">
-          <button
-            className="text-inverted flex h-7 w-7 items-center justify-center rounded-full hover:bg-white/20"
-            onClick={() =>
-              qty === 1 ? removeFullProduct(product.id) : remove(product.id)
-            }
-          >
-            {qty === 1 ? (
-              <RiDeleteBinLine className="h-3.5 w-3.5" />
-            ) : (
-              <RiSubtractLine className="h-3.5 w-3.5" />
-            )}
-          </button>
-          <span className="text-inverted w-5 text-center text-sm font-semibold">
-            {qty}
-          </span>
-          <button
-            className="bg-brand-solid text-inverted hover:bg-brand-solid-hover flex h-7 w-7 items-center justify-center rounded-full"
-            onClick={() => add(product.id)}
-          >
-            <RiAddLine className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ) : (
-        <button
-          className="bg-brand-solid text-inverted hover:bg-brand-solid-hover h-9 rounded-full px-4 text-xs font-semibold transition"
-          onClick={() => add(product.id)}
-        >
-          Add to cart
-        </button>
-      )}
-    </div>
-  )
 
   if (view === 'grid') {
     return (
@@ -134,22 +45,14 @@ export default function FavElement({ product, view = 'list' }: Props) {
             src={getImgUrl(product.productFileUrl, productImg)}
             width={240}
           />
-          <button
-            aria-busy={isPending}
-            aria-label={
-              isFavourited ? 'Remove from favourites' : 'Add to favourites'
-            }
-            aria-pressed={isFavourited}
-            className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm disabled:opacity-50"
-            disabled={isPending}
-            onClick={handleGridHeartClick}
-          >
-            {isFavourited ? (
-              <RiHeartFill className="text-negative h-4 w-4" />
-            ) : (
-              <RiHeartLine className="text-secondary h-4 w-4" />
-            )}
-          </button>
+          <div className="absolute top-2 right-2">
+            <FavoriteToggleButton
+              compact
+              isFavourited={isFavourited}
+              isPending={isPending}
+              onClick={handleGridHeartClick}
+            />
+          </div>
         </Link>
         <div className="flex flex-1 flex-col p-3">
           {product.brandName && (
@@ -173,7 +76,12 @@ export default function FavElement({ product, view = 'list' }: Props) {
             ${product.price.toFixed(2)}
           </p>
           <div className="mt-2">
-            <Stepper />
+            <FavoriteCartStepper
+              onAdd={addToCart}
+              onRemove={decreaseCartQuantity}
+              onRemoveAll={removeFromCart}
+              quantity={quantity}
+            />
           </div>
         </div>
       </div>
@@ -228,11 +136,20 @@ export default function FavElement({ product, view = 'list' }: Props) {
             <p className="text-primary text-base font-bold">
               ${product.price.toFixed(2)}
             </p>
-            <HeartBtn />
+            <FavoriteToggleButton
+              isFavourited={isFavourited}
+              isPending={isPending}
+              onClick={handleToggleFavourite}
+            />
           </div>
         </div>
         <div className="mt-3">
-          <Stepper />
+          <FavoriteCartStepper
+            onAdd={addToCart}
+            onRemove={decreaseCartQuantity}
+            onRemoveAll={removeFromCart}
+            quantity={quantity}
+          />
         </div>
       </div>
     </div>

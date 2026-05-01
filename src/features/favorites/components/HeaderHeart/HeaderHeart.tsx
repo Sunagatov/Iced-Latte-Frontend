@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useFavouritesStore } from '@/features/favorites/store'
+import { useFavouritesStore } from '@/features/favorites/public'
 
 export default function HeaderHeart() {
   const favouriteIds: string[] = useFavouritesStore((s) => s.favouriteIds)
