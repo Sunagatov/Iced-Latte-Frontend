@@ -3,11 +3,14 @@ import { persist } from 'zustand/middleware'
 import {
   hydrateFavouritesStore,
   syncFavouritesStoreWithSession,
+} from '@/features/favorites/favorites.sync'
+import {
   toggleFavouriteInStore,
-} from '@/features/favorites/favorites.service'
+} from '@/features/favorites/favorites.mutations'
+import type { FavStatus } from '@/features/favorites/favorites.service.types'
 import type { IProduct } from '@/features/products/public'
 
-export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
+export type { FavStatus } from '@/features/favorites/favorites.service.types'
 
 interface FavSliceState {
   favouriteIds: string[]

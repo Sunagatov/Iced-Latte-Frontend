@@ -12,6 +12,7 @@ import {
   hydrateCartStore,
   syncCartStoreWithSession,
 } from '@/features/cart/cart.service'
+import type { CartStatus } from '@/features/cart/cart.service.types'
 import type {
   ICartItem,
   ICartPushItem,
@@ -21,8 +22,7 @@ import {
 } from '@/features/cart/utils/cartUtils'
 
 export const MAX_CART_ITEM_QUANTITY = 99
-
-export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
+export type { CartStatus } from '@/features/cart/cart.service.types'
 
 interface CartSliceState {
   itemsIds: ICartPushItem[]
