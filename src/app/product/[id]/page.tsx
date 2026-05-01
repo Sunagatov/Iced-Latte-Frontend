@@ -1,1 +1,1 @@
-export { default } from '@/features/products/routes/ProductDetailsPage'
+export { ProductDetailsPage as default } from '@/features/products/public'

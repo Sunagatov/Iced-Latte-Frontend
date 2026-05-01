@@ -1,4 +1,4 @@
-import { getProductByIds } from '@/features/products/api'
+import { getProductByIds } from '@/features/products/public'
 import {
   changeCartItemQuantity,
   fetchCart,

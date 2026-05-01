@@ -11,7 +11,7 @@ import type {
   IProductReviewsStatistics,
   Review,
 } from '@/features/reviews/types'
-import type { IProduct } from '@/features/products/types'
+import type { IProduct } from '@/features/products/public'
 import type { IOption } from '@/shared/types/Dropdown'
 import type { ISortParams } from '@/shared/types/ISortParams'
 import { getDefaultSortOption } from '@/shared/utils/getDefaultSortOption'

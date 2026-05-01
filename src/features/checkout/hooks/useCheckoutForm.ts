@@ -4,7 +4,7 @@ import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'reac
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/public'
-import { createOrder } from '@/features/orders/api/ordersApi'
+import { createOrder } from '@/features/orders/public'
 import type { DeliveryAddress } from '@/features/addresses/types'
 import type {
   CheckoutAddressSelection,

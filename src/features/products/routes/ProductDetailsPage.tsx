@@ -1,6 +1,6 @@
 import ProductWithReviews from '@/features/products/components/ProductWithReviews/ProductWithReviews'
-import type { IProduct } from '@/features/products/types'
-import { getProduct } from '@/features/products/api'
+import type { IProduct } from '@/features/products/public'
+import { getProduct } from '@/features/products/public'
 import { isAxiosError } from 'axios'
 import { notFound } from 'next/navigation'
 

@@ -2,8 +2,11 @@ export const dynamic = 'force-dynamic'
 
 import { cache } from 'react'
 import Hero from '@/features/home/components/Hero/Hero'
-import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
-import { getProductBrands, getProductSellers } from '@/features/products/api'
+import {
+  getProductBrands,
+  getProductSellers,
+  ProductCatalog,
+} from '@/features/products/public'
 
 const getBrands = cache(async () => {
   try {

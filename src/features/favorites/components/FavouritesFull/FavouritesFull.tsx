@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import FavElement from '../FavElement/FavElement'
-import { IProduct } from '@/features/products/types'
+import { IProduct } from '@/features/products/public'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 
 function ListIcon({ active }: { active: boolean }) {

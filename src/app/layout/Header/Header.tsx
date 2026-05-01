@@ -8,7 +8,7 @@ import logo from '@/../public/logo.svg'
 import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 import CartButton from '@/features/cart/components/CartButton/CartButton'
 import HeaderHeart from '@/features/favorites/components/HeaderHeart/HeaderHeart'
-import SearchBar from '@/features/products/components/search/SearchBar'
+import { SearchBar } from '@/features/products/public'
 
 const logoSrc = logo as unknown as StaticImageData
 

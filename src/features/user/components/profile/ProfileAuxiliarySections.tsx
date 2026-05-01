@@ -7,7 +7,7 @@ import {
   RiShieldLine,
   RiStarLine,
 } from 'react-icons/ri'
-import UserReviews from '@/features/reviews/components/UserReviews/UserReviews'
+import { UserReviews } from '@/features/reviews/public'
 
 type NotificationPreferenceRowProps = {
   defaultOn?: boolean

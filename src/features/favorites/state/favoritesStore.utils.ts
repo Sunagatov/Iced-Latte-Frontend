@@ -1,4 +1,4 @@
-import type { IProduct } from '@/features/products/types'
+import type { IProduct } from '@/features/products/public'
 
 export const uniqueIds = (ids: readonly string[]): string[] =>
   Array.from(new Set(ids))

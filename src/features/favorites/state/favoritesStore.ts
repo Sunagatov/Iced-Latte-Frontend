@@ -1,7 +1,6 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { getProductByIds } from '@/features/products/api'
-import type { IProduct } from '@/features/products/types'
+import { getProductByIds, type IProduct } from '@/features/products/public'
 import {
   fetchFavourites,
   removeFavourite,

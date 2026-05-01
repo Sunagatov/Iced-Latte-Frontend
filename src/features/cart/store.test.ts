@@ -1,7 +1,7 @@
 import { useCartStore } from '@/features/cart/state/cartStore'
 import { useAuthStore } from '@/features/auth/store'
 import * as cartApi from '@/features/cart/api/cartApi'
-import * as productsApi from '@/features/products/api'
+import * as productsApi from '@/features/products/public'
 import type { ICartItem } from '@/features/cart/types/cartTypes'
 
 jest.mock('@/features/cart/api/cartApi', () => ({
@@ -9,7 +9,7 @@ jest.mock('@/features/cart/api/cartApi', () => ({
   removeCartItem: jest.fn(),
   changeCartItemQuantity: jest.fn(),
 }))
-jest.mock('@/features/products/api', () => ({
+jest.mock('@/features/products/public', () => ({
   getProductByIds: jest.fn(),
 }))
 jest.mock('@/features/auth/store', () => ({

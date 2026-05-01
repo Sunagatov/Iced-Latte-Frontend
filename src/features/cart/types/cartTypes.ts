@@ -1,4 +1,4 @@
-import type { IProduct } from '@/features/products/types'
+import type { IProduct } from '@/features/products/public'
 
 export interface ICart {
   id: string
