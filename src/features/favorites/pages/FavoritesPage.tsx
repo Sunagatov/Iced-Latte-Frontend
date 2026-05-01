@@ -1,7 +1,5 @@
 import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
 
-const FavoritesPage = () => {
+export default function FavoritesPage() {
   return <FavouritesPage />
 }
-
-export default FavoritesPage

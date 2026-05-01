@@ -9,6 +9,11 @@ import {
 } from '@/features/favorites/api/favoritesApi'
 import type { SyncFavouritesRequest } from '@/features/favorites/types/favoritesTypes'
 import { useAuthStore } from '@/features/auth/store'
+import {
+  mapProductsToFavourites,
+  normalizeProducts,
+  uniqueIds,
+} from '@/features/favorites/state/favoritesStore.utils'
 
 export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
 
@@ -35,49 +40,6 @@ const initialState: FavSliceState = {
   status: 'idle',
   pendingIds: new Set<string>(),
   isSync: false,
-}
-
-const uniqueIds = (ids: readonly string[]): string[] => Array.from(new Set(ids))
-
-const isProduct = (value: unknown): value is IProduct => {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
-
-  const candidate = value as Partial<IProduct>
-
-  return typeof candidate.id === 'string'
-}
-
-const normalizeProducts = (products: unknown): IProduct[] => {
-  if (!Array.isArray(products)) {
-    return []
-  }
-
-  const seen = new Set<string>()
-  const unique: IProduct[] = []
-
-  for (const item of products) {
-    if (!isProduct(item) || seen.has(item.id)) {
-      continue
-    }
-
-    seen.add(item.id)
-    unique.push(item)
-  }
-
-  return unique
-}
-
-const setProducts = (
-  products: unknown,
-): Pick<FavSliceState, 'favouriteIds' | 'favourites'> => {
-  const unique = normalizeProducts(products)
-
-  return {
-    favouriteIds: unique.map((product) => product.id),
-    favourites: unique,
-  }
 }
 
 const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
@@ -125,7 +87,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
           const request: SyncFavouritesRequest = { productIds: [id] }
           const response = await syncFavourites(request)
 
-          set(setProducts(response.products))
+          set(mapProductsToFavourites(response.products))
         } else {
           await removeFavourite(id)
         }
@@ -137,7 +99,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
         const currentIds = get().favouriteIds
         const products = await getProductByIds(uniqueIds(currentIds))
 
-        set(setProducts(products))
+        set(mapProductsToFavourites(products))
       }
     } catch {
       set((state) => {
@@ -152,7 +114,8 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
 
         const restoredIds = uniqueIds([...state.favouriteIds, id])
         const restoredFavourites = previousProduct
-          ? setProducts([...state.favourites, previousProduct]).favourites
+          ? mapProductsToFavourites([...state.favourites, previousProduct])
+            .favourites
           : state.favourites
 
         return {
@@ -194,7 +157,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
         }
 
         set({
-          ...setProducts(products),
+          ...mapProductsToFavourites(products),
           isSync: incoming.length > 0,
           status: 'ready',
         })
@@ -212,7 +175,7 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
 
       const products = await getProductByIds(productIds)
 
-      set({ ...setProducts(products), status: 'ready' })
+      set({ ...mapProductsToFavourites(products), status: 'ready' })
     } catch (err) {
       if (
         (err as { name?: string }).name === 'AbortError' ||
@@ -235,7 +198,11 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       }
       const response = await syncFavourites(request)
 
-      set({ ...setProducts(response.products), isSync: true, status: 'ready' })
+      set({
+        ...mapProductsToFavourites(response.products),
+        isSync: true,
+        status: 'ready',
+      })
     } catch {
       set({ status: 'error' })
     }

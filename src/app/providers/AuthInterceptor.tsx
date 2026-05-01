@@ -23,7 +23,7 @@ const apiClient = api
 
 // Single-flight mutex: only one refresh can be in-flight at a time.
 // Concurrent 401s await the same promise instead of each triggering a new refresh.
-let refreshPromise: Promise<void> | null = null
+let refreshPromise: ReturnType<typeof refreshAuthenticatedSession> | null = null
 
 export function isBootstrapUserProfileRequest(url?: string): boolean {
   if (!url) return false

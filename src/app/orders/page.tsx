@@ -1,1 +1,1 @@
-export { default } from '@/features/orders/routes/OrdersPage'
+export { default } from '@/features/orders/pages/OrdersPage'

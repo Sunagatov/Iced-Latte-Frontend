@@ -1,126 +1,28 @@
 'use client'
 
-import {
-  useState,
-  useEffect,
-  type ChangeEvent,
-  type SyntheticEvent,
-} from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/features/auth/store'
-import { useCartStore } from '@/features/cart/store'
-import { api } from '@/shared/api/client'
+import type { ChangeEvent } from 'react'
 import Link from 'next/link'
-import Loader from '@/shared/ui/Loader/Loader'
 import AddressPicker from '@/features/addresses/components/AddressPicker'
-import { DeliveryAddress } from '@/features/addresses/types'
+import CheckoutSummary from '@/features/checkout/components/CheckoutSummary'
+import { useCheckoutForm } from '@/features/checkout/hooks/useCheckoutForm'
+import Loader from '@/shared/ui/Loader/Loader'
 
 export default function CheckoutForm() {
-  const router = useRouter()
-  const { userData } = useAuthStore()
-  const { tempItems, totalPrice, resetCart } = useCartStore()
-
-  const [selectedAddress, setSelectedAddress] =
-    useState<DeliveryAddress | null>(null)
-  const [form, setForm] = useState({
-    recipientName: userData?.firstName ?? '',
-    recipientSurname: userData?.lastName ?? '',
-    recipientPhone: userData?.phoneNumber ?? '',
-    country: userData?.address?.country ?? '',
-    city: userData?.address?.city ?? '',
-    line: userData?.address?.line ?? '',
-    postcode: userData?.address?.postcode ?? '',
-  })
-
-  useEffect(() => {
-    if (!userData) {
-      return
-    }
-
-    setForm((prev) => ({
-      recipientName: prev.recipientName || userData.firstName || '',
-      recipientSurname: prev.recipientSurname || userData.lastName || '',
-      recipientPhone: prev.recipientPhone || userData.phoneNumber || '',
-      country: prev.country || userData.address?.country || '',
-      city: prev.city || userData.address?.city || '',
-      line: prev.line || userData.address?.line || '',
-      postcode: prev.postcode || userData.address?.postcode || '',
-    }))
-  }, [userData])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const set = (field: string) => (e: ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [field]: e.target.value }))
-
-  const address = selectedAddress
-    ? {
-      country: selectedAddress.country,
-      city: selectedAddress.city,
-      line: selectedAddress.line,
-      postcode: selectedAddress.postcode,
-    }
-    : {
-      country: form.country,
-      city: form.city,
-      line: form.line,
-      postcode: form.postcode,
-    }
-
-  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError('')
-    if (!tempItems || tempItems.length === 0) {
-      setError('Your cart is empty. Add items before placing an order.')
-
-      return
-    }
-    setLoading(true)
-    try {
-      await api.post('/orders', {
-        recipientName: form.recipientName,
-        recipientSurname: form.recipientSurname,
-        recipientPhone: form.recipientPhone || undefined,
-        address,
-      })
-      resetCart()
-      router.push('/orders')
-    } catch {
-      setError('Could not place order. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const {
+    error,
+    form,
+    handleSubmit,
+    loading,
+    selectedAddress,
+    setSelectedAddress,
+    updateField,
+  } = useCheckoutForm()
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-4 py-10">
       <h1 className="text-primary mb-6 text-3xl font-bold">Checkout</h1>
 
-      {/* Order summary */}
-      <div className="bg-secondary mb-6 rounded-2xl p-4">
-        <p className="text-secondary mb-2 text-xs font-bold tracking-widest uppercase">
-          Order summary
-        </p>
-        <div className="flex flex-col gap-1">
-          {tempItems.map((item) => (
-            <div key={item.id} className="flex justify-between gap-4 text-sm">
-              <span className="text-secondary min-w-0 truncate">
-                {item.productInfo.name}{' '}
-                <span className="opacity-60">×{item.productQuantity}</span>
-              </span>
-              <span className="text-primary font-medium tabular-nums">
-                ${(item.productInfo.price * item.productQuantity).toFixed(2)}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-3 flex justify-between border-t border-black/10 pt-3">
-          <span className="text-primary font-semibold">Total</span>
-          <span className="text-brand text-xl font-bold tabular-nums">
-            ${totalPrice.toFixed(2)}
-          </span>
-        </div>
-      </div>
+      <CheckoutSummary />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <p className="text-secondary text-xs font-bold tracking-widest uppercase">
@@ -131,14 +33,14 @@ export default function CheckoutForm() {
             id="recipientName"
             label="First name"
             value={form.recipientName}
-            onChange={set('recipientName')}
+            onChange={updateField('recipientName')}
             required
           />
           <Field
             id="recipientSurname"
             label="Last name"
             value={form.recipientSurname}
-            onChange={set('recipientSurname')}
+            onChange={updateField('recipientSurname')}
             required
           />
         </div>
@@ -146,7 +48,7 @@ export default function CheckoutForm() {
           id="recipientPhone"
           label="Phone (for delivery updates)"
           value={form.recipientPhone}
-          onChange={set('recipientPhone')}
+          onChange={updateField('recipientPhone')}
           type="tel"
         />
 
@@ -159,14 +61,13 @@ export default function CheckoutForm() {
           onSelect={setSelectedAddress}
         />
 
-        {/* Manual address fields — shown only when entering a new address */}
         {!selectedAddress && (
           <>
             <Field
               id="addressLine"
               label="Address line"
               value={form.line}
-              onChange={set('line')}
+              onChange={updateField('line')}
               required
             />
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -174,14 +75,14 @@ export default function CheckoutForm() {
                 id="city"
                 label="City"
                 value={form.city}
-                onChange={set('city')}
+                onChange={updateField('city')}
                 required
               />
               <Field
                 id="postcode"
                 label="Postcode"
                 value={form.postcode}
-                onChange={set('postcode')}
+                onChange={updateField('postcode')}
                 required
               />
             </div>
@@ -189,7 +90,7 @@ export default function CheckoutForm() {
               id="country"
               label="Country"
               value={form.country}
-              onChange={set('country')}
+              onChange={updateField('country')}
               required
             />
           </>
@@ -227,7 +128,7 @@ function Field({
   id: string
   label: string
   value: string
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
   required?: boolean
   type?: string
 }) {

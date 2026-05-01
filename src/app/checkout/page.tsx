@@ -1,1 +1,1 @@
-export { default } from '@/features/checkout/routes/CheckoutPage'
+export { default } from '@/features/checkout/pages/CheckoutPage'

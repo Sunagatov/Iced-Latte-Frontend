@@ -1,1 +1,1 @@
-export { default } from '@/features/favorites/routes/FavoritesPage'
+export { default } from '@/features/favorites/pages/FavoritesPage'

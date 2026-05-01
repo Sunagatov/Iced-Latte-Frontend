@@ -1,23 +1,13 @@
 'use client'
 import ReviewForm from '../ReviewForm/ReviewForm'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useErrorHandler } from '@/shared/utils/apiError'
-import { Review, IProductReviewsStatistics } from '@/features/reviews/types'
-import { useAuthStore } from '@/features/auth/store'
-import { useReviews } from '@/features/reviews/hooks'
-import { apiGetProductUserReview } from '@/features/reviews/api'
+import type { IProductReviewsStatistics } from '@/features/reviews/types'
 import Loader from '@/shared/ui/Loader/Loader'
 import ReviewsList from '@/features/reviews/components/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/features/reviews/components/ReviewsSorter/ReviewsSorter'
-import { reviewsSortOptions } from '@/features/reviews/constants'
-import { checkIfUserReviewExists } from '@/features/reviews/store'
-import { IOption } from '@/shared/types/Dropdown'
-import { ISortParams } from '@/shared/types/ISortParams'
-import { getDefaultSortOption } from '@/shared/utils/getDefaultSortOption'
 import { IProduct } from '@/features/products/types'
 import AIReviewSummary from '@/features/reviews/components/AIReviewSummary/AIReviewSummary'
-import { useOnClickOutside } from 'usehooks-ts'
-import { FaStar } from 'react-icons/fa'
+import ReviewsFilter from '@/features/reviews/components/ReviewsFilter/ReviewsFilter'
+import { useReviewsSection } from '@/features/reviews/hooks/useReviewsSection'
 
 interface ReviewComponentProps {
   product: IProduct
@@ -30,67 +20,36 @@ const ReviewsSection = ({
   reviewsStatistics,
   refreshStatistics,
 }: ReviewComponentProps) => {
-  const { id: productId } = product
-  const { errorMessage, handleError } = useErrorHandler()
-  const isLoggedIn: boolean = useAuthStore((s) => s.isLoggedIn)
-
-  const [userReview, setUserReview] = useState<Review | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [selectedFilterRating, setSelectedFilterRating] = useState<number[]>([])
-  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
-  const [selectedSortOption, setSelectedSortOption] = useState<
-    IOption<ISortParams>
-  >(() => getDefaultSortOption(reviewsSortOptions))
-  const filterRef = useRef<HTMLDivElement>(null)
-
-  useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () =>
-    setShowFilterDropdown(false),
-  )
-
-  const refreshUserReview = useCallback(() => {
-    apiGetProductUserReview(productId).then(
-      (review) => {
-        setUserReview(checkIfUserReviewExists(review) ? review : null)
-      },
-      () => setUserReview(null),
-    )
-  }, [productId])
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      setUserReview(null)
-
-      return
-    }
-    void refreshUserReview()
-  }, [productId, isLoggedIn, refreshUserReview])
-
   const {
-    data: reviews,
-    fetchNext,
-    hasNextPage,
-    isLoading,
-    isFetchingNextPage,
+    clearRatingFilters,
     error,
-    refreshReviews,
-    removeReviewFromCache,
-    updateReviewInCache,
-  } = useReviews({
+    errorMessage,
+    filterRef,
+    handleReviewDeleted,
+    handleReviewSubmitted,
+    handleShowMoreReviews,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
     productId,
+    refreshReviews,
+    reviews,
+    reviewsSummary,
+    selectedFilterRating,
+    selectedSortOption,
+    setSelectedSortOption,
+    setShowFilterDropdown,
+    showFilterDropdown,
+    showForm,
+    setShowForm,
+    toggleRatingFilter,
+    updateReviewInCache,
     userReview,
-    sortOption: selectedSortOption,
-    ratingFilter: selectedFilterRating,
+  } = useReviewsSection({
+    product,
+    reviewsStatistics,
+    refreshStatistics,
   })
-
-  const ratingFilterChangeHandler = (value: number) => {
-    setSelectedFilterRating((prev) => {
-      const idx = prev.indexOf(value)
-
-      return idx === -1 ? [...prev, value] : prev.toSpliced(idx, 1)
-    })
-  }
-
-  const showMoreReviews = () => fetchNext().catch((e) => handleError(e))
 
   if (error) {
     return (
@@ -142,109 +101,42 @@ const ReviewsSection = ({
               productId={productId}
               showForm={showForm}
               setShowForm={setShowForm}
-              onReviewSubmitted={() => {
-                void refreshUserReview()
-                void refreshReviews()
-                void refreshStatistics()
-              }}
+              onReviewSubmitted={handleReviewSubmitted}
             />
           )}
 
-          {reviewsStatistics && reviewsStatistics.reviewsCount > 0 && (
+          {reviewsStatistics && reviewsSummary.hasStatistics && (
             <ReviewsSorter
               selectedOption={selectedSortOption}
               selectOption={setSelectedSortOption}
               userReview={userReview}
             >
-              <div ref={filterRef} className="relative">
-                <button
-                  onClick={() => setShowFilterDropdown((v) => !v)}
-                  className={`flex items-center gap-1.5 rounded-[40px] border-2 px-5 py-3 text-base font-medium transition-all duration-200 active:scale-95 ${
-                    showFilterDropdown || selectedFilterRating.length > 0
-                      ? 'border-brand-solid bg-secondary text-primary'
-                      : 'bg-secondary text-primary hover:bg-tertiary border-transparent'
-                  }`}
-                >
-                  Filter
-                  {selectedFilterRating.length > 0 && (
-                    <span className="bg-brand-solid flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white">
-                      {selectedFilterRating.length}
-                    </span>
-                  )}
-                  <FaStar className="text-positive h-3 w-3" />
-                </button>
-                {showFilterDropdown && (
-                  <div className="border-primary bg-primary absolute top-[calc(100%+8px)] right-0 z-10 w-56 rounded-xl border shadow-xl">
-                    <div className="flex flex-col gap-0.5 p-2">
-                      {[5, 4, 3, 2, 1].map((value) => {
-                        const count =
-                          reviewsStatistics.ratingMap[`star${value}`] ?? 0
-                        const total = reviewsStatistics.reviewsCount ?? 0
-                        const pct =
-                          total > 0 ? Math.round((count / total) * 100) : 0
-                        const isChecked = selectedFilterRating.includes(value)
-
-                        return (
-                          <button
-                            key={value}
-                            onClick={() => ratingFilterChangeHandler(value)}
-                            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
-                              isChecked
-                                ? 'bg-brand-second font-semibold'
-                                : 'hover:bg-tertiary'
-                            }`}
-                          >
-                            <span className="text-primary w-3 text-right font-semibold">
-                              {value}
-                            </span>
-                            <FaStar className="text-positive h-3.5 w-3.5 shrink-0" />
-                            <div className="bg-secondary h-1.5 flex-1 overflow-hidden rounded-full">
-                              <div
-                                className="bg-positive h-full rounded-full transition-all duration-300"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                            <span className="text-tertiary w-5 text-right text-xs">
-                              {count}
-                            </span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                    {selectedFilterRating.length > 0 && (
-                      <div className="border-primary/10 border-t px-3 py-2">
-                        <button
-                          onClick={() => setSelectedFilterRating([])}
-                          className="text-brand text-xs font-medium hover:underline"
-                        >
-                          Clear filters
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <ReviewsFilter
+                filterRef={filterRef}
+                reviewsStatistics={reviewsStatistics}
+                selectedFilterRating={selectedFilterRating}
+                showFilterDropdown={showFilterDropdown}
+                setShowFilterDropdown={setShowFilterDropdown}
+                toggleRatingFilter={toggleRatingFilter}
+                clearRatingFilters={clearRatingFilters}
+              />
             </ReviewsSorter>
           )}
 
-          {reviews.length > 0 || userReview ? (
+          {reviewsSummary.hasAnyReviews ? (
             <ReviewsList
               productId={productId}
               reviews={reviews}
-              showMoreReviews={showMoreReviews}
+              showMoreReviews={handleShowMoreReviews}
               isFetchingNextPage={isFetchingNextPage}
               hasNextPage={hasNextPage}
               userReview={userReview}
-              onReviewDeleted={(id) => {
-                refreshUserReview()
-                removeReviewFromCache(id)
-                void refreshStatistics()
-              }}
+              onReviewDeleted={handleReviewDeleted}
               onReviewRated={(updated) => updateReviewInCache(updated)}
             />
           ) : (
             !isLoading &&
-            reviewsStatistics?.reviewsCount === 0 && (
+            reviewsSummary.reviewsCount === 0 && (
               <div className="border-primary/60 mt-6 rounded-2xl border bg-white p-8 text-center shadow-sm">
                 <p className="text-primary text-base font-semibold">
                   No reviews yet
@@ -260,7 +152,7 @@ const ReviewsSection = ({
             <div className="text-tertiary mt-4 flex items-center gap-3 text-sm">
               <span>No reviews match this filter.</span>
               <button
-                onClick={() => setSelectedFilterRating([])}
+                onClick={clearRatingFilters}
                 className="text-brand font-medium hover:underline"
               >
                 Clear filters

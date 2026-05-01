@@ -11,9 +11,13 @@ import { useDebounceValue } from 'usehooks-ts'
 import { getAllProducts } from '@/features/products/api'
 import { useProductFiltersStore } from '@/features/products/store'
 import type { IProduct, IProductsList } from '@/features/products/types'
+import {
+  deleteRecentSearch,
+  getRecentSearches,
+  saveRecentSearch,
+} from '@/features/products/utils/productSearchHistory'
+import { highlightSearchMatch } from '@/features/products/utils/highlightSearchMatch'
 
-const RECENT_KEY = 'il_recent_searches'
-const MAX_RECENT = 5
 const AUTOCOMPLETE_SIZE = 6
 
 type UseProductSearchOptions = {
@@ -43,61 +47,6 @@ type UseProductSearchResult = {
 const fetchProducts = getAllProducts as unknown as (
   url: string,
 ) => Promise<IProductsList>
-
-function getRecentSearches(): string[] {
-  try {
-    const rawValue = localStorage.getItem(RECENT_KEY)
-    const parsed: unknown = JSON.parse(rawValue ?? '[]')
-
-    if (!Array.isArray(parsed)) {
-      return []
-    }
-
-    return parsed.filter(
-      (item: unknown): item is string => typeof item === 'string',
-    )
-  } catch {
-    return []
-  }
-}
-
-function saveRecentSearch(query: string): void {
-  const previousQueries = getRecentSearches().filter((item) => item !== query)
-
-  localStorage.setItem(
-    RECENT_KEY,
-    JSON.stringify([query, ...previousQueries].slice(0, MAX_RECENT)),
-  )
-}
-
-function deleteRecentSearch(query: string): void {
-  localStorage.setItem(
-    RECENT_KEY,
-    JSON.stringify(getRecentSearches().filter((item) => item !== query)),
-  )
-}
-
-export function highlightMatch(text: string, query: string): ReactNode {
-  if (!query) {
-    return text
-  }
-
-  const startIndex = text.toLowerCase().indexOf(query.toLowerCase())
-
-  if (startIndex === -1) {
-    return text
-  }
-
-  return (
-    <>
-      {text.slice(0, startIndex)}
-      <mark className="text-brand bg-transparent font-bold">
-        {text.slice(startIndex, startIndex + query.length)}
-      </mark>
-      {text.slice(startIndex + query.length)}
-    </>
-  )
-}
 
 export function useProductSearch({
   onBlur,
@@ -275,7 +224,7 @@ export function useProductSearch({
     handleClear,
     handleFocus,
     handleKeyDown,
-    highlightMatch,
+    highlightMatch: highlightSearchMatch,
     inputRef,
     inputValue,
     isDropdownOpen: showRecent || showSuggestions,

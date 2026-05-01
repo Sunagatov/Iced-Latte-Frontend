@@ -1,10 +1,8 @@
 import { render, waitFor } from '@testing-library/react'
 import OrderHistory from '@/features/orders/components/OrderHistory'
-import { api } from '@/shared/api/client'
+import * as ordersApi from '@/features/orders/api/ordersApi'
 
-jest.mock('@/shared/api/client', () => ({
-  api: { get: jest.fn() },
-}))
+jest.mock('@/features/orders/api/ordersApi')
 
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -15,22 +13,20 @@ jest.mock('next/link', () => ({
   ),
 }))
 
-const mockedApi = api as jest.Mocked<typeof api>
+const mockedOrdersApi = jest.mocked(ordersApi)
 
 describe('OrderHistory', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('loads orders with cache disabled', async () => {
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
-      data: [],
-    })
+  it('loads orders through the orders api', async () => {
+    mockedOrdersApi.fetchOrders.mockResolvedValue([])
 
     render(<OrderHistory />)
 
     await waitFor(() => {
-      expect(mockedApi.get).toHaveBeenCalledWith(
-        '/orders',
-        expect.objectContaining({ cache: false, signal: expect.any(AbortSignal) }),
+      expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledWith(
+        undefined,
+        expect.any(AbortSignal),
       )
     })
   })

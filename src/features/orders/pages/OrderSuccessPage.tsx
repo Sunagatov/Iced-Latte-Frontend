@@ -1,9 +1,9 @@
+import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 import OrderSuccess from '@/features/orders/components/OrderSuccess'
-import Loader from '@/shared/ui/Loader/Loader'
 import { getCookie, getRefreshCookie } from '@/shared/auth/cookies'
 import { hasRecoverableSession } from '@/shared/auth/token'
-import { redirect } from 'next/navigation'
-import { Suspense } from 'react'
+import Loader from '@/shared/ui/Loader/Loader'
 
 interface OrderSuccessPageProps {
   searchParams: Promise<{ sessionId?: string }>

@@ -1,9 +1,9 @@
+import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 import OrderHistory from '@/features/orders/components/OrderHistory'
-import Loader from '@/shared/ui/Loader/Loader'
 import { getCookie, getRefreshCookie } from '@/shared/auth/cookies'
 import { hasRecoverableSession } from '@/shared/auth/token'
-import { redirect } from 'next/navigation'
-import { Suspense } from 'react'
+import Loader from '@/shared/ui/Loader/Loader'
 
 export default async function OrdersPage() {
   const token = await getCookie()
