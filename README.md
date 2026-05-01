@@ -123,39 +123,38 @@ Iced Latte has earned recognition from the broader tech community.
 
 ```text
 src/
-├── 📁 app/                # Next.js App Router pages and route handlers
-│   ├── 📁 api/            # Auth/proxy handlers
-│   ├── 📁 auth/           # OAuth callback pages
-│   ├── 📁 cart/           # Cart page
-│   ├── 📁 checkout/       # Checkout page
-│   ├── 📁 confirm_registration/
-│   ├── 📁 favourites/     # Favourites page
-│   ├── 📁 forgotpass/
-│   ├── 📁 orders/         # Orders page
-│   ├── 📁 product/        # Product detail page
-│   ├── 📁 profile/        # User profile page
-│   ├── 📁 resetpass/
-│   ├── 📁 signin/         # Sign-in page
-│   ├── 📁 signup/         # Sign-up page
-│   └── 📄 layout.tsx      # Root layout
-├── 📁 features/           # Feature-based modules
-│   ├── 📁 addresses/      # Delivery addresses
-│   ├── 📁 auth/           # Auth (login, register)
-│   ├── 📁 cart/           # Shopping cart
-│   ├── 📁 checkout/       # Checkout flow
-│   ├── 📁 favorites/      # Favourites
-│   ├── 📁 orders/         # Orders
-│   ├── 📁 products/       # Product catalog
-│   ├── 📁 reviews/        # Product reviews
-│   ├── 📁 session/        # Session state/helpers
-│   └── 📁 user/           # User profile
-└── 📁 shared/             # Cross-feature shared code
-    ├── 📁 api/            # Axios client
-    ├── 📁 components/     # Shared UI components
-    ├── 📁 providers/      # App-level providers
-    ├── 📁 types/          # Shared TypeScript types
-    └── 📁 utils/          # Utility functions
+├── app/                   # Next App Router entries, route handlers, shell layout, providers
+│   ├── api/               # Next route handlers and proxy endpoints
+│   ├── layout/            # Header, footer, and app-shell UI
+│   └── providers/         # App bootstrap and global runtime wiring
+├── features/              # Product/domain slices
+│   ├── addresses/         # Delivery address management
+│   ├── auth/              # Sign-in, sign-up, password reset, auth guards
+│   ├── cart/              # Shopping cart flows and state
+│   ├── checkout/          # Checkout flow
+│   ├── favorites/         # Favourites
+│   ├── home/              # Home page route and hero section
+│   ├── orders/            # Orders and order success
+│   ├── products/          # Catalog and product details
+│   ├── reviews/           # Reviews and ratings
+│   ├── session/           # Session orchestration across auth/cart/favourites
+│   └── user/              # Profile and user account flows
+├── shared/                # Cross-feature building blocks
+│   ├── api/               # Axios client
+│   ├── auth/              # Cookies, token helpers, session tracing
+│   ├── types/             # Shared TypeScript types
+│   ├── ui/                # Reusable UI primitives
+│   └── utils/             # Non-auth generic utilities
+└── types/                 # Global declaration files
 ```
+
+### Structure rules
+
+- Keep `app/` thin. It should own Next routing, shell layout, and provider wiring, not feature business logic.
+- Keep route implementations under the owning feature whenever the route has meaningful UI or orchestration logic.
+- Use `shared/ui` only for domain-agnostic primitives. Header, footer, hero sections, and auth guards are not generic UI.
+- Keep auth cookies, token helpers, and request tracing under `shared/auth`.
+- Do not let `shared/` import from `app/` or from feature modules.
 
 ---
 

@@ -1,8 +1,8 @@
 'use client'
 
-import Loader from '@/shared/components/Loader/Loader'
-import Button from '@/shared/components/Buttons/Button/Button'
-import FormInput from '@/shared/components/FormInput/FormInput'
+import Loader from '@/shared/ui/Loader/Loader'
+import Button from '@/shared/ui/Buttons/Button/Button'
+import FormInput from '@/shared/ui/FormInput/FormInput'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { changePassSchema } from '@/features/auth/validation'

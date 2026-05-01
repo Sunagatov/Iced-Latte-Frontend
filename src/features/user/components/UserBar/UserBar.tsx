@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
-import Button from '@/shared/components/Buttons/Button/Button'
+import Button from '@/shared/ui/Buttons/Button/Button'
 
 const UserBar = () => {
   const { setUserData, userData } = useAuthStore()

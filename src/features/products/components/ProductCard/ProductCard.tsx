@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { memo } from 'react'
 import productImg from '@/../public/coffee.png'
-import CircleAddBtn from '@/shared/components/Buttons/CircleAddBtn/CircleAddBtn'
+import CircleAddBtn from '@/shared/ui/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/shared/utils/getImgUrl'
 import { useCartStore } from '@/features/cart/store'
 import { useFavouritesStore } from '@/features/favorites/store'
@@ -12,7 +12,7 @@ interface ICardProps {
   priority?: boolean
 }
 import ProductRating from '@/features/products/components/ProductRating/ProductRating'
-import Counter from '@/shared/components/Counter/Counter'
+import Counter from '@/shared/ui/Counter/Counter'
 
 export default memo(function ProductCard({
   product,

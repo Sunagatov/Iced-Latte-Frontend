@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/store'
 import { useCartStore } from '@/features/cart/store'
-import { clearAuthCookies } from '@/shared/utils/cookieUtils'
+import { clearAuthCookies } from '@/shared/auth/cookies'
 
 /**
  * Clears all client-side session state: auth, cart, and favourites.

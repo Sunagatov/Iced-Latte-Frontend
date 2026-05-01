@@ -14,8 +14,8 @@ import * as yup from 'yup'
 type FormValues = yup.InferType<typeof validationSchema>
 import { useErrorHandler } from '@/shared/utils/apiError'
 import Image from 'next/image'
-import Button from '@/shared/components/Buttons/Button/Button'
-import FormInput from '@/shared/components/FormInput/FormInput'
+import Button from '@/shared/ui/Buttons/Button/Button'
+import FormInput from '@/shared/ui/FormInput/FormInput'
 import countries from '@/features/user/constants'
 
 const FormProfile = ({

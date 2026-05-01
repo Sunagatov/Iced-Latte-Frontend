@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/shared/components/Buttons/Button/Button'
+import Button from '@/shared/ui/Buttons/Button/Button'
 import Image from 'next/image'
 import search from '@/../public/search_cart.png'
 import Link from 'next/link'

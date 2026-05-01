@@ -2,7 +2,7 @@
 
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
-import { setAuthCookies } from '@/shared/utils/cookieUtils'
+import { setAuthCookies } from '@/shared/auth/cookies'
 import { useAuthRedirect } from './useAuthRedirect'
 import { useCallback } from 'react'
 

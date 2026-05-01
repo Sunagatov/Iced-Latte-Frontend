@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge'
-import CircleCloseButton from '@/shared/components/Buttons/CircleCloseButton/CircleCloseButton'
+import CircleCloseButton from '@/shared/ui/Buttons/CircleCloseButton/CircleCloseButton'
 import React, { ReactNode, useEffect, useRef } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 

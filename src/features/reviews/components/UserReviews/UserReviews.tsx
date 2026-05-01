@@ -3,7 +3,7 @@
 import useSWR from 'swr'
 import { apiGetUserReviews } from '@/features/reviews/api'
 import Review from '@/features/reviews/components/Review/Review'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 import Link from 'next/link'
 import { RiStarLine } from 'react-icons/ri'
 

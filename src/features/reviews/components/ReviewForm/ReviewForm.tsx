@@ -1,6 +1,6 @@
 'use client'
 import StarRating from '@/features/reviews/components/StarRating/StarRating'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 import { useState } from 'react'
 import { useProductRatingStore } from '@/features/reviews/store'
 import { useErrorHandler } from '@/shared/utils/apiError'

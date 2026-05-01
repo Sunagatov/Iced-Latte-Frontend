@@ -3,10 +3,9 @@ import 'react-toastify/dist/ReactToastify.css'
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
-import Header from '@/shared/components/Header/Header'
-import Footer from '@/shared/components/Footer/Footer'
-import AuthInterceptor from '@/shared/providers/AuthInterceptor'
-import AppInitProvider from '@/shared/providers/AppInitProvider'
+import Header from '@/app/layout/Header/Header'
+import Footer from '@/app/layout/Footer/Footer'
+import AppProviders from '@/app/providers/AppProviders'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -26,13 +25,11 @@ export default function RootLayout({
         className={inter.className + ' flex min-h-screen flex-col'}
       >
         <ToastContainer />
-        <AuthInterceptor>
-          <AppInitProvider>
-            <Header />
-            <main className={'min-w-[360px] grow'}>{children}</main>
-            <Footer />
-          </AppInitProvider>
-        </AuthInterceptor>
+        <AppProviders>
+          <Header />
+          <main className={'min-w-[360px] grow'}>{children}</main>
+          <Footer />
+        </AppProviders>
       </body>
     </html>
   )

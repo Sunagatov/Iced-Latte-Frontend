@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { reviewsSortOptions } from '@/features/reviews/constants'
-import Dropdown from '@/shared/components/Dropdown/Dropdown'
+import Dropdown from '@/shared/ui/Dropdown/Dropdown'
 import { IOption } from '@/shared/types/Dropdown'
 import { ISortParams } from '@/shared/types/ISortParams'
 import { Review } from '@/features/reviews/types'

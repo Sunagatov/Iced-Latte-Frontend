@@ -1,7 +1,1 @@
-import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
-
-const FavPage = () => {
-  return <FavouritesPage />
-}
-
-export default FavPage
+export { default } from '@/features/favorites/routes/FavoritesPage'

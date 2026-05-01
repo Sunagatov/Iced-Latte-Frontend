@@ -8,8 +8,8 @@ import type { CacheAxiosResponse } from 'axios-cache-interceptor'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import { api } from '@/shared/api/client'
-import Button from '@/shared/components/Buttons/Button/Button'
-import Loader from '@/shared/components/Loader/Loader'
+import Button from '@/shared/ui/Buttons/Button/Button'
+import Loader from '@/shared/ui/Loader/Loader'
 import order from '@/../public/orders_stub.png'
 
 interface PaymentSessionStatus {

@@ -1,6 +1,6 @@
 import { IProduct } from '@/features/products/types'
 import ProductCard from '../ProductCard/ProductCard'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 
 const SUGGESTIONS = [
   'Latte',

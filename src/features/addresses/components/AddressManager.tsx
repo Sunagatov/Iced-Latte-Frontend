@@ -6,7 +6,7 @@ import { DeliveryAddress } from '../types'
 import AddressCard from './AddressCard'
 import AddressForm from './AddressForm'
 import { RiMapPinLine, RiAddLine } from 'react-icons/ri'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 
 export default function AddressManager() {
   const { addresses, loading, error, fetch } = useAddressStore()

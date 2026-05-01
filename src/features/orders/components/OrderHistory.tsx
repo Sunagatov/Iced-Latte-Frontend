@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '@/shared/api/client'
 import Link from 'next/link'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 import {
   RiShoppingBagLine,
   RiMapPinLine,

@@ -26,7 +26,7 @@ import UserReviews from '@/features/reviews/components/UserReviews/UserReviews'
 import ImageUpload from '@/features/user/components/ImageUpload/ImageUpload'
 import type { UserData } from '@/features/user/types'
 import { api } from '@/shared/api/client'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 import FormProfile from '../FormProfile/FormProfile'
 
 type Section =

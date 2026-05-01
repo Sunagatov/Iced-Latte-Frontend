@@ -11,7 +11,7 @@ import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
 import { api } from '@/shared/api/client'
 import Link from 'next/link'
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 import AddressPicker from '@/features/addresses/components/AddressPicker'
 import { DeliveryAddress } from '@/features/addresses/types'
 

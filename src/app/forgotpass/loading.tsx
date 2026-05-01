@@ -1,4 +1,4 @@
-import Loader from '@/shared/components/Loader/Loader'
+import Loader from '@/shared/ui/Loader/Loader'
 
 const ForgotLoading = () => {
   return (

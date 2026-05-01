@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { setupCache, AxiosCacheInstance } from 'axios-cache-interceptor'
-import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
+import { getSessionId, generateTraceId } from '@/shared/auth/sessionTracing'
 
 const instance = axios.create({
   timeout: typeof window === 'undefined' ? 5000 : 15000,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
-import { isTokenExpired } from '@/shared/utils/authToken'
+import { isTokenExpired } from '@/shared/auth/token'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
