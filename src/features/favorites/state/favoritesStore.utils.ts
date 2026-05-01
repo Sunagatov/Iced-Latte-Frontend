@@ -1,4 +1,21 @@
-import type { IProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/types'
+
+export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
+
+export type FavStoreSlice = {
+  favouriteIds: string[]
+  favourites: IProduct[]
+  isSync: boolean
+  pendingIds: Set<string>
+  status: FavStatus
+}
+
+export type FavStoreSet = {
+  (partial: Partial<FavStoreSlice>): void
+  (fn: (state: FavStoreSlice) => Partial<FavStoreSlice>): void
+}
+
+export type FavStoreGet = () => FavStoreSlice
 
 export const uniqueIds = (ids: readonly string[]): string[] =>
   Array.from(new Set(ids))
@@ -43,4 +60,39 @@ export function mapProductsToFavourites(products: unknown): {
     favouriteIds: unique.map((product) => product.id),
     favourites: unique,
   }
+}
+
+export function setPendingFavourite(
+  set: FavStoreSet,
+  productId: string,
+): void {
+  set((state) => {
+    const pendingIds = new Set(state.pendingIds)
+
+    pendingIds.add(productId)
+
+    return { pendingIds }
+  })
+}
+
+export function clearPendingFavourite(
+  set: FavStoreSet,
+  productId: string,
+): void {
+  set((state) => {
+    const pendingIds = new Set(state.pendingIds)
+
+    pendingIds.delete(productId)
+
+    return { pendingIds }
+  })
+}
+
+export function restoreRemovedFavourite(
+  favourites: IProduct[],
+  previousProduct: IProduct | null,
+): IProduct[] {
+  return previousProduct
+    ? mapProductsToFavourites([...favourites, previousProduct]).favourites
+    : favourites
 }

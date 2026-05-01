@@ -5,19 +5,18 @@ import {
 } from '@/features/favorites/api/favoritesApi'
 import {
   clearPendingFavourite,
+  type FavStoreGet,
+  type FavStoreSet,
+  mapProductsToFavourites,
   restoreRemovedFavourite,
   setPendingFavourite,
-} from '@/features/favorites/favorites.state'
-import type { FavGet, FavSet } from '@/features/favorites/favorites.service.types'
-import {
-  mapProductsToFavourites,
   uniqueIds,
 } from '@/features/favorites/state/favoritesStore.utils'
-import { getProductByIds } from '@/features/products/public'
+import { getProductByIds } from '@/features/products/api'
 
 export async function toggleFavouriteInStore(
-  set: FavSet,
-  get: FavGet,
+  set: FavStoreSet,
+  get: FavStoreGet,
   productId: string,
 ): Promise<void> {
   const { pendingIds, favouriteIds, favourites } = get()

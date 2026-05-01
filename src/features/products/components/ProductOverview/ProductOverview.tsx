@@ -6,7 +6,7 @@ import { IProduct } from '@/features/products/types'
 import AddToCartButton from '@/features/products/components/AddToCart/AddToCart'
 import HeartWrapper from '@/features/products/components/HeartWrapper/HeartWrapper'
 import Rating from '@/shared/ui/Rating/Rating'
-import { IProductReviewsStatistics } from '@/features/reviews/public'
+import type { IProductReviewsStatistics } from '@/features/reviews/types'
 import { FiPackage, FiShield, FiRefreshCw, FiTruck } from 'react-icons/fi'
 import ProductImageGallery from '@/features/products/components/ProductImageGallery/ProductImageGallery'
 

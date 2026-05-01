@@ -7,18 +7,16 @@ import {
 import {
   toggleFavouriteInStore,
 } from '@/features/favorites/favorites.mutations'
-import type { FavStatus } from '@/features/favorites/favorites.service.types'
-import type { IProduct } from '@/features/products/public'
+import {
+  type FavStatus,
+  type FavStoreGet,
+  type FavStoreSet,
+  type FavStoreSlice,
+} from '@/features/favorites/state/favoritesStore.utils'
 
-export type { FavStatus } from '@/features/favorites/favorites.service.types'
+export type { FavStatus } from '@/features/favorites/state/favoritesStore.utils'
 
-interface FavSliceState {
-  favouriteIds: string[]
-  favourites: IProduct[]
-  status: FavStatus
-  pendingIds: Set<string>
-  isSync: boolean
-}
+type FavSliceState = FavStoreSlice
 
 interface FavSliceActions {
   hydrate: (signal?: AbortSignal) => Promise<void>
@@ -43,9 +41,16 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
 ) => ({
   ...initialState,
 
-  toggleFavourite: (id) => toggleFavouriteInStore(set, get, id),
-  hydrate: (signal) => hydrateFavouritesStore(set, get, signal),
-  syncSession: (signal) => syncFavouritesStoreWithSession(set, get, signal),
+  toggleFavourite: (id) =>
+    toggleFavouriteInStore(set as FavStoreSet, get as FavStoreGet, id),
+  hydrate: (signal) =>
+    hydrateFavouritesStore(set as FavStoreSet, get as FavStoreGet, signal),
+  syncSession: (signal) =>
+    syncFavouritesStoreWithSession(
+      set as FavStoreSet,
+      get as FavStoreGet,
+      signal,
+    ),
 
   resetFav: () =>
     set({

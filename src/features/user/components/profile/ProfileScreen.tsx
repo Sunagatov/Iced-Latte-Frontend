@@ -9,7 +9,7 @@ import {
 import AddressManager from '@/features/addresses/components/AddressManager'
 import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
-import { useFavouritesStore } from '@/features/favorites/public'
+import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import type { UserData } from '@/features/user/types'
 import { api } from '@/shared/api/client'
 import Loader from '@/shared/ui/Loader/Loader'

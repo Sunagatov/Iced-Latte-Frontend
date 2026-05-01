@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import { useAuthStore } from '@/features/auth/store'
-import { IProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/types'
 import {
   apiGetProductUserReview,
 } from '@/features/reviews/api'

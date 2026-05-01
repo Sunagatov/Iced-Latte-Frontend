@@ -1,5 +1,5 @@
 import type { AxiosResponse } from 'axios'
-import type { IProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/types'
 import type {
   FavouritesResponse,
   SyncFavouritesRequest,

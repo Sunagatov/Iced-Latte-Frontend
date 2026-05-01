@@ -1,4 +1,4 @@
-import type { IProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/types'
 
 export interface FavouritesResponse {
   products: IProduct[]

@@ -4,8 +4,8 @@ import { memo } from 'react'
 import productImg from '@/../public/coffee.png'
 import CircleAddBtn from '@/shared/ui/Buttons/CircleAddBtn/CircleAddBtn'
 import getImgUrl from '@/shared/utils/getImgUrl'
-import { useCartStore } from '@/features/cart/public'
-import { useFavouritesStore } from '@/features/favorites/public'
+import { useCartStore } from '@/features/cart/state/cartStore'
+import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { IProduct } from '@/features/products/types'
 interface ICardProps {
   product: IProduct

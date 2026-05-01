@@ -4,10 +4,14 @@ import {
   clearCartStore as clearCartStoreState,
   mergeGuestCartIntoBackend,
 } from '@/features/cart/cart.mutations'
-import type { CartGet, CartSet } from '@/features/cart/cart.service.types'
-import { setCartError, setCartItems } from '@/features/cart/cart.state'
 import type { ICartItem } from '@/features/cart/types/cartTypes'
-import { getProductByIds } from '@/features/products/public'
+import {
+  setCartError,
+  setCartItems,
+  type StoreGet,
+  type StoreSet,
+} from '@/features/cart/utils/cartStoreHelpers'
+import { getProductByIds } from '@/features/products/api'
 
 function isAbortError(err: unknown): boolean {
   return (
@@ -17,8 +21,8 @@ function isAbortError(err: unknown): boolean {
 }
 
 export async function hydrateCartStore(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   signal?: AbortSignal,
 ): Promise<void> {
   const authStatus = useAuthStore.getState().status
@@ -33,8 +37,8 @@ export async function hydrateCartStore(
 }
 
 export async function syncCartStoreWithSession(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   signal?: AbortSignal,
 ): Promise<void> {
   const authStatus = useAuthStore.getState().status
@@ -71,15 +75,15 @@ export async function syncCartStoreWithSession(
   await loadAuthenticatedCart(set, get, signal)
 }
 
-export async function clearCartStore(set: CartSet, get: CartGet): Promise<void> {
+export async function clearCartStore(set: StoreSet, get: StoreGet): Promise<void> {
   const isAuthenticated = useAuthStore.getState().status === 'authenticated'
 
   await clearCartStoreState(set, get, isAuthenticated)
 }
 
 async function loadAuthenticatedCart(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   signal?: AbortSignal,
 ): Promise<void> {
   set({ status: 'loading', lastError: null })
@@ -111,7 +115,7 @@ async function loadAuthenticatedCart(
   }
 }
 
-async function loadGuestCart(set: CartSet, get: CartGet): Promise<void> {
+async function loadGuestCart(set: StoreSet, get: StoreGet): Promise<void> {
   set({ status: 'loading', lastError: null })
 
   try {

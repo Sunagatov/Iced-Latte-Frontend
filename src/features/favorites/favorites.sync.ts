@@ -3,13 +3,14 @@ import {
   fetchFavourites,
   syncFavourites,
 } from '@/features/favorites/api/favoritesApi'
-import type { FavGet, FavSet } from '@/features/favorites/favorites.service.types'
 import {
+  type FavStoreGet,
+  type FavStoreSet,
   mapProductsToFavourites,
   normalizeProducts,
   uniqueIds,
 } from '@/features/favorites/state/favoritesStore.utils'
-import { getProductByIds } from '@/features/products/public'
+import { getProductByIds } from '@/features/products/api'
 
 function isAbortError(err: unknown): boolean {
   return (
@@ -19,8 +20,8 @@ function isAbortError(err: unknown): boolean {
 }
 
 export async function hydrateFavouritesStore(
-  set: FavSet,
-  get: FavGet,
+  set: FavStoreSet,
+  get: FavStoreGet,
   signal?: AbortSignal,
 ): Promise<void> {
   const isAuthenticated = useAuthStore.getState().status === 'authenticated'
@@ -71,8 +72,8 @@ export async function hydrateFavouritesStore(
 }
 
 export async function syncFavouritesStoreWithSession(
-  set: FavSet,
-  get: FavGet,
+  set: FavStoreSet,
+  get: FavStoreGet,
   signal?: AbortSignal,
 ): Promise<void> {
   const authStatus = useAuthStore.getState().status
@@ -107,8 +108,8 @@ export async function syncFavouritesStoreWithSession(
 }
 
 async function syncGuestFavouritesIntoBackend(
-  set: FavSet,
-  get: FavGet,
+  set: FavStoreSet,
+  get: FavStoreGet,
 ): Promise<void> {
   set({ status: 'syncing' })
 

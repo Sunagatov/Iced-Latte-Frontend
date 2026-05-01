@@ -4,12 +4,12 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import {
   type CartSliceStore,
-  type ICartItem,
   useCartStore,
-} from '@/features/cart/public'
+} from '@/features/cart/state/cartStore'
+import type { ICartItem as CartItem } from '@/features/cart/types/cartTypes'
 import CartElement from '../CartElement/CartElement'
 
-const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems
+const selectTempItems = (state: CartSliceStore): CartItem[] => state.tempItems
 const selectTotalPrice = (state: CartSliceStore): number => state.totalPrice
 const selectCount = (state: CartSliceStore): number => state.count
 const selectStatus = (state: CartSliceStore): CartSliceStore['status'] =>
@@ -66,7 +66,7 @@ export default function CartFull() {
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="flex flex-1 flex-col gap-3">
-          {tempItems.map((item: ICartItem) => (
+          {tempItems.map((item: CartItem) => (
             <CartElement
               add={() => add(item.productInfo.id)}
               isPending={pendingProductIds.has(item.productInfo.id)}
@@ -96,7 +96,7 @@ export default function CartFull() {
 
             <div className="px-5 py-4">
               <div className="mb-3 flex flex-col gap-1.5">
-                {tempItems.map((item: ICartItem) => (
+                {tempItems.map((item: CartItem) => (
                   <div
                     className="flex items-center justify-between gap-2"
                     key={item.id}

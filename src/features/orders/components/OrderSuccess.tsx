@@ -6,7 +6,10 @@ import Link from 'next/link'
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 import type { CacheAxiosResponse } from 'axios-cache-interceptor'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
-import { type CartSliceStore, useCartStore } from '@/features/cart/public'
+import {
+  type CartSliceStore,
+  useCartStore,
+} from '@/features/cart/state/cartStore'
 import { api } from '@/shared/api/client'
 import Button from '@/shared/ui/Buttons/Button/Button'
 import Loader from '@/shared/ui/Loader/Loader'

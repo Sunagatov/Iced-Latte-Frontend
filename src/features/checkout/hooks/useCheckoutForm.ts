@@ -3,7 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
-import { useCartStore } from '@/features/cart/public'
+import { useCartStore } from '@/features/cart/state/cartStore'
 import { createOrder } from '@/features/orders/public'
 import type { DeliveryAddress } from '@/features/addresses/types'
 import type {

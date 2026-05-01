@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useCartStore } from '@/features/cart/public'
+import { useCartStore } from '@/features/cart/state/cartStore'
 
 export default function CartButton() {
   const count = useCartStore((state) => state.count)

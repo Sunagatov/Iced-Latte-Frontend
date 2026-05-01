@@ -8,7 +8,7 @@ import {
   type FavStoreState,
 } from '@/features/favorites/state/favoritesStore'
 import { useAuthStore, AuthStatus } from '@/features/auth/store'
-import { IProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/types'
 import { useEffect, useState } from 'react'
 
 interface PersistApi {

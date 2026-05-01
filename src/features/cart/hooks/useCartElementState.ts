@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useFavouritesStore } from '@/features/favorites/public'
+import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 
 export function useCartElementState(productId: string, productQuantity: number) {
   const [pulse, setPulse] = useState(false)

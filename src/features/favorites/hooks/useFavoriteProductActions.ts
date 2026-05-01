@@ -1,10 +1,13 @@
 'use client'
 
-import { useCartStore, type CartSliceStore } from '@/features/cart/public'
 import {
-  useFavouritesStore,
+  useCartStore,
+  type CartSliceStore,
+} from '@/features/cart/state/cartStore'
+import {
   type FavStoreState,
-} from '@/features/favorites/public'
+  useFavouritesStore,
+} from '@/features/favorites/state/favoritesStore'
 
 export function useFavoriteProductActions(productId: string) {
   const toggleFavourite = useFavouritesStore(

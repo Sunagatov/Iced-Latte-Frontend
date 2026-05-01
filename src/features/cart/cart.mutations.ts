@@ -3,17 +3,20 @@ import {
   mergeCarts,
   removeCartItem,
 } from '@/features/cart/api/cartApi'
-import type { CartGet, CartSet } from '@/features/cart/cart.service.types'
-import { setCartError, setCartItems } from '@/features/cart/cart.state'
 import type {
   ICartItem,
   ICartPushItem,
   ICartUpdatedItem,
 } from '@/features/cart/types/cartTypes'
 import {
+  setCartError,
+  setCartItems,
+  type StoreGet,
+  type StoreSet,
+} from '@/features/cart/utils/cartStoreHelpers'
+import {
   addToCart,
   clearPending,
-  createItemsIdsFromCart,
   getProductCartSlotId,
   getProductsCount,
   getTotalPrice,
@@ -23,7 +26,11 @@ import {
 
 const MAX_CART_ITEM_QUANTITY = 99
 
-export function applyGuestAdd(set: CartSet, get: CartGet, productId: string): void {
+export function applyGuestAdd(
+  set: StoreSet,
+  get: StoreGet,
+  productId: string,
+): void {
   const { itemsIds, tempItems, pendingProductIds, totalPrice } = get()
   const cartItem = itemsIds.find((item) => item.productId === productId)
 
@@ -49,7 +56,11 @@ export function applyGuestAdd(set: CartSet, get: CartGet, productId: string): vo
   void get().hydrate().catch(() => {})
 }
 
-export function applyGuestRemove(set: CartSet, get: CartGet, productId: string): void {
+export function applyGuestRemove(
+  set: StoreSet,
+  get: StoreGet,
+  productId: string,
+): void {
   const { itemsIds, tempItems } = get()
   const updatedCart = removeItem(productId, itemsIds)
   const updatedTempItems = tempItems
@@ -69,8 +80,8 @@ export function applyGuestRemove(set: CartSet, get: CartGet, productId: string):
 }
 
 export function applyGuestRemoveFullProduct(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   productId: string,
 ): void {
   const { itemsIds, tempItems } = get()
@@ -88,8 +99,8 @@ export function applyGuestRemoveFullProduct(
 }
 
 export function applyAuthenticatedAdd(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   productId: string,
 ): void {
   const { itemsIds, tempItems, pendingProductIds } = get()
@@ -146,8 +157,8 @@ export function applyAuthenticatedAdd(
 }
 
 export function applyAuthenticatedRemove(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   productId: string,
 ): void {
   const { itemsIds, tempItems, pendingProductIds } = get()
@@ -201,8 +212,8 @@ export function applyAuthenticatedRemove(
 }
 
 export function applyAuthenticatedRemoveFullProduct(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   productId: string,
 ): void {
   const { tempItems, pendingProductIds } = get()
@@ -227,8 +238,8 @@ export function applyAuthenticatedRemoveFullProduct(
 }
 
 export async function clearCartStore(
-  set: CartSet,
-  get: CartGet,
+  set: StoreSet,
+  get: StoreGet,
   isAuthenticated: boolean,
 ): Promise<void> {
   const { tempItems, isSync } = get()
@@ -256,7 +267,7 @@ export async function clearCartStore(
 }
 
 export async function mergeGuestCartIntoBackend(
-  set: CartSet,
+  set: StoreSet,
   items: ICartPushItem[],
 ): Promise<void> {
   set({ status: 'syncing' })
@@ -277,7 +288,7 @@ export async function mergeGuestCartIntoBackend(
 }
 
 export async function updateBackendCartItem(
-  set: CartSet,
+  set: StoreSet,
   updatedItem: ICartUpdatedItem,
 ): Promise<void> {
   set({ status: 'syncing' })

@@ -8,32 +8,26 @@ import {
   applyGuestAdd,
   applyGuestRemove,
   applyGuestRemoveFullProduct,
+} from '@/features/cart/cart.mutations'
+import type { ICartItem } from '@/features/cart/types/cartTypes'
+import {
   clearCartStore,
   hydrateCartStore,
   syncCartStoreWithSession,
-} from '@/features/cart/cart.service'
-import type { CartStatus } from '@/features/cart/cart.service.types'
-import type {
-  ICartItem,
-  ICartPushItem,
-} from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cart.sync'
 import {
   createItemsIdsFromCart,
 } from '@/features/cart/utils/cartUtils'
+import {
+  type CartStoreState,
+  type StoreGet,
+  type StoreSet,
+} from '@/features/cart/utils/cartStoreHelpers'
 
 export const MAX_CART_ITEM_QUANTITY = 99
-export type { CartStatus } from '@/features/cart/cart.service.types'
+export type { CartStatus } from '@/features/cart/utils/cartStoreHelpers'
 
-interface CartSliceState {
-  itemsIds: ICartPushItem[]
-  tempItems: ICartItem[]
-  count: number
-  totalPrice: number
-  isSync: boolean
-  status: CartStatus
-  pendingProductIds: Set<string>
-  lastError: string | null
-}
+type CartSliceState = CartStoreState
 
 interface CartSliceActions {
   add: (id: string) => void
@@ -70,41 +64,42 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
     if (isLoggedIn) {
-      applyAuthenticatedAdd(set, get, id)
+      applyAuthenticatedAdd(set as StoreSet, get as StoreGet, id)
 
       return
     }
 
-    applyGuestAdd(set, get, id)
+    applyGuestAdd(set as StoreSet, get as StoreGet, id)
   },
 
   remove: (id) => {
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
     if (isLoggedIn) {
-      applyAuthenticatedRemove(set, get, id)
+      applyAuthenticatedRemove(set as StoreSet, get as StoreGet, id)
 
       return
     }
 
-    applyGuestRemove(set, get, id)
+    applyGuestRemove(set as StoreSet, get as StoreGet, id)
   },
 
   removeFullProduct: (id) => {
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
 
     if (isLoggedIn) {
-      applyAuthenticatedRemoveFullProduct(set, get, id)
+      applyAuthenticatedRemoveFullProduct(set as StoreSet, get as StoreGet, id)
 
       return
     }
 
-    applyGuestRemoveFullProduct(set, get, id)
+    applyGuestRemoveFullProduct(set as StoreSet, get as StoreGet, id)
   },
 
-  hydrate: (signal) => hydrateCartStore(set, get, signal),
-  syncSession: (signal) => syncCartStoreWithSession(set, get, signal),
-  clearCart: () => clearCartStore(set, get),
+  hydrate: (signal) => hydrateCartStore(set as StoreSet, get as StoreGet, signal),
+  syncSession: (signal) =>
+    syncCartStoreWithSession(set as StoreSet, get as StoreGet, signal),
+  clearCart: () => clearCartStore(set as StoreSet, get as StoreGet),
 
   setTempItems: (items) =>
     set({

@@ -1,17 +1,16 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from 'react'
-import {
-  apiGetProductReviewsStatistics,
-  type IProductReviewsStatistics,
-} from '@/features/reviews/public'
+import { apiGetProductReviewsStatistics } from '@/features/reviews/api'
+import type { IProductReviewsStatistics } from '@/features/reviews/types'
 import { IProduct } from '@/features/products/types'
 import dynamic from 'next/dynamic'
 import ProductOverview from '@/features/products/components/ProductOverview/ProductOverview'
 import { useErrorHandler } from '@/shared/utils/apiError'
 
 const ReviewsSection = dynamic(
-  () => import('@/features/reviews/public').then((mod) => mod.ReviewsSection),
+  () =>
+    import('@/features/reviews/components/ReviewsSection/ReviewsSection'),
   { ssr: false },
 )
 

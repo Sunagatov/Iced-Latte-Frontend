@@ -3,7 +3,7 @@ import Image from 'next/image'
 import productImg from '@/../public/coffee.png'
 import getImgUrl from '@/shared/utils/getImgUrl'
 import Link from 'next/link'
-import { CartElementProps } from '@/features/cart/public'
+import type { CartElementProps } from '@/features/cart/types/cartTypes'
 import CartItemActions from '@/features/cart/components/CartItemActions/CartItemActions'
 import { useCartElementState } from '@/features/cart/hooks/useCartElementState'
 
