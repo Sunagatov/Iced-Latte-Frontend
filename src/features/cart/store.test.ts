@@ -1,10 +1,10 @@
-import { useCartStore } from '@/features/cart/store'
+import { useCartStore } from '@/features/cart/state/cartStore'
 import { useAuthStore } from '@/features/auth/store'
-import * as cartApi from '@/features/cart/api'
+import * as cartApi from '@/features/cart/api/cartApi'
 import * as productsApi from '@/features/products/api'
-import { ICartItem } from '@/features/cart/types'
+import type { ICartItem } from '@/features/cart/types/cartTypes'
 
-jest.mock('@/features/cart/api', () => ({
+jest.mock('@/features/cart/api/cartApi', () => ({
   mergeCarts: jest.fn(),
   removeCartItem: jest.fn(),
   changeCartItemQuantity: jest.fn(),

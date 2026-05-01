@@ -15,8 +15,8 @@ import { useCartStore, type CartSliceStore } from '@/features/cart/store'
 import {
   useFavouritesStore,
   type FavStoreState,
-} from '@/features/favorites/store'
-import type { FavElementProps } from '@/features/favorites/types'
+} from '@/features/favorites/state/favoritesStore'
+import type { FavElementProps } from '@/features/favorites/types/favoritesTypes'
 import getImgUrl from '@/shared/utils/getImgUrl'
 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>

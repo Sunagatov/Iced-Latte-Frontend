@@ -2,16 +2,18 @@
 
 import type { ReactNode } from 'react'
 import AuthInterceptor from '@/app/providers/AuthInterceptor'
-import AppInitProvider from '@/app/providers/AppInitProvider'
+import { useSessionBootstrap } from '@/features/session/useSessionBootstrap'
 
 interface AppProvidersProps {
   children: ReactNode
 }
 
 const AppProviders = ({ children }: Readonly<AppProvidersProps>) => {
+  useSessionBootstrap()
+
   return (
     <AuthInterceptor>
-      <AppInitProvider>{children}</AppInitProvider>
+      {children}
     </AuthInterceptor>
   )
 }

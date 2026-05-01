@@ -2,7 +2,11 @@
 import FavouritesEmpty from '../FavouritesEmpty/FavouritesEmpty'
 import FavouritesFull from '../FavouritesFull/FavouritesFull'
 import FavouritesSkeleton from '../FavouritesSkeleton/FavouritesSkeleton'
-import { useFavouritesStore, FavStatus, type FavStoreState } from '@/features/favorites/store'
+import {
+  useFavouritesStore,
+  type FavStatus,
+  type FavStoreState,
+} from '@/features/favorites/state/favoritesStore'
 import { useAuthStore, AuthStatus } from '@/features/auth/store'
 import { IProduct } from '@/features/products/types'
 import { useEffect, useState } from 'react'
@@ -25,7 +29,7 @@ export default function FavouritesPage() {
   const authStatus: AuthStatus = useAuthStore((s) => s.status)
   const [hydrated, setHydrated] = useState(false)
 
-  // Only fav store is persisted; auth store resolves via session fetch in AppInitProvider
+  // Only fav store is persisted; auth state resolves during app session bootstrap.
   useEffect(() => {
     const favPersist = (useFavouritesStore as unknown as PersistApi).persist
 
@@ -38,7 +42,7 @@ export default function FavouritesPage() {
     return favPersist.onFinishHydration(() => setHydrated(true))
   }, [])
 
-  // Guest-only fetch — AppInitProvider owns authenticated sync
+  // Guest-only fetch — app session bootstrap owns authenticated sync.
   useEffect(() => {
     if (!hydrated) return
     if (authStatus === 'loading') return

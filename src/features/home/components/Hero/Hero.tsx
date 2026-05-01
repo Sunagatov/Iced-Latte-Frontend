@@ -1,6 +1,6 @@
 'use client'
 
-import SearchBar from '@/app/layout/Header/SearchBar'
+import SearchBar from '@/features/products/components/search/SearchBar'
 
 export default function Hero() {
   return (

@@ -1,40 +1,8 @@
-import { IProduct } from '@/features/products/types'
-
-export interface ICart {
-  id: string
-  userId: string
-  items: ICartItem[]
-  itemsQuantity: number
-  itemsTotalPrice: number
-  productsQuantity: number
-  createdAt: string
-  closedAt: string | null
-}
-
-export interface ICartItem {
-  id: string
-  productInfo: IProduct
-  productQuantity: number
-}
-
-export interface ICartPushItems {
-  items: ICartPushItem[]
-}
-
-export interface ICartPushItem {
-  productId: string
-  productQuantity: number
-}
-
-export interface ICartUpdatedItem {
-  shoppingCartItemId: string
-  productQuantityChange: number
-}
-
-export interface CartElementProps {
-  product: ICartItem
-  isPending?: boolean
-  add: () => void
-  remove: () => void
-  removeAll: () => void
-}
+export type {
+  CartElementProps,
+  ICart,
+  ICartItem,
+  ICartPushItem,
+  ICartPushItems,
+  ICartUpdatedItem,
+} from '@/features/cart/types/cartTypes'

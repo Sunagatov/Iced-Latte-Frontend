@@ -2,10 +2,12 @@
 
 import { useEffect, type ReactNode } from 'react'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { useAuthStore, type AuthStore } from '@/features/auth/store'
-import { getUserData } from '@/features/user/api'
+import { useAuthStore } from '@/features/auth/store'
 import { api } from '@/shared/api/client'
-import { clearClientSession } from '@/features/session/clearClientSession'
+import {
+  clearClientSession,
+  refreshAuthenticatedSession,
+} from '@/features/session/sessionController'
 import { useRouter } from 'next/navigation'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -39,9 +41,6 @@ export function isBootstrapUserProfileRequest(url?: string): boolean {
 }
 
 const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
-  const setAuthenticated = useAuthStore(
-    (state: AuthStore): AuthStore['setAuthenticated'] => state.setAuthenticated,
-  )
   const router = useRouter()
 
   useEffect(() => {
@@ -75,16 +74,9 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
 
             // Reuse an in-flight refresh instead of starting a new one
             if (!refreshPromise) {
-              refreshPromise = apiClient
-                .post('/auth/refresh', null)
-                .then(async () => {
-                  const userData = await getUserData()
-
-                  setAuthenticated(userData)
-                })
-                .finally(() => {
-                  refreshPromise = null
-                })
+              refreshPromise = refreshAuthenticatedSession().finally(() => {
+                refreshPromise = null
+              })
             }
 
             await refreshPromise
@@ -105,7 +97,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
     return () => {
       apiClient.interceptors.response.eject(responseInterceptor)
     }
-  }, [router, setAuthenticated])
+  }, [router])
 
   return <>{children}</>
 }

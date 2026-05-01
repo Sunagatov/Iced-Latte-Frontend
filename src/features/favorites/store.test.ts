@@ -1,12 +1,12 @@
-import { useFavouritesStore } from '@/features/favorites/store'
-import type { FavStoreState } from '@/features/favorites/store'
-import * as favsApi from '@/features/favorites/api'
+import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
+import type { FavStoreState } from '@/features/favorites/state/favoritesStore'
+import * as favsApi from '@/features/favorites/api/favoritesApi'
 import * as productsApi from '@/features/products/api'
 import { useAuthStore } from '@/features/auth/store'
 import type { AuthStore } from '@/features/auth/store'
 import type { IProduct } from '@/features/products/types'
 
-jest.mock('@/features/favorites/api', () => ({
+jest.mock('@/features/favorites/api/favoritesApi', () => ({
   syncFavourites: jest.fn(),
   removeFavourite: jest.fn(),
   fetchFavourites: jest.fn(),
