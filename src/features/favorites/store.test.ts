@@ -160,12 +160,12 @@ describe('favourites store — toggleFavourite (remove)', () => {
   })
 })
 
-describe('favourites store — getFavouriteProducts', () => {
+describe('favourites store — hydrate', () => {
   it('fetches from server when authenticated', async () => {
     setAuthStatus('authenticated')
     mockedFetchFavourites.mockResolvedValue([makeProduct('p1')])
 
-    await getFavState().getFavouriteProducts()
+    await getFavState().hydrate()
 
     expect(getFavState().favourites).toHaveLength(1)
     expect(getFavState().status).toBe('ready')
@@ -175,7 +175,7 @@ describe('favourites store — getFavouriteProducts', () => {
     setFavState({ favouriteIds: ['p1'] })
     mockedGetProductByIds.mockResolvedValue([makeProduct('p1')])
 
-    await getFavState().getFavouriteProducts()
+    await getFavState().hydrate()
 
     expect(getFavState().favourites).toHaveLength(1)
     expect(getFavState().status).toBe('ready')
@@ -185,18 +185,19 @@ describe('favourites store — getFavouriteProducts', () => {
     setAuthStatus('authenticated')
     mockedFetchFavourites.mockRejectedValue(new Error('fail'))
 
-    await getFavState().getFavouriteProducts()
+    await getFavState().hydrate()
 
     expect(getFavState().status).toBe('error')
   })
 })
 
-describe('favourites store — syncBackendFav', () => {
+describe('favourites store — syncSession', () => {
   it('merges and updates state', async () => {
+    setAuthStatus('authenticated')
     setFavState({ favouriteIds: ['p1'] })
     mockedSyncFavourites.mockResolvedValue({ products: [makeProduct('p1')] })
 
-    await getFavState().syncBackendFav()
+    await getFavState().syncSession()
 
     expect(getFavState().favouriteIds).toContain('p1')
   })

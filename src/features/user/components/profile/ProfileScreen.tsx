@@ -1,11 +1,17 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   RiCupLine,
   RiLogoutBoxLine,
 } from 'react-icons/ri'
 import AddressManager from '@/features/addresses/components/AddressManager'
-import { useProfileViewModel } from '@/features/user/hooks/useProfileViewModel'
+import { useLogout } from '@/features/auth/hooks'
+import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { useFavouritesStore } from '@/features/favorites/public'
+import type { UserData } from '@/features/user/types'
+import { api } from '@/shared/api/client'
 import Loader from '@/shared/ui/Loader/Loader'
 import ImageUpload from '../ImageUpload/ImageUpload'
 import {
@@ -18,21 +24,51 @@ import ProfileSidebarNavigation, {
 } from './ProfileNavigation'
 import ProfileOverviewSection from './ProfileOverviewSection'
 import ProfilePersonalDetailsSection from './ProfilePersonalDetailsSection'
+import type { ProfileSection, ProfileSummary } from './profileTypes'
 
 export default function ProfileScreen() {
-  const {
-    activeSection,
-    favCount,
-    isEditing,
-    logoutState,
-    orderCount,
-    setActiveSection,
-    setIsEditing,
-    setUserData,
-    status,
-    summary,
-    userData,
-  } = useProfileViewModel()
+  const router = useRouter()
+  const [activeSection, setActiveSection] = useState<ProfileSection>('overview')
+  const [isEditing, setIsEditing] = useState(false)
+  const [orderCount, setOrderCount] = useState<number | null>(null)
+
+  const setUserData = useAuthStore(
+    (state: AuthStore): AuthStore['setUserData'] => state.setUserData,
+  )
+  const userData = useAuthStore(
+    (state: AuthStore): UserData | null => state.userData,
+  )
+  const status = useAuthStore(
+    (state: AuthStore): AuthStore['status'] => state.status,
+  )
+  const favCount = useFavouritesStore((state) => state.favouriteIds.length)
+  const logoutState = useLogout()
+
+  useEffect(() => {
+    if (status === 'anonymous') {
+      router.replace('/signin')
+    }
+  }, [router, status])
+
+  useEffect(() => {
+    if (status !== 'authenticated') {
+      return
+    }
+
+    const loadOrderCount = async (): Promise<void> => {
+      try {
+        const response = await api.get<{ id: string }[]>('/orders', {
+          cache: false,
+        })
+
+        setOrderCount(response.data.length)
+      } catch {
+        // non-critical
+      }
+    }
+
+    void loadOrderCount()
+  }, [status])
 
   if (status === 'loading') {
     return (
@@ -44,6 +80,23 @@ export default function ProfileScreen() {
 
   if (status !== 'authenticated') {
     return null
+  }
+
+  const firstName = userData?.firstName ?? null
+  const lastName = userData?.lastName ?? null
+  const summary: ProfileSummary = {
+    avatarLink: userData?.avatarLink ?? null,
+    birthDate: userData?.birthDate ?? null,
+    city: userData?.address?.city ?? null,
+    email: userData?.email ?? null,
+    firstName,
+    fullName: firstName && lastName ? `${firstName} ${lastName}` : 'Your Account',
+    hasCustomAvatar: Boolean(
+      userData?.avatarLink && userData.avatarLink !== 'default file',
+    ),
+    initials: `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase() || '?',
+    lastName,
+    phoneNumber: userData?.phoneNumber ?? null,
   }
 
   const handleSectionChange = (section: typeof activeSection): void => {

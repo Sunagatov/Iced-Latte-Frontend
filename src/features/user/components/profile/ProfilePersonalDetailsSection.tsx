@@ -2,9 +2,9 @@
 
 import { RiUserLine } from 'react-icons/ri'
 import FormProfile from '@/features/user/components/FormProfile/FormProfile'
-import type { ProfileSummary } from '@/features/user/hooks/useProfileViewModel'
 import type { UserData } from '@/features/user/types'
 import type { AuthStore } from '@/features/auth/store'
+import type { ProfileSummary } from './profileTypes'
 
 type ProfilePersonalDetailsSectionProps = {
   isEditing: boolean

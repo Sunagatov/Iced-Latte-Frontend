@@ -23,8 +23,8 @@ export default function FavouritesPage() {
     (s: FavStoreState): IProduct[] => s.favourites,
   )
   const status: FavStatus = useFavouritesStore((s) => s.status)
-  const getFavouriteProducts: () => Promise<void> = useFavouritesStore(
-    (s) => s.getFavouriteProducts,
+  const hydrate: () => Promise<void> = useFavouritesStore(
+    (s) => s.hydrate,
   )
   const authStatus: AuthStatus = useAuthStore((s) => s.status)
   const [hydrated, setHydrated] = useState(false)
@@ -47,8 +47,8 @@ export default function FavouritesPage() {
     if (!hydrated) return
     if (authStatus === 'loading') return
     if (authStatus === 'authenticated') return
-    void getFavouriteProducts()
-  }, [getFavouriteProducts, authStatus, hydrated])
+    void hydrate()
+  }, [hydrate, authStatus, hydrated])
 
   if (!hydrated || status === 'idle' || status === 'syncing')
     return <FavouritesSkeleton />
@@ -59,7 +59,7 @@ export default function FavouritesPage() {
         <p className="text-tertiary text-sm">Couldn&apos;t load favourites</p>
         <button
           className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-full px-4 py-2 text-sm font-semibold"
-          onClick={() => void getFavouriteProducts()}
+          onClick={() => void hydrate()}
         >
           Retry
         </button>

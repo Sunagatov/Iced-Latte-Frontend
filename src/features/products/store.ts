@@ -14,25 +14,25 @@ interface IProductFiltersStore {
   selectedSortOption: IOption<ISortParams>
   ratingFilter: StarsType | null
   searchQuery: string
-  selectBrandOption: (value: string) => void
-  removeBrandOption: (value: string) => void
-  selectSellerOption: (value: string) => void
-  removeSellerOption: (value: string) => void
-  updateProductFiltersStore: (
-    slice: Partial<
-      Omit<
-        IProductFiltersStore,
-        | 'selectBrandOption'
-        | 'removeBrandOption'
-        | 'selectSellerOption'
-        | 'removeSellerOption'
-        | 'updateProductFiltersStore'
-      >
-    >,
-  ) => void
+  resetFilters: () => void
+  setFilters: (slice: Partial<ProductFiltersState>) => void
 }
 
-export const defaultProductsFilters = {
+export type ProductFiltersState = Pick<
+  IProductFiltersStore,
+  | 'fromPriceFilter'
+  | 'ratingFilter'
+  | 'searchQuery'
+  | 'selectedBrandOptions'
+  | 'selectedSellerOptions'
+  | 'selectedSortOption'
+  | 'toPriceFilter'
+>
+
+export const defaultProductsFilters: Omit<
+  ProductFiltersState,
+  'selectedSortOption'
+> = {
   selectedBrandOptions: [],
   selectedSellerOptions: [],
   ratingFilter: null,
@@ -49,26 +49,10 @@ export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
   selectedBrandOptions: [],
   selectedSellerOptions: [],
   selectedSortOption: getDefaultSortOption(sortOptions),
-  selectBrandOption: (value) =>
+  resetFilters: () =>
     set((state) => ({
-      selectedBrandOptions: [...state.selectedBrandOptions, value],
+      ...state,
+      ...defaultProductsFilters,
     })),
-  removeBrandOption: (value) =>
-    set((state) => ({
-      selectedBrandOptions: state.selectedBrandOptions.filter(
-        (o) => o !== value,
-      ),
-    })),
-  selectSellerOption: (value) =>
-    set((state) => ({
-      selectedSellerOptions: [...state.selectedSellerOptions, value],
-    })),
-  removeSellerOption: (value) =>
-    set((state) => ({
-      selectedSellerOptions: state.selectedSellerOptions.filter(
-        (o) => o !== value,
-      ),
-    })),
-  updateProductFiltersStore: (slice) =>
-    set((state) => ({ ...state, ...slice })),
+  setFilters: (slice) => set((state) => ({ ...state, ...slice })),
 }))

@@ -130,8 +130,16 @@ describe('cart store — resetCart / setTempItems', () => {
   })
 })
 
-describe('cart store — createCart', () => {
-  it('updates state from merged cart response', async () => {
+describe('cart store — syncSession', () => {
+  it('merges guest cart into backend when authenticated', async () => {
+    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 2 }],
+      tempItems: [],
+      count: 2,
+      totalPrice: 0,
+      isSync: false,
+    })
     mockedCartApi.mergeCarts.mockResolvedValue({
       id: 'c1',
       userId: 'u1',
@@ -142,16 +150,22 @@ describe('cart store — createCart', () => {
       productsQuantity: 2,
       items: [makeCartItem('p1', 2)],
     })
-    await useCartStore
-      .getState()
-      .createCart({ items: [{ productId: 'p1', productQuantity: 2 }] })
+    await useCartStore.getState().syncSession()
     expect(useCartStore.getState().totalPrice).toBe(20)
     expect(useCartStore.getState().isSync).toBe(true)
   })
 })
 
-describe('cart store — updateCartItem', () => {
+describe('cart store — authenticated add', () => {
   it('updates state from response', async () => {
+    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 1 }],
+      tempItems: [makeCartItem('p1', 1)],
+      count: 1,
+      totalPrice: 10,
+      isSync: true,
+    })
     mockedCartApi.changeCartItemQuantity.mockResolvedValue({
       id: 'c1',
       userId: 'u1',
@@ -162,10 +176,9 @@ describe('cart store — updateCartItem', () => {
       productsQuantity: 1,
       items: [makeCartItem('p1', 1)],
     })
-    await useCartStore.getState().updateCartItem({
-      shoppingCartItemId: 'slot-p1',
-      productQuantityChange: 1,
-    })
+    useCartStore.getState().add('p1')
+    await Promise.resolve()
+    await Promise.resolve()
     expect(useCartStore.getState().totalPrice).toBe(10)
   })
 })
@@ -199,7 +212,7 @@ describe('cart store — removeFullProduct (guest)', () => {
   })
 })
 
-describe('cart store — getCartItems', () => {
+describe('cart store — hydrate', () => {
   it('hydrates tempItems from product API', async () => {
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 2 }],
@@ -209,7 +222,7 @@ describe('cart store — getCartItems', () => {
       isSync: false,
     })
     mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p1', 15)])
-    await useCartStore.getState().getCartItems()
+    await useCartStore.getState().hydrate()
     expect(useCartStore.getState().totalPrice).toBe(30)
   })
 })

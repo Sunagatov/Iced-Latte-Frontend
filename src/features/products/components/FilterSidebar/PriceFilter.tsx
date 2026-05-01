@@ -16,9 +16,7 @@ const toDecimal = (input: string) => {
 }
 
 const PriceFilter = () => {
-  const updateProductFiltersStore = useProductFiltersStore(
-    (s) => s.updateProductFiltersStore,
-  )
+  const setFilters = useProductFiltersStore((s) => s.setFilters)
   const toPriceFilter: string = useProductFiltersStore((s) => s.toPriceFilter)
   const fromPriceFilter: string = useProductFiltersStore(
     (s) => s.fromPriceFilter,
@@ -49,7 +47,7 @@ const PriceFilter = () => {
         return
       }
       setRangeError('')
-      updateProductFiltersStore({ fromPriceFilter: from, toPriceFilter: to })
+      setFilters({ fromPriceFilter: from, toPriceFilter: to })
     }, 800)
   }
 

@@ -17,47 +17,44 @@ interface IFilters {
 export default function Filters({ sellers, brands }: Readonly<IFilters>) {
   const {
     selectedBrandOptions,
-    selectBrandOption,
-    removeBrandOption,
-    selectSellerOption,
     selectedSellerOptions,
     ratingFilter,
-    removeSellerOption,
-    updateProductFiltersStore,
+    setFilters,
+    resetFilters,
     fromPriceFilter,
     toPriceFilter,
   } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
-    if (selectedBrandOptions.includes(value)) {
-      removeBrandOption(value)
-    } else {
-      selectBrandOption(value)
-    }
+    setFilters({
+      selectedBrandOptions: selectedBrandOptions.includes(value)
+        ? selectedBrandOptions.filter((option) => option !== value)
+        : [...selectedBrandOptions, value],
+    })
   }
 
   const handleSellerCheckboxChange = (value: string) => {
-    if (selectedSellerOptions.includes(value)) {
-      removeSellerOption(value)
-    } else {
-      selectSellerOption(value)
-    }
+    setFilters({
+      selectedSellerOptions: selectedSellerOptions.includes(value)
+        ? selectedSellerOptions.filter((option) => option !== value)
+        : [...selectedSellerOptions, value],
+    })
   }
 
   const resetSelectedBrandsHandler = () => {
-    updateProductFiltersStore({
+    setFilters({
       selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
     })
   }
 
   const resetSelectedSellerHandler = () => {
-    updateProductFiltersStore({
+    setFilters({
       selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
     })
   }
 
   const ratingFilterChangeHandler = (value: null | StarsType) => {
-    updateProductFiltersStore({ ratingFilter: value })
+    setFilters({ ratingFilter: value })
   }
 
   const hasActiveFilters =
@@ -72,7 +69,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
       {hasActiveFilters && (
         <div className="pb-3">
           <button
-            onClick={() => updateProductFiltersStore(defaultProductsFilters)}
+            onClick={resetFilters}
             className="text-brand-solid text-xs font-medium hover:opacity-70"
           >
             ✕ Reset all filters

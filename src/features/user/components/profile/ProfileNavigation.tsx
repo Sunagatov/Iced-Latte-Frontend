@@ -10,8 +10,8 @@ import {
   RiStarLine,
   RiUserLine,
 } from 'react-icons/ri'
-import type { ProfileSection } from '@/features/user/hooks/useProfileViewModel'
 import Loader from '@/shared/ui/Loader/Loader'
+import type { ProfileSection } from './profileTypes'
 
 type ProfileNavigationProps = {
   activeSection: ProfileSection

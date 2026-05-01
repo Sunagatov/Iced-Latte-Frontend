@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { api } from '@/shared/api/client'
 import { UserData } from './types'
 import {
@@ -15,9 +15,16 @@ function normalizeUserData(data: UserData): UserData {
   }
 }
 
-export const getUserData = async (): Promise<UserData> => {
+type UserRequestConfig = AxiosRequestConfig & {
+  skipAuthRetry?: boolean
+}
+
+export const getUserData = async (
+  config?: UserRequestConfig,
+): Promise<UserData> => {
   const response: AxiosResponse<UserData> = await api.get('/users', {
     cache: false,
+    ...config,
   })
 
   return normalizeUserData(response.data)

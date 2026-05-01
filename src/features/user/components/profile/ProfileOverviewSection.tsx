@@ -10,7 +10,7 @@ import {
   RiStarLine,
   RiUserLine,
 } from 'react-icons/ri'
-import type { ProfileSummary } from '@/features/user/hooks/useProfileViewModel'
+import type { ProfileSummary } from './profileTypes'
 
 type ProfileOverviewSectionProps = {
   favCount: number

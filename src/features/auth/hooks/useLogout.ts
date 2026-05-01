@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { apiLogoutUser } from '../api'
-import { clearClientSession } from '@/features/session/sessionController'
+import { clearClientSession } from '@/features/session/session'
 import { useCallback, useState } from 'react'
 
 export function useLogout() {

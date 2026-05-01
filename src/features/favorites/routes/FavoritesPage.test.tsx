@@ -37,7 +37,7 @@ beforeEach(() => {
 describe('FavouritesPage', () => {
   it('shows FavouritesEmpty when no favourites', () => {
     jest
-      .spyOn(useFavouritesStore.getState(), 'getFavouriteProducts')
+      .spyOn(useFavouritesStore.getState(), 'hydrate')
       .mockResolvedValue(undefined)
     act(() => {
       render(<FavouritesPage />)
@@ -67,7 +67,7 @@ describe('FavouritesPage', () => {
       pendingIds: new Set(),
     })
     jest
-      .spyOn(useFavouritesStore.getState(), 'getFavouriteProducts')
+      .spyOn(useFavouritesStore.getState(), 'hydrate')
       .mockResolvedValue(undefined)
     act(() => {
       render(<FavouritesPage />)

@@ -1,29 +1,23 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useAuthStore } from '@/features/auth/store'
-import { removeCartItem } from '@/features/cart/api/cartApi'
-import type {
-  ICartItem,
-  ICartPushItem,
-  ICartPushItems,
-  ICartUpdatedItem,
-} from '@/features/cart/types/cartTypes'
 import {
   applyAuthenticatedAdd,
   applyAuthenticatedRemove,
   applyAuthenticatedRemoveFullProduct,
-  loadAuthCartIntoStore,
-  loadGuestCartItemsIntoStore,
-  mergeCartsIntoStore,
-  syncBackendCartIntoStore,
-  updateCartItemInStore,
-} from '@/features/cart/utils/cartBackend'
+  applyGuestAdd,
+  applyGuestRemove,
+  applyGuestRemoveFullProduct,
+  clearCartStore,
+  hydrateCartStore,
+  syncCartStoreWithSession,
+} from '@/features/cart/cart.service'
+import type {
+  ICartItem,
+  ICartPushItem,
+} from '@/features/cart/types/cartTypes'
 import {
-  addToCart,
   createItemsIdsFromCart,
-  getProductsCount,
-  getTotalPrice,
-  removeItem,
 } from '@/features/cart/utils/cartUtils'
 
 export const MAX_CART_ITEM_QUANTITY = 99
@@ -44,16 +38,13 @@ interface CartSliceState {
 interface CartSliceActions {
   add: (id: string) => void
   clearCart: () => Promise<void>
-  createCart: (reqItems: ICartPushItems) => Promise<void>
-  getCartItems: () => Promise<void>
-  loadAuthCart: (signal?: AbortSignal) => Promise<void>
+  hydrate: (signal?: AbortSignal) => Promise<void>
   remove: (id: string) => void
   removeFullProduct: (id: string) => void
   resetCart: () => void
   retryHydration: () => void
   setTempItems: (items: ICartItem[]) => void
-  syncBackendCart: () => Promise<void>
-  updateCartItem: (updatedItem: ICartUpdatedItem) => Promise<void>
+  syncSession: (signal?: AbortSignal) => Promise<void>
 }
 
 export type CartSliceStore = CartSliceState & CartSliceActions
@@ -77,35 +68,14 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
 
   add: (id) => {
     const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
-    const { itemsIds, tempItems, pendingProductIds } = get()
-    const cartItem = itemsIds.find((item) => item.productId === id)
 
     if (isLoggedIn) {
-      if (cartItem && cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
       applyAuthenticatedAdd(set, get, id)
 
       return
     }
 
-    if (cartItem && cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
-    if (pendingProductIds.has(id)) return
-
-    const updatedCart = addToCart(id, itemsIds)
-    const updatedTempItems = cartItem
-      ? tempItems.map((tempItem) =>
-        tempItem.productInfo.id === id
-          ? { ...tempItem, productQuantity: tempItem.productQuantity + 1 }
-          : tempItem,
-      )
-      : tempItems
-
-    set({
-      count: getProductsCount(updatedCart),
-      itemsIds: updatedCart,
-      tempItems: updatedTempItems,
-      totalPrice: cartItem ? getTotalPrice(updatedTempItems) : get().totalPrice,
-    })
-    get().getCartItems().catch(() => {})
+    applyGuestAdd(set, get, id)
   },
 
   remove: (id) => {
@@ -117,22 +87,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
       return
     }
 
-    const { itemsIds, tempItems } = get()
-    const updatedCart = removeItem(id, itemsIds)
-    const updatedTempItems = tempItems
-      .map((tempItem) =>
-        tempItem.productInfo.id === id
-          ? { ...tempItem, productQuantity: tempItem.productQuantity - 1 }
-          : tempItem,
-      )
-      .filter((tempItem) => tempItem.productQuantity > 0)
-
-    set({
-      count: getProductsCount(updatedCart),
-      itemsIds: updatedCart,
-      tempItems: updatedTempItems,
-      totalPrice: getTotalPrice(updatedTempItems),
-    })
+    applyGuestRemove(set, get, id)
   },
 
   removeFullProduct: (id) => {
@@ -144,55 +99,12 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
       return
     }
 
-    const { itemsIds, tempItems } = get()
-    const updatedCart = itemsIds.filter((item) => item.productId !== id)
-    const removedTempItems = tempItems.filter(
-      (item) => item.productInfo.id !== id,
-    )
-
-    set({
-      count: getProductsCount(updatedCart),
-      itemsIds: updatedCart,
-      tempItems: removedTempItems,
-      totalPrice: getTotalPrice(removedTempItems),
-    } as CartSliceState)
+    applyGuestRemoveFullProduct(set, get, id)
   },
 
-  getCartItems: () => loadGuestCartItemsIntoStore(set, get),
-  loadAuthCart: (signal) => loadAuthCartIntoStore(set, get, signal),
-  syncBackendCart: () => syncBackendCartIntoStore(get),
-  createCart: (reqItems) => mergeCartsIntoStore(set, reqItems),
-  updateCartItem: (updatedItem) => updateCartItemInStore(set, updatedItem),
-
-  clearCart: async () => {
-    const { tempItems, isSync } = get()
-    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
-
-    set({ status: 'syncing' })
-
-    try {
-      if (isLoggedIn && isSync && tempItems.length > 0) {
-        const ids = tempItems.map((item) => item.id)
-
-        await removeCartItem(ids)
-      }
-
-      set({
-        count: 0,
-        isSync: isLoggedIn,
-        itemsIds: [],
-        lastError: null,
-        pendingProductIds: new Set(),
-        status: 'ready',
-        tempItems: [],
-        totalPrice: 0,
-      } as CartSliceState)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to clear cart'
-
-      set({ lastError: message, status: 'error' })
-    }
-  },
+  hydrate: (signal) => hydrateCartStore(set, get, signal),
+  syncSession: (signal) => syncCartStoreWithSession(set, get, signal),
+  clearCart: () => clearCartStore(set, get),
 
   setTempItems: (items) =>
     set({
@@ -220,14 +132,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
 
   retryHydration: () => {
     set({ lastError: null, status: 'idle' })
-    const isAuthenticated =
-      useAuthStore?.getState?.()?.status === 'authenticated'
-
-    if (isAuthenticated) {
-      get().loadAuthCart().catch(() => {})
-    } else {
-      get().getCartItems().catch(() => {})
-    }
+    void get().hydrate().catch(() => {})
   },
 })
 

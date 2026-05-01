@@ -7,7 +7,7 @@ import { api } from '@/shared/api/client'
 import {
   clearClientSession,
   refreshAuthenticatedSession,
-} from '@/features/session/sessionController'
+} from '@/features/session/session'
 import { useRouter } from 'next/navigation'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -25,7 +25,7 @@ const apiClient = api
 // Concurrent 401s await the same promise instead of each triggering a new refresh.
 let refreshPromise: ReturnType<typeof refreshAuthenticatedSession> | null = null
 
-export function isBootstrapUserProfileRequest(url?: string): boolean {
+export function isAuthRefreshExcludedRequest(url?: string): boolean {
   if (!url) return false
 
   try {
@@ -34,7 +34,11 @@ export function isBootstrapUserProfileRequest(url?: string): boolean {
       .replace(/^\/api\/proxy/, '')
       .replace(/^\/api\/v1/, '')
 
-    return normalizedPath === '/users'
+    return (
+      normalizedPath === '/auth/authenticate' ||
+      normalizedPath === '/auth/refresh' ||
+      normalizedPath === '/auth/logout'
+    )
   } catch {
     return false
   }
@@ -60,11 +64,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
           error.response?.status === 401 &&
           !originalRequest.isRetry &&
           !originalRequest.skipAuthRetry &&
-          // Never refresh for auth-related endpoints
-          !originalRequest.url?.includes('/auth/authenticate') &&
-          !originalRequest.url?.includes('/auth/refresh') &&
-          !originalRequest.url?.includes('/auth/logout') &&
-          !isBootstrapUserProfileRequest(originalRequest.url) &&
+          !isAuthRefreshExcludedRequest(originalRequest.url) &&
           // Skip refresh when we know the visitor is anonymous
           authStatus !== 'anonymous'
 

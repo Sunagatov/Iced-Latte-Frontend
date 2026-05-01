@@ -12,7 +12,6 @@ export { default as ReviewsSection } from '@/features/reviews/components/Reviews
 export { default as UserReviews } from '@/features/reviews/components/UserReviews/UserReviews'
 export { reviewsSortOptions } from '@/features/reviews/constants'
 export { useReviews } from '@/features/reviews/hooks'
-export { useReviewsSection } from '@/features/reviews/hooks/useReviewsSection'
 export {
   checkIfUserReviewExists,
   useProductRatingStore,
