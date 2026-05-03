@@ -11,15 +11,17 @@
 }
 /*noinspection CssInvalidAtRule*/
 @theme {
-  /* Brand / state colors — 2026 warm neutral + accent */
-  --color-focus: #1a1a1a;
+  /* Brand / state colors — 2026 premium marketplace */
+  --color-focus: #1B4332;
   --color-error: #ef4444;
-  --color-brand: #1a1a1a;
+  --color-brand: #1B4332;
   --color-positive: #16a34a;
   --color-negative: #dc2626;
-  --color-brand-solid: #1a1a1a;
-  --color-brand-second: #f5f5f4;
-  --color-brand-solid-hover: #333333;
+  --color-brand-solid: #1B4332;
+  --color-brand-second: #F0F7F4;
+  --color-brand-solid-hover: #143728;
+  --color-accent: #1B4332;
+  --color-accent-hover: #143728;
   --color-hover-heart: #d9d9d9;
   --color-fullpage-tint: #00000059;
 
@@ -67,7 +69,7 @@
     color: #ffffff;
   }
   .text-brand {
-    color: #1a1a1a;
+    color: #1B4332;
   }
   .text-positive {
     color: #16a34a;
@@ -86,11 +88,11 @@
     border-color: #ef4444;
   }
   .border-focus {
-    border-color: #1a1a1a;
+    border-color: #1B4332;
   }
 
   .outline-focus {
-    outline-color: #1a1a1a;
+    outline-color: #1B4332;
   }
 
   .scrollbar-hide {

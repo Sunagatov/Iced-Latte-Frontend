@@ -23,14 +23,14 @@ const ProductRatingFilter = ({
   return (
     <div>
       <FiltersGroupTitle title="Rating" />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         <button
           id="checkbox-any"
           onClick={() => onChange(null)}
-          className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+          className={`rounded-full px-3 py-1 text-[13px] font-medium transition ${
             selectedOption === null
-              ? 'border-brand-solid bg-brand-solid text-white'
-              : 'text-primary hover:border-brand-solid hover:text-brand-solid border-black/10 bg-white'
+              ? 'bg-[#1B4332] text-white'
+              : 'bg-black/[0.04] text-black/60 hover:bg-black/[0.07]'
           }`}
         >
           Any
@@ -41,15 +41,15 @@ const ProductRatingFilter = ({
             id={`checkbox-${value}`}
             aria-label={`Filter by ${value} stars`}
             onClick={() => handleCheckboxChange(value)}
-            className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+            className={`flex items-center gap-1 rounded-full px-3 py-1 text-[13px] font-medium transition ${
               value === selectedOption
-                ? 'border-brand-solid bg-brand-solid text-white'
-                : 'text-primary hover:border-brand-solid hover:text-brand-solid border-black/10 bg-white'
+                ? 'bg-[#1B4332] text-white'
+                : 'bg-black/[0.04] text-black/60 hover:bg-black/[0.07]'
             }`}
           >
             <FaStar
-              className="h-3.5 w-3.5"
-              color={value === selectedOption ? 'white' : '#00A30E'}
+              className="h-3 w-3"
+              color={value === selectedOption ? 'white' : '#d97706'}
             />
             {value}+
           </button>

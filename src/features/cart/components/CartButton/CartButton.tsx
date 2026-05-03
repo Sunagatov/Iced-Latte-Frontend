@@ -7,9 +7,9 @@ export default function CartButton() {
 
   return (
     <Link href={'/cart'}>
-      <div className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/5">
+      <div className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/[0.04]">
         <svg
-          className="text-primary h-5 w-5"
+          className="h-[18px] w-[18px] text-black/50"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
@@ -20,7 +20,7 @@ export default function CartButton() {
           <path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
         {!!count && (
-          <div data-testid="header-cart-badge" className="bg-brand-solid absolute top-0.5 right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-white">
+          <div data-testid="header-cart-badge" className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#1B4332] px-1 text-[10px] font-bold text-white">
             {count > 99 ? '99+' : count}
           </div>
         )}

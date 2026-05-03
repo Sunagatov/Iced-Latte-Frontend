@@ -13,15 +13,24 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#1a1a1a',
-          borderRadius: '8px',
-          color: '#ffffff',
-          fontSize: 16,
-          fontWeight: 700,
-          letterSpacing: '-0.5px',
+          background: '#1B4332',
+          borderRadius: '7px',
         }}
       >
-        IL
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+          <path
+            d="M6 8.5C6 8.5 8 5 16 5C24 5 26 8.5 26 8.5L24 25C24 25 22.5 28 16 28C9.5 28 8 25 8 25L6 8.5Z"
+            fill="white"
+            fillOpacity="0.95"
+          />
+          <ellipse cx="16" cy="8.5" rx="10" ry="3.5" fill="white" />
+          <path
+            d="M26 12C26 12 30 12.8 30 16C30 19.2 26 20 26 20"
+            stroke="white"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+        </svg>
       </div>
     ),
     { ...size },

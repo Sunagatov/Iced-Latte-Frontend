@@ -5,7 +5,7 @@ export default function Footer() {
   const copyrightYears = currentYear === 2024 ? '2024' : `2024-${currentYear}`
 
   return (
-    <footer className="bg-[#0a0a0a] text-white">
+    <footer className="bg-[#1B4332] text-white">
       <div className="mx-auto max-w-[1384px] px-6 py-12 sm:px-20 sm:py-16">
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           {/* Brand */}

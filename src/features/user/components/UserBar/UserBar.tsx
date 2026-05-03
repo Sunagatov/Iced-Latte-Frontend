@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
-import Button from '@/shared/ui/Buttons/Button/Button'
 
 const UserBar = () => {
   const { setUserData, userData } = useAuthStore()
@@ -27,12 +26,12 @@ const UserBar = () => {
   const userName = `${userData?.firstName?.[0] ?? ''}${userData?.lastName?.[0] ?? ''}`
 
   return (
-    <Button
+    <div
       id="user-btn"
-      className="flex h-12 w-12 items-center justify-center"
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B4332] text-[11px] font-bold text-white transition hover:bg-[#143728]"
     >
       {userName}
-    </Button>
+    </div>
   )
 }
 

@@ -22,23 +22,18 @@ export default function CatalogToolbar({
   selectedSortOption,
   totalProducts,
 }: Readonly<CatalogToolbarProps>) {
-  const heading = searchQuery ? `"${searchQuery}"` : 'All Products'
   const count =
-    totalProducts !== undefined ? ` (${totalProducts})` : ''
+    totalProducts !== undefined ? `${totalProducts} products` : ''
 
   return (
     <div className="flex items-center gap-3">
-      <div className="flex shrink-0 flex-col">
-        <p className="text-brand text-xs font-medium">Our Collection</p>
-        <h1 className="text-2XL text-primary min-[1124px]:text-3XL font-bold tracking-tight">
-          {heading}
-          {count && (
-            <span className="text-secondary ml-1 text-lg font-normal">
-              {count}
-            </span>
-          )}
-        </h1>
-      </div>
+      <span className="shrink-0 text-[13px] font-medium text-black/40">
+        {searchQuery ? (
+          <>Results for <span className="text-black/70">&ldquo;{searchQuery}&rdquo;</span></>
+        ) : (
+          count
+        )}
+      </span>
       <button
         aria-controls="mobile-filter-sidebar"
         aria-expanded={isMobileFilterOpen}

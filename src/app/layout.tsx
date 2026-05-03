@@ -42,7 +42,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         suppressHydrationWarning
-        className={inter.className + ' flex min-h-screen flex-col'}
+        className={inter.className + ' flex min-h-screen flex-col bg-[#F8F7F4]'}
       >
         <ToastContainer />
         <AppProviders>

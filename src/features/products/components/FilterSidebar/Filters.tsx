@@ -65,27 +65,27 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     toPriceFilter !== ''
 
   return (
-    <div className={'flex flex-col divide-y divide-black/6'}>
+    <div className={'flex flex-col gap-5'}>
       {hasActiveFilters && (
-        <div className="pb-3">
+        <div>
           <button
             onClick={resetFilters}
-            className="text-brand-solid text-xs font-medium hover:opacity-70"
+            className="text-[12px] font-medium text-[#1B4332] hover:underline"
           >
-            ✕ Reset all filters
+            Reset all filters
           </button>
         </div>
       )}
-      <div className="py-4">
+      <div>
         <PriceFilter />
       </div>
-      <div className="py-4">
+      <div>
         <ProductRatingFilter
           onChange={ratingFilterChangeHandler}
           selectedOption={ratingFilter}
         />
       </div>
-      <div className="py-4">
+      <div className="border-t border-black/[0.06] pt-5">
         <FilterCheckboxGroup
           selectedItems={selectedBrandOptions}
           items={brands}
@@ -94,7 +94,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
           onReset={resetSelectedBrandsHandler}
         />
       </div>
-      <div className="py-4">
+      <div className="border-t border-black/[0.06] pt-5">
         <FilterCheckboxGroup
           selectedItems={selectedSellerOptions}
           items={sellers}

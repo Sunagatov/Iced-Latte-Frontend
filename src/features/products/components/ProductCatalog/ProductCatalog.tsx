@@ -122,7 +122,7 @@ export default function ProductCatalog({
     <section
       id="catalog"
       className={twMerge(
-        'mx-4 mb-4 mt-2 text-center min-[1124px]:mt-4',
+        'mx-4 mb-4 mt-2 scroll-mt-[120px] text-center min-[1124px]:mt-4',
       )}
     >
       <div
@@ -130,7 +130,7 @@ export default function ProductCatalog({
           'mx-auto flex max-w-[716px] flex-col items-center text-left min-[1100px]:max-w-[1014px] min-[1440px]:max-w-[1384px]'
         }
       >
-        <div className="sticky top-[64px] z-20 mb-6 w-full bg-white py-3 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
+        <div className="sticky top-[56px] z-20 mb-6 w-full bg-[#F8F7F4] py-3 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
           <CatalogToolbar
             isMobileFilterOpen={isMobileFilterOpen}
             onSelectSortOption={(selectedOption) =>

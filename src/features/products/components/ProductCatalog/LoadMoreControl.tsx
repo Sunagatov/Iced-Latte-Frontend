@@ -20,7 +20,7 @@ export default function LoadMoreControl({
       {isVisible && (
         <div className="mt-[24px] flex flex-col items-center gap-2">
           <button
-            className="border-brand-solid text-L text-brand-solid hover:bg-brand-solid focus-visible:ring-brand-solid h-[54px] w-[160px] rounded-[46px] border-2 font-semibold shadow-sm transition-all duration-200 hover:text-white hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
+            className="h-11 rounded-full border border-[#1B4332]/30 px-8 text-sm font-medium text-[#1B4332] transition-all duration-200 hover:bg-[#F0F7F4] focus-visible:ring-2 focus-visible:ring-[#1B4332]/30 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
             onClick={onLoadMore}
           >
             Show more

@@ -69,34 +69,25 @@ const PriceFilter = () => {
 
   return (
     <div>
-      <FiltersGroupTitle title="Price, $" />
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/40">
-            from
-          </span>
-          <input
-            className="text-primary focus:border-brand-solid focus:ring-brand-solid h-10 w-full rounded-lg border border-black/10 bg-white pr-3 pl-10 text-sm outline-none placeholder:text-black/25 focus:ring-1"
-            id="from-price-input"
-            onChange={handleFromChange}
-            placeholder="Min"
-            type="text"
-            value={fromInput}
-          />
-        </div>
-        <div className="relative flex-1">
-          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/40">
-            to
-          </span>
-          <input
-            className="text-primary focus:border-brand-solid focus:ring-brand-solid h-10 w-full rounded-lg border border-black/10 bg-white pr-3 pl-7 text-sm outline-none placeholder:text-black/25 focus:ring-1"
-            id="to-price-input"
-            onChange={handleToChange}
-            placeholder="Max"
-            type="text"
-            value={toInput}
-          />
-        </div>
+      <FiltersGroupTitle title="Price" />
+      <div className="flex items-center gap-2">
+        <input
+          className="text-primary focus:border-black/30 h-9 w-full rounded-lg border border-black/8 bg-white px-3 text-sm outline-none placeholder:text-black/30"
+          id="from-price-input"
+          onChange={handleFromChange}
+          placeholder="Min"
+          type="text"
+          value={fromInput}
+        />
+        <span className="text-black/20">—</span>
+        <input
+          className="text-primary focus:border-black/30 h-9 w-full rounded-lg border border-black/8 bg-white px-3 text-sm outline-none placeholder:text-black/30"
+          id="to-price-input"
+          onChange={handleToChange}
+          placeholder="Max"
+          type="text"
+          value={toInput}
+        />
       </div>
       {rangeError && (
         <p className="mt-1.5 text-xs text-red-500">{rangeError}</p>

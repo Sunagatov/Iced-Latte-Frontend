@@ -1,16 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image, { type StaticImageData } from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import logo from '@/../public/logo.svg'
 import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 import CartButton from '@/features/cart/components/CartButton/CartButton'
 import HeaderHeart from '@/features/favorites/components/HeaderHeart/HeaderHeart'
 import { SearchBar } from '@/features/products/public'
-
-const logoSrc = logo as unknown as StaticImageData
 
 export default function Header() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
@@ -32,7 +28,7 @@ export default function Header() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setHeroVisible(entry.isIntersecting),
-      { threshold: 0, rootMargin: '-64px 0px 0px 0px' },
+      { threshold: 0, rootMargin: '-56px 0px 0px 0px' },
     )
 
     observer.observe(hero)
@@ -43,30 +39,39 @@ export default function Header() {
   const showSearch = isHome && !heroVisible
 
   return (
-    <header className="sticky top-0 left-0 z-50 flex h-16 w-full items-center gap-3 border-b border-black/6 bg-white px-4 sm:px-8">
+    <header className="sticky top-0 left-0 z-50 flex h-14 w-full items-center gap-4 border-b border-black/[0.06] bg-white px-4 sm:px-8">
       {mobileSearchOpen && showSearch ? (
         <div className="flex w-full items-center gap-2">
           <SearchBar autoFocus onBlur={() => setMobileSearchOpen(false)} />
           <button
             type="button"
             onClick={() => setMobileSearchOpen(false)}
-            className="text-brand shrink-0 text-sm font-medium"
+            className="shrink-0 text-sm font-medium text-[#1B4332]"
           >
             Cancel
           </button>
         </div>
       ) : (
         <>
-          <Link href="/" className="group flex shrink-0 items-center gap-3">
-            <div className="bg-brand-solid group-hover:bg-brand-solid-hover flex h-8 w-8 items-center justify-center rounded-lg shadow-sm transition">
-              <Image
-                src={logoSrc}
-                width={18}
-                alt="Iced Latte"
-                className="invert"
-              />
+          <Link href="/" className="group flex shrink-0 items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" rx="8" fill="#1B4332" />
+                <path
+                  d="M10 10.5C10 10.5 11.5 8 16 8C20.5 8 22 10.5 22 10.5L20.5 22C20.5 22 19.5 24 16 24C12.5 24 11.5 22 11.5 22L10 10.5Z"
+                  fill="white"
+                  fillOpacity="0.95"
+                />
+                <ellipse cx="16" cy="10.5" rx="6" ry="2.5" fill="white" />
+                <path
+                  d="M22 13C22 13 24.5 13.5 24.5 15.5C24.5 17.5 22 18 22 18"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
             </div>
-            <span className="text-primary hidden text-base font-semibold tracking-tight sm:block">
+            <span className="hidden text-[17px] font-bold tracking-[-0.02em] text-[#1B4332] sm:block">
               Iced Latte
             </span>
           </Link>
@@ -77,16 +82,16 @@ export default function Header() {
             </div>
           )}
 
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-0.5">
             {showSearch && (
               <button
                 type="button"
                 onClick={() => setMobileSearchOpen(true)}
-                className="hover:bg-secondary flex h-9 w-9 items-center justify-center rounded-full sm:hidden"
+                className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/[0.04] sm:hidden"
                 aria-label="Open search"
               >
                 <svg
-                  className="text-primary h-5 w-5"
+                  className="h-[18px] w-[18px] text-black/50"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -99,7 +104,7 @@ export default function Header() {
             )}
             <HeaderHeart />
             <CartButton />
-            <div className="ml-2">
+            <div className="ml-1.5">
               <LoginIcon />
             </div>
           </div>
