@@ -27,7 +27,7 @@ export default function CatalogToolbar({
 
   return (
     <div className="flex items-center gap-3">
-      <span className="shrink-0 text-[13px] font-medium text-black/40">
+      <span key={count} className="shrink-0 animate-[fade-in-down_0.2s_ease-out] text-[13px] font-medium text-black/40">
         {searchQuery ? (
           <>Results for <span className="text-black/70">&ldquo;{searchQuery}&rdquo;</span></>
         ) : (

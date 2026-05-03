@@ -130,7 +130,7 @@ export default function ProductCatalog({
           'mx-auto flex max-w-[716px] flex-col items-center text-left min-[1100px]:max-w-[1014px] min-[1440px]:max-w-[1384px]'
         }
       >
-        <div className="sticky top-[56px] z-20 mb-6 w-full bg-[#F8F7F4] py-3 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
+        <div className="sticky top-[56px] z-20 mb-6 w-full bg-[#F8F7F4] pt-3 pb-3 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
           <CatalogToolbar
             isMobileFilterOpen={isMobileFilterOpen}
             onSelectSortOption={(selectedOption) =>
@@ -158,7 +158,7 @@ export default function ProductCatalog({
         </div>
 
         <div className="flex w-full justify-center gap-x-8">
-          <FilterSidebar className="sticky top-[180px] hidden max-h-[calc(100vh-150px)] overflow-y-auto min-[1100px]:block">
+          <FilterSidebar className="sticky top-[120px] hidden max-h-[calc(100vh-140px)] self-start overflow-y-auto min-[1100px]:block">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (

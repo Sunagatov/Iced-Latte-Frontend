@@ -65,7 +65,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     toPriceFilter !== ''
 
   return (
-    <div className={'flex flex-col gap-5'}>
+    <div className={'flex flex-col gap-6'}>
       {hasActiveFilters && (
         <div>
           <button

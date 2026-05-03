@@ -32,7 +32,7 @@ function FilterChip({
   tone?: 'neutral' | 'search'
 }>) {
   const base =
-    'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors'
+    'flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors'
   const className =
     tone === 'search'
       ? `${base} bg-[#1B4332]/10 text-[#1B4332]`
@@ -64,8 +64,9 @@ export default function ActiveFilterChips({
   updateFilters,
 }: Readonly<ActiveFilterChipsProps>) {
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-2">
-      {searchQuery && (
+    <div className="relative mt-2">
+      <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto">
+        {searchQuery && (
         <FilterChip
           ariaLabel="Remove search filter"
           onRemove={() => updateFilters({ searchQuery: '' })}
@@ -126,6 +127,8 @@ export default function ActiveFilterChips({
           {'⭐'.repeat(Number(ratingFilter))}+
         </FilterChip>
       )}
+      </div>
+      <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-[#F8F7F4]" />
     </div>
   )
 }

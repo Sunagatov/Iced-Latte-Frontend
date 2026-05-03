@@ -54,10 +54,10 @@ export default memo(function ProductCard({
   return (
     <li
       data-testid="product-card"
-      className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] sm:min-w-[190px]"
+      className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] sm:min-w-[190px]"
     >
       <div className="relative">
-        <div className="relative h-[200px] w-full overflow-hidden bg-white sm:h-[220px]">
+        <div className="relative aspect-[3/4] w-full overflow-hidden">
           <Link href={`/product/${id}`} className="relative block h-full w-full">
             <Image
               src={getImgUrl(productFileUrl, productImg)}
@@ -79,8 +79,8 @@ export default memo(function ProductCard({
           aria-pressed={isFavourited}
           className={`focus-visible:ring-brand-solid absolute top-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
             isFavourited
-              ? 'bg-red-500 text-white'
-              : 'text-black/20 opacity-0 group-hover:opacity-100 hover:text-red-400'
+              ? 'bg-red-500 text-white animate-[heart-pop_0.3s_ease-out]'
+              : 'text-black/20 hover:text-red-400'
           }`}
           data-active={isFavourited ? 'true' : 'false'}
           data-testid="favourite-btn"
@@ -102,10 +102,10 @@ export default memo(function ProductCard({
 
       <Link href={`/product/${id}`} className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col gap-1 px-4 pt-3 pb-2">
-          <h2 className="text-primary line-clamp-2 text-[13px] leading-snug font-medium sm:text-sm">
+          <h2 className="text-primary line-clamp-2 text-sm leading-snug font-semibold">
             {name}
           </h2>
-          <p className="text-[11px] text-black/35">
+          <p className="text-[11px] text-black/30">
             {[brandName, sellerName].filter(Boolean).join(' · ')}
           </p>
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
@@ -115,7 +115,7 @@ export default memo(function ProductCard({
       <div className="flex items-center justify-between px-4 pb-3.5">
         <p
           data-testid="product-price"
-          className="text-[15px] font-semibold text-[#1B4332]"
+          className="text-base font-bold text-[#1B4332]"
         >
           {price.toLocaleString('en-US', {
             style: 'currency',
@@ -140,11 +140,12 @@ export default memo(function ProductCard({
             data-testid="add-to-cart-circle-btn"
             disabled={isCartPending}
             onClick={() => addToCart(id)}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#1B4332]/20 text-[#1B4332] transition hover:bg-[#1B4332] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-1 rounded-full border border-[#1B4332]/15 px-3 py-1.5 text-[11px] font-medium text-[#1B4332] transition hover:bg-[#1B4332] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path d="M12 5v14M5 12h14" />
             </svg>
+            Add
           </button>
         )}
       </div>

@@ -35,6 +35,12 @@
     transform: translateY(0);
   }
 }
+
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
 /*noinspection CssInvalidAtRule*/
 @theme {
   /* Brand / state colors — 2026 premium marketplace */

@@ -7,9 +7,9 @@ import { twMerge } from 'tailwind-merge'
 const headerStyles =
   'py-2 px-4 rounded-full cursor-pointer flex gap-x-1.5 items-center text-[13px] font-medium text-black/60 transition-all duration-150 hover:text-black/80 hover:bg-black/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'
 const listStyles =
-  'border border-black/[0.08] rounded-xl py-1 absolute w-max min-w-full right-0 top-[calc(100%+4px)] bg-white shadow-lg z-[5]'
+  'border border-black/[0.08] rounded-xl py-1.5 absolute w-max min-w-full right-0 top-[calc(100%+4px)] bg-white shadow-lg z-[5] animate-[fade-in-down_0.15s_ease-out]'
 const optionBtnStyles =
-  'text-[13px] font-medium leading-5 rounded-lg flex items-center justify-between w-full px-4 py-2 transition-colors duration-150 hover:bg-black/[0.03] text-black/60'
+  'text-[13px] font-medium leading-5 rounded-lg flex items-center justify-between w-full px-4 py-2.5 transition-colors duration-150 hover:bg-black/[0.03] text-black/60'
 
 const Dropdown = <T,>({
   className,
