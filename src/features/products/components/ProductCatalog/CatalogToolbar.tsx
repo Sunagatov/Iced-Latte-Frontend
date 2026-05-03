@@ -11,6 +11,7 @@ type CatalogToolbarProps = {
   onToggleMobileFilter: () => void
   searchQuery: string
   selectedSortOption: IOption<ISortParams>
+  totalProducts?: number
 }
 
 export default function CatalogToolbar({
@@ -19,13 +20,23 @@ export default function CatalogToolbar({
   onToggleMobileFilter,
   searchQuery,
   selectedSortOption,
+  totalProducts,
 }: Readonly<CatalogToolbarProps>) {
+  const heading = searchQuery ? `"${searchQuery}"` : 'All Coffee'
+  const count =
+    totalProducts !== undefined ? ` (${totalProducts})` : ''
+
   return (
     <div className="flex items-center gap-3">
       <div className="flex shrink-0 flex-col">
         <p className="text-brand text-xs font-medium">Our Collection</p>
         <h1 className="text-2XL text-primary min-[1124px]:text-3XL font-bold tracking-tight">
-          {searchQuery ? `"${searchQuery}"` : 'All Coffee'}
+          {heading}
+          {count && (
+            <span className="text-secondary ml-1 text-lg font-normal">
+              {count}
+            </span>
+          )}
         </h1>
       </div>
       <button

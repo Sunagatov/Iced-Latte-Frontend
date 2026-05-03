@@ -1,6 +1,6 @@
 import { IProduct } from '@/features/products/types'
 import ProductCard from '../ProductCard/ProductCard'
-import Loader from '@/shared/ui/Loader/Loader'
+import ProductCardSkeleton from '../ProductCard/ProductCardSkeleton'
 
 const SUGGESTIONS = [
   'Latte',
@@ -42,9 +42,11 @@ export default function ProductList({
 
   if (isLoading) {
     return (
-      <div className={'mt-14 flex h-[54px] grow items-center justify-center'}>
-        <Loader />
-      </div>
+      <ul className="grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-[56px] min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4">
+        {Array.from({ length: 8 }, (_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </ul>
     )
   }
 

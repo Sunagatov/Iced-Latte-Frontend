@@ -60,7 +60,7 @@ export default memo(function ProductCard({
       {/* Heart button — inside image container so it stays within card bounds */}
       <div className="relative">
         <div className="relative h-[200px] w-full overflow-hidden rounded-t-2xl bg-[#F7F7F9] sm:h-[220px]">
-          <Link href={`/product/${id}`} className="block h-full w-full">
+          <Link href={`/product/${id}`} className="relative block h-full w-full">
             <Image
               src={getImgUrl(productFileUrl, productImg)}
               alt={name}
