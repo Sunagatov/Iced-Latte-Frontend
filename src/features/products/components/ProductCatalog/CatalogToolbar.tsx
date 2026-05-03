@@ -37,10 +37,13 @@ export default function CatalogToolbar({
       <button
         aria-controls="mobile-filter-sidebar"
         aria-expanded={isMobileFilterOpen}
-        className="text-L text-brand ml-auto block shrink-0 cursor-pointer font-medium min-[1100px]:hidden"
+        className="ml-auto flex shrink-0 items-center gap-1.5 rounded-full border border-black/[0.08] px-3.5 py-1.5 text-[13px] font-medium text-black/60 transition hover:bg-black/[0.03] min-[1100px]:hidden"
         id="filter-btn"
         onClick={onToggleMobileFilter}
       >
+        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M3 6h18M7 12h10M10 18h4" />
+        </svg>
         Filter
       </button>
       <Dropdown<ISortParams>

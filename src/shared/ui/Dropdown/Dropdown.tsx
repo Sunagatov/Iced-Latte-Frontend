@@ -3,14 +3,13 @@ import React, { useRef, useState } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import { IOption, PropsDropdown } from '@/shared/types/Dropdown'
 import { twMerge } from 'tailwind-merge'
-import Image from 'next/image'
 
 const headerStyles =
-  'py-3 px-5 rounded-[40px] cursor-pointer flex gap-x-2 items-center font-medium text-primary border-2 border-transparent transition-all duration-200 hover:bg-tertiary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'
+  'py-2 px-4 rounded-full cursor-pointer flex gap-x-1.5 items-center text-[13px] font-medium text-black/60 transition-all duration-150 hover:text-black/80 hover:bg-black/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'
 const listStyles =
-  'border border-primary rounded-xl py-1.5 absolute w-max min-w-full right-0 top-[calc(100%+8px)] bg-primary shadow-xl z-[5]'
+  'border border-black/[0.08] rounded-xl py-1 absolute w-max min-w-full right-0 top-[calc(100%+4px)] bg-white shadow-lg z-[5]'
 const optionBtnStyles =
-  'font-medium leading-5 rounded-lg flex items-center justify-between w-full px-5 py-2.5 transition-colors duration-150 hover:bg-tertiary'
+  'text-[13px] font-medium leading-5 rounded-lg flex items-center justify-between w-full px-4 py-2 transition-colors duration-150 hover:bg-black/[0.03] text-black/60'
 
 const Dropdown = <T,>({
   className,
@@ -58,23 +57,22 @@ const Dropdown = <T,>({
       <button
         className={twMerge(
           headerStyles,
-          isOpen ? 'border-brand-solid bg-secondary' : 'bg-secondary',
-          compact ? 'px-3' : '',
+          isOpen ? 'bg-black/[0.04] text-black/80' : '',
+          compact ? 'px-2.5' : '',
         )}
         onClick={handleClick}
         tabIndex={0}
       >
         {compact ? (
-          <Image
-            src={'/open_select.svg'}
-            alt="sort"
-            width={17}
-            height={10}
+          <svg
             className={twMerge(
-              'transition-transform duration-200',
+              'h-3.5 w-3.5 text-black/40 transition-transform duration-200',
               isOpen && 'rotate-180',
             )}
-          />
+            fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
+          >
+            <path d="M19 9l-7 7-7-7" />
+          </svg>
         ) : (
           <>
             <span>
@@ -82,16 +80,15 @@ const Dropdown = <T,>({
                 ? selectedOption.label
                 : `Sort by: ${selectedOption.label}`}
             </span>
-            <Image
-              src={'/open_select.svg'}
-              alt="open select icon"
-              width={17}
-              height={10}
+            <svg
               className={twMerge(
-                'transition-transform duration-200',
+                'h-3.5 w-3.5 text-black/40 transition-transform duration-200',
                 isOpen && 'rotate-180',
               )}
-            />
+              fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
+            >
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
           </>
         )}
       </button>
@@ -104,18 +101,15 @@ const Dropdown = <T,>({
                 className={twMerge(
                   optionBtnStyles,
                   isSelected(selectedOption, option) &&
-                    'bg-secondary text-brand-solid font-bold',
+                    'bg-[#F0F7F4] text-[#1B4332] font-semibold',
                 )}
                 onClick={handleChange(option)}
               >
                 <span>{option.label}</span>
                 {isSelected(selectedOption, option) && (
-                  <Image
-                    src={'/check.svg'}
-                    alt="selected icon"
-                    width={14}
-                    height={10}
-                  />
+                  <svg className="ml-2 h-3.5 w-3.5 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
                 )}
               </button>
             </li>

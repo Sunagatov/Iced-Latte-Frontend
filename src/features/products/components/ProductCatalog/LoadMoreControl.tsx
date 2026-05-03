@@ -18,12 +18,15 @@ export default function LoadMoreControl({
   return (
     <>
       {isVisible && (
-        <div className="mt-[24px] flex flex-col items-center gap-2">
+        <div className="mt-8 flex flex-col items-center gap-2">
           <button
-            className="h-11 rounded-full border border-[#1B4332]/30 px-8 text-sm font-medium text-[#1B4332] transition-all duration-200 hover:bg-[#F0F7F4] focus-visible:ring-2 focus-visible:ring-[#1B4332]/30 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
+            className="group flex items-center gap-2 text-[13px] font-medium text-black/40 transition hover:text-[#1B4332]"
             onClick={onLoadMore}
           >
-            Show more
+            Load more
+            <svg className="h-4 w-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
           {loadMoreError && (
             <p className="text-xs text-red-500">
