@@ -1,8 +1,5 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { memo } from 'react'
-import productImg from '@/../public/coffee.png'
-import getImgUrl from '@/shared/utils/getImgUrl'
 import { useCartStore } from '@/features/cart/state/cartStore'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { IProduct } from '@/features/products/types'
@@ -11,6 +8,7 @@ interface ICardProps {
   priority?: boolean
 }
 import ProductRating from '@/features/products/components/ProductRating/ProductRating'
+import ProductImage from '@/shared/ui/ProductImage/ProductImage'
 import Counter from '@/shared/ui/Counter/Counter'
 
 export default memo(function ProductCard({
@@ -59,8 +57,8 @@ export default memo(function ProductCard({
       <div className="relative">
         <div className="relative aspect-[4/5] w-full overflow-hidden">
           <Link href={`/product/${id}`} className="relative block h-full w-full">
-            <Image
-              src={getImgUrl(productFileUrl, productImg)}
+            <ProductImage
+              productFileUrl={productFileUrl}
               alt={name}
               style={{ objectFit: 'contain', padding: '12px' }}
               fill={true}

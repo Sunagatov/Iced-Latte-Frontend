@@ -125,6 +125,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
           alt={productName}
           priority
           className="max-w-full transition-opacity duration-200 md:h-[500px] md:w-full md:object-cover xl:w-[500px] xl:object-contain"
+          onError={(e) => { (e.target as HTMLImageElement).src = '/coffee.png' }}
         />
 
         {/* Prev / Next arrows — desktop */}

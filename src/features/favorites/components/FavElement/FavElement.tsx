@@ -8,7 +8,7 @@ import type { FavElementProps } from '@/features/favorites/types/favoritesTypes'
 import FavoriteCartStepper from '@/features/favorites/components/FavoriteCartStepper/FavoriteCartStepper'
 import FavoriteToggleButton from '@/features/favorites/components/FavoriteToggleButton/FavoriteToggleButton'
 import { useFavoriteProductActions } from '@/features/favorites/hooks/useFavoriteProductActions'
-import getImgUrl from '@/shared/utils/getImgUrl'
+import ProductImage from '@/shared/ui/ProductImage/ProductImage'
 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
 
@@ -38,11 +38,11 @@ export default function FavElement({ product, view = 'list' }: Props) {
           className="bg-secondary relative block"
           href={`/product/${product.id}`}
         >
-          <Image
+          <ProductImage
             alt={product.name}
             className="h-[140px] w-full object-contain p-3"
             height={160}
-            src={getImgUrl(product.productFileUrl, productImg)}
+            productFileUrl={product.productFileUrl}
             width={240}
           />
           <div className="absolute top-2 right-2">
@@ -94,11 +94,11 @@ export default function FavElement({ product, view = 'list' }: Props) {
       data-testid="fav-element"
     >
       <Link className="shrink-0" href={`/product/${product.id}`}>
-        <Image
+        <ProductImage
           alt={product.name}
           className="bg-secondary h-full w-24 object-cover"
           height={100}
-          src={getImgUrl(product.productFileUrl, productImg)}
+          productFileUrl={product.productFileUrl}
           width={100}
         />
       </Link>
