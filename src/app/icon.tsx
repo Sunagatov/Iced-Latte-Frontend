@@ -13,12 +13,15 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+          background: '#1a1a1a',
           borderRadius: '8px',
-          fontSize: 22,
+          color: '#ffffff',
+          fontSize: 16,
+          fontWeight: 700,
+          letterSpacing: '-0.5px',
         }}
       >
-        ☕
+        IL
       </div>
     ),
     { ...size },

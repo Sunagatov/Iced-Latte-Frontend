@@ -22,7 +22,7 @@ export default function CatalogToolbar({
   selectedSortOption,
   totalProducts,
 }: Readonly<CatalogToolbarProps>) {
-  const heading = searchQuery ? `"${searchQuery}"` : 'All Coffee'
+  const heading = searchQuery ? `"${searchQuery}"` : 'All Products'
   const count =
     totalProducts !== undefined ? ` (${totalProducts})` : ''
 

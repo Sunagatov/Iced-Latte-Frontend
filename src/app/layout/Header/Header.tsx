@@ -43,7 +43,7 @@ export default function Header() {
   const showSearch = isHome && !heroVisible
 
   return (
-    <header className="sticky top-0 left-0 z-50 flex h-16 w-full items-center gap-3 border-b border-black/5 bg-white/90 px-4 backdrop-blur-md sm:px-8">
+    <header className="sticky top-0 left-0 z-50 flex h-16 w-full items-center gap-3 border-b border-black/6 bg-white px-4 sm:px-8">
       {mobileSearchOpen && showSearch ? (
         <div className="flex w-full items-center gap-2">
           <SearchBar autoFocus onBlur={() => setMobileSearchOpen(false)} />

@@ -68,7 +68,7 @@ export default function SearchBar({
           onChange={handleChange}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
-          placeholder="Search coffees, brands…"
+          placeholder="Search products, brands…"
           className="text-primary placeholder:text-placeholder w-full bg-transparent text-sm outline-none"
           aria-autocomplete="list"
           aria-label="Search products"

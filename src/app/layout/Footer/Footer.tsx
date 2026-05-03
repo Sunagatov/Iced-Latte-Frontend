@@ -11,14 +11,13 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 flex flex-col gap-4 sm:col-span-1">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">☕</span>
               <span className="text-xl font-bold tracking-tight">
                 Iced Latte
               </span>
             </div>
             <p className="max-w-[240px] text-sm leading-relaxed text-white/50">
-              An open-source specialty coffee marketplace built by the
-              community, for the community.
+              An open-source marketplace built by the community, for the
+              community.
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -64,7 +63,7 @@ export default function Footer() {
             </span>
             <nav className="flex flex-col gap-2 text-sm text-white/60">
               <Link href="/" className="transition hover:text-white">
-                All Coffee
+                All Products
               </Link>
               <Link href="/favourites" className="transition hover:text-white">
                 Favourites

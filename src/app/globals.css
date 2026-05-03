@@ -11,34 +11,27 @@
 }
 /*noinspection CssInvalidAtRule*/
 @theme {
-  /* Brand / state colors */
-  --color-focus: #682eff;
-  --color-error: #eb5757;
-  --color-brand: #682eff;
-  --color-positive: #00a30e;
-  --color-negative: #e12e3c;
-  --color-brand-solid: #682eff;
-  --color-brand-second: #f0eaff;
-  --color-brand-solid-hover: #5425cc;
+  /* Brand / state colors — 2026 warm neutral + accent */
+  --color-focus: #1a1a1a;
+  --color-error: #ef4444;
+  --color-brand: #1a1a1a;
+  --color-positive: #16a34a;
+  --color-negative: #dc2626;
+  --color-brand-solid: #1a1a1a;
+  --color-brand-second: #f5f5f4;
+  --color-brand-solid-hover: #333333;
   --color-hover-heart: #d9d9d9;
   --color-fullpage-tint: #00000059;
 
-  /*
-   * In Tailwind v3, bg-* and text-* had separate color maps.
-   * bg-primary = #FFFFFF, text-primary = #04121B
-   * bg-secondary = #F4F5F6, text-secondary = #04121BA3
-   * In v4 there is one flat namespace, so we use the background values
-   * for the shared tokens and override text/border via @utility below.
-   */
   --color-primary: #ffffff;
-  --color-secondary: #f4f5f6;
-  --color-tertiary: #e9eced;
-  --color-inverted: #000000;
-  --color-placeholder: #04121b5c;
-  --color-disabled: #04121b3d;
+  --color-secondary: #fafaf9;
+  --color-tertiary: #f0efed;
+  --color-inverted: #0a0a0a;
+  --color-placeholder: #0a0a0a52;
+  --color-disabled: #0a0a0a3d;
 
-  --shadow-primary: 0 -1px 0 0 #0000001a;
-  --shadow-header: 0 2px 2px 0 #682eff14;
+  --shadow-primary: 0 -1px 0 0 #0000000a;
+  --shadow-header: 0 1px 2px 0 #0000000a;
 
   --text-XS: 14px;
   --text-M: 16px;
@@ -56,48 +49,48 @@
 /* Override text-* and border-* to use the correct dark/semi-transparent values */
 @layer utilities {
   .text-primary {
-    color: #04121b;
+    color: #0a0a0a;
   }
   .text-secondary {
-    color: #04121ba3;
+    color: #0a0a0a99;
   }
   .text-tertiary {
-    color: #04121b7a;
+    color: #0a0a0a70;
   }
   .text-placeholder {
-    color: #04121b5c;
+    color: #0a0a0a52;
   }
   .text-disabled {
-    color: #04121b3d;
+    color: #0a0a0a3d;
   }
   .text-inverted {
     color: #ffffff;
   }
   .text-brand {
-    color: #682eff;
+    color: #1a1a1a;
   }
   .text-positive {
-    color: #00a30e;
+    color: #16a34a;
   }
   .text-negative {
-    color: #e12e3c;
+    color: #dc2626;
   }
 
   .border-primary {
-    border-color: #242d3429;
+    border-color: #0a0a0a14;
   }
   .border-secondary {
-    border-color: #f4f5f6;
+    border-color: #f0efed;
   }
   .border-error {
-    border-color: #eb5757;
+    border-color: #ef4444;
   }
   .border-focus {
-    border-color: #682eff;
+    border-color: #1a1a1a;
   }
 
   .outline-focus {
-    outline-color: #682eff;
+    outline-color: #1a1a1a;
   }
 
   .scrollbar-hide {
@@ -191,10 +184,10 @@
 }
 
 .react-calendar__tile--now {
-  background: #6f48eb33;
+  background: #1a1a1a1a;
   border-radius: 6px;
   font-weight: bold;
-  color: #6f48eb;
+  color: #1a1a1a;
 }
 
 .react-calendar .react-calendar__tile {
@@ -231,7 +224,7 @@
 }
 
 .react-calendar .react-calendar__tile.react-calendar__month-view__days__day:hover {
-  background-color: #6f48eb;
+  background-color: #1a1a1a;
   border-radius: 50%;
   margin-top: 5px;
   color: white;
@@ -251,7 +244,7 @@
 
 .react-calendar .react-calendar__tile.react-calendar__decade-view__years__year:hover {
   border-radius: 6px;
-  background-color: #6f48eb;
+  background-color: #1a1a1a;
   color: white;
 }
 
@@ -268,7 +261,7 @@
 
 .react-calendar .react-calendar__tile.react-calendar__year-view__months__month:hover {
   border-radius: 6px;
-  background-color: #6f48eb;
+  background-color: #1a1a1a;
   color: white;
 }
 
