@@ -1,16 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchOrders } from '@/features/orders/api/ordersApi'
-import type { Order } from '@/features/orders/types/orderTypes'
+import type {
+  OrderPageDto,
+  OrderStatus,
+  OrderSummaryDto,
+} from '@/features/orders/types/orderTypes'
 
-export type OrderFilter = '' | Order['status']
+export type OrderFilter = '' | OrderStatus
 
-export function useOrders(filter: OrderFilter) {
-  const [orders, setOrders] = useState<Order[]>([])
+export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
+  const [orders, setOrders] = useState<OrderSummaryDto[]>([])
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
+
+  useEffect(() => {
+    setPage(0)
+  }, [filter, year])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -18,8 +29,22 @@ export function useOrders(filter: OrderFilter) {
     setLoading(true)
     setError(false)
 
-    fetchOrders(filter || undefined, controller.signal)
-      .then(setOrders)
+    fetchOrders(
+      {
+        status: filter || undefined,
+        page,
+        size: pageSize,
+        sortBy: 'createdAt',
+        sortDirection: 'DESC',
+        year,
+      },
+      controller.signal,
+    )
+      .then((data: OrderPageDto) => {
+        setOrders(data.content)
+        setTotalPages(data.totalPages)
+        setTotalElements(data.totalElements)
+      })
       .catch((err) => {
         if (err?.code !== 'ERR_CANCELED') {
           setError(true)
@@ -30,12 +55,18 @@ export function useOrders(filter: OrderFilter) {
     return () => {
       controller.abort()
     }
-  }, [filter, retryKey])
+  }, [filter, page, pageSize, year, retryKey])
+
+  const goToPage = useCallback((p: number) => setPage(p), [])
 
   return {
     error,
+    goToPage,
     loading,
     orders,
+    page,
     retry: () => setRetryKey((value) => value + 1),
+    totalElements,
+    totalPages,
   }
 }

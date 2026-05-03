@@ -4,7 +4,7 @@ import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'reac
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/state/cartStore'
-import { createOrder } from '@/features/orders/public'
+import { createOrder } from '@/features/orders/api/ordersApi'
 import type { DeliveryAddress } from '@/features/addresses/types'
 import type {
   CheckoutAddressSelection,
@@ -91,12 +91,19 @@ export function useCheckoutForm() {
     setLoading(true)
 
     try {
-      await createOrder({
-        recipientName: form.recipientName,
-        recipientSurname: form.recipientSurname,
-        recipientPhone: form.recipientPhone || undefined,
-        address: resolveShippingAddress(form, selectedAddress),
-      })
+      const idempotencyKey = crypto.randomUUID()
+
+      await createOrder(
+        {
+          recipientName: form.recipientName,
+          recipientSurname: form.recipientSurname,
+          recipientPhone: form.recipientPhone || undefined,
+          ...(selectedAddress
+            ? { deliveryAddressId: selectedAddress.id }
+            : { address: resolveShippingAddress(form, null) }),
+        },
+        idempotencyKey,
+      )
       resetCart()
       router.push('/orders')
     } catch {

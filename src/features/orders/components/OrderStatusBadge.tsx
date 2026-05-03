@@ -1,18 +1,22 @@
 import React from 'react'
 import {
   RiCheckboxCircleLine,
+  RiCloseCircleLine,
+  RiMoneyDollarCircleLine,
+  RiRefund2Line,
   RiStarLine,
+  RiTimeLine,
   RiTruckLine,
 } from 'react-icons/ri'
-import type { Order } from '@/features/orders/types/orderTypes'
+import type { OrderStatus } from '@/features/orders/types/orderTypes'
 
 const STATUS_CONFIG: Record<
-  Order['status'],
+  OrderStatus,
   { label: string; icon: React.ReactNode; color: string }
 > = {
   CREATED: {
     label: 'Order placed',
-    icon: <RiCheckboxCircleLine className="h-4 w-4" />,
+    icon: <RiTimeLine className="h-4 w-4" />,
     color: 'text-brand bg-brand-second',
   },
   PAID: {
@@ -20,8 +24,34 @@ const STATUS_CONFIG: Record<
     icon: <RiStarLine className="h-4 w-4" />,
     color: 'text-yellow-700 bg-yellow-50',
   },
+  SHIPPED: {
+    label: 'Shipped',
+    icon: <RiTruckLine className="h-4 w-4" />,
+    color: 'text-blue-700 bg-blue-50',
+  },
+  DELIVERED: {
+    label: 'Delivered',
+    icon: <RiCheckboxCircleLine className="h-4 w-4" />,
+    color: 'text-green-700 bg-green-50',
+  },
+  CANCELLED: {
+    label: 'Cancelled',
+    icon: <RiCloseCircleLine className="h-4 w-4" />,
+    color: 'text-gray-600 bg-gray-100',
+  },
+  REFUND_REQUESTED: {
+    label: 'Refund requested',
+    icon: <RiRefund2Line className="h-4 w-4" />,
+    color: 'text-orange-700 bg-orange-50',
+  },
+  REFUNDED: {
+    label: 'Refunded',
+    icon: <RiMoneyDollarCircleLine className="h-4 w-4" />,
+    color: 'text-purple-700 bg-purple-50',
+  },
+  // deprecated aliases
   DELIVERY: {
-    label: 'On the way',
+    label: 'Shipped',
     icon: <RiTruckLine className="h-4 w-4" />,
     color: 'text-blue-700 bg-blue-50',
   },
@@ -33,7 +63,7 @@ const STATUS_CONFIG: Record<
 }
 
 interface OrderStatusBadgeProps {
-  status: Order['status']
+  status: OrderStatus
 }
 
 export default function OrderStatusBadge({

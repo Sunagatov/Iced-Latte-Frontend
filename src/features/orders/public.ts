@@ -1,7 +1,10 @@
-export { createOrder, fetchOrders } from '@/features/orders/api/ordersApi'
+export { createOrder, fetchOrders, fetchOrder } from '@/features/orders/api/ordersApi'
 export type {
   CreateOrderRequest,
-  Order,
   OrderAddress,
+  OrderDetailDto,
   OrderItem,
+  OrderPageDto,
+  OrderStatus,
+  OrderSummaryDto,
 } from '@/features/orders/types/orderTypes'
