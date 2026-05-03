@@ -3,12 +3,12 @@ import ProductCard from '../ProductCard/ProductCard'
 import ProductCardSkeleton from '../ProductCard/ProductCardSkeleton'
 
 const SUGGESTIONS = [
-  'Latte',
-  'Espresso',
-  'Mocha',
-  'Cold Brew',
-  'Cappuccino',
-  'Flat White',
+  'Organic',
+  'Bestseller',
+  'New arrivals',
+  'Under $20',
+  'Premium',
+  'Gift sets',
 ]
 
 interface IProductListProps {
@@ -31,7 +31,10 @@ export default function ProductList({
   if (error && products.length === 0) {
     return (
       <div className="flex grow flex-col items-center justify-center gap-4 py-24 text-center">
-        <span className="text-5xl">⚠️</span>
+        <svg className="h-16 w-16 text-black/10" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M8 15s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" strokeLinecap="round" />
+        </svg>
         <h3 className="text-primary text-2xl font-semibold">
           Something went wrong
         </h3>
@@ -42,7 +45,7 @@ export default function ProductList({
 
   if (isLoading) {
     return (
-      <ul className="grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-[56px] min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4">
+      <ul className="grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-7 min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4">
         {Array.from({ length: 8 }, (_, i) => (
           <ProductCardSkeleton key={i} />
         ))}
@@ -56,7 +59,11 @@ export default function ProductList({
         data-testid="empty-state"
         className="flex grow flex-col items-center justify-start gap-4 pt-16 text-center"
       >
-        <span className="text-5xl">🔍</span>
+        <svg className="h-16 w-16 text-black/10" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.35-4.35" strokeLinecap="round" />
+          <path d="M8 11h6M11 8v6" strokeLinecap="round" />
+        </svg>
         {searchQuery ? (
           <>
             <h3 className="text-primary text-xl font-semibold">
@@ -104,7 +111,7 @@ export default function ProductList({
   return (
     <ul
       className={
-        'grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-[56px] min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4'
+        'grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-7 min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4'
       }
     >
       {products.map((product, index) => (

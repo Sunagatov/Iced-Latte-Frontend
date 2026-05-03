@@ -1,36 +1,28 @@
-import Image from 'next/image'
+'use client'
+
 import { useEffect, useState } from 'react'
-import Button from '../Button/Button'
 
 export default function ScrollUpBtn() {
-  const [showButton, setShowButton] = useState(false)
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setShowButton(window.scrollY > 1400)
-
+    const onScroll = () => setShow(window.scrollY > 1400)
     window.addEventListener('scroll', onScroll)
-
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
-  }
+  if (!show) return null
 
   return (
-    <>
-      {showButton && (
-        <Button
-          id="scroll-btn"
-          className="border-focus bg-secondary focus-visible:ring-focus fixed right-4 bottom-4 flex h-[56px] w-[56px] transform items-center justify-center rounded-full border-2 shadow-lg transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-90"
-          onClick={scrollToTop}
-        >
-          <Image src="/arrowup.svg" alt="up_arrow" width={16} height={20} />
-        </Button>
-      )}
-    </>
+    <button
+      id="scroll-btn"
+      aria-label="Scroll to top"
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className="fixed right-4 bottom-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+    >
+      <svg className="h-4 w-4 text-black/50" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+        <path d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
   )
 }

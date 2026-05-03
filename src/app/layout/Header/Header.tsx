@@ -77,7 +77,7 @@ export default function Header() {
           </Link>
 
           {showSearch && (
-            <div className="hidden flex-1 justify-center sm:flex">
+            <div className="hidden flex-1 justify-center animate-[fade-in-down_0.25s_ease-out] sm:flex">
               <SearchBar />
             </div>
           )}
@@ -87,7 +87,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setMobileSearchOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/[0.04] sm:hidden"
+                className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/[0.04] animate-[fade-in-down_0.25s_ease-out] sm:hidden"
                 aria-label="Open search"
               >
                 <svg

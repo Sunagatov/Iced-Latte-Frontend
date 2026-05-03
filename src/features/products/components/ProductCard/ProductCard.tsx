@@ -66,6 +66,7 @@ export default memo(function ProductCard({
               fill={true}
               sizes="(max-width: 768px) 50vw, 25vw"
               priority={priority}
+              className="transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
         </div>

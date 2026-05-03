@@ -33,6 +33,7 @@ export default function Hero() {
         </a>
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_#2D6A4F33,_transparent_70%)]" />
+      <div className="absolute inset-0 animate-[hero-glow_6s_ease-in-out_infinite] bg-[radial-gradient(ellipse_at_top_right,_#2D6A4F,_transparent_60%)]" />
     </section>
   )
 }

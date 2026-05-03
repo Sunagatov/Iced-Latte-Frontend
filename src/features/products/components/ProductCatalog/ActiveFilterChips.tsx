@@ -31,20 +31,24 @@ function FilterChip({
   onRemove: () => void
   tone?: 'neutral' | 'search'
 }>) {
+  const base =
+    'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors'
   const className =
     tone === 'search'
-      ? 'bg-brand/10 text-brand flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium'
-      : 'bg-secondary text-primary flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium'
+      ? `${base} bg-[#1B4332]/10 text-[#1B4332]`
+      : `${base} bg-black/[0.04] text-black/60`
 
   return (
     <span className={className}>
       {children}
       <button
         aria-label={ariaLabel}
-        className="hover:opacity-70"
+        className="ml-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full transition hover:bg-black/10"
         onClick={onRemove}
       >
-        ✕
+        <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
       </button>
     </span>
   )
@@ -67,7 +71,7 @@ export default function ActiveFilterChips({
           onRemove={() => updateFilters({ searchQuery: '' })}
           tone="search"
         >
-          <>🔍 {searchQuery}</>
+          <><svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg> {searchQuery}</>
         </FilterChip>
       )}
 
