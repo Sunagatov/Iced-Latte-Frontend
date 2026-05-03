@@ -7,6 +7,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiRegisterUser } from '@/features/auth/api'
 import { useState } from 'react'
 import { registrationSchema } from '@/features/auth/validation'
+import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 import { useRouter } from 'next/navigation'
 interface IFormValues {
   firstName: string
@@ -34,6 +35,8 @@ export default function RegistrationForm() {
       password: '',
     },
   })
+
+  const [showPassword, setShowPassword] = useState(false)
 
   const { errorMessage, handleError } = useErrorHandler()
 
@@ -86,10 +89,24 @@ export default function RegistrationForm() {
         id="password"
         register={register}
         name="password"
-        type="password"
+        type={showPassword ? 'text' : 'password'}
         label="Password"
         placeholder="Password"
         error={errors.password}
+        endAdornment={
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="text-secondary hover:text-primary cursor-pointer"
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? (
+              <RiEyeOffLine className="h-5 w-5" />
+            ) : (
+              <RiEyeLine className="h-5 w-5" />
+            )}
+          </button>
+        }
       />
       <Button
         id="register-btn"

@@ -7,6 +7,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/features/auth/api'
 import { useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
+import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 interface IFormValues {
   email: string
   password: string
@@ -42,6 +43,8 @@ export default function LoginForm() {
     }
   }
 
+  const [showPassword, setShowPassword] = useState(false)
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
       {errorMessage && <div className="text-negative mt-4">{errorMessage}</div>}
@@ -57,11 +60,25 @@ export default function LoginForm() {
       <FormInput
         id="password"
         register={register}
-        type="password"
+        type={showPassword ? 'text' : 'password'}
         name="password"
         label="Password"
         placeholder="Password"
         error={errors.password}
+        endAdornment={
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="text-secondary hover:text-primary cursor-pointer"
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? (
+              <RiEyeOffLine className="h-5 w-5" />
+            ) : (
+              <RiEyeLine className="h-5 w-5" />
+            )}
+          </button>
+        }
       />
       <Button
         id="login-btn"

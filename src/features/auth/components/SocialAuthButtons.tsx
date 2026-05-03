@@ -45,28 +45,6 @@ const GoogleIcon = (
   </svg>
 )
 
-const AppleIcon = (
-  <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
-    <path
-      d="M13.173 9.558c-.02-2.117 1.73-3.14 1.81-3.19-.988-1.443-2.523-1.64-3.065-1.66-1.305-.133-2.558.775-3.22.775-.662 0-1.682-.757-2.768-.736-1.42.021-2.737.832-3.467 2.107-1.484 2.572-.38 6.37 1.063 8.453.706 1.02 1.543 2.163 2.641 2.122 1.063-.042 1.463-.682 2.748-.682 1.285 0 1.643.682 2.768.66 1.143-.02 1.863-1.04 2.562-2.063.81-1.18 1.143-2.327 1.163-2.387-.025-.01-2.23-.855-2.255-3.399Z"
-      fill="#000"
-    />
-    <path
-      d="M11.07 3.18C11.64 2.49 12.03 1.54 11.92.57c-.83.043-1.84.556-2.43 1.23-.534.6-.998 1.57-.873 2.49.924.07 1.87-.47 2.453-1.11Z"
-      fill="#000"
-    />
-  </svg>
-)
-
-const FacebookIcon = (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path
-      d="M18 9a9 9 0 1 0-10.406 8.89v-6.288H5.31V9h2.284V7.017c0-2.255 1.343-3.502 3.4-3.502.985 0 2.015.176 2.015.176v2.215h-1.135c-1.118 0-1.467.694-1.467 1.406V9h2.496l-.399 2.602H10.41v6.288A9.003 9.003 0 0 0 18 9Z"
-      fill="#1877F2"
-    />
-  </svg>
-)
-
 export default function SocialAuthButtons({
   mode,
 }: {
@@ -93,10 +71,6 @@ export default function SocialAuthButtons({
         label={googleLabel}
         onClick={handleGoogleAuth}
       />
-      <div className="flex gap-3">
-        <SocialButton icon={AppleIcon} label="Apple" />
-        <SocialButton icon={FacebookIcon} label="Facebook" />
-      </div>
     </div>
   )
 }

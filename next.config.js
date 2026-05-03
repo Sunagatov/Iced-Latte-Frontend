@@ -3,6 +3,7 @@ const nextConfig = {
   compress: true,
   serverExternalPackages: [],
   images: {
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production',
     remotePatterns: [
       {
         protocol: 'https',
@@ -36,7 +37,7 @@ const nextConfig = {
               'default-src \'self\'',
               'script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'', // unsafe-eval required by Next.js dev mode
               'style-src \'self\' \'unsafe-inline\'',
-              'img-src \'self\' data: blob: https://iced-latte-bucket-for-products.s3.eu-west-2.amazonaws.com https://*.supabase.co',
+              'img-src \'self\' data: blob: https://iced-latte-bucket-for-products.s3.eu-west-2.amazonaws.com https://*.supabase.co http://localhost:9000',
               'font-src \'self\'',
               'connect-src \'self\'',
               'frame-ancestors \'none\'',

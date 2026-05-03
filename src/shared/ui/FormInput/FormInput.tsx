@@ -13,6 +13,7 @@ interface InputProps<T extends FieldValues> {
   className?: string
   labelClassName?: string
   inputClassName?: string
+  endAdornment?: React.ReactNode
   onChange?: React.ChangeEventHandler<HTMLInputElement>
   [key: string]: unknown
 }
@@ -28,6 +29,7 @@ export default function FormInput<T extends FieldValues>({
   className,
   labelClassName,
   inputClassName,
+  endAdornment,
   onChange,
   ...rest
 }: Readonly<InputProps<T>>) {
@@ -44,26 +46,34 @@ export default function FormInput<T extends FieldValues>({
       >
         {label}
       </label>
-      <input
-        className={twMerge(
-          'bg-secondary text-L text-primary outline-focus placeholder:text-placeholder block h-[54px] w-full rounded-lg p-2.5',
-          error && 'border-error border-2',
-          inputClassName,
+      <div className="relative">
+        <input
+          className={twMerge(
+            'bg-secondary text-L text-primary outline-focus placeholder:text-placeholder block h-[54px] w-full rounded-lg p-2.5',
+            endAdornment && 'pr-10',
+            error && 'border-error border-2',
+            inputClassName,
+          )}
+          id={id}
+          type={type}
+          placeholder={placeholder}
+          {...registered}
+          {...rest}
+          aria-describedby={error ? `${id}-error` : undefined}
+          aria-invalid={!!error}
+          onChange={(e) => {
+            void (
+              registered.onChange as React.ChangeEventHandler<HTMLInputElement>
+            )(e)
+            onChange?.(e)
+          }}
+        />
+        {endAdornment && (
+          <div className="absolute inset-y-0 right-3 flex items-center">
+            {endAdornment}
+          </div>
         )}
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        {...registered}
-        {...rest}
-        aria-describedby={error ? `${id}-error` : undefined}
-        aria-invalid={!!error}
-        onChange={(e) => {
-          void (
-            registered.onChange as React.ChangeEventHandler<HTMLInputElement>
-          )(e)
-          onChange?.(e)
-        }}
-      />
+      </div>
       {error && (
         <div id={`${id}-error`} className="text-negative mt-2 font-medium">
           {error.message}

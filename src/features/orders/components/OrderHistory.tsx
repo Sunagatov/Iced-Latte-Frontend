@@ -104,7 +104,7 @@ export default function OrderHistory() {
         <>
           <div className="flex flex-col gap-3">
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={order.id} order={order} onStatusChange={retry} />
             ))}
           </div>
 
