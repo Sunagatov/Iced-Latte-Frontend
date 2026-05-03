@@ -57,12 +57,12 @@ export default memo(function ProductCard({
       className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] sm:min-w-[190px]"
     >
       <div className="relative">
-        <div className="relative aspect-[3/4] w-full overflow-hidden">
+        <div className="relative aspect-[4/5] w-full overflow-hidden">
           <Link href={`/product/${id}`} className="relative block h-full w-full">
             <Image
               src={getImgUrl(productFileUrl, productImg)}
               alt={name}
-              style={{ objectFit: 'contain', padding: '20px' }}
+              style={{ objectFit: 'contain', padding: '12px' }}
               fill={true}
               sizes="(max-width: 768px) 50vw, 25vw"
               priority={priority}
@@ -79,8 +79,8 @@ export default memo(function ProductCard({
           aria-pressed={isFavourited}
           className={`focus-visible:ring-brand-solid absolute top-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
             isFavourited
-              ? 'bg-red-500 text-white animate-[heart-pop_0.3s_ease-out]'
-              : 'text-black/20 hover:text-red-400'
+              ? 'bg-[#1B4332] text-white animate-[heart-pop_0.3s_ease-out]'
+              : 'bg-white/80 text-black/40 hover:text-[#1B4332]'
           }`}
           data-active={isFavourited ? 'true' : 'false'}
           data-testid="favourite-btn"
@@ -105,7 +105,7 @@ export default memo(function ProductCard({
           <h2 className="text-primary line-clamp-2 text-sm leading-snug font-semibold">
             {name}
           </h2>
-          <p className="text-[11px] text-black/30">
+          <p className="text-[11px] text-black/40">
             {[brandName, sellerName].filter(Boolean).join(' · ')}
           </p>
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
