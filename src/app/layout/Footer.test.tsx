@@ -27,4 +27,12 @@ describe('Footer', () => {
 
     expect(matches.length).toBeGreaterThan(0)
   })
+
+  it('renders a terms of use link', () => {
+    render(<Footer />)
+
+    expect(
+      screen.getByRole('link', { name: /terms of use/i }),
+    ).toHaveAttribute('href', '/terms-of-use')
+  })
 })

@@ -115,6 +115,9 @@ export default function Footer() {
               >
                 Contribute
               </a>
+              <Link href="/terms-of-use" className="transition hover:text-white">
+                Terms of Use
+              </Link>
             </nav>
           </div>
 
