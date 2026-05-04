@@ -20,6 +20,14 @@ describe('payment config', () => {
     expect(hostedCheckoutEnabled).toBe(false)
   })
 
+  it('hostedCheckoutEnabled is false when NEXT_PUBLIC_STRIPE_ENABLED is missing', async () => {
+    const { NEXT_PUBLIC_STRIPE_ENABLED: _, ...envWithout } = originalEnv
+    process.env = envWithout
+    const { hostedCheckoutEnabled } = await import('@/features/payment/config')
+
+    expect(hostedCheckoutEnabled).toBe(false)
+  })
+
   it('getCheckoutUnavailableMessage returns disabled message when checkout is off', async () => {
     process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'false' }
     const { getCheckoutUnavailableMessage } = await import('@/features/payment/config')

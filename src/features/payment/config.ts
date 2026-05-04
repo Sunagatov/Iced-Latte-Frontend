@@ -1,9 +1,7 @@
-const rawCheckoutFlag = process.env.NEXT_PUBLIC_STRIPE_ENABLED
-
+// Stripe checkout is only enabled when explicitly set to 'true'.
+// This is a test-mode educational project — never enable by default.
 export const hostedCheckoutEnabled =
-  rawCheckoutFlag != null
-    ? rawCheckoutFlag === 'true'
-    : process.env.NODE_ENV !== 'development'
+  process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true'
 
 export function getCheckoutUnavailableMessage(): string {
   return hostedCheckoutEnabled
