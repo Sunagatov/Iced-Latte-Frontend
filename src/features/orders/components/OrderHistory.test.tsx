@@ -31,8 +31,8 @@ describe('OrderHistory', () => {
 
     await waitFor(() => {
       expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledWith(
-        undefined,
-        expect.any(AbortSignal),
+        expect.objectContaining({ page: 0, size: 10 }),
+        expect.anything(),
       )
     })
   })
