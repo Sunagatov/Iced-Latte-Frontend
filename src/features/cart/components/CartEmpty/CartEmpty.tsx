@@ -75,14 +75,14 @@ export default function CartEmpty() {
         Looks like you haven&apos;t added anything yet.
       </p>
       <p className="text-secondary mb-10 text-base">
-        Explore our coffee selection and find your next favourite brew.
+        Explore our selection and find something you&apos;ll love.
       </p>
 
       <Link
         href="/"
         className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-[48px] px-10 py-4 text-base font-semibold transition-colors active:scale-95"
       >
-        Browse Coffee
+        Start shopping
       </Link>
 
       <Link

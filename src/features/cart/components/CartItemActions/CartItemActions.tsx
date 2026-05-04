@@ -41,8 +41,8 @@ function HeartIcon({ isFavourited }: Readonly<{ isFavourited: boolean }>) {
       width="14"
       height="14"
       viewBox="0 0 24 24"
-      fill={isFavourited ? '#E12E3C' : 'none'}
-      stroke={isFavourited ? '#E12E3C' : 'currentColor'}
+      fill={isFavourited ? '#1B4332' : 'none'}
+      stroke={isFavourited ? '#1B4332' : 'currentColor'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
