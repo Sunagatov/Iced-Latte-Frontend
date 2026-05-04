@@ -1,5 +1,4 @@
 'use client'
-import Image from 'next/image'
 import Link from 'next/link'
 import type { CartElementProps } from '@/features/cart/types/cartTypes'
 import CartItemActions from '@/features/cart/components/CartItemActions/CartItemActions'

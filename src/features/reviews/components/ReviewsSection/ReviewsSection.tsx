@@ -154,9 +154,11 @@ const ReviewsSection = ({
 
   return (
     <div data-testid="reviews-section" className="mx-auto max-w-[1157px] pb-16">
-      <h2 className="text-primary mb-8 text-3xl font-bold tracking-tight">
-        Rating and reviews
-      </h2>
+      <div className="mb-8 border-t border-black/[0.06] pt-8">
+        <h2 className="text-lg font-semibold text-black/70">
+          Rating and reviews
+        </h2>
+      </div>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         {/* Left: AI summary + write review + reviews list */}

@@ -23,7 +23,7 @@ const labels: Record<number, string> = {
 const StarRating = ({
   productId,
   count,
-  activeColor = '#682EFF',
+  activeColor = '#1B4332',
   size = 'lg',
 }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)

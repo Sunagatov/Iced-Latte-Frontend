@@ -49,7 +49,7 @@ export default function SignInPage() {
             <div className="mt-4 text-center">
               <Link
                 href="/forgotpass"
-                className="text-sm text-[#682EFF] hover:underline"
+                className="text-sm text-[#1B4332] hover:underline"
               >
                 Forgot password?
               </Link>

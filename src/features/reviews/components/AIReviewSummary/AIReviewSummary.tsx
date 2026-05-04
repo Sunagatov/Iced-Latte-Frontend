@@ -19,7 +19,7 @@ const AIReviewSummary = ({ summary, reviewsCount }: AIReviewSummaryProps) => {
       {/* Header */}
       <div className="mb-4 flex items-center gap-2">
         <svg
-          className="h-4 w-4 shrink-0 text-violet-500"
+          className="h-4 w-4 shrink-0 text-[#1B4332]"
           viewBox="0 0 24 24"
           fill="currentColor"
           aria-hidden="true"
@@ -36,7 +36,7 @@ const AIReviewSummary = ({ summary, reviewsCount }: AIReviewSummaryProps) => {
 
       {/* Quote */}
       <div className="relative pl-5">
-        <span className="absolute top-[-4px] left-0 text-3xl leading-none text-violet-300 select-none">
+        <span className="absolute top-[-4px] left-0 text-3xl leading-none text-[#1B4332]/30 select-none">
           &ldquo;
         </span>
         <p className="text-sm leading-relaxed text-slate-700 sm:text-[15px]">
@@ -44,13 +44,13 @@ const AIReviewSummary = ({ summary, reviewsCount }: AIReviewSummaryProps) => {
           {isLong && (
             <button
               onClick={() => setExpanded((v) => !v)}
-              className="ml-1.5 font-semibold text-violet-600 hover:underline focus:outline-none"
+              className="ml-1.5 font-semibold text-[#1B4332] hover:underline focus:outline-none"
             >
               {expanded ? 'less' : 'more'}
             </button>
           )}
         </p>
-        <span className="text-3xl leading-none text-violet-300 select-none">
+        <span className="text-3xl leading-none text-[#1B4332]/30 select-none">
           &rdquo;
         </span>
       </div>

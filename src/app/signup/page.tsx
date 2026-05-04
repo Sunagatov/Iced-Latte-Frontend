@@ -7,7 +7,7 @@ export default function SignUpPage() {
   return (
     <RestrictRoute>
       <div className="flex min-h-[calc(100vh-112px)]">
-        <div className="hidden flex-col justify-end gap-10 bg-[#682EFF] px-12 pt-10 pb-12 text-white lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-112px)] lg:w-[45%]">
+        <div className="hidden flex-col justify-end gap-10 bg-[#1B4332] px-12 pt-10 pb-12 text-white lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-112px)] lg:w-[45%]">
           <div>
             <p className="text-4xl leading-tight font-bold">
               Join thousands of
@@ -28,7 +28,7 @@ export default function SignUpPage() {
                   key={item}
                   className="flex items-center gap-2 text-sm text-white/80"
                 >
-                  <span>✓</span> {item}
+                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg> {item}
                 </div>
               ))}
             </div>

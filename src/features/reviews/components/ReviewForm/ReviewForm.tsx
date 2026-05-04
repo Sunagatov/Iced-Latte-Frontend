@@ -100,7 +100,7 @@ const ReviewForm = ({
         <StarRating
           productId={productId}
           count={5}
-          activeColor="#682EFF"
+          activeColor="#1B4332"
           size="lg"
         />
       </div>

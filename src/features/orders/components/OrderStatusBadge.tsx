@@ -47,7 +47,7 @@ const STATUS_CONFIG: Record<
   REFUNDED: {
     label: 'Refunded',
     icon: <RiMoneyDollarCircleLine className="h-4 w-4" />,
-    color: 'text-purple-700 bg-purple-50',
+    color: 'text-slate-700 bg-slate-50',
   },
   // deprecated aliases
   DELIVERY: {

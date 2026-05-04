@@ -1,7 +1,4 @@
-import Image, { type StaticImageData } from 'next/image'
 import { twMerge } from 'tailwind-merge'
-import active_heart from '@/../public/active_heart.svg'
-import not_active_heart from '@/../public/not_active_heart.svg'
 
 interface ButtonHeartProps {
   active: boolean
@@ -18,10 +15,6 @@ export default function ButtonHeart({
   label,
   disabled,
 }: Readonly<ButtonHeartProps>) {
-  const imageUrl: StaticImageData = active
-    ? (active_heart as unknown as StaticImageData)
-    : (not_active_heart as unknown as StaticImageData)
-
   return (
     <button
       type="button"
@@ -31,13 +24,23 @@ export default function ButtonHeart({
       }
       aria-pressed={active}
       className={twMerge(
-        'bg-secondary hover:bg-hover-heart focus-visible:ring-brand-solid flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full transition-all duration-200 outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-90 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50',
+        'focus-visible:ring-brand-solid flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full transition-all duration-200 outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-90 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50',
+        active ? 'bg-[#1B4332] text-white' : 'bg-black/[0.04] text-black/40 hover:text-[#1B4332]',
         className,
       )}
       disabled={disabled}
       onClick={onClick}
     >
-      <Image src={imageUrl} alt={`heart ${active ? 'liked' : 'unliked'}`} />
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
     </button>
   )
 }

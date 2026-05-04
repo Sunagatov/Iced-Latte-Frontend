@@ -112,7 +112,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
       {/* Main image */}
       <div
-        className="bg-secondary relative flex-1 overflow-hidden rounded-3xl shadow-sm"
+        className="relative flex-1 overflow-hidden rounded-3xl"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         aria-live="polite"

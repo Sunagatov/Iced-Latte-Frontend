@@ -53,17 +53,17 @@ export default function ForgotPassForm() {
     return (
       <div className="flex min-h-[calc(100vh-7rem-7rem)] items-center justify-center px-6">
         <div className="w-full max-w-[420px] rounded-2xl border border-[#E2E8F0] bg-white p-10 text-center shadow-sm">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#F0EAFF]">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#F0F7F4]">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"
-                stroke="#682EFF"
+                stroke="#1B4332"
                 strokeWidth="1.8"
                 strokeLinejoin="round"
               />
               <path
                 d="m2 6 10 7 10-7"
-                stroke="#682EFF"
+                stroke="#1B4332"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="1.8"
@@ -91,7 +91,7 @@ export default function ForgotPassForm() {
           </Button>
           <Link
             href="/signin"
-            className="mt-4 block text-sm text-[#682EFF] hover:underline"
+            className="mt-4 block text-sm text-[#1B4332] hover:underline"
           >
             Back to sign in
           </Link>
@@ -119,12 +119,12 @@ export default function ForgotPassForm() {
           Back to sign in
         </Link>
 
-        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0EAFF]">
+        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0F7F4]">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <rect
               height="11"
               rx="2"
-              stroke="#682EFF"
+              stroke="#1B4332"
               strokeWidth="1.8"
               width="18"
               x="3"
@@ -132,7 +132,7 @@ export default function ForgotPassForm() {
             />
             <path
               d="M7 11V7a5 5 0 0 1 10 0v4"
-              stroke="#682EFF"
+              stroke="#1B4332"
               strokeWidth="1.8"
               strokeLinecap="round"
             />
