@@ -196,6 +196,7 @@ function CountrySelect({
         className="pointer-events-none absolute top-[60%] right-2 -translate-y-[-60%] transform"
         width={14}
         height={14}
+        style={{ width: 'auto', height: 'auto' }}
       />
       {error && <span className="text-negative text-sm">{error}</span>}
     </div>

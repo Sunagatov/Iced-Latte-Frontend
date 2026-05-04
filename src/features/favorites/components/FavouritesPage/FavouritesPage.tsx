@@ -56,9 +56,9 @@ export default function FavouritesPage() {
   if (status === 'error') {
     return (
       <div className="flex flex-col items-center gap-3 pt-20 text-center">
-        <p className="text-tertiary text-sm">Couldn&apos;t load favourites</p>
+        <p className="text-sm text-black/40">Couldn&apos;t load favourites</p>
         <button
-          className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-full px-4 py-2 text-sm font-semibold"
+          className="rounded-full bg-[#1B4332] px-4 py-2 text-sm font-semibold text-white hover:bg-[#143728]"
           onClick={() => void hydrate()}
         >
           Retry

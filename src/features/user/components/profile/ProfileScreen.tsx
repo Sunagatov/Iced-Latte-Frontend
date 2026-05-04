@@ -2,10 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  RiCupLine,
-  RiLogoutBoxLine,
-} from 'react-icons/ri'
 import AddressManager from '@/features/addresses/components/AddressManager'
 import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
@@ -57,11 +53,11 @@ export default function ProfileScreen() {
 
     const loadOrderCount = async (): Promise<void> => {
       try {
-        const response = await api.get<{ id: string }[]>('/orders', {
+        const response = await api.get<{ totalElements: number }>('/orders', {
           cache: false,
         })
 
-        setOrderCount(response.data.length)
+        setOrderCount(response.data.totalElements)
       } catch {
         // non-critical
       }
@@ -115,8 +111,8 @@ export default function ProfileScreen() {
   }
 
   return (
-    <div className="bg-secondary min-h-screen">
-      <div className="from-brand to-brand-solid-hover bg-gradient-to-r">
+    <div className="min-h-screen bg-[#F8F7F4]">
+      <div className="bg-gradient-to-r from-[#1B4332] to-[#143728]">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 shrink-0">
@@ -125,7 +121,7 @@ export default function ProfileScreen() {
               </div>
 
               {!summary.hasCustomAvatar && (
-                <div className="bg-brand-solid-hover pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full text-xl font-bold text-white ring-4 ring-white/30">
+                <div className="pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full bg-[#143728] text-xl font-bold text-white ring-4 ring-white/30">
                   {summary.initials}
                 </div>
               )}
@@ -139,7 +135,7 @@ export default function ProfileScreen() {
 
                 {summary.email && (
                   <span className="flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium text-white">
-                    <RiCupLine className="h-3 w-3" />
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     Member
                   </span>
                 )}
@@ -161,7 +157,7 @@ export default function ProfileScreen() {
                 <Loader />
               ) : (
                 <>
-                  <RiLogoutBoxLine className="h-4 w-4" />
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                   Log out
                 </>
               )}

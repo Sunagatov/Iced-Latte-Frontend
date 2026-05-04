@@ -6,38 +6,19 @@ import type { IProduct } from '@/features/products/types'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 
 function ListIcon({ active }: { active: boolean }) {
+  const c = active ? '#1B4332' : '#9CA3AF'
+
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect
-        fill={active ? '#6B21A8' : '#9CA3AF'}
-        height="2"
-        rx="1"
-        width="16"
-        x="2"
-        y="4"
-      />
-      <rect
-        fill={active ? '#6B21A8' : '#9CA3AF'}
-        height="2"
-        rx="1"
-        width="16"
-        x="2"
-        y="9"
-      />
-      <rect
-        fill={active ? '#6B21A8' : '#9CA3AF'}
-        height="2"
-        rx="1"
-        width="16"
-        x="2"
-        y="14"
-      />
+      <rect fill={c} height="2" rx="1" width="16" x="2" y="4" />
+      <rect fill={c} height="2" rx="1" width="16" x="2" y="9" />
+      <rect fill={c} height="2" rx="1" width="16" x="2" y="14" />
     </svg>
   )
 }
 
 function GridIcon({ active }: { active: boolean }) {
-  const c = active ? '#6B21A8' : '#9CA3AF'
+  const c = active ? '#1B4332' : '#9CA3AF'
 
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -83,22 +64,22 @@ export default function FavouritesFull() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[960px] px-4 pt-10 pb-16">
+    <div className="mx-auto w-full max-w-[1100px] px-4 pt-10 pb-16">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-baseline gap-3">
-          <h1 className="text-primary text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-black/80">
             Favourites
           </h1>
-          <span className="text-tertiary text-sm font-medium">
-            {favourites.length} items
+          <span className="text-sm text-black/40">
+            {favourites.length} {favourites.length === 1 ? 'item' : 'items'}
           </span>
         </div>
-        <div className="border-primary/20 flex items-center gap-1 rounded-xl border p-1">
+        <div className="flex items-center gap-1 rounded-xl border border-black/[0.06] bg-white p-1">
           <button
             aria-label="List view"
             aria-pressed={view === 'list'}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-              view === 'list' ? 'bg-brand-second' : 'hover:bg-secondary'
+              view === 'list' ? 'bg-[#F0F7F4]' : 'hover:bg-black/[0.03]'
             }`}
             onClick={() => setView('list')}
           >
@@ -108,7 +89,7 @@ export default function FavouritesFull() {
             aria-label="Grid view"
             aria-pressed={view === 'grid'}
             className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-              view === 'grid' ? 'bg-brand-second' : 'hover:bg-secondary'
+              view === 'grid' ? 'bg-[#F0F7F4]' : 'hover:bg-black/[0.03]'
             }`}
             onClick={() => setView('grid')}
           >
