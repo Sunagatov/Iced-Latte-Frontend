@@ -5,7 +5,7 @@ import Link from 'next/link'
 import AddressPicker from '@/features/addresses/components/AddressPicker'
 import CheckoutSummary from '@/features/checkout/components/CheckoutSummary'
 import { useCheckoutForm } from '@/features/checkout/hooks/useCheckoutForm'
-import Loader from '@/shared/ui/Loader/Loader'
+import Loader from '@/shared/ui/Loader'
 
 export default function CheckoutForm() {
   const {

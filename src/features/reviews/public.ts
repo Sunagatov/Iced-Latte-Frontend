@@ -8,8 +8,8 @@ export {
   apiRateProductReview,
   type IReviews,
 } from '@/features/reviews/api'
-export { default as ReviewsSection } from '@/features/reviews/components/ReviewsSection/ReviewsSection'
-export { default as UserReviews } from '@/features/reviews/components/UserReviews/UserReviews'
+export { default as ReviewsSection } from '@/features/reviews/components/ReviewsSection'
+export { default as UserReviews } from '@/features/reviews/components/UserReviews'
 export { reviewsSortOptions } from '@/features/reviews/constants'
 export { useReviews } from '@/features/reviews/hooks'
 export {

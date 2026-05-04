@@ -1,6 +1,6 @@
 'use client'
 
-import FormProfile from '@/features/user/components/FormProfile/FormProfile'
+import FormProfile from '@/features/user/components/FormProfile'
 import type { UserData } from '@/features/user/types'
 import type { AuthStore } from '@/features/auth/store'
 import type { ProfileSummary } from './profileTypes'

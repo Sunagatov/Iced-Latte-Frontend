@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { RiArrowLeftSLine, RiArrowRightSLine, RiTimeLine } from 'react-icons/ri'
-import Loader from '@/shared/ui/Loader/Loader'
+import Loader from '@/shared/ui/Loader'
 import OrderCard from '@/features/orders/components/OrderCard'
 import { useOrders, type OrderFilter } from '@/features/orders/hooks/useOrders'
 

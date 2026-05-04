@@ -1,4 +1,4 @@
-import VerifyEmailCodeForm from '@/features/auth/components/VerifyEmailCode/VerifyEmailCodeForm'
+import VerifyEmailCodeForm from '@/features/auth/components/VerifyEmailCodeForm'
 import RestrictRoute from '@/features/auth/routes/RestrictRoute'
 
 export default function ConfirmRegistrationPage() {

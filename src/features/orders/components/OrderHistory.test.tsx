@@ -19,7 +19,13 @@ describe('OrderHistory', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('loads orders through the orders api', async () => {
-    mockedOrdersApi.fetchOrders.mockResolvedValue([])
+    mockedOrdersApi.fetchOrders.mockResolvedValue({
+      content: [],
+      page: 0,
+      size: 10,
+      totalElements: 0,
+      totalPages: 0,
+    })
 
     render(<OrderHistory />)
 

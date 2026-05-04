@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import CartEmpty from '@/features/cart/components/CartEmpty/CartEmpty'
-import CartFull from '@/features/cart/components/CartFull/CartFull'
+import CartEmpty from '@/features/cart/components/CartEmpty'
+import CartFull from '@/features/cart/components/CartFull'
 import {
   type CartSliceStore,
   type ICartItem,
   useCartStore,
 } from '@/features/cart/public'
-import Loader from '@/shared/ui/Loader/Loader'
+import Loader from '@/shared/ui/Loader'
 
 const selectTempItems = (state: CartSliceStore): ICartItem[] => state.tempItems
 const selectCount = (state: CartSliceStore): number => state.count

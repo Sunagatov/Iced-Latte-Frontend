@@ -153,6 +153,8 @@ src/
 - Keep `app/` thin. It should own Next routing, shell layout, and provider wiring, not feature business logic.
 - Keep route implementations under the owning feature whenever the route has meaningful UI or orchestration logic.
 - Use `shared/ui` only for domain-agnostic primitives. Header, footer, hero sections, and auth guards are not generic UI.
+- Keep single-file components flat: `components/ProductCard.tsx`, not `components/ProductCard/ProductCard.tsx`.
+- Create a component directory only when the component owns colocated tests, helpers, or subcomponents that justify the extra nesting.
 - Keep auth cookies, token helpers, and request tracing under `shared/auth`.
 - Do not let `shared/` import from `app/` or from feature modules.
 

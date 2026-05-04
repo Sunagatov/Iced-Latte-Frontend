@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { AuthStore } from '@/features/auth/store'
 import { useAuthStore } from '@/features/auth/store'
-import UserBar from '@/features/user/components/UserBar/UserBar'
+import UserBar from '@/features/user/components/UserBar'
 
 export default function LoginIcon() {
   const isLoggedIn = useAuthStore((state: AuthStore) => state.isLoggedIn)

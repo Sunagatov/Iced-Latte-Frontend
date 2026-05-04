@@ -17,11 +17,11 @@ import {
   useProductFiltersStore,
 } from '@/features/products/store'
 import type { IProductsList } from '@/features/products/types'
-import ScrollUpBtn from '@/shared/ui/Buttons/ScrollUpBtn/ScrollUpBtn'
+import ScrollUpBtn from '@/shared/ui/ScrollUpButton'
 import ActiveFilterChips from './ActiveFilterChips'
 import CatalogToolbar from './CatalogToolbar'
 import LoadMoreControl from './LoadMoreControl'
-import ProductList from '../ProductList/ProductList'
+import ProductList from '../ProductList'
 
 interface IProductCatalogProps {
   brands: string[]

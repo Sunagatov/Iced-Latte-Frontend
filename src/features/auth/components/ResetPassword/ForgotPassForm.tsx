@@ -1,8 +1,8 @@
 'use client'
 
-import Loader from '@/shared/ui/Loader/Loader'
-import Button from '@/shared/ui/Buttons/Button/Button'
-import FormInput from '@/shared/ui/FormInput/FormInput'
+import Loader from '@/shared/ui/Loader'
+import Button from '@/shared/ui/Button'
+import FormInput from '@/shared/ui/FormInput'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'

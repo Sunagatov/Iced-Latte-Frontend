@@ -1,18 +1,18 @@
 import { render, screen, act } from '@testing-library/react'
-import FavouritesPage from '@/features/favorites/components/FavouritesPage/FavouritesPage'
+import FavouritesPage from '@/features/favorites/components/FavouritesPage'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { useAuthStore } from '@/features/auth/store'
 
 jest.mock(
-  '@/features/favorites/components/FavouritesSkeleton/FavouritesSkeleton',
+  '@/features/favorites/components/FavouritesSkeleton',
   () => ({ __esModule: true, default: () => <div>Loading</div> }),
 )
 jest.mock(
-  '@/features/favorites/components/FavouritesEmpty/FavouritesEmpty',
+  '@/features/favorites/components/FavouritesEmpty',
   () => ({ __esModule: true, default: () => <div>FavouritesEmpty</div> }),
 )
 jest.mock(
-  '@/features/favorites/components/FavouritesFull/FavouritesFull',
+  '@/features/favorites/components/FavouritesFull',
   () => ({ __esModule: true, default: () => <div>FavouritesFull</div> }),
 )
 

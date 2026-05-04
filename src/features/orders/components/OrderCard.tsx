@@ -20,7 +20,7 @@ import {
   reorderOrder,
 } from '@/features/orders/api/ordersApi'
 import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/types/orderTypes'
-import Loader from '@/shared/ui/Loader/Loader'
+import Loader from '@/shared/ui/Loader'
 
 interface OrderCardProps {
   order: OrderSummaryDto

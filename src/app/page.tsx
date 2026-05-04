@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { cache } from 'react'
-import Hero from '@/features/home/components/Hero/Hero'
+import Hero from '@/features/home/components/Hero'
 import {
   getProductBrands,
   getProductSellers,

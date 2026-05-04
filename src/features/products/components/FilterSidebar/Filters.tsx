@@ -8,7 +8,7 @@ import FilterCheckboxGroup from '@/features/products/components/FilterSidebar/Fi
 import PriceFilter from '@/features/products/components/FilterSidebar/PriceFilter'
 import ProductRatingFilter, {
   StarsType,
-} from '@/features/products/components/ProductRatingFilter/ProductRatingFilter'
+} from '@/features/products/components/ProductRatingFilter'
 
 interface IFilters {
   brands: string[]

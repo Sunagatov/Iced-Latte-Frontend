@@ -1,4 +1,4 @@
-import FavouritesSkeleton from '@/features/favorites/components/FavouritesSkeleton/FavouritesSkeleton'
+import FavouritesSkeleton from '@/features/favorites/components/FavouritesSkeleton'
 
 const FavouritesLoading = () => <FavouritesSkeleton />
 

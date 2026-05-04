@@ -2,15 +2,15 @@ import { render, screen, act } from '@testing-library/react'
 import Cart from '@/app/cart/page'
 import { useCartStore } from '@/features/cart/state/cartStore'
 
-jest.mock('@/features/cart/components/CartFull/CartFull', () => ({
+jest.mock('@/features/cart/components/CartFull', () => ({
   __esModule: true,
   default: () => <div>CartFull</div>,
 }))
-jest.mock('@/features/cart/components/CartEmpty/CartEmpty', () => ({
+jest.mock('@/features/cart/components/CartEmpty', () => ({
   __esModule: true,
   default: () => <div>CartEmpty</div>,
 }))
-jest.mock('@/shared/ui/Loader/Loader', () => ({
+jest.mock('@/shared/ui/Loader', () => ({
   __esModule: true,
   default: () => <div>Loader</div>,
 }))

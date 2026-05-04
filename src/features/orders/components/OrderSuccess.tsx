@@ -11,8 +11,8 @@ import {
   useCartStore,
 } from '@/features/cart/state/cartStore'
 import { api } from '@/shared/api/client'
-import Button from '@/shared/ui/Buttons/Button/Button'
-import Loader from '@/shared/ui/Loader/Loader'
+import Button from '@/shared/ui/Button'
+import Loader from '@/shared/ui/Loader'
 import order from '@/../public/orders_stub.png'
 
 interface PaymentSessionStatus {

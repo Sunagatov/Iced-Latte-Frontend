@@ -1,6 +1,6 @@
 'use client'
 
-import ScrollUpBtn from '@/shared/ui/Buttons/ScrollUpBtn/ScrollUpBtn'
+import ScrollUpBtn from '@/shared/ui/ScrollUpButton'
 import React from 'react'
 import {
   apiDeleteProductReview,
@@ -8,8 +8,8 @@ import {
 } from '@/features/reviews/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { Review as ReviewType } from '@/features/reviews/types'
-import Loader from '@/shared/ui/Loader/Loader'
-import Review from '@/features/reviews/components/Review/Review'
+import Loader from '@/shared/ui/Loader'
+import Review from '@/features/reviews/components/Review'
 import { useAuthStore } from '@/features/auth/store'
 import { useRouter } from 'next/navigation'
 

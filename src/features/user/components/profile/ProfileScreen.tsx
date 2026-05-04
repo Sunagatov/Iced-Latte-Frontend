@@ -8,8 +8,8 @@ import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import type { UserData } from '@/features/user/types'
 import { api } from '@/shared/api/client'
-import Loader from '@/shared/ui/Loader/Loader'
-import ImageUpload from '../ImageUpload/ImageUpload'
+import Loader from '@/shared/ui/Loader'
+import ImageUpload from '../ImageUpload'
 import {
   ProfileNotificationsSection,
   ProfileReviewsSection,

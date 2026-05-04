@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import UserReviews from '@/features/reviews/components/UserReviews/UserReviews'
+import UserReviews from '@/features/reviews/components/UserReviews'
 
 type NotificationPreferenceRowProps = {
   defaultOn?: boolean

@@ -7,9 +7,9 @@ interface ICardProps {
   product: IProduct
   priority?: boolean
 }
-import ProductRating from '@/features/products/components/ProductRating/ProductRating'
-import ProductImage from '@/shared/ui/ProductImage/ProductImage'
-import Counter from '@/shared/ui/Counter/Counter'
+import ProductRating from '@/features/products/components/ProductRating'
+import ProductImage from '@/shared/ui/ProductImage'
+import Counter from '@/shared/ui/Counter'
 
 export default memo(function ProductCard({
   product,

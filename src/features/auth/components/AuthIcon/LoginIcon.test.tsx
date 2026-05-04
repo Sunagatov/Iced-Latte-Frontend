@@ -11,7 +11,7 @@ jest.mock('next/link', () => ({
     children: React.ReactNode
   }) => <a href={href}>{children}</a>,
 }))
-jest.mock('@/features/user/components/UserBar/UserBar', () => ({
+jest.mock('@/features/user/components/UserBar', () => ({
   __esModule: true,
   default: () => <div>UserBar</div>,
 }))

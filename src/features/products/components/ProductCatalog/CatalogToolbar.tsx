@@ -2,7 +2,7 @@
 
 import { sortOptions } from '@/features/products/constants'
 import type { IOption } from '@/shared/types/Dropdown'
-import Dropdown from '@/shared/ui/Dropdown/Dropdown'
+import Dropdown from '@/shared/ui/Dropdown'
 import type { ISortParams } from '@/shared/types/ISortParams'
 
 type CatalogToolbarProps = {

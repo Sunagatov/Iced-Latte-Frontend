@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import OrderSuccess from '@/features/orders/components/OrderSuccess'
 import { requireRecoverableSession } from '@/shared/auth/guards'
-import Loader from '@/shared/ui/Loader/Loader'
+import Loader from '@/shared/ui/Loader'
 
 interface OrderSuccessPageProps {
   searchParams: Promise<{ sessionId?: string }>

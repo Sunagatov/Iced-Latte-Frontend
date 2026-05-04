@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import Loader from '@/shared/ui/Loader/Loader'
+import Loader from '@/shared/ui/Loader'
 import type { ProfileSection } from './profileTypes'
 
 type ProfileNavigationProps = {
