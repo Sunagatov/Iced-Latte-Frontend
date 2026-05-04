@@ -171,7 +171,9 @@ async function handleProxy(
     const rawBody = await response.text()
 
     const data: unknown =
-      contentType.includes('application/json') && rawBody
+      (contentType.includes('application/json') ||
+        contentType.includes('application/problem+json')) &&
+      rawBody
         ? (JSON.parse(rawBody) as unknown)
         : rawBody
 

@@ -7,21 +7,29 @@ export const handleAxiosError = (error: unknown): string => {
     const axiosError = error as AxiosError<ErrorResponse>
 
     if (axiosError.response) {
-      // Normalize auth errors — never expose backend distinctions like
-      // "email not found" / "account not confirmed" to the user
-      if (
-        axiosError.response.status === 401 ||
-        axiosError.response.status === 403
-      ) {
-        return 'Incorrect email or password'
+      const { status, data } = axiosError.response
+
+      if (status === 401) {
+        return data?.detail || data?.message || 'Please sign in to continue.'
       }
-      if (axiosError.response.status === 422)
-        return 'Your review was rejected — it may contain inappropriate content.'
 
-      const data: ErrorResponse = axiosError.response.data
+      if (status === 403) {
+        return (
+          data?.detail ||
+          data?.message ||
+          'You do not have permission to perform this action.'
+        )
+      }
 
-      return data.message || data.error || 'An unknown error occurred'
+      return (
+        data?.detail ||
+        data?.message ||
+        data?.error ||
+        'An unknown error occurred'
+      )
     }
+
+    return 'Network error. Please check your connection.'
   }
 
   return 'An unknown error occurred'

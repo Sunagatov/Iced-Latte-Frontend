@@ -16,22 +16,38 @@ function makeAxiosError(status: number, data: Record<string, unknown>) {
 }
 
 describe('handleAxiosError', () => {
-  it('returns normalized message for 401 regardless of backend payload', () => {
+  it('returns backend message for 401 when present', () => {
     expect(
-      handleAxiosError(makeAxiosError(401, { message: 'Bad creds' })),
-    ).toBe('Incorrect email or password')
+      handleAxiosError(
+        makeAxiosError(401, { message: 'Session expired. Please sign in again.' }),
+      ),
+    ).toBe('Session expired. Please sign in again.')
   })
 
-  it('returns default message for 401 without message', () => {
+  it('returns fallback message for 401 without message', () => {
     expect(handleAxiosError(makeAxiosError(401, {}))).toBe(
-      'Incorrect email or password',
+      'Please sign in to continue.',
     )
   })
 
-  it('returns rejection message for 422', () => {
-    expect(handleAxiosError(makeAxiosError(422, {}))).toBe(
-      'Your review was rejected — it may contain inappropriate content.',
+  it('returns backend message for 403 when present', () => {
+    expect(
+      handleAxiosError(makeAxiosError(403, { message: 'Access denied.' })),
+    ).toBe('Access denied.')
+  })
+
+  it('returns fallback message for 403 without message', () => {
+    expect(handleAxiosError(makeAxiosError(403, {}))).toBe(
+      'You do not have permission to perform this action.',
     )
+  })
+
+  it('prefers detail over message (ProblemDetail)', () => {
+    expect(
+      handleAxiosError(
+        makeAxiosError(400, { detail: 'Validation failed', message: 'old' }),
+      ),
+    ).toBe('Validation failed')
   })
 
   it('returns data.message for other status', () => {
@@ -52,9 +68,11 @@ describe('handleAxiosError', () => {
     )
   })
 
-  it('returns fallback for axios error without response', () => {
+  it('returns network error for axios error without response', () => {
     const err = new axios.AxiosError('network')
 
-    expect(handleAxiosError(err)).toBe('An unknown error occurred')
+    expect(handleAxiosError(err)).toBe(
+      'Network error. Please check your connection.',
+    )
   })
 })

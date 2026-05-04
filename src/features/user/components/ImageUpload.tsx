@@ -11,7 +11,7 @@ const ImageUpload = () => {
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [inputKey, setInputKey] = useState(0)
-  const { handleError } = useErrorHandler()
+  const { errorMessage, handleError } = useErrorHandler()
   const userData = useAuthStore((s) => s.userData)
   const setUserData = useAuthStore((s) => s.setUserData)
   const prevPreviewRef = useRef<string | null>(null)
@@ -78,6 +78,11 @@ const ImageUpload = () => {
       <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition group-hover:opacity-100">
         {loading ? <Loader /> : <RiCameraLine className="h-6 w-6 text-white" />}
       </div>
+      {errorMessage && (
+        <p className="mt-1 text-center text-xs text-red-500" role="alert">
+          {errorMessage}
+        </p>
+      )}
     </label>
   )
 }

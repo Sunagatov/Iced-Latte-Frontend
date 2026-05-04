@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { DeliveryAddress, AddressFormData } from './types'
 import * as api from './api'
+import { handleAxiosError } from '@/shared/utils/apiError'
 
 interface AddressStore {
   addresses: DeliveryAddress[]
@@ -33,29 +34,53 @@ export const useAddressStore = create<AddressStore>()(
     },
 
     add: async (data) => {
-      const address = await api.createAddress(data)
+      try {
+        const address = await api.createAddress(data)
 
-      set((s) => ({ addresses: [...s.addresses, address] }))
+        set((s) => ({ addresses: [...s.addresses, address], error: null }))
+      } catch (err) {
+        set({ error: handleAxiosError(err) })
+      }
     },
 
     update: async (id, data) => {
-      const updated = await api.updateAddress(id, data)
+      try {
+        const updated = await api.updateAddress(id, data)
 
-      set((s) => ({
-        addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
-      }))
+        set((s) => ({
+          addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
+          error: null,
+        }))
+      } catch (err) {
+        set({ error: handleAxiosError(err) })
+      }
     },
 
     remove: async (id) => {
-      await api.deleteAddress(id)
-      set((s) => ({ addresses: s.addresses.filter((a) => a.id !== id) }))
+      try {
+        await api.deleteAddress(id)
+        set((s) => ({
+          addresses: s.addresses.filter((a) => a.id !== id),
+          error: null,
+        }))
+      } catch (err) {
+        set({ error: handleAxiosError(err) })
+      }
     },
 
     setDefault: async (id) => {
-      await api.setDefaultAddress(id)
-      set((s) => ({
-        addresses: s.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
-      }))
+      try {
+        await api.setDefaultAddress(id)
+        set((s) => ({
+          addresses: s.addresses.map((a) => ({
+            ...a,
+            isDefault: a.id === id,
+          })),
+          error: null,
+        }))
+      } catch (err) {
+        set({ error: handleAxiosError(err) })
+      }
     },
   }),
 )

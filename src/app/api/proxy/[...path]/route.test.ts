@@ -106,6 +106,24 @@ describe('proxy route', () => {
     expect(res.status).toBe(404)
   })
 
+  it('parses application/problem+json as JSON', async () => {
+    mockFetch(
+      400,
+      { type: 'about:blank', title: 'Bad Request', status: 400, detail: 'Validation failed' },
+      'application/problem+json',
+    )
+
+    const res = await GET(makeRequest('GET', 'products'), {
+      params: Promise.resolve({ path: ['products'] }),
+    })
+
+    expect(res.status).toBe(400)
+    const body = await res.json()
+
+    expect(body.detail).toBe('Validation failed')
+    expect(body.type).toBe('about:blank')
+  })
+
   it('POST proxies request', async () => {
     mockFetch(200, { ok: true })
 
