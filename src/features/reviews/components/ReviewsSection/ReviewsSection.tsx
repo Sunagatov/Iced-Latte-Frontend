@@ -25,6 +25,7 @@ import ReviewsList from '@/features/reviews/components/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/features/reviews/components/ReviewsSorter/ReviewsSorter'
 import AIReviewSummary from '@/features/reviews/components/AIReviewSummary/AIReviewSummary'
 import ReviewsFilter from '@/features/reviews/components/ReviewsFilter/ReviewsFilter'
+import RatingSummary from '@/features/reviews/components/RatingSummary/RatingSummary'
 
 interface ReviewComponentProps {
   product: IProduct
@@ -160,88 +161,95 @@ const ReviewsSection = ({
         </h2>
       </div>
 
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        {/* Left: AI summary + write review + reviews list */}
-        <div className="flex min-w-0 flex-1 flex-col">
+      {/* 2-col header: Rating summary + AI summary */}
+      {reviewsSummary.hasStatistics && (
+        <div className="mb-8 grid gap-4 sm:grid-cols-2">
+          {reviewsStatistics && <RatingSummary statistics={reviewsStatistics} />}
           {product.aiSummary && (
-            <div className="mb-6">
-              <AIReviewSummary
-                summary={product.aiSummary}
-                reviewsCount={
-                  reviewsStatistics?.reviewsCount ?? product.reviewsCount
-                }
-              />
-            </div>
-          )}
-
-          {!userReview && (
-            <ReviewForm
-              productId={productId}
-              showForm={showForm}
-              setShowForm={setShowForm}
-              onReviewSubmitted={handleReviewSubmitted}
+            <AIReviewSummary
+              summary={product.aiSummary}
+              reviewsCount={reviewsStatistics?.reviewsCount ?? product.reviewsCount}
             />
-          )}
-
-          {reviewsStatistics && reviewsSummary.hasStatistics && (
-            <ReviewsSorter
-              selectedOption={selectedSortOption}
-              selectOption={setSelectedSortOption}
-              userReview={userReview}
-            >
-              <ReviewsFilter
-                filterRef={filterRef}
-                reviewsStatistics={reviewsStatistics}
-                selectedFilterRating={selectedFilterRating}
-                showFilterDropdown={showFilterDropdown}
-                setShowFilterDropdown={setShowFilterDropdown}
-                toggleRatingFilter={toggleRatingFilter}
-                clearRatingFilters={clearRatingFilters}
-              />
-            </ReviewsSorter>
-          )}
-
-          {reviewsSummary.hasAnyReviews ? (
-            <ReviewsList
-              productId={productId}
-              reviews={reviewsState.data}
-              showMoreReviews={handleShowMoreReviews}
-              isFetchingNextPage={reviewsState.isFetchingNextPage}
-              hasNextPage={reviewsState.hasNextPage}
-              userReview={userReview}
-              onReviewDeleted={handleReviewDeleted}
-              onReviewRated={(updated) => reviewsState.updateReviewInCache(updated)}
-            />
-          ) : (
-            !reviewsState.isLoading &&
-            reviewsSummary.reviewsCount === 0 && (
-              <div className="border-primary/60 mt-6 rounded-2xl border bg-white p-8 text-center shadow-sm">
-                <p className="text-primary text-base font-semibold">
-                  No reviews yet
-                </p>
-                <p className="text-tertiary mt-1 text-sm">
-                  Be the first to review this product
-                </p>
-              </div>
-            )
-          )}
-
-          {reviewsState.data.length === 0 && selectedFilterRating.length > 0 && (
-            <div className="text-tertiary mt-4 flex items-center gap-3 text-sm">
-              <span>No reviews match this filter.</span>
-              <button
-                onClick={clearRatingFilters}
-                className="text-brand font-medium hover:underline"
-              >
-                Clear filters
-              </button>
-            </div>
-          )}
-          {errorMessage && (
-            <div className="text-negative mt-4">{errorMessage}</div>
           )}
         </div>
-      </div>
+      )}
+
+      {/* AI summary full-width fallback when no statistics */}
+      {!reviewsSummary.hasStatistics && product.aiSummary && (
+        <div className="mb-8">
+          <AIReviewSummary
+            summary={product.aiSummary}
+            reviewsCount={reviewsStatistics?.reviewsCount ?? product.reviewsCount}
+          />
+        </div>
+      )}
+
+      {!userReview && (
+        <ReviewForm
+          productId={productId}
+          showForm={showForm}
+          setShowForm={setShowForm}
+          onReviewSubmitted={handleReviewSubmitted}
+        />
+      )}
+
+      {reviewsStatistics && reviewsSummary.hasStatistics && (
+        <ReviewsSorter
+          selectedOption={selectedSortOption}
+          selectOption={setSelectedSortOption}
+          userReview={userReview}
+        >
+          <ReviewsFilter
+            filterRef={filterRef}
+            reviewsStatistics={reviewsStatistics}
+            selectedFilterRating={selectedFilterRating}
+            showFilterDropdown={showFilterDropdown}
+            setShowFilterDropdown={setShowFilterDropdown}
+            toggleRatingFilter={toggleRatingFilter}
+            clearRatingFilters={clearRatingFilters}
+          />
+        </ReviewsSorter>
+      )}
+
+      {reviewsSummary.hasAnyReviews ? (
+        <ReviewsList
+          productId={productId}
+          reviews={reviewsState.data}
+          showMoreReviews={handleShowMoreReviews}
+          isFetchingNextPage={reviewsState.isFetchingNextPage}
+          hasNextPage={reviewsState.hasNextPage}
+          userReview={userReview}
+          onReviewDeleted={handleReviewDeleted}
+          onReviewRated={(updated) => reviewsState.updateReviewInCache(updated)}
+        />
+      ) : (
+        !reviewsState.isLoading &&
+        reviewsSummary.reviewsCount === 0 && (
+          <div className="mt-6 rounded-2xl border border-black/6 bg-white p-8 text-center shadow-sm">
+            <p className="text-primary text-base font-semibold">
+              No reviews yet
+            </p>
+            <p className="text-tertiary mt-1 text-sm">
+              Be the first to review this product
+            </p>
+          </div>
+        )
+      )}
+
+      {reviewsState.data.length === 0 && selectedFilterRating.length > 0 && (
+        <div className="text-tertiary mt-4 flex items-center gap-3 text-sm">
+          <span>No reviews match this filter.</span>
+          <button
+            onClick={clearRatingFilters}
+            className="text-brand font-medium hover:underline"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+      {errorMessage && (
+        <div className="text-negative mt-4">{errorMessage}</div>
+      )}
     </div>
   )
 }

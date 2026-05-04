@@ -1,6 +1,5 @@
 'use client'
 
-import Button from '@/shared/ui/Buttons/Button/Button'
 import ScrollUpBtn from '@/shared/ui/Buttons/ScrollUpBtn/ScrollUpBtn'
 import React from 'react'
 import {
@@ -97,10 +96,10 @@ const ReviewsList: React.FC<IReviewsList> = ({
         </div>
       )}
 
-      <ul className="mt-6 flex flex-col gap-3">
+      <ul className="mt-6 flex flex-col gap-4">
         {reviews.map((review) => (
           <li
-            className="border-primary/60 rounded-2xl border bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="rounded-2xl border border-black/6 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
             key={review.productReviewId}
           >
             <Review
@@ -116,13 +115,15 @@ const ReviewsList: React.FC<IReviewsList> = ({
       </ul>
 
       {hasNextPage && !isFetchingNextPage && (
-        <Button
-          id="showmore-btn"
-          onClick={showMoreReviews}
-          className="border-brand-solid text-brand-solid hover:bg-brand-solid mt-6 mr-auto mb-[94px] ml-auto flex w-[200px] items-center justify-center rounded-[47px] border-2 bg-transparent text-[18px] font-semibold shadow-sm hover:text-white hover:shadow-md active:scale-95"
-        >
-          Show more
-        </Button>
+        <div className="mt-8 flex justify-center">
+          <button
+            id="showmore-btn"
+            onClick={showMoreReviews}
+            className="rounded-full border border-black/10 bg-white px-8 py-2.5 text-sm font-medium text-black/60 shadow-sm transition hover:border-black/20 hover:text-black/80 active:scale-[0.98]"
+          >
+            Show more reviews
+          </button>
+        </div>
       )}
       {isFetchingNextPage && (
         <div className={'mt-[24px] flex h-[54px] items-center'}>
