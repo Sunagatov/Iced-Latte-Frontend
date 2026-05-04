@@ -1,7 +1,7 @@
 import type {
   ICartItem,
   ICartPushItem,
-} from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cartTypes'
 import { createItemsIdsFromCart } from '@/features/cart/utils/cartUtils'
 
 export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'

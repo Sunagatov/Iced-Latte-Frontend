@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { RiArrowLeftSLine, RiArrowRightSLine, RiTimeLine } from 'react-icons/ri'
 import Loader from '@/shared/ui/Loader'
 import OrderCard from '@/features/orders/components/OrderCard'
-import { useOrders, type OrderFilter } from '@/features/orders/hooks/useOrders'
+import { useOrders, type OrderFilter } from '@/features/orders/useOrders'
 
 const FILTERS: { label: string; value: OrderFilter }[] = [
   { label: 'All', value: '' },
+  { label: 'Pending', value: 'PENDING_PAYMENT' },
   { label: 'Placed', value: 'CREATED' },
   { label: 'Paid', value: 'PAID' },
   { label: 'Shipped', value: 'SHIPPED' },

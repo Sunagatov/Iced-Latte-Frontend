@@ -3,7 +3,7 @@
 import {
   useCartStore,
   type CartSliceStore,
-} from '@/features/cart/state/cartStore'
+} from '@/features/cart/cartStore'
 import {
   type FavStoreState,
   useFavouritesStore,

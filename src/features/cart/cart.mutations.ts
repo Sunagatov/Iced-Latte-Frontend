@@ -2,12 +2,12 @@ import {
   changeCartItemQuantity,
   mergeCarts,
   removeCartItem,
-} from '@/features/cart/api/cartApi'
+} from '@/features/cart/cartApi'
 import type {
   ICartItem,
   ICartPushItem,
   ICartUpdatedItem,
-} from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cartTypes'
 import {
   setCartError,
   setCartItems,

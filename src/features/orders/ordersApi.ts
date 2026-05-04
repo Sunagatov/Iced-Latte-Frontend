@@ -7,7 +7,7 @@ import type {
   OrderStatus,
   RefundRequest,
   ReorderResponse,
-} from '@/features/orders/types/orderTypes'
+} from '@/features/orders/orderTypes'
 
 export async function fetchOrders(
   params: {

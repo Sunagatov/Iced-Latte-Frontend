@@ -14,6 +14,7 @@ export interface OrderAddress {
 }
 
 export type OrderStatus =
+  | 'PENDING_PAYMENT'
   | 'CREATED'
   | 'PAID'
   | 'SHIPPED'
@@ -21,6 +22,8 @@ export type OrderStatus =
   | 'CANCELLED'
   | 'REFUND_REQUESTED'
   | 'REFUNDED'
+  | 'PAYMENT_FAILED'
+  | 'PAYMENT_EXPIRED'
   // deprecated — kept for backward compatibility during transition
   | 'DELIVERY'
   | 'FINISHED'

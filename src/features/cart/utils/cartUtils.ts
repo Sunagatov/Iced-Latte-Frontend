@@ -1,7 +1,7 @@
 import type {
   ICartItem,
   ICartPushItem,
-} from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cartTypes'
 
 export type SetFn = {
   (partial: Partial<{ pendingProductIds: Set<string> }>): void

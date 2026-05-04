@@ -8,12 +8,17 @@ import {
   RiTimeLine,
   RiTruckLine,
 } from 'react-icons/ri'
-import type { OrderStatus } from '@/features/orders/types/orderTypes'
+import type { OrderStatus } from '@/features/orders/orderTypes'
 
 const STATUS_CONFIG: Record<
   OrderStatus,
   { label: string; icon: React.ReactNode; color: string }
 > = {
+  PENDING_PAYMENT: {
+    label: 'Pending payment',
+    icon: <RiTimeLine className="h-4 w-4" />,
+    color: 'text-amber-700 bg-amber-50',
+  },
   CREATED: {
     label: 'Order placed',
     icon: <RiTimeLine className="h-4 w-4" />,
@@ -48,6 +53,16 @@ const STATUS_CONFIG: Record<
     label: 'Refunded',
     icon: <RiMoneyDollarCircleLine className="h-4 w-4" />,
     color: 'text-slate-700 bg-slate-50',
+  },
+  PAYMENT_FAILED: {
+    label: 'Payment failed',
+    icon: <RiCloseCircleLine className="h-4 w-4" />,
+    color: 'text-red-700 bg-red-50',
+  },
+  PAYMENT_EXPIRED: {
+    label: 'Payment expired',
+    icon: <RiTimeLine className="h-4 w-4" />,
+    color: 'text-gray-600 bg-gray-100',
   },
   // deprecated aliases
   DELIVERY: {

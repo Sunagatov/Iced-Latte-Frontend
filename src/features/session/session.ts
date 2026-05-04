@@ -1,6 +1,6 @@
 import type { AuthStatus } from '@/features/auth/store'
 import { useAuthStore } from '@/features/auth/store'
-import { useCartStore } from '@/features/cart/state/cartStore'
+import { useCartStore } from '@/features/cart/cartStore'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { getUserData } from '@/features/user/api'
 import type { UserData } from '@/features/user/types'

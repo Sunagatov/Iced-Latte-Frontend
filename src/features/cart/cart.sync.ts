@@ -1,10 +1,10 @@
 import { useAuthStore } from '@/features/auth/store'
-import { fetchCart } from '@/features/cart/api/cartApi'
+import { fetchCart } from '@/features/cart/cartApi'
 import {
   clearCartStore as clearCartStoreState,
   mergeGuestCartIntoBackend,
 } from '@/features/cart/cart.mutations'
-import type { ICartItem } from '@/features/cart/types/cartTypes'
+import type { ICartItem } from '@/features/cart/cartTypes'
 import {
   setCartError,
   setCartItems,

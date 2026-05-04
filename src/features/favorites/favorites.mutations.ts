@@ -2,7 +2,7 @@ import { useAuthStore } from '@/features/auth/store'
 import {
   removeFavourite,
   syncFavourites,
-} from '@/features/favorites/api/favoritesApi'
+} from '@/features/favorites/favoritesApi'
 import {
   clearPendingFavourite,
   type FavStoreGet,

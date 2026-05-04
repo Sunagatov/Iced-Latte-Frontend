@@ -1,15 +1,18 @@
 'use client'
 
 import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
-import { useCartStore } from '@/features/cart/state/cartStore'
-import { createOrder } from '@/features/orders/api/ordersApi'
+import { useCartStore } from '@/features/cart/cartStore'
+import {
+  getCheckoutUnavailableMessage,
+  hostedCheckoutEnabled,
+} from '@/features/payment/config'
+import { createCheckout } from '@/features/payment/public'
 import type { DeliveryAddress } from '@/features/addresses/types'
 import type {
   CheckoutAddressSelection,
   CheckoutFormValues,
-} from '@/features/checkout/types/checkoutTypes'
+} from '@/features/checkout/checkoutTypes'
 
 function getInitialFormValues(): CheckoutFormValues {
   const userData = useAuthStore.getState().userData
@@ -47,9 +50,8 @@ function resolveShippingAddress(
 }
 
 export function useCheckoutForm() {
-  const router = useRouter()
   const { userData } = useAuthStore()
-  const { resetCart, tempItems } = useCartStore()
+  const { tempItems } = useCartStore()
   const [selectedAddress, setSelectedAddress] =
     useState<DeliveryAddress | null>(null)
   const [form, setForm] = useState<CheckoutFormValues>(getInitialFormValues)
@@ -82,6 +84,12 @@ export function useCheckoutForm() {
     event.preventDefault()
     setError('')
 
+    if (!hostedCheckoutEnabled) {
+      setError(getCheckoutUnavailableMessage())
+
+      return
+    }
+
     if (tempItems.length === 0) {
       setError('Your cart is empty. Add items before placing an order.')
 
@@ -93,7 +101,7 @@ export function useCheckoutForm() {
     try {
       const idempotencyKey = crypto.randomUUID()
 
-      await createOrder(
+      const checkout = await createCheckout(
         {
           recipientName: form.recipientName,
           recipientSurname: form.recipientSurname,
@@ -104,10 +112,11 @@ export function useCheckoutForm() {
         },
         idempotencyKey,
       )
-      resetCart()
-      router.push('/orders')
+      // Redirect to Stripe Hosted Checkout — do NOT resetCart() here.
+      // Cart is cleared by the backend webhook after payment confirmation.
+      window.location.href = checkout.checkoutUrl
     } catch {
-      setError('Could not place order. Please try again.')
+      setError(getCheckoutUnavailableMessage())
     } finally {
       setLoading(false)
     }
@@ -117,6 +126,7 @@ export function useCheckoutForm() {
     error,
     form,
     handleSubmit,
+    hostedCheckoutEnabled,
     loading,
     selectedAddress,
     setSelectedAddress,

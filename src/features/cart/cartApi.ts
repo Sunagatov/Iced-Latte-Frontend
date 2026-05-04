@@ -4,7 +4,7 @@ import type {
   ICart,
   ICartPushItems,
   ICartUpdatedItem,
-} from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cartTypes'
 
 interface DeleteItemsPayload {
   shoppingCartItemIds: string[]

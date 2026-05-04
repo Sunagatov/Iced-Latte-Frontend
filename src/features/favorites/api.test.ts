@@ -1,4 +1,4 @@
-import { fetchFavourites } from '@/features/favorites/api/favoritesApi'
+import { fetchFavourites } from '@/features/favorites/favoritesApi'
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({

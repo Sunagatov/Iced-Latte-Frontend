@@ -9,7 +9,7 @@ import {
   applyGuestRemove,
   applyGuestRemoveFullProduct,
 } from '@/features/cart/cart.mutations'
-import type { ICartItem } from '@/features/cart/types/cartTypes'
+import type { ICartItem } from '@/features/cart/cartTypes'
 import {
   clearCartStore,
   hydrateCartStore,

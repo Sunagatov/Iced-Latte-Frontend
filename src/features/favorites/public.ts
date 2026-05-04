@@ -7,9 +7,9 @@ export {
   fetchFavourites,
   removeFavourite,
   syncFavourites,
-} from '@/features/favorites/api/favoritesApi'
+} from '@/features/favorites/favoritesApi'
 export type {
   FavElementProps,
   FavouritesResponse,
   SyncFavouritesRequest,
-} from '@/features/favorites/types/favoritesTypes'
+} from '@/features/favorites/favoritesTypes'

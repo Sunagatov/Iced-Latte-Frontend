@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import type { FavElementProps } from '@/features/favorites/types/favoritesTypes'
+import type { FavElementProps } from '@/features/favorites/favoritesTypes'
 import FavoriteCartStepper from '@/features/favorites/components/FavoriteCartStepper'
 import FavoriteToggleButton from '@/features/favorites/components/FavoriteToggleButton'
-import { useFavoriteProductActions } from '@/features/favorites/hooks/useFavoriteProductActions'
+import { useFavoriteProductActions } from '@/features/favorites/useFavoriteProductActions'
 import ProductImage from '@/shared/ui/ProductImage'
 
 type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
@@ -35,13 +35,15 @@ export default function FavElement({ product, view = 'list' }: Props) {
           className="relative block bg-[#F8F7F4] p-4"
           href={`/product/${product.id}`}
         >
-          <ProductImage
-            alt={product.name}
-            className="mx-auto h-[160px] w-full object-contain transition-transform duration-300 group-hover:scale-105"
-            height={180}
-            productFileUrl={product.productFileUrl}
-            width={240}
-          />
+          <div className="relative h-[160px] w-full">
+            <ProductImage
+              alt={product.name}
+              className="object-contain transition-transform duration-300 group-hover:scale-105"
+              fill
+              productFileUrl={product.productFileUrl}
+              sizes="(max-width: 768px) 50vw, 240px"
+            />
+          </div>
           <div className="absolute top-2.5 right-2.5">
             <FavoriteToggleButton
               compact
@@ -92,13 +94,15 @@ export default function FavElement({ product, view = 'list' }: Props) {
     >
       <Link className="shrink-0" href={`/product/${product.id}`}>
         <div className="flex h-full w-[140px] items-center justify-center overflow-hidden bg-[#F8F7F4] p-3">
-          <ProductImage
-            alt={product.name}
-            className="h-full max-h-[120px] w-full object-contain transition-transform duration-300 group-hover:scale-105"
-            height={140}
-            productFileUrl={product.productFileUrl}
-            width={140}
-          />
+          <div className="relative h-[120px] w-full">
+            <ProductImage
+              alt={product.name}
+              className="object-contain transition-transform duration-300 group-hover:scale-105"
+              fill
+              productFileUrl={product.productFileUrl}
+              sizes="140px"
+            />
+          </div>
         </div>
       </Link>
 

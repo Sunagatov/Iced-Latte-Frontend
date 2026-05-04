@@ -5,8 +5,9 @@ import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import {
   type CartSliceStore,
   useCartStore,
-} from '@/features/cart/state/cartStore'
-import type { ICartItem as CartItem } from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cartStore'
+import { hostedCheckoutEnabled } from '@/features/payment/config'
+import type { ICartItem as CartItem } from '@/features/cart/cartTypes'
 import CartElement from './CartElement'
 
 const selectTempItems = (state: CartSliceStore): CartItem[] => state.tempItems
@@ -153,7 +154,8 @@ export default function CartFull() {
               </div>
 
               <button
-                className="block w-full rounded-full bg-[#1B4332] py-3.5 text-center text-base font-semibold text-white transition-colors hover:bg-[#143728] active:scale-[0.98]"
+                className="block w-full rounded-full bg-[#1B4332] py-3.5 text-center text-base font-semibold text-white transition-colors hover:bg-[#143728] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={!hostedCheckoutEnabled}
                 onClick={handleCheckout}
               >
                 Go to checkout
@@ -161,7 +163,9 @@ export default function CartFull() {
 
               <p className="mt-3 flex items-center justify-center gap-1 text-xs text-black/30">
                 <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                Secure checkout
+                {hostedCheckoutEnabled
+                  ? 'Secure checkout'
+                  : 'Checkout disabled in this environment'}
               </p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/state/cartStore'
+import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/cartStore'
 
 interface CartItemActionsProps {
   isFavouritePending: boolean

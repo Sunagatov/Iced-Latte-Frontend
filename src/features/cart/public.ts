@@ -3,13 +3,13 @@ export {
   type CartStatus,
   MAX_CART_ITEM_QUANTITY,
   useCartStore,
-} from '@/features/cart/state/cartStore'
+} from '@/features/cart/cartStore'
 export {
   changeCartItemQuantity,
   fetchCart,
   mergeCarts,
   removeCartItem,
-} from '@/features/cart/api/cartApi'
+} from '@/features/cart/cartApi'
 export type {
   CartElementProps,
   ICart,
@@ -17,4 +17,4 @@ export type {
   ICartPushItem,
   ICartPushItems,
   ICartUpdatedItem,
-} from '@/features/cart/types/cartTypes'
+} from '@/features/cart/cartTypes'

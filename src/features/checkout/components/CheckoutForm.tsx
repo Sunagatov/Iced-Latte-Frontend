@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react'
 import Link from 'next/link'
 import AddressPicker from '@/features/addresses/components/AddressPicker'
 import CheckoutSummary from '@/features/checkout/components/CheckoutSummary'
-import { useCheckoutForm } from '@/features/checkout/hooks/useCheckoutForm'
+import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
 import Loader from '@/shared/ui/Loader'
 
 export default function CheckoutForm() {
@@ -12,6 +12,7 @@ export default function CheckoutForm() {
     error,
     form,
     handleSubmit,
+    hostedCheckoutEnabled,
     loading,
     selectedAddress,
     setSelectedAddress,
@@ -98,9 +99,15 @@ export default function CheckoutForm() {
 
         {error && <p className="text-negative text-sm">{error}</p>}
 
+        {!hostedCheckoutEnabled && (
+          <p className="text-secondary text-sm">
+            Hosted checkout is disabled for this environment.
+          </p>
+        )}
+
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !hostedCheckoutEnabled}
           className="bg-brand-solid text-inverted hover:bg-brand-solid-hover mt-2 flex w-full items-center justify-center rounded-[48px] py-3.5 text-base font-semibold transition disabled:opacity-60"
         >
           {loading ? <Loader /> : 'Place order'}

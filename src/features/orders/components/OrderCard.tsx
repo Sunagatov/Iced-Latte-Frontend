@@ -18,8 +18,8 @@ import {
   fetchOrder,
   refundOrder,
   reorderOrder,
-} from '@/features/orders/api/ordersApi'
-import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/types/orderTypes'
+} from '@/features/orders/ordersApi'
+import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/orderTypes'
 import Loader from '@/shared/ui/Loader'
 
 interface OrderCardProps {

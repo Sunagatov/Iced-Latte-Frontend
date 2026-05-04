@@ -3,7 +3,7 @@ import type { IProduct } from '@/features/products/types'
 import type {
   FavouritesResponse,
   SyncFavouritesRequest,
-} from '@/features/favorites/types/favoritesTypes'
+} from '@/features/favorites/favoritesTypes'
 import { api } from '@/shared/api/client'
 
 export async function syncFavourites(

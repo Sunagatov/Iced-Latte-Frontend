@@ -9,16 +9,13 @@ type Props = Omit<ImageProps, 'src'> & {
   productFileUrl: string | null | undefined
 }
 
-export default function ProductImage({ productFileUrl, style, fill, ...props }: Props) {
+export default function ProductImage({ productFileUrl, ...props }: Props) {
   const [src, setSrc] = useState(() => getImgUrl(productFileUrl, productImg))
-  const autoStyle = fill ? style : { width: 'auto', height: 'auto', ...style }
 
   return (
     <Image
       {...props}
-      fill={fill}
       src={src}
-      style={autoStyle}
       onError={() => setSrc(productImg)}
     />
   )

@@ -1,4 +1,4 @@
-export { createOrder, fetchOrders, fetchOrder } from '@/features/orders/api/ordersApi'
+export { createOrder, fetchOrders, fetchOrder } from '@/features/orders/ordersApi'
 export type {
   CreateOrderRequest,
   OrderAddress,
@@ -7,4 +7,4 @@ export type {
   OrderPageDto,
   OrderStatus,
   OrderSummaryDto,
-} from '@/features/orders/types/orderTypes'
+} from '@/features/orders/orderTypes'

@@ -1,12 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { fetchOrders } from '@/features/orders/api/ordersApi'
+import { fetchOrders } from '@/features/orders/ordersApi'
 import type {
   OrderPageDto,
   OrderStatus,
   OrderSummaryDto,
-} from '@/features/orders/types/orderTypes'
+} from '@/features/orders/orderTypes'
 
 export type OrderFilter = '' | OrderStatus
 

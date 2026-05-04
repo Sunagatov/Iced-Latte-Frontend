@@ -1,8 +1,8 @@
 'use client'
 import Link from 'next/link'
-import type { CartElementProps } from '@/features/cart/types/cartTypes'
+import type { CartElementProps } from '@/features/cart/cartTypes'
 import CartItemActions from '@/features/cart/components/CartItemActions'
-import { useCartElementState } from '@/features/cart/hooks/useCartElementState'
+import { useCartElementState } from '@/features/cart/useCartElementState'
 import ProductImage from '@/shared/ui/ProductImage'
 
 export default function CartElement({
@@ -25,12 +25,12 @@ export default function CartElement({
     >
       <div className="flex gap-4">
         <Link href={`/product/${productInfo.id}`} className="shrink-0">
-          <div className="h-[100px] w-[100px] overflow-hidden rounded-xl bg-[#F8F7F4]">
+          <div className="relative h-[100px] w-[100px] overflow-hidden rounded-xl bg-[#F8F7F4]">
             <ProductImage
               productFileUrl={productInfo.productFileUrl}
               alt={productInfo.name}
-              width={100}
-              height={100}
+              fill
+              sizes="100px"
               className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
             />
           </div>

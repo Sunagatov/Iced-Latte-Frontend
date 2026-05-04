@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import RegistrationForm from '@/features/auth/components/Forms/RegistrationForm/RegistrationForm'
+import RegistrationForm from '@/features/auth/components/RegistrationForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
-import RestrictRoute from '@/features/auth/routes/RestrictRoute'
+import RestrictRoute from '@/features/auth/RestrictRoute'
 
 export default function SignUpPage() {
   return (

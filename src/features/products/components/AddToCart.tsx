@@ -2,7 +2,7 @@
 import { useCallback } from 'react'
 import Button from '@/shared/ui/Button'
 import Counter from '@/shared/ui/Counter'
-import { useCartStore } from '@/features/cart/state/cartStore'
+import { useCartStore } from '@/features/cart/cartStore'
 import { IProduct } from '@/features/products/types'
 interface Props {
   product: IProduct

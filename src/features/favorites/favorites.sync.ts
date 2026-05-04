@@ -2,7 +2,7 @@ import { useAuthStore } from '@/features/auth/store'
 import {
   fetchFavourites,
   syncFavourites,
-} from '@/features/favorites/api/favoritesApi'
+} from '@/features/favorites/favoritesApi'
 import {
   type FavStoreGet,
   type FavStoreSet,

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { memo } from 'react'
-import { useCartStore } from '@/features/cart/state/cartStore'
+import { useCartStore } from '@/features/cart/cartStore'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { IProduct } from '@/features/products/types'
 interface ICardProps {
@@ -63,7 +63,7 @@ export default memo(function ProductCard({
               style={{ objectFit: 'contain', padding: '12px' }}
               fill={true}
               sizes="(max-width: 768px) 50vw, 25vw"
-              priority={priority}
+              loading={priority ? 'eager' : 'lazy'}
               className="transition-transform duration-300 group-hover:scale-105"
             />
           </Link>

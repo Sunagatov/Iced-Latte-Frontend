@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react'
 import OrderHistory from '@/features/orders/components/OrderHistory'
-import * as ordersApi from '@/features/orders/api/ordersApi'
+import * as ordersApi from '@/features/orders/ordersApi'
 
-jest.mock('@/features/orders/api/ordersApi')
+jest.mock('@/features/orders/ordersApi')
 
 jest.mock('next/link', () => ({
   __esModule: true,
