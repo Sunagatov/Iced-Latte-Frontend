@@ -76,23 +76,30 @@ test('sign up with new email redirects to /confirm_registration', async ({
 })
 
 test('sign up with existing email shows error message', async ({ page }) => {
-  if (IS_REAL) {
-    test.skip(true, 'real backend does not return 409 synchronously — confirmation is async')
-
-    return
-  }
-  await mockRoute(page, '**/api/proxy/auth/register', async (route) => {
-    await route.fulfill({
-      status: 409,
-      contentType: 'application/json',
-      body: JSON.stringify({ message: 'Email already exists' }),
+  if (!IS_REAL) {
+    await mockRoute(page, '**/api/proxy/auth/register', async (route) => {
+      await route.fulfill({
+        status: 409,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({
+          type: 'https://iced-latte.uk/errors/registration-failed',
+          title: 'Registration failed',
+          status: 409,
+          detail:
+            'This email is already registered. Please sign in or use a different email.',
+        }),
+      })
     })
-  })
+  }
   await page.goto('/signup')
   await page.fill('#firstName', 'Test')
   await page.fill('#lastName', 'User')
   await page.fill('#email', EXISTING_EMAIL)
   await page.fill('#password', 'ValidPass1@')
   await page.click('#register-btn')
-  await expect(page.locator('.text-negative')).toBeVisible({ timeout: 8000 })
+  await expect(page.locator('.text-negative')).toContainText(
+    'This email is already registered',
+    { timeout: 8000 },
+  )
+  await expect(page).toHaveURL(/\/signup/)
 })
