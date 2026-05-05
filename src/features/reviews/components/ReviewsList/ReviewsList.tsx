@@ -6,7 +6,7 @@ import {
   apiDeleteProductReview,
   apiRateProductReview,
 } from '@/features/reviews/api'
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useToastErrorHandler } from '@/shared/utils/apiError'
 import { Review as ReviewType } from '@/features/reviews/types'
 import Loader from '@/shared/ui/Loader'
 import Review from '@/features/reviews/components/Review'
@@ -36,7 +36,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
 }) => {
   const isLoggedIn: boolean = useAuthStore((s) => s.isLoggedIn)
   const router = useRouter()
-  const { handleError } = useErrorHandler()
+  const { handleError } = useToastErrorHandler()
   const [isPending, setIsPending] = React.useState(false)
 
   const deleteReviewHandler = async (

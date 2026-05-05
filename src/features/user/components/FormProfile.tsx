@@ -10,7 +10,7 @@ import { editUserProfile } from '@/features/user/api'
 import countries from '@/features/user/constants'
 import type { UserData } from '@/features/user/types'
 import { validationSchema } from '@/features/user/validation'
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useFormErrorHandler } from '@/shared/utils/apiError'
 import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
 
@@ -41,17 +41,17 @@ const FormProfile = ({
   updateUserData,
   initialUserData,
 }: Readonly<FormProfileProps>) => {
-  const { errorMessage, handleError } = useErrorHandler()
-
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: yupResolver(validationSchema) as unknown as Resolver<FormValues>,
     defaultValues: initialUserData ?? undefined,
     mode: 'onChange',
   })
+  const { errorMessage, handleError } = useFormErrorHandler<FormValues>(setError)
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {

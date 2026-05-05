@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { DeliveryAddress, AddressFormData } from './types'
 import * as api from './api'
-import { handleAxiosError } from '@/shared/utils/apiError'
+import { getUserMessage } from '@/shared/utils/errorMessages'
+import { toastError } from '@/shared/utils/apiError'
 
 interface AddressStore {
   addresses: DeliveryAddress[]
@@ -39,7 +40,9 @@ export const useAddressStore = create<AddressStore>()(
 
         set((s) => ({ addresses: [...s.addresses, address], error: null }))
       } catch (err) {
-        set({ error: handleAxiosError(err) })
+        const msg = getUserMessage(err)
+        set({ error: msg })
+        toastError(err)
       }
     },
 
@@ -52,7 +55,9 @@ export const useAddressStore = create<AddressStore>()(
           error: null,
         }))
       } catch (err) {
-        set({ error: handleAxiosError(err) })
+        const msg = getUserMessage(err)
+        set({ error: msg })
+        toastError(err)
       }
     },
 
@@ -64,7 +69,9 @@ export const useAddressStore = create<AddressStore>()(
           error: null,
         }))
       } catch (err) {
-        set({ error: handleAxiosError(err) })
+        const msg = getUserMessage(err)
+        set({ error: msg })
+        toastError(err)
       }
     },
 
@@ -79,7 +86,9 @@ export const useAddressStore = create<AddressStore>()(
           error: null,
         }))
       } catch (err) {
-        set({ error: handleAxiosError(err) })
+        const msg = getUserMessage(err)
+        set({ error: msg })
+        toastError(err)
       }
     },
   }),

@@ -11,6 +11,7 @@ import {
   uniqueIds,
 } from '@/features/favorites/state/favoritesStore.utils'
 import { getProductByIds } from '@/features/products/api'
+import { toastError } from '@/shared/utils/apiError'
 
 function isAbortError(err: unknown): boolean {
   return (
@@ -67,6 +68,7 @@ export async function hydrateFavouritesStore(
       return
     }
 
+    toastError(err)
     set({ status: 'error' })
   }
 }
@@ -123,7 +125,8 @@ async function syncGuestFavouritesIntoBackend(
       isSync: true,
       status: 'ready',
     })
-  } catch {
+  } catch (err) {
+    toastError(err)
     set({ status: 'error' })
   }
 }

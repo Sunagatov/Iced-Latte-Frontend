@@ -6,7 +6,7 @@ import type { IProductReviewsStatistics } from '@/features/reviews/types'
 import { IProduct } from '@/features/products/types'
 import dynamic from 'next/dynamic'
 import ProductOverview from '@/features/products/components/ProductOverview'
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useToastErrorHandler } from '@/shared/utils/apiError'
 
 const ReviewsSection = dynamic(
   () =>
@@ -21,7 +21,7 @@ interface IProductWithReviews {
 const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
   const [reviewsStatistics, setReviewsStatistics] =
     useState<IProductReviewsStatistics | null>(null)
-  const { handleError } = useErrorHandler()
+  const { handleError } = useToastErrorHandler()
 
   const refreshStatistics = useCallback(async () => {
     try {

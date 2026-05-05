@@ -12,22 +12,23 @@ interface IFormValues {
   email: string
   password: string
 }
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { completeAuthSession } = useCompleteAuthSession()
-  const { errorMessage, handleError } = useErrorHandler()
   const {
     register,
     reset,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<IFormValues>({
     resolver: yupResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   })
+  const { errorMessage, handleError } = useFormErrorHandler<IFormValues>(setError)
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {

@@ -15,7 +15,7 @@ interface IFormValues {
   email: string
   password: string
 }
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useFormErrorHandler } from '@/shared/utils/apiError'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
@@ -24,6 +24,7 @@ export default function RegistrationForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<IFormValues>({
     resolver: yupResolver(registrationSchema),
@@ -38,7 +39,7 @@ export default function RegistrationForm() {
 
   const [showPassword, setShowPassword] = useState(false)
 
-  const { errorMessage, handleError } = useErrorHandler()
+  const { errorMessage, handleError } = useFormErrorHandler<IFormValues>(setError)
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {

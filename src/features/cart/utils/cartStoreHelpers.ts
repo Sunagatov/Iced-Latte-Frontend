@@ -54,17 +54,17 @@ export function setCartItems(
   })
 }
 
-import { handleAxiosError } from '@/shared/utils/apiError'
+import { getUserMessage } from '@/shared/utils/errorMessages'
 
 export function setCartError(
   set: StoreSet,
   fallbackMessage: string,
   err: unknown,
 ): void {
-  const message = handleAxiosError(err)
+  const message = getUserMessage(err)
 
   set({
-    lastError: message === 'An unknown error occurred' ? fallbackMessage : message,
+    lastError: message === 'Something went wrong. Please try again.' ? fallbackMessage : message,
     status: 'error',
   })
 }

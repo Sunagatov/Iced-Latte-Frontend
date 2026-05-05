@@ -13,6 +13,7 @@ import {
   uniqueIds,
 } from '@/features/favorites/state/favoritesStore.utils'
 import { getProductByIds } from '@/features/products/api'
+import { toastError } from '@/shared/utils/apiError'
 
 export async function toggleFavouriteInStore(
   set: FavStoreSet,
@@ -58,7 +59,8 @@ export async function toggleFavouriteInStore(
 
       set(mapProductsToFavourites(products))
     }
-  } catch {
+  } catch (err) {
+    toastError(err)
     set((state) =>
       wasAdded
         ? {

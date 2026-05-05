@@ -3,11 +3,11 @@
 import { useEffect } from 'react'
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useToastErrorHandler } from '@/shared/utils/apiError'
 
 const UserBar = () => {
   const { setUserData, userData } = useAuthStore()
-  const { handleError } = useErrorHandler()
+  const { handleError } = useToastErrorHandler()
 
   useEffect(() => {
     const fetchData = async () => {
