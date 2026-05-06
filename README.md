@@ -37,7 +37,7 @@
 ## 📸 Preview
 
 <div style="text-align: center;">
-  <img src="public/assets/images/iced-latte-avatar.jpg" alt="Iced Latte Frontend">
+  <img src="public/assets/images/iced-latte-preview.png" alt="Iced Latte Frontend" width="825">
   <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
 </div>
 
