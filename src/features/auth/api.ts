@@ -4,13 +4,10 @@ import { LoginCredentials, RegisterCredentials } from './types'
 
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
-): Promise<string> {
-  const response: AxiosResponse<string> = await api.post(
-    '/auth/register',
-    credentials,
-  )
+): Promise<{ token: string; refreshToken: string } | null> {
+  const response = await api.post('/auth/register', credentials)
 
-  return response.data
+  return response.data?.token ? response.data : null
 }
 
 export async function verifyEmailCode(

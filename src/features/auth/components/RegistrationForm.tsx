@@ -17,7 +17,6 @@ interface IFormValues {
 }
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { ROUTES } from '@/shared/config/routes'
-import { FEATURES } from '@/shared/config/features'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 export default function RegistrationForm() {
@@ -50,12 +49,10 @@ export default function RegistrationForm() {
       setLoading(true)
       const data = await apiRegisterUser(formData)
 
-      if (FEATURES.emailConfirmation) {
-        router.push(ROUTES.confirmRegistration)
+      if (data) {
+        await completeAuthSession(data.token, data.refreshToken)
       } else {
-        const { token, refreshToken } = JSON.parse(data)
-
-        await completeAuthSession(token, refreshToken)
+        router.push(ROUTES.confirmRegistration)
       }
     } catch (error) {
       handleError(error)
