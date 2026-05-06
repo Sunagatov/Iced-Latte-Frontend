@@ -2,22 +2,23 @@
 
 Pick the setup that fits you:
 
-| Option | What runs where                                                                                             | Best for                        |
-| ------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| **A**  | Frontend in IDE + Backend & Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker | Active development, debugging   |
-| **B**  | Frontend + Backend + Infrastructure (PostgreSQL database, Redis cache, MinIO file storage) in Docker        | Quick smoke test, no IDE needed |
+| Option | What runs where | Best for |
+|--------|----------------|----------|
+| **A** | Frontend locally, Backend + Infrastructure in Docker | Active frontend development (recommended) |
+| **B** | Frontend + Backend + Infrastructure in Docker | Quick smoke test, no Node.js needed |
+| **C** | Frontend + Backend locally, Infrastructure in Docker | Full-stack development on both repos |
+| **D** | Frontend in Docker, Backend locally | Backend debugging in IntelliJ, frontend isolated |
 
 ---
 
 ## 📋 Prerequisites
 
-| Tool           | Version | Download                                        |
-| -------------- | ------- | ----------------------------------------------- |
-| Node.js        | 20+     | https://nodejs.org/ (Option A only)             |
-| Docker Desktop | latest  | https://www.docker.com/products/docker-desktop/ |
+| Tool | Version | Download |
+|------|---------|----------|
+| Node.js | 20+ | https://nodejs.org/ (Options A, C only) |
+| Docker Desktop | latest | https://www.docker.com/products/docker-desktop/ |
 
 Verify your setup:
-
 ```bash
 node -v           # v20... or higher
 docker --version  # Docker version...
@@ -25,120 +26,168 @@ docker --version  # Docker version...
 
 ---
 
-## Option A — Frontend in IDE, Backend + Infrastructure in Docker
+## Before you start
 
-> Best for: active frontend development. You run the frontend locally with hot reload, and the backend + database run in Docker.
-
-### Step 1 — Clone both repositories
+### Clone both repositories as siblings
 
 ```bash
-git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git
 git clone https://github.com/Sunagatov/Iced-Latte.git
+git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git
 ```
 
-✅ You should see two new folders: `Iced-Latte-Frontend/` and `Iced-Latte/`.
+✅ You should see two folders side by side: `Iced-Latte/` and `Iced-Latte-Frontend/`.
 
-### Step 2 — Start the backend + infrastructure
+> The backend repository contains the unified `docker-compose.yml` that orchestrates all services — including the frontend container when needed.
+
+### Configure the frontend environment
+
+```bash
+cd Iced-Latte-Frontend
+cp .env.example .env.local
+```
+
+✅ The default `.env.local` points to `http://localhost:8083/api/v1` — no changes needed.
+
+> ⚠️ `.env.example` disables all optional integrations (Stripe, Google OAuth, AI, email) so you can run locally without production credentials.
+
+---
+
+## Option A — Frontend locally, Backend + Infrastructure in Docker
+
+> Best for: active frontend development with hot reload. The backend runs in Docker so you don't need Java installed.
+
+### Step 1 — Start the backend + infrastructure
 
 ```bash
 cd Iced-Latte
-docker compose --profile backend up -d --build
+docker compose --env-file .env.example --profile backend up -d --build
 ```
 
 This starts:
-
-- `iced-latte-postgresdb` — PostgreSQL database on port `5432`
-- `iced-latte-redis` — Redis cache on port `6379`
-- `iced-latte-minio` — MinIO file storage on port `9000`
+- `iced-latte-postgresdb` — PostgreSQL on port `5432`
+- `iced-latte-redis` — Redis on port `6379`
+- `iced-latte-minio` — S3-compatible object storage on port `9000` (console at http://localhost:9001)
 - `iced-latte-backend` — Spring Boot API on port `8083`
 
 Verify all containers are running:
-
 ```bash
 docker ps
 ```
 
-✅ You should see 4 containers with status `Up`: `iced-latte-postgresdb`, `iced-latte-redis`, `iced-latte-minio`, `iced-latte-backend`.
+✅ You should see 4 containers with status `Up`.
 
-### Step 3 — Configure environment
+### Step 2 — Install dependencies and start the dev server
 
 ```bash
 cd ../Iced-Latte-Frontend
-cp .env.example .env.local
-```
-
-✅ The default `.env.local` points to `http://localhost:8083/api/v1` — no changes needed for local development.
-
-### Step 4 — Install dependencies
-
-```bash
 npm ci
-```
-
-✅ You should see packages installed with no errors. This may take a minute on first run.
-
-### Step 5 — Start the dev server
-
-```bash
 npm run dev
 ```
 
-✅ When you see `Local: http://localhost:3000` in the terminal, the app is ready.
+✅ When you see `Local: http://localhost:3000`, the app is ready.
 
-### Step 6 — Verify the app is running
-
-Open http://localhost:3000 in your browser.
-
-✅ You should see the Iced Latte shop with a list of coffee products.
-
-### Step 7 — Log in with a test user
-
-Use the login form at http://localhost:3000/signin:
-
-- Email: `olivia@example.com`
-- Password: `p@ss1logic11`
-
-✅ You should be redirected to the home page as a logged-in user.
-
-> All 15 seed users share the password `p@ss1logic11`.
-
----
-
-## Option B — Everything in Docker (no IDE needed)
-
-> Best for: quick smoke test. Everything — frontend, backend, and infrastructure — runs in Docker. No Node.js installation needed.
->
-> This is driven from the **backend** repository, which has the unified `docker-compose.yml`. Follow **Option C** in the [backend START.md](https://github.com/Sunagatov/Iced-Latte/blob/development/START.md):
-
-```bash
-git clone https://github.com/Sunagatov/Iced-Latte.git
-git clone https://github.com/Sunagatov/Iced-Latte-Frontend.git
-cd Iced-Latte
-docker compose --profile backend --profile frontend up -d --build
-```
-
-✅ When the build finishes, all 5 containers should be running (`docker ps`).
+### Step 3 — Verify
 
 - 🌐 Frontend: http://localhost:3000
 - 🔌 Backend API: http://localhost:8083
-- 🪣 MinIO console: http://localhost:9001 — login `minioadmin` / `minioadmin`
+- 📚 Swagger UI: http://localhost:8083/api/docs/swagger-ui/index.html
 
-### 🛠️ Useful Docker commands
+Log in with: `olivia@example.com` / `p@ss1logic11`
+
+---
+
+## Option B — Everything in Docker
+
+> Best for: quick smoke test. No Node.js or Java needed — everything runs in Docker.
+
+### Step 1 — Start everything
 
 ```bash
-# Live logs
-docker compose --profile backend --profile frontend logs -f frontend
-docker compose --profile backend --profile frontend logs -f backend
-
-# Stop (keeps data)
-docker compose --profile backend --profile frontend down
-
-# Stop and wipe all data (fresh start)
-docker compose --profile backend --profile frontend down -v
-
-# Rebuild after code changes
-docker compose --profile backend --profile frontend up -d --build
+cd Iced-Latte
+docker compose --env-file .env.example --profile backend --profile frontend up -d --build
 ```
+
+> ⏳ The first build takes several minutes (Maven + npm + Next.js build). Subsequent builds are faster.
+
+This builds and starts:
+- `iced-latte-postgresdb`
+- `iced-latte-redis`
+- `iced-latte-minio`
+- `iced-latte-backend`
+- `iced-latte-frontend`
+
+### Step 2 — Verify
+
+- 🌐 Frontend: http://localhost:3000
+- 🔌 Backend API: http://localhost:8083
+- 📚 Swagger UI: http://localhost:8083/api/docs/swagger-ui/index.html
+- 🪣 MinIO console: http://localhost:9001
+
+---
+
+## Option C — Frontend + Backend locally, Infrastructure in Docker
+
+> Best for: full-stack development on both repos with hot reload on both sides.
+
+### Step 1 — Start infrastructure
+
+```bash
+cd Iced-Latte
+docker compose --env-file .env.example up -d postgres redis minio minio-init
+```
+
+### Step 2 — Run the backend locally
+
+```bash
+set -a && source .env.example && set +a && mvn spring-boot:run
+```
+
+> 🪟 **Windows:** use IntelliJ with `.env.example` loaded in the run configuration.
+
+✅ When you see `Tomcat started on port 8083`, the backend is ready.
+
+### Step 3 — Run the frontend locally
+
+```bash
+cd ../Iced-Latte-Frontend
+npm ci
+npm run dev
+```
+
+### Step 4 — Verify
+
+- 🌐 Frontend: http://localhost:3000
+- 🔌 Backend API: http://localhost:8083
+- 📚 Swagger UI: http://localhost:8083/api/docs/swagger-ui/index.html
+
+---
+
+## Option D — Frontend in Docker, Backend locally
+
+> Best for: debugging the backend in IntelliJ while the frontend runs in a container.
+
+### Step 1 — Start infrastructure and run the backend locally
+
+```bash
+cd Iced-Latte
+docker compose --env-file .env.example up -d postgres redis minio minio-init
+set -a && source .env.example && set +a && mvn spring-boot:run
+```
+
+### Step 2 — Build the frontend container against the local backend
+
+```bash
+FRONTEND_DOCKER_API_URL=http://host.docker.internal:8083/api/v1 \
+docker compose --env-file .env.example --profile frontend up -d --build
+```
+
+The frontend container uses `host.docker.internal` to reach the backend running on your machine.
+
+### Step 3 — Verify
+
+- 🌐 Frontend: http://localhost:3000
+- 🔌 Backend API: http://localhost:8083
+- 📚 Swagger UI: http://localhost:8083/api/docs/swagger-ui/index.html
 
 ---
 
@@ -158,15 +207,11 @@ npm test
 npm run test:e2e
 ```
 
-✅ Playwright will open a browser and run through user flows automatically.
-
 ### View E2E report
 
 ```bash
 npm run test:e2e:report
 ```
-
-✅ A browser window opens with a detailed test report.
 
 ---
 
@@ -174,7 +219,7 @@ npm run test:e2e:report
 
 ```bash
 npm run lint
-npm run tsc
+npm run tsc -- --noEmit
 ```
 
 ✅ No errors means your code is clean and type-safe.
@@ -183,12 +228,17 @@ npm run tsc
 
 ## ⚙️ Environment variables
 
-| Variable              | Description          | Default                        |
-| --------------------- | -------------------- | ------------------------------ |
+| Variable | Description | Default |
+|----------|-------------|---------|
 | `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:8083/api/v1` |
-| `PROTOCOL`            | `http` or `https`    | `http`                         |
-| `HOST`                | Hostname             | `localhost`                    |
-| `PORT`                | Dev server port      | `3000`                         |
+| `NEXT_PUBLIC_FRONTEND_URL` | Frontend URL (for OAuth redirects) | `http://localhost:3000` |
+| `NEXT_IMAGE_REMOTE_SOURCES` | Allowed remote image hosts | `http://localhost:9000` |
+| `NEXT_PUBLIC_STRIPE_ENABLED` | Enable Stripe checkout UI | `false` |
+| `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` | Enable Google OAuth sign-in | `false` |
+| `NEXT_PUBLIC_AI_ENABLED` | Enable AI review summaries | `false` |
+| `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
+
+> All `NEXT_PUBLIC_*_ENABLED` flags default to `false`. Enable them only when the corresponding backend service is configured.
 
 ---
 
@@ -201,7 +251,13 @@ npm run tsc
 → Make sure `.env.local` exists. Run `cp .env.example .env.local`.
 
 **❌ Port 3000 already in use**
-→ Change `PORT` in `.env.local` or stop the process using port 3000.
+→ Stop the conflicting process or override: `FRONTEND_HOST_PORT=3001 docker compose --env-file .env.example --profile frontend up -d --build`.
+
+**❌ Port 8083 already in use**
+→ Stop the conflicting process or override: `BACKEND_HOST_PORT=8084 docker compose --env-file .env.example --profile backend up -d --build`.
+
+**❌ Frontend container cannot reach local backend**
+→ Rebuild with `FRONTEND_DOCKER_API_URL=http://host.docker.internal:8083/api/v1 docker compose --env-file .env.example --profile frontend up -d --build`.
 
 **❌ E2E tests fail**
 → Make sure the dev server is running on `http://localhost:3000` before running `npm run test:e2e`.
@@ -209,48 +265,33 @@ npm run tsc
 **❌ `npm ci` fails**
 → Make sure you are using Node.js 20 or higher. Run `node -v` to check.
 
+**❌ Login returns 401**
+→ Use password `p@ss1logic11` and an email from the seed data (e.g. `olivia@example.com`).
+
 ---
 
-## 📁 Project structure
+## 🛠️ Useful Docker commands
 
+```bash
+# Live logs
+docker compose --profile backend --profile frontend logs -f frontend
+docker compose --profile backend --profile frontend logs -f backend
+
+# Stop (keeps data)
+docker compose --env-file .env.example --profile backend --profile frontend down
+
+# Stop and wipe all data (fresh start)
+docker compose --env-file .env.example --profile backend --profile frontend down -v
+
+# Rebuild after code changes
+docker compose --env-file .env.example --profile backend --profile frontend up -d --build
 ```
-src/
-├── app/                # Next.js App Router pages
-│   ├── api/            # API proxy route (avoids CORS)
-│   ├── cart/           # Cart page
-│   ├── checkout/       # Checkout page
-│   ├── favourites/     # Favourites page
-│   ├── orders/         # Orders page
-│   ├── product/        # Product detail page
-│   ├── profile/        # User profile page
-│   ├── signin/signup/  # Auth pages
-│   └── layout.tsx      # Root layout
-├── features/           # Feature-based modules
-│   ├── addresses/      # Delivery addresses
-│   ├── auth/           # Auth (login, register)
-│   ├── cart/           # Shopping cart
-│   ├── favorites/      # Favourites
-│   ├── products/       # Product catalog
-│   ├── reviews/        # Product reviews
-│   └── user/           # User profile
-└── shared/             # Cross-feature shared code
-    ├── api/            # Axios client
-    ├── components/     # Shared UI components
-    ├── providers/      # App-level providers
-    ├── types/          # Shared TypeScript types
-    └── utils/          # Utility functions
-```
-
-API docs:
-
-- 🖥️ Local: http://localhost:8083/api/docs/swagger-ui/index.html
-- 🌐 Production: https://iced-latte.uk/backend/api/docs/swagger-ui/index.html
 
 ---
 
 ## 📞 Contact
 
-- 💬 **Telegram community:** [Zufar Explained IT](https://t.me/zufarexplained)
+- 💬 **Telegram community:** [Project community](https://t.me/zufarexplained)
 - 👤 **Personal Telegram:** [@lucky_1uck](https://web.telegram.org/k/#@lucky_1uck)
 - 📧 **Email:** [zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)
 - 🐛 **Issues:** [GitHub Issues](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)
