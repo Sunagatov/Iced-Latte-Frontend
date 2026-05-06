@@ -3,6 +3,7 @@ import Image from 'next/image'
 import search from '@/../public/search_cart.png'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import { useAuthStore } from '@/features/auth/store'
 
 export default function FavouritesEmpty() {
@@ -34,15 +35,15 @@ export default function FavouritesEmpty() {
       </p>
       <div className="flex w-full max-w-[240px] flex-col gap-3">
         <Link
-          href="/"
-          className="flex h-[54px] items-center justify-center rounded-full bg-[#1B4332] font-semibold text-white shadow-md transition-colors hover:bg-[#143728]"
+          href={ROUTES.home}
+          className="flex h-[54px] items-center justify-center rounded-full bg-brand-solid font-semibold text-white shadow-md transition-colors hover:bg-brand-solid-hover"
         >
           Start shopping
         </Link>
         {!isLoggedIn && (
           <button
-            className="h-[54px] w-full rounded-full border-2 border-[#1B4332] bg-transparent font-semibold text-[#1B4332] shadow-sm transition-colors hover:bg-[#1B4332] hover:text-white"
-            onClick={() => router.push('/signin')}
+            className="h-[54px] w-full rounded-full border-2 border-brand-solid bg-transparent font-semibold text-brand shadow-sm transition-colors hover:bg-brand-solid hover:text-white"
+            onClick={() => router.push(ROUTES.signin)}
           >
             Log in
           </button>

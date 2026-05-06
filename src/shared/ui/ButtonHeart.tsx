@@ -25,7 +25,7 @@ export default function ButtonHeart({
       aria-pressed={active}
       className={twMerge(
         'focus-visible:ring-brand-solid flex h-[54px] w-[54px] cursor-pointer items-center justify-center rounded-full transition-all duration-200 outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-90 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50',
-        active ? 'bg-[#1B4332] text-white' : 'bg-black/[0.04] text-black/40 hover:text-[#1B4332]',
+        active ? 'bg-brand-solid text-white' : 'bg-black/[0.04] text-black/40 hover:text-brand',
         className,
       )}
       disabled={disabled}

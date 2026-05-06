@@ -70,7 +70,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
         <div>
           <button
             onClick={resetFilters}
-            className="text-[12px] font-medium text-[#1B4332] hover:underline"
+            className="text-[12px] font-medium text-brand hover:underline"
           >
             Reset all filters
           </button>

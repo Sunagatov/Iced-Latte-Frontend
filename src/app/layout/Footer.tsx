@@ -1,11 +1,13 @@
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
+import { EXTERNAL_LINKS } from '@/shared/config/links'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   const copyrightYears = currentYear === 2024 ? '2024' : `2024-${currentYear}`
 
   return (
-    <footer className="bg-[#1B4332] text-white">
+    <footer className="bg-brand-solid text-white">
       <div className="mx-auto max-w-[1384px] px-6 py-12 sm:px-20 sm:py-16">
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           {/* Brand */}
@@ -21,7 +23,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/Sunagatov"
+                href={EXTERNAL_LINKS.github.org}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -32,7 +34,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://t.me/lucky_1uck"
+                href={EXTERNAL_LINKS.social.telegram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
@@ -43,7 +45,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://www.linkedin.com/in/zufar-sunagatov/"
+                href={EXTERNAL_LINKS.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -62,16 +64,16 @@ export default function Footer() {
               Shop
             </span>
             <nav className="flex flex-col gap-2 text-sm text-white/60">
-              <Link href="/" className="transition hover:text-white">
+              <Link href={ROUTES.home} className="transition hover:text-white">
                 All Products
               </Link>
-              <Link href="/favourites" className="transition hover:text-white">
+              <Link href={ROUTES.favourites} className="transition hover:text-white">
                 Favourites
               </Link>
-              <Link href="/cart" className="transition hover:text-white">
+              <Link href={ROUTES.cart} className="transition hover:text-white">
                 Cart
               </Link>
-              <Link href="/orders" className="transition hover:text-white">
+              <Link href={ROUTES.orders} className="transition hover:text-white">
                 Orders
               </Link>
             </nav>
@@ -84,7 +86,7 @@ export default function Footer() {
             </span>
             <nav className="flex flex-col gap-2 text-sm text-white/60">
               <a
-                href="https://github.com/Sunagatov/Iced-Latte"
+                href={EXTERNAL_LINKS.github.backend}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition hover:text-white"
@@ -92,7 +94,7 @@ export default function Footer() {
                 Backend Repo
               </a>
               <a
-                href="https://github.com/Sunagatov/Iced-Latte-Frontend"
+                href={EXTERNAL_LINKS.github.frontend}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition hover:text-white"
@@ -100,7 +102,7 @@ export default function Footer() {
                 Frontend Repo
               </a>
               <a
-                href="https://github.com/Sunagatov/Iced-Latte#-guides--features"
+                href={EXTERNAL_LINKS.github.apiDocs}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition hover:text-white"
@@ -108,14 +110,14 @@ export default function Footer() {
                 API Docs
               </a>
               <a
-                href="https://github.com/Sunagatov/Iced-Latte/blob/development/.github/CONTRIBUTING.md"
+                href={EXTERNAL_LINKS.github.contributing}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition hover:text-white"
               >
                 Contribute
               </a>
-              <Link href="/terms-of-use" className="transition hover:text-white">
+              <Link href={ROUTES.termsOfUse} className="transition hover:text-white">
                 Terms of Use
               </Link>
             </nav>
@@ -128,13 +130,13 @@ export default function Footer() {
             </span>
             <nav className="flex flex-col gap-2 text-sm text-white/60">
               <a
-                href="mailto:zufar.sunagatov@gmail.com"
+                href={EXTERNAL_LINKS.email}
                 className="transition hover:text-white"
               >
                 zufar.sunagatov@gmail.com
               </a>
               <a
-                href="https://t.me/lucky_1uck"
+                href={EXTERNAL_LINKS.social.telegram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition hover:text-white"
@@ -142,7 +144,7 @@ export default function Footer() {
                 Telegram
               </a>
               <a
-                href="https://wa.me/447405503609"
+                href={EXTERNAL_LINKS.social.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition hover:text-white"

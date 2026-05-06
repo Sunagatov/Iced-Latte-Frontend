@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 import { isTokenExpired } from '@/shared/auth/token'
 import { isHttpsFrontend, secureCookieSuffix } from '@/shared/config/runtime'
+import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
@@ -79,8 +80,8 @@ function forwardHeaders(request: NextRequest, path: string): HeadersInit {
     if (value) headers[targetName] = value
   }
 
-  const accessToken = request.cookies.get('token')?.value
-  const refreshToken = request.cookies.get('refreshToken')?.value
+  const accessToken = request.cookies.get(COOKIE_NAMES.access)?.value
+  const refreshToken = request.cookies.get(COOKIE_NAMES.refresh)?.value
 
   if (path === 'auth/refresh') {
     if (refreshToken && !isTokenExpired(refreshToken)) {
@@ -141,8 +142,8 @@ function setAuthCookies(
     `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
   )
 
-  nextResponse.cookies.set('token', data.token, AUTH_COOKIE_OPTIONS)
-  nextResponse.cookies.set('refreshToken', data.refreshToken, AUTH_COOKIE_OPTIONS)
+  nextResponse.cookies.set(COOKIE_NAMES.access, data.token, AUTH_COOKIE_OPTIONS)
+  nextResponse.cookies.set(COOKIE_NAMES.refresh, data.refreshToken, AUTH_COOKIE_OPTIONS)
 }
 
 async function handleProxy(

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 
 export default function CartEmpty() {
   return (
@@ -13,7 +14,7 @@ export default function CartEmpty() {
         viewBox="0 0 160 160"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="mb-8"
+        className="mb-8 text-brand"
       >
         {/* Background circle */}
         <circle cx="80" cy="80" r="80" fill="#F0F7F4" />
@@ -24,7 +25,7 @@ export default function CartEmpty() {
           width="64"
           height="44"
           rx="8"
-          fill="#1B4332"
+          fill="currentColor"
           fillOpacity="0.12"
         />
         <rect
@@ -33,16 +34,16 @@ export default function CartEmpty() {
           width="64"
           height="44"
           rx="8"
-          stroke="#1B4332"
+          stroke="currentColor"
           strokeWidth="3"
         />
         {/* Cart wheels */}
-        <circle cx="64" cy="122" r="6" fill="#1B4332" />
-        <circle cx="96" cy="122" r="6" fill="#1B4332" />
+        <circle cx="64" cy="122" r="6" fill="currentColor" />
+        <circle cx="96" cy="122" r="6" fill="currentColor" />
         {/* Cart handle */}
         <path
           d="M36 56h12l8 16h48l8-16h12"
-          stroke="#1B4332"
+          stroke="currentColor"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -53,7 +54,7 @@ export default function CartEmpty() {
           y1="84"
           x2="80"
           y2="104"
-          stroke="#1B4332"
+          stroke="currentColor"
           strokeWidth="3"
           strokeLinecap="round"
         />
@@ -62,7 +63,7 @@ export default function CartEmpty() {
           y1="94"
           x2="90"
           y2="94"
-          stroke="#1B4332"
+          stroke="currentColor"
           strokeWidth="3"
           strokeLinecap="round"
         />
@@ -79,14 +80,14 @@ export default function CartEmpty() {
       </p>
 
       <Link
-        href="/"
+        href={ROUTES.home}
         className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-[48px] px-10 py-4 text-base font-semibold transition-colors active:scale-95"
       >
         Start shopping
       </Link>
 
       <Link
-        href="/favourites"
+        href={ROUTES.favourites}
         className="text-brand mt-4 text-sm font-medium underline-offset-2 hover:underline"
       >
         View your favourites →

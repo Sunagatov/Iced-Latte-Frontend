@@ -26,13 +26,16 @@ export default function ConfirmationModal({
   children,
 }: Readonly<ConfirmationModalProps>) {
   const panelRef = useRef<HTMLDivElement>(null)
+
   useOnClickOutside(panelRef as React.RefObject<HTMLDivElement>, onCancel)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onCancel()
     }
+
     document.addEventListener('keydown', onKey)
+
     return () => document.removeEventListener('keydown', onKey)
   }, [onCancel])
 

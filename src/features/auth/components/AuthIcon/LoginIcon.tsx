@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { AuthStore } from '@/features/auth/store'
 import { useAuthStore } from '@/features/auth/store'
 import UserBar from '@/features/user/components/UserBar'
+import { ROUTES } from '@/shared/config/routes'
 
 export default function LoginIcon() {
   const isLoggedIn = useAuthStore((state: AuthStore) => state.isLoggedIn)
@@ -20,12 +21,12 @@ export default function LoginIcon() {
   }
 
   return isLoggedIn ? (
-    <Link className="inline-flex" href="/profile">
+    <Link className="inline-flex" href={ROUTES.profile}>
       <UserBar />
     </Link>
   ) : (
-    <Link className="inline-flex" href="/signin">
-      <div className="flex h-8 items-center justify-center rounded-full bg-[#1B4332] px-4 text-[13px] font-semibold text-white transition hover:bg-[#143728] active:scale-[0.97]">
+    <Link className="inline-flex" href={ROUTES.signin}>
+      <div className="flex h-8 items-center justify-center rounded-full bg-brand-solid px-4 text-[13px] font-semibold text-white transition hover:bg-brand-solid-hover active:scale-[0.97]">
         Log in
       </div>
     </Link>

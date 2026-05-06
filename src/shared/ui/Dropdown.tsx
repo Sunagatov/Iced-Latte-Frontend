@@ -101,13 +101,13 @@ const Dropdown = <T,>({
                 className={twMerge(
                   optionBtnStyles,
                   isSelected(selectedOption, option) &&
-                    'bg-[#F0F7F4] text-[#1B4332] font-semibold',
+                    'bg-[#F0F7F4] text-brand font-semibold',
                 )}
                 onClick={handleChange(option)}
               >
                 <span>{option.label}</span>
                 {isSelected(selectedOption, option) && (
-                  <svg className="ml-2 h-3.5 w-3.5 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <svg className="ml-2 h-3.5 w-3.5 text-brand" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path d="M5 13l4 4L19 7" />
                   </svg>
                 )}

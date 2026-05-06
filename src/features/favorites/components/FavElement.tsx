@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import type { FavElementProps } from '@/features/favorites/favoritesTypes'
 import FavoriteCartStepper from '@/features/favorites/components/FavoriteCartStepper'
 import FavoriteToggleButton from '@/features/favorites/components/FavoriteToggleButton'
@@ -33,7 +34,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
       <div className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-sm">
         <Link
           className="relative block bg-[#F8F7F4] p-4"
-          href={`/product/${product.id}`}
+          href={ROUTES.product(product.id)}
         >
           <div className="relative h-[160px] w-full">
             <ProductImage
@@ -59,8 +60,8 @@ export default function FavElement({ product, view = 'list' }: Props) {
               {product.brandName}
             </p>
           )}
-          <Link href={`/product/${product.id}`}>
-            <p className="mt-0.5 line-clamp-2 text-sm leading-snug font-semibold text-black/80 hover:text-[#1B4332]">
+          <Link href={ROUTES.product(product.id)}>
+            <p className="mt-0.5 line-clamp-2 text-sm leading-snug font-semibold text-black/80 hover:text-brand">
               {product.name}
             </p>
           </Link>
@@ -92,7 +93,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
       className="group flex overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-sm transition-shadow hover:shadow-md"
       data-testid="fav-element"
     >
-      <Link className="shrink-0" href={`/product/${product.id}`}>
+      <Link className="shrink-0" href={ROUTES.product(product.id)}>
         <div className="flex h-full w-[140px] items-center justify-center overflow-hidden bg-[#F8F7F4] p-3">
           <div className="relative h-[120px] w-full">
             <ProductImage
@@ -114,8 +115,8 @@ export default function FavElement({ product, view = 'list' }: Props) {
                 {product.brandName}
               </p>
             )}
-            <Link href={`/product/${product.id}`}>
-              <p className="mt-0.5 text-base font-bold text-black/80 hover:text-[#1B4332]">
+            <Link href={ROUTES.product(product.id)}>
+              <p className="mt-0.5 text-base font-bold text-black/80 hover:text-brand">
                 {product.name}
               </p>
             </Link>

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/api'
 import { getSafeNext } from '@/shared/utils/navigation'
+import { ROUTES } from '@/shared/config/routes'
 
 function getTokensFromHash() {
   const hash = window.location.hash.startsWith('#')
@@ -25,9 +26,9 @@ function GoogleCallbackInner() {
 
   useEffect(() => {
     const error = searchParams.get('error')
-    const next = getSafeNext(searchParams.get('next')) ?? '/'
+    const next = getSafeNext(searchParams.get('next')) ?? ROUTES.home
     const signInUrl = `/signin?error=google_auth_failed${
-      next !== '/' ? `&next=${encodeURIComponent(next)}` : ''
+      next !== ROUTES.home ? `&next=${encodeURIComponent(next)}` : ''
     }`
 
     if (error) {

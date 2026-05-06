@@ -34,6 +34,7 @@ export default function RatingSummary({ statistics }: Readonly<RatingSummaryProp
           {[5, 4, 3, 2, 1].map((star) => {
             const count = ratingMap[`star${star}`] ?? 0
             const pct = reviewsCount > 0 ? Math.round((count / reviewsCount) * 100) : 0
+
             return (
               <div key={star} className="flex items-center gap-2 text-xs">
                 <span className="w-3 text-right font-medium text-black/50">{star}</span>

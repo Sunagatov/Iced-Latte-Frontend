@@ -5,8 +5,10 @@ import FavElement from './FavElement'
 import type { IProduct } from '@/features/products/types'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 
+const FAVOURITES_VIEW_KEY = 'favourites-view'
+
 function ListIcon({ active }: { active: boolean }) {
-  const c = active ? '#1B4332' : '#9CA3AF'
+  const c = active ? 'var(--color-brand-solid)' : '#9CA3AF'
 
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -18,7 +20,7 @@ function ListIcon({ active }: { active: boolean }) {
 }
 
 function GridIcon({ active }: { active: boolean }) {
-  const c = active ? '#1B4332' : '#9CA3AF'
+  const c = active ? 'var(--color-brand-solid)' : '#9CA3AF'
 
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -34,13 +36,13 @@ export default function FavouritesFull() {
   const favourites: IProduct[] = useFavouritesStore((s) => s.favourites)
   const [view, setView] = useState<'list' | 'grid'>(() => {
     if (typeof window === 'undefined') return 'list'
-    const saved = window.localStorage.getItem('favourites-view')
+    const saved = window.localStorage.getItem(FAVOURITES_VIEW_KEY)
 
     return saved === 'grid' ? 'grid' : 'list'
   })
 
   useEffect(() => {
-    window.localStorage.setItem('favourites-view', view)
+    window.localStorage.setItem(FAVOURITES_VIEW_KEY, view)
   }, [view])
 
   const renderContent = () => {

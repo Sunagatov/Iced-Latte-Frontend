@@ -5,6 +5,7 @@ import { AxiosError } from 'axios'
 import useSWRInfinite from 'swr/infinite'
 import { twMerge } from 'tailwind-merge'
 import { useMediaQuery } from 'usehooks-ts'
+import { CATALOG_PAGE_SIZE_WIDE, CATALOG_PAGE_SIZE_DEFAULT } from '@/shared/config/constants'
 import FilterSidebar from '@/features/products/components/FilterSidebar/FilterSidebar'
 import Filters from '@/features/products/components/FilterSidebar/Filters'
 import MobileFilterSidebar from '@/features/products/components/FilterSidebar/MobileFilterSidebar'
@@ -50,7 +51,7 @@ export default function ProductCatalog({
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [loadMoreError, setLoadMoreError] = useState(false)
   const isWideScreen = useMediaQuery('(min-width: 1440px)')
-  const productSize = isWideScreen ? 8 : 6
+  const productSize = isWideScreen ? CATALOG_PAGE_SIZE_WIDE : CATALOG_PAGE_SIZE_DEFAULT
 
   const { data, error, isLoading, size, setSize } = useSWRInfinite<
     IProductsList,

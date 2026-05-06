@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import {
   RiArrowRightSLine,
   RiCloseCircleLine,
@@ -46,6 +47,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
   const handleToggle = useCallback(async () => {
     if (expanded) {
       setExpanded(false)
+
       return
     }
     setExpanded(true)
@@ -53,6 +55,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
       setLoadingDetail(true)
       try {
         const data = await fetchOrder(order.id)
+
         setDetail(data)
       } catch {
         setActionError('Could not load order details.')
@@ -68,6 +71,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
     setActionError('')
     try {
       const updated = await cancelOrder(order.id)
+
       setDetail(updated)
       onStatusChange?.()
     } catch {
@@ -79,12 +83,14 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
 
   const handleRefund = async () => {
     const reason = refundReason.trim() || undefined
+
     setModal(null)
     setRefundReason('')
     setActionLoading(true)
     setActionError('')
     try {
       const updated = await refundOrder(order.id, reason ? { reason } : undefined)
+
       setDetail(updated)
       onStatusChange?.()
     } catch {
@@ -103,8 +109,9 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
         result.unavailableItems.length > 0
           ? `${result.addedItems} items added. ${result.unavailableItems.length} unavailable.`
           : `${result.addedItems} items added to cart.`
+
       alert(msg)
-      router.push('/cart')
+      router.push(ROUTES.cart)
     } catch {
       setActionError('Could not re-order.')
     } finally {
@@ -158,7 +165,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
                   >
                     <div className="min-w-0">
                       <Link
-                        href={`/product/${item.productId}`}
+                        href={ROUTES.product(item.productId)}
                         data-testid="order-product-link"
                         className="text-primary hover:text-brand block truncate text-sm font-medium"
                       >

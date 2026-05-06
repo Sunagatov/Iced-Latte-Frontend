@@ -5,6 +5,7 @@ import { apiGetUserReviews } from '@/features/reviews/api'
 import Review from '@/features/reviews/components/Review'
 import Loader from '@/shared/ui/Loader'
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import { RiStarLine } from 'react-icons/ri'
 
 export default function UserReviews() {
@@ -53,7 +54,7 @@ export default function UserReviews() {
         >
           <div className="mb-3">
             <Link
-              href={`/product/${review.productId}`}
+              href={ROUTES.product(review.productId)}
               className="text-brand text-xs font-medium hover:underline"
             >
               View product →

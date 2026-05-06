@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import { memo } from 'react'
 import { useCartStore } from '@/features/cart/cartStore'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
@@ -56,7 +57,7 @@ export default memo(function ProductCard({
     >
       <div className="relative">
         <div className="relative aspect-[4/5] w-full overflow-hidden">
-          <Link href={`/product/${id}`} className="relative block h-full w-full">
+          <Link href={ROUTES.product(id)} className="relative block h-full w-full">
             <ProductImage
               productFileUrl={productFileUrl}
               alt={name}
@@ -77,8 +78,8 @@ export default memo(function ProductCard({
           aria-pressed={isFavourited}
           className={`focus-visible:ring-brand-solid absolute top-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
             isFavourited
-              ? 'bg-[#1B4332] text-white animate-[heart-pop_0.3s_ease-out]'
-              : 'bg-white/80 text-black/40 hover:text-[#1B4332]'
+              ? 'bg-brand-solid text-white animate-[heart-pop_0.3s_ease-out]'
+              : 'bg-white/80 text-black/40 hover:text-brand'
           }`}
           data-active={isFavourited ? 'true' : 'false'}
           data-testid="favourite-btn"
@@ -98,7 +99,7 @@ export default memo(function ProductCard({
         </button>
       </div>
 
-      <Link href={`/product/${id}`} className="flex flex-1 flex-col">
+      <Link href={ROUTES.product(id)} className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col gap-1 px-4 pt-3 pb-2">
           <h2 className="text-primary line-clamp-2 text-sm leading-snug font-semibold">
             {name}
@@ -113,7 +114,7 @@ export default memo(function ProductCard({
       <div className="flex items-center justify-between px-4 pb-3.5">
         <p
           data-testid="product-price"
-          className="text-base font-bold text-[#1B4332]"
+          className="text-base font-bold text-brand"
         >
           {price.toLocaleString('en-US', {
             style: 'currency',
@@ -138,7 +139,7 @@ export default memo(function ProductCard({
             data-testid="add-to-cart-circle-btn"
             disabled={isCartPending}
             onClick={() => addToCart(id)}
-            className="flex items-center gap-1 rounded-full border border-[#1B4332]/15 px-3 py-1.5 text-[11px] font-medium text-[#1B4332] transition hover:bg-[#1B4332] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-1 rounded-full border border-brand-solid/15 px-3 py-1.5 text-[11px] font-medium text-brand transition hover:bg-brand-solid hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
           >
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path d="M12 5v14M5 12h14" />

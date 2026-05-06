@@ -42,13 +42,13 @@ export default function ProfilePersonalDetailsSection({
     <div className="rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06]">
       <div className="flex items-center justify-between border-b border-black/[0.06] px-5 py-4">
         <div className="flex items-center gap-2">
-          <svg className="h-5 w-5 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+          <svg className="h-5 w-5 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
           <h2 className="font-semibold text-black/80">Personal details</h2>
         </div>
 
         {!isEditing && (
           <button
-            className="rounded-lg bg-[#1B4332] px-4 py-1.5 text-sm font-medium text-white transition hover:bg-[#143728]"
+            className="rounded-lg bg-brand-solid px-4 py-1.5 text-sm font-medium text-white transition hover:bg-brand-solid-hover"
             id="edit-btn"
             onClick={onStartEditing}
           >

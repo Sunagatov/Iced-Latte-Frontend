@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-[380px] items-center justify-center overflow-hidden bg-[#1B4332] px-6 text-center sm:min-h-[440px]"
+      className="relative flex min-h-[380px] items-center justify-center overflow-hidden bg-brand-solid px-6 text-center sm:min-h-[440px]"
     >
       <div className="z-10 flex w-full max-w-2xl flex-col items-center gap-5 py-16 sm:py-20">
         <span className="rounded-full border border-white/15 px-4 py-1.5 text-[11px] font-medium tracking-[0.15em] text-white/60 uppercase">

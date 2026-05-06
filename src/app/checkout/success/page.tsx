@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import { requireRecoverableSession } from '@/shared/auth/guards'
 import { CheckoutSuccess } from '@/features/payment/CheckoutSuccess'
 
@@ -7,13 +8,13 @@ interface Props {
 }
 
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
-  await requireRecoverableSession('/checkout')
+  await requireRecoverableSession(ROUTES.checkout)
 
   const params = await searchParams
   const orderId = params.order_id
 
   if (!orderId) {
-    redirect('/orders')
+    redirect(ROUTES.orders)
   }
 
   return <CheckoutSuccess orderId={orderId} />

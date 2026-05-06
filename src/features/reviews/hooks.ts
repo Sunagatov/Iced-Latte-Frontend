@@ -4,6 +4,7 @@ import { apiGetAllReviews, IReviews } from './api'
 import { Review } from './types'
 import { IOption } from '@/shared/types/Dropdown'
 import { ISortParams } from '@/shared/types/ISortParams'
+import { REVIEWS_PAGE_SIZE } from '@/shared/config/constants'
 
 type UseReviewsParamsType = {
   productId: string
@@ -26,7 +27,7 @@ export function useReviews({
     const productRatingQuery =
       ratingFilter.length > 0 ? `&productRatings=${ratingFilter.join(',')}` : ''
 
-    return `/products/${productId}/reviews?page=${pageIndex}&size=3&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${productRatingQuery}`
+    return `/products/${productId}/reviews?page=${pageIndex}&size=${REVIEWS_PAGE_SIZE}&sort_attribute=${sortAttribute}&sort_direction=${sortDirection}${productRatingQuery}`
   }
 
   const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite<

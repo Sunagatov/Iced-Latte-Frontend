@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import type { CartElementProps } from '@/features/cart/cartTypes'
 import CartItemActions from '@/features/cart/components/CartItemActions'
 import { useCartElementState } from '@/features/cart/useCartElementState'
@@ -24,7 +25,7 @@ export default function CartElement({
       className="group rounded-2xl border border-black/[0.06] bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex gap-4">
-        <Link href={`/product/${productInfo.id}`} className="shrink-0">
+        <Link href={ROUTES.product(productInfo.id)} className="shrink-0">
           <div className="relative h-[100px] w-[100px] overflow-hidden rounded-xl bg-[#F8F7F4]">
             <ProductImage
               productFileUrl={productInfo.productFileUrl}
@@ -42,8 +43,8 @@ export default function CartElement({
               <p className="text-[10px] font-bold tracking-widest uppercase text-black/30">
                 {productInfo.brandName}
               </p>
-              <Link href={`/product/${productInfo.id}`}>
-                <p className="text-[15px] leading-snug font-semibold text-black/80 hover:text-[#1B4332]">
+              <Link href={ROUTES.product(productInfo.id)}>
+                <p className="text-[15px] leading-snug font-semibold text-black/80 hover:text-brand">
                   {productInfo.name}
                 </p>
               </Link>
@@ -54,7 +55,7 @@ export default function CartElement({
             >
               <span className="text-xs font-medium text-black/40">$</span>
               <span
-                className={`text-xl font-bold tabular-nums ${pulse ? 'text-[#1B4332]' : 'text-black/80'}`}
+                className={`text-xl font-bold tabular-nums ${pulse ? 'text-brand' : 'text-black/80'}`}
               >
                 {totalProductPrice}
               </span>

@@ -64,7 +64,7 @@ export function ProfileNavigation({
           <button
             className={`flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition ${
               activeSection === item.id
-                ? 'bg-[#1B4332] text-white'
+                ? 'bg-brand-solid text-white'
                 : 'bg-white text-black/50 ring-1 ring-black/[0.06]'
             }`}
             key={item.id}
@@ -92,7 +92,7 @@ export default function ProfileSidebarNavigation({
           <button
             className={`flex w-full items-center gap-3 px-4 py-3.5 text-sm font-medium transition-colors ${
               activeSection === item.id
-                ? 'border-r-2 border-[#1B4332] bg-[#F0F7F4] text-[#1B4332]'
+                ? 'border-r-2 border-brand-solid bg-[#F0F7F4] text-brand'
                 : 'text-black/40 hover:bg-black/[0.02] hover:text-black/70'
             }`}
             key={item.id}

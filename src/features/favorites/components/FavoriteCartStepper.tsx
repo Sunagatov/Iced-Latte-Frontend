@@ -16,7 +16,7 @@ export default function FavoriteCartStepper({
   return (
     <div className="flex h-9 items-center">
       {quantity > 0 ? (
-        <div className="inline-flex items-center gap-1 rounded-full bg-[#1B4332] px-1 py-1">
+        <div className="inline-flex items-center gap-1 rounded-full bg-brand-solid px-1 py-1">
           <button
             className="flex h-7 w-7 items-center justify-center rounded-full text-white hover:bg-white/20"
             onClick={quantity === 1 ? onRemoveAll : onRemove}
@@ -39,7 +39,7 @@ export default function FavoriteCartStepper({
         </div>
       ) : (
         <button
-          className="h-9 rounded-full bg-[#1B4332] px-4 text-xs font-semibold text-white transition hover:bg-[#143728]"
+          className="h-9 rounded-full bg-brand-solid px-4 text-xs font-semibold text-white transition hover:bg-brand-solid-hover"
           onClick={onAdd}
         >
           Add to cart

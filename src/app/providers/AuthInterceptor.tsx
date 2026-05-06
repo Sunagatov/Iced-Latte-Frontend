@@ -9,6 +9,7 @@ import {
   refreshAuthenticatedSession,
 } from '@/features/session/session'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isRetry?: boolean
@@ -87,7 +88,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
           } catch (refreshError: unknown) {
             refreshPromise = null
             await clearClientSession()
-            router.push('/signin')
+            router.push(ROUTES.signin)
             throw refreshError
           }
         }

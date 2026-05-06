@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import AddressManager from '@/features/addresses/components/AddressManager'
 import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
@@ -42,7 +43,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (status === 'anonymous') {
-      router.replace('/signin')
+      router.replace(ROUTES.signin)
     }
   }, [router, status])
 
@@ -112,7 +113,7 @@ export default function ProfileScreen() {
 
   return (
     <div className="min-h-screen bg-[#F8F7F4]">
-      <div className="bg-gradient-to-r from-[#1B4332] to-[#143728]">
+      <div className="bg-gradient-to-r from-brand-solid to-brand-solid-hover">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 shrink-0">
@@ -121,7 +122,7 @@ export default function ProfileScreen() {
               </div>
 
               {!summary.hasCustomAvatar && (
-                <div className="pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full bg-[#143728] text-xl font-bold text-white ring-4 ring-white/30">
+                <div className="pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full bg-brand-solid-hover text-xl font-bold text-white ring-4 ring-white/30">
                   {summary.initials}
                 </div>
               )}

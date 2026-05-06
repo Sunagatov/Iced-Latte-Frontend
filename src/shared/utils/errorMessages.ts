@@ -14,7 +14,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   'session-access-denied': 'You do not have access to this session.',
 
   // Orders
-  'order-not-found': "We couldn't find this order.",
+  'order-not-found': 'We couldn\'t find this order.',
   'order-access-denied': 'You do not have permission to access this order.',
   'order-state-invalid': 'This order can no longer be modified.',
   'order-cancellation-expired': 'The cancellation window for this order has passed.',
@@ -33,12 +33,13 @@ const ERROR_MESSAGES: Record<string, string> = {
   'rate-limited': 'Too many requests. Please wait a moment and try again.',
 
   // Payment
-  'payment-session-failed': "We couldn't process your payment. Please try again.",
+  'payment-session-failed': 'We couldn\'t process your payment. Please try again.',
 }
 
 function errorTypeSlug(type: string): string {
   try {
     const pathname = new URL(type).pathname
+
     return pathname.split('/').filter(Boolean).at(-1) ?? type
   } catch {
     return type.split('/').filter(Boolean).at(-1) ?? type

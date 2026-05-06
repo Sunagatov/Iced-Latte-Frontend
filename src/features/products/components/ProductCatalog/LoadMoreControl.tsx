@@ -20,7 +20,7 @@ export default function LoadMoreControl({
       {isVisible && (
         <div className="mt-8 flex flex-col items-center gap-2">
           <button
-            className="group flex items-center gap-2 text-[13px] font-medium text-black/40 transition hover:text-[#1B4332]"
+            className="group flex items-center gap-2 text-[13px] font-medium text-black/40 transition hover:text-brand"
             onClick={onLoadMore}
           >
             Load more

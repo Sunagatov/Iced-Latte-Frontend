@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import { usePathname } from 'next/navigation'
 import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 import CartButton from '@/features/cart/components/CartButton'
@@ -46,17 +47,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setMobileSearchOpen(false)}
-            className="shrink-0 text-sm font-medium text-[#1B4332]"
+            className="shrink-0 text-sm font-medium text-brand"
           >
             Cancel
           </button>
         </div>
       ) : (
         <>
-          <Link href="/" className="group flex shrink-0 items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center">
+          <Link href={ROUTES.home} className="group flex shrink-0 items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center text-brand">
               <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                <rect width="32" height="32" rx="8" fill="#1B4332" />
+                <rect width="32" height="32" rx="8" fill="currentColor" />
                 <path
                   d="M10 10.5C10 10.5 11.5 8 16 8C20.5 8 22 10.5 22 10.5L20.5 22C20.5 22 19.5 24 16 24C12.5 24 11.5 22 11.5 22L10 10.5Z"
                   fill="white"
@@ -71,7 +72,7 @@ export default function Header() {
                 />
               </svg>
             </div>
-            <span className="hidden text-[17px] font-bold tracking-[-0.02em] text-[#1B4332] sm:block">
+            <span className="hidden text-[17px] font-bold tracking-[-0.02em] text-brand sm:block">
               Iced Latte
             </span>
           </Link>

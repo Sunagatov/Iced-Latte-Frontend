@@ -1,6 +1,7 @@
 'use client'
 
 import { useSearchParams, usePathname } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import { getSafeNext } from '@/shared/utils/navigation'
 
 function SocialButton({
@@ -57,7 +58,7 @@ export default function SocialAuthButtons({
 
   const handleGoogleAuth = () => {
     const requestedNext = searchParams.get('next')
-    const fallbackNext = pathname !== '/signin' && pathname !== '/signup' ? pathname : null
+    const fallbackNext = pathname !== ROUTES.signin && pathname !== ROUTES.signup ? pathname : null
     const next = getSafeNext(requestedNext) ?? getSafeNext(fallbackNext)
     const url = next ? `/api/auth/google?next=${encodeURIComponent(next)}` : '/api/auth/google'
 

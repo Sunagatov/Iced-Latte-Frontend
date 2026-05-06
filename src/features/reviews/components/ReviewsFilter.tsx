@@ -40,7 +40,7 @@ export default function ReviewsFilter({
             {selectedFilterRating.length}
           </span>
         )}
-        <svg className="h-3 w-3 text-[#1B4332]" viewBox="0 0 20 20" fill="currentColor"><path d={STAR_PATH} /></svg>
+        <svg className="h-3 w-3 text-brand" viewBox="0 0 20 20" fill="currentColor"><path d={STAR_PATH} /></svg>
       </button>
       {showFilterDropdown && (
         <div className="border-primary bg-primary absolute top-[calc(100%+8px)] right-0 z-10 w-56 rounded-xl border shadow-xl">

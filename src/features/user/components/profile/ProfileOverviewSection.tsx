@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import type { ProfileSummary } from './profileTypes'
 
 type ProfileOverviewSectionProps = {
@@ -78,7 +79,7 @@ const QuickAction = ({
   )
 
   const cls =
-    'flex w-full items-center gap-3 rounded-xl border border-black/[0.06] p-4 text-left transition hover:border-[#1B4332]/20 hover:bg-[#F0F7F4]'
+    'flex w-full items-center gap-3 rounded-xl border border-black/[0.06] p-4 text-left transition hover:border-brand-solid/20 hover:bg-[#F0F7F4]'
 
   if (href) {
     return (
@@ -106,15 +107,15 @@ export default function ProfileOverviewSection({
     <>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <StatCard
-          href="/orders"
-          icon={<svg className="h-5 w-5 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>}
+          href={ROUTES.orders}
+          icon={<svg className="h-5 w-5 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>}
           label="Orders"
           sub="All time"
           value={orderCount !== null ? String(orderCount) : '—'}
         />
         <StatCard
-          href="/favourites"
-          icon={<svg className="h-5 w-5 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>}
+          href={ROUTES.favourites}
+          icon={<svg className="h-5 w-5 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>}
           label="Favourites"
           sub="Saved items"
           value={String(favCount)}
@@ -135,25 +136,25 @@ export default function ProfileOverviewSection({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <QuickAction
             desc="Track and manage your orders"
-            href="/orders"
-            icon={<svg className="h-6 w-6 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>}
+            href={ROUTES.orders}
+            icon={<svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>}
             title="My Orders"
           />
           <QuickAction
             desc={`${favCount} saved items`}
-            href="/favourites"
-            icon={<svg className="h-6 w-6 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>}
+            href={ROUTES.favourites}
+            icon={<svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>}
             title="Favourites"
           />
           <QuickAction
             desc="Update your personal details"
-            icon={<svg className="h-6 w-6 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>}
+            icon={<svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>}
             onClick={onOpenProfileEditor}
             title="Edit Profile"
           />
           <QuickAction
             desc="Manage your saved addresses"
-            icon={<svg className="h-6 w-6 text-[#1B4332]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>}
+            icon={<svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>}
             onClick={onOpenAddresses}
             title="Delivery Address"
           />
@@ -164,7 +165,7 @@ export default function ProfileOverviewSection({
         <div className="flex items-center justify-between border-b border-black/[0.06] px-5 py-4">
           <h2 className="font-semibold text-black/80">Account summary</h2>
           <button
-            className="text-sm font-medium text-[#1B4332] hover:underline"
+            className="text-sm font-medium text-brand hover:underline"
             onClick={onOpenProfileEditor}
           >
             Edit

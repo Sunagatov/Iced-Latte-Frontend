@@ -8,6 +8,7 @@ import type {
 } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { getAllProducts } from '@/features/products/api'
+import { SEARCH_DEBOUNCE_MS } from '@/shared/config/constants'
 import { buildAutocompleteProductsPath } from '@/features/products/catalogQuery'
 import { useProductFiltersStore } from '@/features/products/store'
 import type { IProduct, IProductsList } from '@/features/products/types'
@@ -27,7 +28,7 @@ export function useSearchBar({ onBlur }: UseSearchBarOptions = {}) {
   const searchQuery = useProductFiltersStore((state) => state.searchQuery)
   const setFilters = useProductFiltersStore((state) => state.setFilters)
   const [inputValue, setInputValue] = useState(searchQuery)
-  const [debouncedInput] = useDebounceValue(inputValue, 300)
+  const [debouncedInput] = useDebounceValue(inputValue, SEARCH_DEBOUNCE_MS)
   const [suggestions, setSuggestions] = useState<IProduct[]>([])
   const [recent, setRecent] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState(false)

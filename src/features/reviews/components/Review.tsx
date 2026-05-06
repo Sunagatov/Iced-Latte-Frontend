@@ -38,6 +38,7 @@ const Review: React.FC<Readonly<IReview>> = ({
     if (!review.productReviewId || !deleteReview) return
     if (!confirmDelete) {
       setConfirmDelete(true)
+
       return
     }
     deleteReview(review.productReviewId as string)
@@ -60,7 +61,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   return (
     <article className="group">
       <div className="mb-3 flex items-center gap-3">
-        <div className="bg-[#1B4332] text-white flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold">
+        <div className="bg-brand-solid text-white flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold">
           {displayName[0]?.toUpperCase() ?? '?'}
         </div>
         <div className="flex-1">
@@ -100,7 +101,7 @@ const Review: React.FC<Readonly<IReview>> = ({
               {review.text.slice(0, 300)}
               <button
                 onClick={() => setIsReviewExpanded(true)}
-                className="text-[#1B4332] ml-1 text-sm font-medium hover:underline"
+                className="text-brand ml-1 text-sm font-medium hover:underline"
               >
                 Read more
               </button>
@@ -111,7 +112,7 @@ const Review: React.FC<Readonly<IReview>> = ({
               {review.text.length > 300 && (
                 <button
                   onClick={() => setIsReviewExpanded(false)}
-                  className="text-[#1B4332] ml-1 text-sm font-medium hover:underline"
+                  className="text-brand ml-1 text-sm font-medium hover:underline"
                 >
                   Show less
                 </button>
@@ -125,7 +126,7 @@ const Review: React.FC<Readonly<IReview>> = ({
 
       {review.aiSummary && review.aiSummary !== 'Summary unavailable.' && (
         <p className="mt-3 rounded-lg bg-[#F0F7F4] px-3 py-2 text-xs text-black/50">
-          <span className="font-semibold text-[#1B4332]">AI summary: </span>
+          <span className="font-semibold text-brand">AI summary: </span>
           {review.aiSummary}
         </p>
       )}
@@ -147,7 +148,7 @@ const Review: React.FC<Readonly<IReview>> = ({
               onClick={likeReviewHandler}
               disabled={isPending}
               aria-label={`Mark review as helpful, ${review.likesCount} likes`}
-              className="text-black/30 hover:text-[#1B4332] flex items-center gap-1 text-xs transition disabled:opacity-50"
+              className="text-black/30 hover:text-brand flex items-center gap-1 text-xs transition disabled:opacity-50"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z" /><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" /></svg>
               <span>{review.likesCount}</span>

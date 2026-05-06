@@ -3,6 +3,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useProductFiltersStore } from '@/features/products/store'
 import FiltersGroupTitle from '@/features/products/components/FilterSidebar/FiltersGroupTitle'
+import { PRICE_FILTER_DEBOUNCE_MS } from '@/shared/config/constants'
 
 const toDecimal = (input: string) => {
   const cleaned = input.replace(/[^\d.]/g, '')
@@ -48,7 +49,7 @@ const PriceFilter = () => {
       }
       setRangeError('')
       setFilters({ fromPriceFilter: from, toPriceFilter: to })
-    }, 800)
+    }, PRICE_FILTER_DEBOUNCE_MS)
   }
 
   const handleFromChange = (e: ChangeEvent<HTMLInputElement>) => {

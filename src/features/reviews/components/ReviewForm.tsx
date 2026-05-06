@@ -7,6 +7,7 @@ import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiAddProductReview } from '@/features/reviews/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 
 interface ReviewFormProps {
   productId: string
@@ -54,7 +55,7 @@ const ReviewForm = ({
     if (isLoggedIn) {
       setShowForm(true)
     } else {
-      router.push(`/signin?next=/product/${productId}`)
+      router.push(`${ROUTES.signin}?next=${ROUTES.product(productId)}`)
     }
   }
 
@@ -99,7 +100,7 @@ const ReviewForm = ({
         <StarRating
           productId={productId}
           count={5}
-          activeColor="#1B4332"
+          activeColor="var(--color-brand-solid)"
           size="lg"
         />
       </div>

@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation'
 import { apiLogoutUser } from '../api'
 import { clearClientSession } from '@/features/session/session'
 import { useCallback, useState } from 'react'
+import { ROUTES } from '@/shared/config/routes'
 
 export function useLogout() {
   const [isLoading, setIsLoading] = useState(false)
@@ -15,7 +16,7 @@ export function useLogout() {
       // ignore — session is cleared regardless
     } finally {
       await clearClientSession()
-      router.push('/signin')
+      router.push(ROUTES.signin)
       setIsLoading(false)
     }
   }, [router])

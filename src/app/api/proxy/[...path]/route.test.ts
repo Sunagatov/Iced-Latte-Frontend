@@ -1,6 +1,9 @@
 /**
  * @jest-environment node
  */
+process.env.NEXT_PUBLIC_API_URL = 'http://backend'
+process.env.NEXT_PUBLIC_FRONTEND_URL = 'http://localhost'
+
 import {
   GET,
   POST,
@@ -10,8 +13,6 @@ import {
   OPTIONS,
 } from '@/app/api/proxy/[...path]/route'
 import { NextRequest } from 'next/server'
-
-process.env.NEXT_PUBLIC_API_URL = 'http://backend'
 
 function makeJwt(expOffsetSeconds = 3600): string {
   const payload = Buffer.from(
@@ -59,7 +60,10 @@ describe('proxy route', () => {
 
   it('OPTIONS returns 200', async () => {
     const res = await OPTIONS(
-      new NextRequest('http://localhost/api/proxy/test', { method: 'OPTIONS' }),
+      new NextRequest('http://localhost/api/proxy/test', {
+        method: 'OPTIONS',
+        headers: { origin: 'http://localhost' },
+      }),
     )
 
     expect(res.status).toBe(200)

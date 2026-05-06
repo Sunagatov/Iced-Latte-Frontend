@@ -35,7 +35,7 @@ function FilterChip({
     'flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors'
   const className =
     tone === 'search'
-      ? `${base} bg-[#1B4332]/10 text-[#1B4332]`
+      ? `${base} bg-brand-solid/10 text-brand`
       : `${base} bg-black/[0.04] text-black/60`
 
   return (
@@ -67,66 +67,66 @@ export default function ActiveFilterChips({
     <div className="relative mt-2">
       <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto">
         {searchQuery && (
-        <FilterChip
-          ariaLabel="Remove search filter"
-          onRemove={() => updateFilters({ searchQuery: '' })}
-          tone="search"
-        >
-          <><svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg> {searchQuery}</>
-        </FilterChip>
-      )}
+          <FilterChip
+            ariaLabel="Remove search filter"
+            onRemove={() => updateFilters({ searchQuery: '' })}
+            tone="search"
+          >
+            <><svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg> {searchQuery}</>
+          </FilterChip>
+        )}
 
-      {selectedBrandOptions.map((brand) => (
-        <FilterChip
-          ariaLabel={`Remove brand ${brand}`}
-          key={brand}
-          onRemove={() =>
-            updateFilters({
-              selectedBrandOptions: selectedBrandOptions.filter(
-                (item) => item !== brand,
-              ),
-            })
-          }
-        >
-          {brand}
-        </FilterChip>
-      ))}
+        {selectedBrandOptions.map((brand) => (
+          <FilterChip
+            ariaLabel={`Remove brand ${brand}`}
+            key={brand}
+            onRemove={() =>
+              updateFilters({
+                selectedBrandOptions: selectedBrandOptions.filter(
+                  (item) => item !== brand,
+                ),
+              })
+            }
+          >
+            {brand}
+          </FilterChip>
+        ))}
 
-      {selectedSellerOptions.map((seller) => (
-        <FilterChip
-          ariaLabel={`Remove seller ${seller}`}
-          key={seller}
-          onRemove={() =>
-            updateFilters({
-              selectedSellerOptions: selectedSellerOptions.filter(
-                (item) => item !== seller,
-              ),
-            })
-          }
-        >
-          {seller}
-        </FilterChip>
-      ))}
+        {selectedSellerOptions.map((seller) => (
+          <FilterChip
+            ariaLabel={`Remove seller ${seller}`}
+            key={seller}
+            onRemove={() =>
+              updateFilters({
+                selectedSellerOptions: selectedSellerOptions.filter(
+                  (item) => item !== seller,
+                ),
+              })
+            }
+          >
+            {seller}
+          </FilterChip>
+        ))}
 
-      {hasPriceFilter && (
-        <FilterChip
-          ariaLabel="Remove price filter"
-          onRemove={() =>
-            updateFilters({ fromPriceFilter: '', toPriceFilter: '' })
-          }
-        >
-          {priceChipLabel}
-        </FilterChip>
-      )}
+        {hasPriceFilter && (
+          <FilterChip
+            ariaLabel="Remove price filter"
+            onRemove={() =>
+              updateFilters({ fromPriceFilter: '', toPriceFilter: '' })
+            }
+          >
+            {priceChipLabel}
+          </FilterChip>
+        )}
 
-      {ratingFilter && (
-        <FilterChip
-          ariaLabel="Remove rating filter"
-          onRemove={() => updateFilters({ ratingFilter: null })}
-        >
-          {'⭐'.repeat(Number(ratingFilter))}+
-        </FilterChip>
-      )}
+        {ratingFilter && (
+          <FilterChip
+            ariaLabel="Remove rating filter"
+            onRemove={() => updateFilters({ ratingFilter: null })}
+          >
+            {'⭐'.repeat(Number(ratingFilter))}+
+          </FilterChip>
+        )}
       </div>
       <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-[#F8F7F4]" />
     </div>

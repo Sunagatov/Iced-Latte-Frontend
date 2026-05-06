@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import RegistrationForm from '@/features/auth/components/RegistrationForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
 import RestrictRoute from '@/features/auth/RestrictRoute'
@@ -7,7 +8,7 @@ export default function SignUpPage() {
   return (
     <RestrictRoute>
       <div className="flex min-h-[calc(100vh-112px)]">
-        <div className="hidden flex-col justify-end gap-10 bg-[#1B4332] px-12 pt-10 pb-12 text-white lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-112px)] lg:w-[45%]">
+        <div className="hidden flex-col justify-end gap-10 bg-brand-solid px-12 pt-10 pb-12 text-white lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-112px)] lg:w-[45%]">
           <div>
             <p className="text-4xl leading-tight font-bold">
               Join thousands of
@@ -64,7 +65,7 @@ export default function SignUpPage() {
             <p className="mt-6 text-center text-sm text-[#64748B]">
               Already have an account?{' '}
               <Link
-                href="/signin"
+                href={ROUTES.signin}
                 className="font-semibold text-[#0D0D0D] hover:underline"
               >
                 Sign in
@@ -73,7 +74,7 @@ export default function SignUpPage() {
 
             <p className="mt-3 text-center text-xs text-[#94A3B8]">
               By registering you agree to our{' '}
-              <Link href="/" className="underline hover:text-[#64748B]">
+              <Link href={ROUTES.home} className="underline hover:text-[#64748B]">
                 Terms of Use
               </Link>
             </p>

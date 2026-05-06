@@ -112,6 +112,7 @@ export function useCheckoutForm() {
         },
         idempotencyKey,
       )
+
       // Redirect to Stripe Hosted Checkout — do NOT resetCart() here.
       // Cart is cleared by the backend webhook after payment confirmation.
       window.location.href = checkout.checkoutUrl

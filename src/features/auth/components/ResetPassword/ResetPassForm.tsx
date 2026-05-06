@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import { useEffect } from 'react'
 import AuthResetPassForm from './AuthResetPassForm'
 import GuestResetPassForm from './GuestResetPassForm'
@@ -15,7 +16,7 @@ export default function ResetPassForm() {
     if (status === 'authenticated' && userData?.oauthUser) {
       const params = new URLSearchParams({ email: userData.email })
 
-      router.replace(`/forgotpass?${params}`)
+      router.replace(`${ROUTES.forgotpass}?${params}`)
     }
   }, [status, userData, router])
 

@@ -28,7 +28,7 @@ const ProductRatingFilter = ({
           onClick={() => onChange(null)}
           className={`rounded-full px-3 py-1 text-[13px] font-medium transition ${
             selectedOption === null
-              ? 'bg-[#1B4332] text-white'
+              ? 'bg-brand-solid text-white'
               : 'bg-black/[0.04] text-black/60 hover:bg-black/[0.07]'
           }`}
         >
@@ -42,7 +42,7 @@ const ProductRatingFilter = ({
             onClick={() => handleCheckboxChange(value)}
             className={`flex items-center gap-1 rounded-full px-3 py-1 text-[13px] font-medium transition ${
               value === selectedOption
-                ? 'bg-[#1B4332] text-white'
+                ? 'bg-brand-solid text-white'
                 : 'bg-black/[0.04] text-black/60 hover:bg-black/[0.07]'
             }`}
           >

@@ -16,6 +16,7 @@ interface IFormValues {
   password: string
 }
 import { useFormErrorHandler } from '@/shared/utils/apiError'
+import { ROUTES } from '@/shared/config/routes'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
@@ -47,7 +48,7 @@ export default function RegistrationForm() {
       const data = await apiRegisterUser(formData)
 
       if (data) {
-        router.push('/confirm_registration')
+        router.push(ROUTES.confirmRegistration)
       }
     } catch (error) {
       handleError(error)

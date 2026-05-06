@@ -1,8 +1,9 @@
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import { requireRecoverableSession } from '@/shared/auth/guards'
 
 export default async function CheckoutCancelPage() {
-  await requireRecoverableSession('/checkout')
+  await requireRecoverableSession(ROUTES.checkout)
 
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
@@ -16,13 +17,13 @@ export default async function CheckoutCancelPage() {
       </p>
       <div className="mt-4 flex gap-4">
         <Link
-          href="/checkout"
+          href={ROUTES.checkout}
           className="rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
         >
           Try again
         </Link>
         <Link
-          href="/cart"
+          href={ROUTES.cart}
           className="rounded-lg border border-gray-300 px-6 py-3 hover:bg-gray-50"
         >
           Back to cart

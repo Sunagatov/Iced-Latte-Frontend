@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import LoginForm from '@/features/auth/components/LoginForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
 import RestrictRoute from '@/features/auth/RestrictRoute'
@@ -48,8 +49,8 @@ export default function SignInPage() {
 
             <div className="mt-4 text-center">
               <Link
-                href="/forgotpass"
-                className="text-sm text-[#1B4332] hover:underline"
+                href={ROUTES.forgotpass}
+                className="text-sm text-brand hover:underline"
               >
                 Forgot password?
               </Link>
@@ -58,7 +59,7 @@ export default function SignInPage() {
             <p className="mt-6 text-center text-sm text-[#64748B]">
               Don&apos;t have an account?{' '}
               <Link
-                href="/signup"
+                href={ROUTES.signup}
                 className="font-semibold text-[#0D0D0D] hover:underline"
               >
                 Sign up

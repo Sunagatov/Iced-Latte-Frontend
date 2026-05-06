@@ -41,6 +41,7 @@ export const useAddressStore = create<AddressStore>()(
         set((s) => ({ addresses: [...s.addresses, address], error: null }))
       } catch (err) {
         const msg = getUserMessage(err)
+
         set({ error: msg })
         toastError(err)
       }
@@ -56,6 +57,7 @@ export const useAddressStore = create<AddressStore>()(
         }))
       } catch (err) {
         const msg = getUserMessage(err)
+
         set({ error: msg })
         toastError(err)
       }
@@ -70,6 +72,7 @@ export const useAddressStore = create<AddressStore>()(
         }))
       } catch (err) {
         const msg = getUserMessage(err)
+
         set({ error: msg })
         toastError(err)
       }
@@ -87,6 +90,7 @@ export const useAddressStore = create<AddressStore>()(
         }))
       } catch (err) {
         const msg = getUserMessage(err)
+
         set({ error: msg })
         toastError(err)
       }

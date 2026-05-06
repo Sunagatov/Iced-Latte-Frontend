@@ -1,6 +1,8 @@
 /**
  * @jest-environment node
  */
+process.env.NEXT_PUBLIC_FRONTEND_URL = 'http://localhost'
+
 import {
   createCorsResponse,
   handleOptions,
@@ -15,7 +17,7 @@ describe('corsUtils', () => {
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({ ok: true })
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe(
-      corsHeaders['Access-Control-Allow-Origin'],
+      corsHeaders()['Access-Control-Allow-Origin'],
     )
   })
 
@@ -32,8 +34,7 @@ describe('corsUtils', () => {
   })
 
   it('handleOptions returns 200 for matching origin', () => {
-    const origin =
-      corsHeaders['Access-Control-Allow-Origin'] || 'http://localhost:3000'
+    const origin = corsHeaders()['Access-Control-Allow-Origin'] || 'http://localhost'
     const res = handleOptions(
       new NextRequest('http://localhost/', {
         method: 'OPTIONS',
@@ -43,13 +44,12 @@ describe('corsUtils', () => {
 
     expect(res.status).toBe(200)
     expect(res.headers.get('Access-Control-Allow-Methods')).toBe(
-      corsHeaders['Access-Control-Allow-Methods'],
+      corsHeaders()['Access-Control-Allow-Methods'],
     )
   })
 
   it('handleOptions returns 403 for unknown origin when ALLOWED_ORIGIN is set', () => {
-    // Only applies when ALLOWED_ORIGIN env var is configured
-    if (!corsHeaders['Access-Control-Allow-Origin']) return
+    if (!corsHeaders()['Access-Control-Allow-Origin']) return
     const res = handleOptions(
       new NextRequest('http://localhost/', {
         method: 'OPTIONS',

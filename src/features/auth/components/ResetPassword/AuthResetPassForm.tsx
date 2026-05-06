@@ -6,6 +6,7 @@ import Loader from '@/shared/ui/Loader'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { AuthChangePasswordCredentials } from '@/features/auth/types'
 import { apiAuthChangePassword } from '@/features/user/api'
@@ -81,7 +82,7 @@ export default function AuthResetPassForm() {
               className="w-full justify-center"
               id="reset-pass-btn"
               onClick={() => {
-                router.push('/signin')
+                router.push(ROUTES.signin)
               }}
             >
               Sign in again

@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { setupCache, AxiosCacheInstance } from 'axios-cache-interceptor'
 import { getSessionId, generateTraceId } from '@/shared/auth/sessionTracing'
+import { API_TIMEOUT_SSR_MS, API_TIMEOUT_BROWSER_MS } from '@/shared/config/constants'
 
 const instance = axios.create({
-  timeout: typeof window === 'undefined' ? 5000 : 15000,
+  timeout: typeof window === 'undefined' ? API_TIMEOUT_SSR_MS : API_TIMEOUT_BROWSER_MS,
 })
 
 instance.interceptors.request.use((config) => {

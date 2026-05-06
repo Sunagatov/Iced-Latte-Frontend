@@ -113,7 +113,7 @@ const ProductOverview: React.FC<IProductOverview> = ({
         {/* Price */}
         <p
           data-testid="product-price"
-          className="text-3xl font-bold tracking-tight text-[#1B4332]"
+          className="text-3xl font-bold tracking-tight text-brand"
         >
           ${product.price.toFixed(2)}
         </p>

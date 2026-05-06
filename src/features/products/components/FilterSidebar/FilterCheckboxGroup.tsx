@@ -30,7 +30,7 @@ const FilterCheckboxGroup = ({
           <button
             onClick={onReset}
             id={`${title}-reset-btn`}
-            className="text-[11px] text-[#1B4332] hover:underline"
+            className="text-[11px] text-brand hover:underline"
           >
             Clear
           </button>
@@ -44,7 +44,7 @@ const FilterCheckboxGroup = ({
           >
             <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition ${
               selectedItems.includes(item)
-                ? 'border-[#1B4332] bg-[#1B4332]'
+                ? 'border-brand-solid bg-brand-solid'
                 : 'border-black/15 bg-white'
             }`}>
               {selectedItems.includes(item) && (
@@ -67,7 +67,7 @@ const FilterCheckboxGroup = ({
           <button
             id={`${title}-filter-btn`}
             onClick={toggleItemsButtonClick}
-            className="mt-1 px-1.5 text-left text-[12px] font-medium text-[#1B4332] hover:underline"
+            className="mt-1 px-1.5 text-left text-[12px] font-medium text-brand hover:underline"
           >
             {isExpanded ? 'Show less' : `+${items.length - 5} more`}
           </button>

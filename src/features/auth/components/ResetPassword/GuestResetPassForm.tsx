@@ -5,6 +5,7 @@ import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useErrorHandler } from '@/shared/utils/apiError'
@@ -66,7 +67,7 @@ export default function GuestResetPassForm() {
   }
 
   const handleReturnHome = () => {
-    router.push('/signin')
+    router.push(ROUTES.signin)
   }
 
   const strength = getPasswordStrength(newPw)

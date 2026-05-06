@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { EXTERNAL_LINKS } from '@/shared/config/links'
 import Link from 'next/link'
 import React from 'react'
 
@@ -46,7 +47,7 @@ const sections = [
       'Scrape, crawl, or use automated tools to extract data beyond normal API usage.',
       'Upload malicious content, spam, or any material that infringes on the rights of others.',
       'Impersonate another person or misrepresent your affiliation with any entity.',
-      "Interfere with or disrupt the platform's infrastructure.",
+      'Interfere with or disrupt the platform\'s infrastructure.',
     ],
   },
   {
@@ -79,7 +80,7 @@ const sections = [
     bullets: [
       'No real money is charged, transferred, or held.',
       'No real goods or services are sold or delivered.',
-      "Credit card numbers entered in the demo environment are processed by Stripe's test sandbox and are not real charges.",
+      'Credit card numbers entered in the demo environment are processed by Stripe\'s test sandbox and are not real charges.',
       'The author assumes no liability for any financial loss arising from misuse or misunderstanding of the payment demonstration features.',
     ],
   },
@@ -117,7 +118,7 @@ export default function TermsOfUsePage() {
     <section className="bg-[linear-gradient(180deg,#f7f3eb_0%,#f8f7f4_24%,#ffffff_100%)]">
       <div className="mx-auto flex max-w-4xl flex-col gap-10 px-6 py-12 sm:px-10 sm:py-16 lg:px-12">
         <div className="overflow-hidden rounded-[32px] border border-black/6 bg-white shadow-[0_24px_80px_rgba(27,67,50,0.08)]">
-          <div className="border-b border-[#1B4332]/10 bg-[#1B4332] px-6 py-8 text-white sm:px-10 sm:py-10">
+          <div className="border-b border-brand-solid/10 bg-brand-solid px-6 py-8 text-white sm:px-10 sm:py-10">
             <p className="text-xs font-semibold tracking-[0.28em] text-white/60 uppercase">
               Legal
             </p>
@@ -140,14 +141,14 @@ export default function TermsOfUsePage() {
           </div>
 
           <div className="px-6 py-8 sm:px-10 sm:py-10">
-            <div className="rounded-[24px] border border-[#1B4332]/10 bg-[#F5FBF7] p-5 text-sm leading-7 text-[#214433]">
+            <div className="rounded-[24px] border border-brand-solid/10 bg-[#F5FBF7] p-5 text-sm leading-7 text-[#214433]">
               <p>
                 Source of truth for this text lives in the backend repository at{' '}
                 <a
-                  href="https://github.com/Sunagatov/Iced-Latte/blob/development/docs/terms-of-use.md"
+                  href={EXTERNAL_LINKS.github.termsSource}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-[#1B4332] underline decoration-[#1B4332]/30 underline-offset-4 transition hover:decoration-[#1B4332]"
+                  className="font-medium text-brand underline decoration-brand/30 underline-offset-4 transition hover:decoration-brand"
                 >
                   docs/terms-of-use.md
                 </a>
@@ -158,7 +159,7 @@ export default function TermsOfUsePage() {
             <div className="mt-10 space-y-10 text-[#1E1E1A]">
               {sections.map((section) => (
                 <section key={section.title} className="space-y-4">
-                  <h2 className="text-2xl font-semibold tracking-tight text-[#1B4332]">
+                  <h2 className="text-2xl font-semibold tracking-tight text-brand">
                     {section.title}
                   </h2>
 
@@ -169,7 +170,7 @@ export default function TermsOfUsePage() {
                   ))}
 
                   {section.bullets && (
-                    <ul className="space-y-3 pl-5 text-[15px] leading-8 text-black/75 marker:text-[#1B4332]">
+                    <ul className="space-y-3 pl-5 text-[15px] leading-8 text-black/75 marker:text-brand">
                       {section.bullets.map((bullet) => (
                         <li key={bullet}>{bullet}</li>
                       ))}
@@ -192,18 +193,18 @@ export default function TermsOfUsePage() {
               ))}
 
               <section className="space-y-4">
-                <h2 className="text-2xl font-semibold tracking-tight text-[#1B4332]">
+                <h2 className="text-2xl font-semibold tracking-tight text-brand">
                   12. Contact
                 </h2>
                 <p className="text-[15px] leading-8 text-black/75">
                   For questions, concerns, or requests regarding these terms:
                 </p>
-                <ul className="space-y-3 pl-5 text-[15px] leading-8 text-black/75 marker:text-[#1B4332]">
+                <ul className="space-y-3 pl-5 text-[15px] leading-8 text-black/75 marker:text-brand">
                   <li>
                     Email:{' '}
                     <a
-                      href="mailto:zufar.sunagatov@gmail.com"
-                      className="text-[#1B4332] underline decoration-[#1B4332]/25 underline-offset-4 transition hover:decoration-[#1B4332]"
+                      href={EXTERNAL_LINKS.email}
+                      className="text-brand underline decoration-brand/25 underline-offset-4 transition hover:decoration-brand"
                     >
                       zufar.sunagatov@gmail.com
                     </a>
@@ -211,10 +212,10 @@ export default function TermsOfUsePage() {
                   <li>
                     Telegram:{' '}
                     <a
-                      href="https://t.me/lucky_1uck"
+                      href={EXTERNAL_LINKS.social.telegram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#1B4332] underline decoration-[#1B4332]/25 underline-offset-4 transition hover:decoration-[#1B4332]"
+                      className="text-brand underline decoration-brand/25 underline-offset-4 transition hover:decoration-brand"
                     >
                       @lucky_1uck
                     </a>
@@ -222,10 +223,10 @@ export default function TermsOfUsePage() {
                   <li>
                     GitHub Issues:{' '}
                     <a
-                      href="https://github.com/Sunagatov/Iced-Latte/issues"
+                      href={EXTERNAL_LINKS.github.issues}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#1B4332] underline decoration-[#1B4332]/25 underline-offset-4 transition hover:decoration-[#1B4332]"
+                      className="text-brand underline decoration-brand/25 underline-offset-4 transition hover:decoration-brand"
                     >
                       github.com/Sunagatov/Iced-Latte/issues
                     </a>
@@ -237,19 +238,19 @@ export default function TermsOfUsePage() {
                 <p>
                   Need the full license text? See{' '}
                   <a
-                    href="https://creativecommons.org/licenses/by-nc/4.0/legalcode"
+                    href={EXTERNAL_LINKS.license}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-[#1B4332] underline decoration-[#1B4332]/30 underline-offset-4 transition hover:decoration-[#1B4332]"
+                    className="font-medium text-brand underline decoration-brand/30 underline-offset-4 transition hover:decoration-brand"
                   >
                     CC BY-NC 4.0 legal code
                   </a>
                   . Contributors can also review the{' '}
                   <a
-                    href="https://github.com/Sunagatov/Iced-Latte/blob/development/.github/CONTRIBUTING.md"
+                    href={EXTERNAL_LINKS.github.contributing}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-[#1B4332] underline decoration-[#1B4332]/30 underline-offset-4 transition hover:decoration-[#1B4332]"
+                    className="font-medium text-brand underline decoration-brand/30 underline-offset-4 transition hover:decoration-brand"
                   >
                     Contributing Guide
                   </a>
@@ -258,7 +259,7 @@ export default function TermsOfUsePage() {
                 <p className="mt-4">
                   <Link
                     href="/"
-                    className="font-medium text-[#1B4332] underline decoration-[#1B4332]/30 underline-offset-4 transition hover:decoration-[#1B4332]"
+                    className="font-medium text-brand underline decoration-brand/30 underline-offset-4 transition hover:decoration-brand"
                   >
                     Return to the marketplace
                   </Link>

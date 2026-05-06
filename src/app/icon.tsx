@@ -3,6 +3,9 @@ import { ImageResponse } from 'next/og'
 export const size = { width: 32, height: 32 }
 export const contentType = 'image/png'
 
+// Static image generation — CSS variables unavailable, use raw value matching --color-brand-solid
+const BRAND_COLOR = '#1B4332'
+
 export default function Icon() {
   return new ImageResponse(
     (
@@ -13,7 +16,7 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#1B4332',
+          background: BRAND_COLOR,
           borderRadius: '7px',
         }}
       >

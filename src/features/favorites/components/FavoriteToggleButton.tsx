@@ -23,8 +23,8 @@ export default function FavoriteToggleButton({
       aria-pressed={isFavourited}
       className={`flex ${size} shrink-0 items-center justify-center rounded-full transition disabled:opacity-50 ${
         isFavourited
-          ? 'bg-[#1B4332] text-white'
-          : 'bg-black/[0.04] text-black/40 hover:text-[#1B4332]'
+          ? 'bg-brand-solid text-white'
+          : 'bg-black/[0.04] text-black/40 hover:text-brand'
       }`}
       disabled={isPending}
       onClick={onClick}

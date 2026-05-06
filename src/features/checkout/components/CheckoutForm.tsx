@@ -2,6 +2,7 @@
 
 import type { ChangeEvent } from 'react'
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import AddressPicker from '@/features/addresses/components/AddressPicker'
 import CheckoutSummary from '@/features/checkout/components/CheckoutSummary'
 import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
@@ -114,7 +115,7 @@ export default function CheckoutForm() {
         </button>
 
         <Link
-          href="/cart"
+          href={ROUTES.cart}
           className="text-secondary hover:text-primary text-center text-sm"
         >
           ← Back to cart

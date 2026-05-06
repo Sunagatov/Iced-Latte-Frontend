@@ -41,8 +41,10 @@ export const handleAxiosError = (error: unknown): string => {
 export function extractFieldErrors(error: unknown): Array<{ field: string; message: string }> {
   if (axios.isAxiosError(error)) {
     const data = (error as AxiosError<ErrorResponse>).response?.data
+
     if (data?.errors && data.errors.length > 0) return data.errors
   }
+
   return []
 }
 
@@ -60,6 +62,7 @@ export function useFormErrorHandler<T extends FieldValues>(setError: UseFormSetE
 
   const handleError = useCallback((error: unknown) => {
     const fieldErrors = extractFieldErrors(error)
+
     fieldErrors.forEach(({ field, message }) => {
       setError(field as Path<T>, { type: 'server', message })
     })

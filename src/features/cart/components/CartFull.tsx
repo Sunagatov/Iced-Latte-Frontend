@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { ROUTES } from '@/shared/config/routes'
+import { FREE_SHIPPING_THRESHOLD } from '@/shared/config/constants'
 import {
   type CartSliceStore,
   useCartStore,
@@ -42,18 +44,17 @@ export default function CartFull() {
 
   const router = useRouter()
 
-  const FREE_SHIPPING_THRESHOLD = 200
   const shippingProgress = Math.min(totalPrice / FREE_SHIPPING_THRESHOLD, 1)
   const amountToFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - totalPrice, 0)
 
   const handleCheckout = (): void => {
     if (isLoggedIn) {
-      router.push('/checkout')
+      router.push(ROUTES.checkout)
 
       return
     }
 
-    router.push('/signin?next=/checkout')
+    router.push(`${ROUTES.signin}?next=${ROUTES.checkout}`)
   }
 
   const handleClearCart = (): void => {
@@ -106,16 +107,16 @@ export default function CartFull() {
               <div className="mb-4 rounded-xl bg-[#F0F7F4] px-3.5 py-3">
                 {amountToFreeShipping > 0 ? (
                   <p className="mb-2 text-xs text-black/50">
-                    <span className="font-semibold text-[#1B4332]">${amountToFreeShipping.toFixed(2)}</span> away from free shipping
+                    <span className="font-semibold text-brand">${amountToFreeShipping.toFixed(2)}</span> away from free shipping
                   </p>
                 ) : (
-                  <p className="mb-2 text-xs font-semibold text-[#1B4332]">
+                  <p className="mb-2 text-xs font-semibold text-brand">
                     You qualify for free shipping!
                   </p>
                 )}
                 <div className="h-1.5 overflow-hidden rounded-full bg-black/[0.06]">
                   <div
-                    className="h-full rounded-full bg-[#1B4332] transition-all duration-500"
+                    className="h-full rounded-full bg-brand-solid transition-all duration-500"
                     style={{ width: `${shippingProgress * 100}%` }}
                   />
                 </div>
@@ -147,14 +148,14 @@ export default function CartFull() {
                 <span className="text-sm font-semibold text-black/70">Subtotal</span>
                 <div className="flex items-baseline gap-0.5">
                   <span className="text-xs font-medium text-black/40">$</span>
-                  <span className="text-2xl font-bold tabular-nums text-[#1B4332]">
+                  <span className="text-2xl font-bold tabular-nums text-brand">
                     {totalPrice.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               <button
-                className="block w-full rounded-full bg-[#1B4332] py-3.5 text-center text-base font-semibold text-white transition-colors hover:bg-[#143728] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="block w-full rounded-full bg-brand-solid py-3.5 text-center text-base font-semibold text-white transition-colors hover:bg-brand-solid-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!hostedCheckoutEnabled}
                 onClick={handleCheckout}
               >

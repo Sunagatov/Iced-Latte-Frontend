@@ -28,7 +28,7 @@ const UserBar = () => {
   return (
     <div
       id="user-btn"
-      className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B4332] text-[11px] font-bold text-white transition hover:bg-[#143728]"
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-solid text-[11px] font-bold text-white transition hover:bg-brand-solid-hover"
     >
       {userName}
     </div>
