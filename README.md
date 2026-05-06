@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
   <br>
   <img src="public/assets/images/iced-latte-avatar-readme.jpg" alt="Iced Latte Frontend">
   <h1>Iced Latte Frontend</h1>
@@ -36,8 +36,8 @@
 
 ## 📸 Preview
 
-<div style="text-align: center;">
-  <img src="public/assets/images/iced-latte-preview.png" alt="Iced Latte Frontend" width="825">
+<div align="center">
+  <img src="public/assets/images/iced-latte-preview.png" alt="Iced Latte Frontend" style="max-width: 825px; width: 100%;">
   <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
 </div>
 
