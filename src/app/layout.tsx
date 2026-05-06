@@ -9,6 +9,11 @@ import AppProviders from '@/app/providers/AppProviders'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
+const siteUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
+
+if (!siteUrl) {
+  throw new Error('NEXT_PUBLIC_FRONTEND_URL is required')
+}
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +26,7 @@ export const metadata: Metadata = {
     title: 'Iced Latte — Marketplace',
     description:
       'Discover thousands of products from trusted sellers. An open-source marketplace built by the community.',
-    url: 'https://iced-latte.uk',
+    url: siteUrl,
     siteName: 'Iced Latte',
     locale: 'en_US',
     type: 'website',
@@ -32,7 +37,7 @@ export const metadata: Metadata = {
     description:
       'Discover thousands of products from trusted sellers.',
   },
-  metadataBase: new URL('https://iced-latte.uk'),
+  metadataBase: new URL(siteUrl),
 }
 
 export default function RootLayout({

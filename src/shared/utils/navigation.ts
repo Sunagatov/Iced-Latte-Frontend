@@ -1,18 +1,23 @@
-const SAFE_NEXT_BASE = 'https://iced-latte.local'
-
 export function getSafeNext(next: string | null | undefined): string | null {
-  if (!next || !next.trim() || next.includes('\\')) {
+  if (
+    !next ||
+    !next.trim() ||
+    next.includes('\\') ||
+    !next.startsWith('/') ||
+    next.startsWith('//')
+  ) {
     return null
   }
 
   try {
-    const url = new URL(next, SAFE_NEXT_BASE)
+    const [pathWithQuery, hash = ''] = next.split('#', 2)
+    const [pathname, query = ''] = pathWithQuery.split('?', 2)
 
-    if (url.origin !== SAFE_NEXT_BASE || !url.pathname.startsWith('/')) {
+    if (!pathname.startsWith('/')) {
       return null
     }
 
-    return `${url.pathname}${url.search}${url.hash}`
+    return `${pathname}${query ? `?${query}` : ''}${hash ? `#${hash}` : ''}`
   } catch {
     return null
   }

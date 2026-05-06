@@ -29,8 +29,10 @@ export function isAuthRefreshExcludedRequest(url?: string): boolean {
   if (!url) return false
 
   try {
-    const parsed = new URL(url, 'http://localhost')
-    const normalizedPath = parsed.pathname
+    const pathname = /^[a-z][a-z\d+\-.]*:\/\//i.test(url)
+      ? new URL(url).pathname
+      : url.split('?')[0].split('#')[0]
+    const normalizedPath = pathname
       .replace(/^\/api\/proxy/, '')
       .replace(/^\/api\/v1/, '')
 

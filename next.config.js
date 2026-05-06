@@ -1,23 +1,30 @@
+function parseRemoteImageSource(source) {
+  const parsed = new URL(source)
+
+  return {
+    protocol: parsed.protocol.replace(':', ''),
+    hostname: parsed.hostname,
+    port: parsed.port,
+    pathname: parsed.pathname === '/' ? undefined : parsed.pathname,
+  }
+}
+
+function remoteImageSources() {
+  return (process.env.NEXT_IMAGE_REMOTE_SOURCES ?? '')
+    .split(',')
+    .map((source) => source.trim())
+    .filter(Boolean)
+}
+
+const imageSources = remoteImageSources()
+
 const nextConfig = {
   output: 'standalone',
   compress: true,
   serverExternalPackages: [],
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production',
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'iced-latte-bucket-for-products.s3.eu-west-2.amazonaws.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-      },
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-      },
-    ],
+    remotePatterns: imageSources.map(parseRemoteImageSource),
   },
   async headers() {
     return [
@@ -37,7 +44,7 @@ const nextConfig = {
               'default-src \'self\'',
               'script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'', // unsafe-eval required by Next.js dev mode
               'style-src \'self\' \'unsafe-inline\'',
-              'img-src \'self\' data: blob: https://iced-latte-bucket-for-products.s3.eu-west-2.amazonaws.com https://*.supabase.co http://localhost:9000',
+              ['img-src \'self\' data: blob:', ...imageSources].join(' '),
               'font-src \'self\'',
               'connect-src \'self\'',
               'frame-ancestors \'none\'',

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSafeNext } from '@/shared/utils/navigation'
+import { isHttpsFrontend, secureCookieSuffix } from '@/shared/config/runtime'
 
 const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: isHttpsFrontend(),
   sameSite: 'lax' as const,
   path: '/',
   maxAge: 60 * 60 * 24,
@@ -32,15 +33,11 @@ function createSessionCookieResponse(token: string, refreshToken: string) {
   // being sent on any request that fires before the redirect completes.
   response.headers.append(
     'Set-Cookie',
-    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
-      process.env.NODE_ENV === 'production' ? '; Secure' : ''
-    }`,
+    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
   )
   response.headers.append(
     'Set-Cookie',
-    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
-      process.env.NODE_ENV === 'production' ? '; Secure' : ''
-    }`,
+    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
   )
 
   response.cookies.set('token', token, COOKIE_OPTIONS)

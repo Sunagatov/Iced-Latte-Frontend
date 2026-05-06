@@ -3,11 +3,14 @@
 # =============================================================================
 FROM node:22.17.0-alpine3.22 AS build
 
-ARG NEXT_PUBLIC_API_URL=https://api.iced-latte.uk/api/v1
-ARG NEXT_PUBLIC_FRONTEND_URL=https://iced-latte.uk
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_FRONTEND_URL
+ARG NEXT_IMAGE_REMOTE_SOURCES
+# Keep local Docker builds disabled unless prod release tooling passes true.
 ARG NEXT_PUBLIC_STRIPE_ENABLED=false
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
+ENV NEXT_IMAGE_REMOTE_SOURCES=$NEXT_IMAGE_REMOTE_SOURCES
 ENV NEXT_PUBLIC_STRIPE_ENABLED=$NEXT_PUBLIC_STRIPE_ENABLED
 
 WORKDIR /app
@@ -31,7 +34,6 @@ LABEL maintainer="Iced-Latte Team" \
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    PORT=3000 \
     HOSTNAME=0.0.0.0
 
 COPY --from=build --chown=node:node /app/public ./public
@@ -40,8 +42,6 @@ COPY --from=build --chown=node:node /app/.next/standalone ./
 
 RUN mkdir -p /app/.next/cache \
  && chown -R node:node /app
-
-EXPOSE 3000
 
 USER node
 

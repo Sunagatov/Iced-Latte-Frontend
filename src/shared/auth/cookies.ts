@@ -1,12 +1,13 @@
 'use server'
 import { cookies } from 'next/headers'
+import { isHttpsFrontend } from '@/shared/config/runtime'
 
 const AUTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24
 
 const TOKEN_COOKIE_OPTIONS = {
   path: '/',
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: isHttpsFrontend(),
   sameSite: 'lax' as const,
   maxAge: AUTH_COOKIE_MAX_AGE_SECONDS,
 }

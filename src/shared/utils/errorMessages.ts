@@ -3,37 +3,46 @@ import { ErrorResponse } from '@/shared/types/ErrorResponse'
 
 const ERROR_MESSAGES: Record<string, string> = {
   // Auth & Security
-  'https://iced-latte.uk/errors/invalid-credentials': 'The email or password you entered is incorrect.',
-  'https://iced-latte.uk/errors/auth-required': 'Please sign in to continue.',
-  'https://iced-latte.uk/errors/session-expired': 'Your session expired. Please sign in again.',
-  'https://iced-latte.uk/errors/account-locked': 'Your account has been locked. Please contact support.',
-  'https://iced-latte.uk/errors/access-denied': 'You do not have permission to perform this action.',
-  'https://iced-latte.uk/errors/registration-failed': 'This email is already registered. Please sign in.',
-  'https://iced-latte.uk/errors/user-not-found': 'User not found.',
-  'https://iced-latte.uk/errors/session-not-found': 'Your session could not be found. Please sign in again.',
-  'https://iced-latte.uk/errors/session-access-denied': 'You do not have access to this session.',
+  'invalid-credentials': 'The email or password you entered is incorrect.',
+  'auth-required': 'Please sign in to continue.',
+  'session-expired': 'Your session expired. Please sign in again.',
+  'account-locked': 'Your account has been locked. Please contact support.',
+  'access-denied': 'You do not have permission to perform this action.',
+  'registration-failed': 'This email is already registered. Please sign in.',
+  'user-not-found': 'User not found.',
+  'session-not-found': 'Your session could not be found. Please sign in again.',
+  'session-access-denied': 'You do not have access to this session.',
 
   // Orders
-  'https://iced-latte.uk/errors/order-not-found': "We couldn't find this order.",
-  'https://iced-latte.uk/errors/order-access-denied': 'You do not have permission to access this order.',
-  'https://iced-latte.uk/errors/order-state-invalid': 'This order can no longer be modified.',
-  'https://iced-latte.uk/errors/order-cancellation-expired': 'The cancellation window for this order has passed.',
+  'order-not-found': "We couldn't find this order.",
+  'order-access-denied': 'You do not have permission to access this order.',
+  'order-state-invalid': 'This order can no longer be modified.',
+  'order-cancellation-expired': 'The cancellation window for this order has passed.',
 
   // Cart
-  'https://iced-latte.uk/errors/cart-not-found': 'Your shopping cart could not be found.',
-  'https://iced-latte.uk/errors/cart-item-not-found': 'This item is no longer in your cart.',
+  'cart-not-found': 'Your shopping cart could not be found.',
+  'cart-item-not-found': 'This item is no longer in your cart.',
 
   // Products & Reviews
-  'https://iced-latte.uk/errors/product-not-found': 'This product is no longer available.',
-  'https://iced-latte.uk/errors/review-moderation-failed': 'Your review could not be published — it may contain inappropriate content.',
+  'product-not-found': 'This product is no longer available.',
+  'review-moderation-failed': 'Your review could not be published — it may contain inappropriate content.',
 
   // Validation & Generic
-  'https://iced-latte.uk/errors/validation-failed': 'Please check the form for errors.',
-  'https://iced-latte.uk/errors/file-too-large': 'The file you selected is too large.',
-  'https://iced-latte.uk/errors/rate-limited': 'Too many requests. Please wait a moment and try again.',
+  'validation-failed': 'Please check the form for errors.',
+  'file-too-large': 'The file you selected is too large.',
+  'rate-limited': 'Too many requests. Please wait a moment and try again.',
 
   // Payment
-  'https://iced-latte.uk/errors/payment-session-failed': "We couldn't process your payment. Please try again.",
+  'payment-session-failed': "We couldn't process your payment. Please try again.",
+}
+
+function errorTypeSlug(type: string): string {
+  try {
+    const pathname = new URL(type).pathname
+    return pathname.split('/').filter(Boolean).at(-1) ?? type
+  } catch {
+    return type.split('/').filter(Boolean).at(-1) ?? type
+  }
 }
 
 export function getUserMessage(error: unknown): string {
@@ -42,8 +51,10 @@ export function getUserMessage(error: unknown): string {
   }
   const data = (error as AxiosError<ErrorResponse>).response?.data
 
-  if (data?.type && ERROR_MESSAGES[data.type]) {
-    return ERROR_MESSAGES[data.type]
+  const typeSlug = data?.type ? errorTypeSlug(data.type) : undefined
+
+  if (typeSlug && ERROR_MESSAGES[typeSlug]) {
+    return ERROR_MESSAGES[typeSlug]
   }
 
   return data?.detail || data?.message || data?.error || 'Something went wrong. Please try again.'

@@ -1,5 +1,5 @@
 // Stripe checkout is only enabled when explicitly set to 'true'.
-// This is a test-mode educational project — never enable by default.
+// Local and local-Docker builds stay disabled by default.
 export const hostedCheckoutEnabled =
   process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true'
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 import { isTokenExpired } from '@/shared/auth/token'
+import { isHttpsFrontend, secureCookieSuffix } from '@/shared/config/runtime'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
@@ -15,7 +16,7 @@ const PROXY_FORWARD_HEADERS: Array<[string, string]> = [
 ]
 const AUTH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: isHttpsFrontend(),
   sameSite: 'lax' as const,
   path: '/',
   maxAge: 60 * 60 * 24,
@@ -133,15 +134,11 @@ function setAuthCookies(
 
   nextResponse.headers.append(
     'Set-Cookie',
-    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
-      process.env.NODE_ENV === 'production' ? '; Secure' : ''
-    }`,
+    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
   )
   nextResponse.headers.append(
     'Set-Cookie',
-    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${
-      process.env.NODE_ENV === 'production' ? '; Secure' : ''
-    }`,
+    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
   )
 
   nextResponse.cookies.set('token', data.token, AUTH_COOKIE_OPTIONS)
