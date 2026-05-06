@@ -24,6 +24,7 @@ import Loader from '@/shared/ui/Loader'
 import ReviewsList from '@/features/reviews/components/ReviewsList/ReviewsList'
 import ReviewsSorter from '@/features/reviews/components/ReviewsSorter'
 import AIReviewSummary from '@/features/reviews/components/AIReviewSummary/AIReviewSummary'
+import { FEATURES } from '@/shared/config/features'
 import ReviewsFilter from '@/features/reviews/components/ReviewsFilter'
 import RatingSummary from '@/features/reviews/components/RatingSummary'
 
@@ -165,7 +166,7 @@ const ReviewsSection = ({
       {reviewsSummary.hasStatistics && (
         <div className="mb-8 grid gap-4 sm:grid-cols-2">
           {reviewsStatistics && <RatingSummary statistics={reviewsStatistics} />}
-          {product.aiSummary && (
+          {FEATURES.ai && product.aiSummary && (
             <AIReviewSummary
               summary={product.aiSummary}
               reviewsCount={reviewsStatistics?.reviewsCount ?? product.reviewsCount}
@@ -175,7 +176,7 @@ const ReviewsSection = ({
       )}
 
       {/* AI summary full-width fallback when no statistics */}
-      {!reviewsSummary.hasStatistics && product.aiSummary && (
+      {!reviewsSummary.hasStatistics && FEATURES.ai && product.aiSummary && (
         <div className="mb-8">
           <AIReviewSummary
             summary={product.aiSummary}

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
+import { FEATURES } from '@/shared/config/features'
 import LoginForm from '@/features/auth/components/LoginForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
 import RestrictRoute from '@/features/auth/RestrictRoute'
@@ -37,24 +38,28 @@ export default function SignInPage() {
               <SocialAuthButtons mode="signin" />
             </div>
 
-            <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-[#E2E8F0]" />
-              <span className="text-xs text-[#94A3B8]">
-                or continue with email
-              </span>
-              <div className="h-px flex-1 bg-[#E2E8F0]" />
-            </div>
+            {FEATURES.googleAuth && (
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#E2E8F0]" />
+                <span className="text-xs text-[#94A3B8]">
+                  or continue with email
+                </span>
+                <div className="h-px flex-1 bg-[#E2E8F0]" />
+              </div>
+            )}
 
             <LoginForm />
 
-            <div className="mt-4 text-center">
-              <Link
-                href={ROUTES.forgotpass}
-                className="text-sm text-brand hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
+            {FEATURES.emailConfirmation && (
+              <div className="mt-4 text-center">
+                <Link
+                  href={ROUTES.forgotpass}
+                  className="text-sm text-brand hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            )}
 
             <p className="mt-6 text-center text-sm text-[#64748B]">
               Don&apos;t have an account?{' '}

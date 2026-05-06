@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
+import { FEATURES } from '@/shared/config/features'
 import RegistrationForm from '@/features/auth/components/RegistrationForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
 import RestrictRoute from '@/features/auth/RestrictRoute'
@@ -52,13 +53,15 @@ export default function SignUpPage() {
               <SocialAuthButtons mode="signup" />
             </div>
 
-            <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-[#E2E8F0]" />
-              <span className="text-xs text-[#94A3B8]">
-                or sign up with email
-              </span>
-              <div className="h-px flex-1 bg-[#E2E8F0]" />
-            </div>
+            {FEATURES.googleAuth && (
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#E2E8F0]" />
+                <span className="text-xs text-[#94A3B8]">
+                  or sign up with email
+                </span>
+                <div className="h-px flex-1 bg-[#E2E8F0]" />
+              </div>
+            )}
 
             <RegistrationForm />
 

@@ -1,7 +1,8 @@
+import { FEATURES } from '@/shared/config/features'
+
 // Stripe checkout is only enabled when explicitly set to 'true'.
 // Local and local-Docker builds stay disabled by default.
-export const hostedCheckoutEnabled =
-  process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true'
+export const hostedCheckoutEnabled = FEATURES.stripe
 
 export function getCheckoutUnavailableMessage(): string {
   return hostedCheckoutEnabled

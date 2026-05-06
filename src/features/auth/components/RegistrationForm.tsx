@@ -17,10 +17,13 @@ interface IFormValues {
 }
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { ROUTES } from '@/shared/config/routes'
+import { FEATURES } from '@/shared/config/features'
+import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { completeAuthSession } = useCompleteAuthSession()
 
   const {
     register,
@@ -47,8 +50,12 @@ export default function RegistrationForm() {
       setLoading(true)
       const data = await apiRegisterUser(formData)
 
-      if (data) {
+      if (FEATURES.emailConfirmation) {
         router.push(ROUTES.confirmRegistration)
+      } else {
+        const { token, refreshToken } = JSON.parse(data)
+
+        await completeAuthSession(token, refreshToken)
       }
     } catch (error) {
       handleError(error)

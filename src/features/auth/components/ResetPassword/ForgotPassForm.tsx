@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
+import { FEATURES } from '@/shared/config/features'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiForgotPassword } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
@@ -34,6 +35,28 @@ export default function ForgotPassForm() {
     resolver: yupResolver(forgotPassSchema),
     defaultValues: { email: prefilledEmail },
   })
+
+  if (!FEATURES.emailConfirmation) {
+    return (
+      <div className="flex min-h-[calc(100vh-7rem-7rem)] items-center justify-center px-6">
+        <div className="w-full max-w-[420px] rounded-2xl border border-[#E2E8F0] bg-white p-10 text-center shadow-sm">
+          <h2 className="text-2xl font-bold text-[#0D0D0D]">
+            Password reset unavailable
+          </h2>
+          <p className="mt-3 text-sm text-[#64748B]">
+            Email service is not configured in this environment. Please contact
+            the administrator or reset your password directly in the database.
+          </p>
+          <Link
+            href={ROUTES.signin}
+            className="mt-6 inline-block text-sm text-brand hover:underline"
+          >
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const onSubmit = async (data: IForgotValues): Promise<void> => {
     const { email } = data
