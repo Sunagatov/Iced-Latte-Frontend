@@ -12,6 +12,7 @@ export function corsHeaders() {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
     'Access-Control-Allow-Headers':
       'Content-Type, Authorization, X-Requested-With',
+    'Access-Control-Expose-Headers': 'Retry-After',
     'Access-Control-Max-Age': '86400',
   }
 }

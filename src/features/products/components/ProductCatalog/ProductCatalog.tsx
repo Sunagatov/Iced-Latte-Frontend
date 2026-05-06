@@ -80,12 +80,15 @@ export default function ProductCatalog({
       onErrorRetry: (retryError, _key, _config, revalidate, { retryCount }) => {
         const status = retryError?.response?.status
 
-        if (status && status >= 400) return
+        if (status && status >= 400 && status !== 429) return
         if (retryCount >= 3) return
+
+        const retryAfter = retryError?.response?.headers?.['retry-after']
+        const delay = status === 429 && retryAfter ? Number(retryAfter) * 1000 : 5000
 
         setTimeout(() => {
           void revalidate({ retryCount })
-        }, 5000)
+        }, Number.isFinite(delay) ? delay : 5000)
       },
     },
   )

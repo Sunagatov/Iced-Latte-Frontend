@@ -146,6 +146,23 @@ function setAuthCookies(
   nextResponse.cookies.set(COOKIE_NAMES.refresh, data.refreshToken, AUTH_COOKIE_OPTIONS)
 }
 
+async function refreshTokens(refreshToken: string): Promise<TokenPair | null> {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${refreshToken}`, 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) return null
+
+    const data: unknown = await response.json()
+
+    return isTokenPair(data) ? data : null
+  } catch {
+    return null
+  }
+}
+
 async function handleProxy(
   request: NextRequest,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
@@ -158,13 +175,26 @@ async function handleProxy(
   const url = new URL(request.url)
   const apiUrl = `${API_BASE_URL}/${safePath}${sanitizeQueryString(url.searchParams)}`
   const body = method === 'GET' ? undefined : await readBody(request)
+  const headers = forwardHeaders(request, safePath)
+
+  // If no Authorization was set and a valid refresh token exists, refresh inline
+  let refreshedTokens: TokenPair | null = null
+  const hdrs = headers as Record<string, string>
+
+  if (safePath !== 'auth/refresh' && !hdrs['Authorization']) {
+    const refreshToken = request.cookies.get(COOKIE_NAMES.refresh)?.value
+
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      refreshedTokens = await refreshTokens(refreshToken)
+
+      if (refreshedTokens) {
+        hdrs['Authorization'] = `Bearer ${refreshedTokens.token}`
+      }
+    }
+  }
 
   try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method,
-      headers: forwardHeaders(request, safePath),
-      body,
-    })
+    const response = await fetchWithTimeout(apiUrl, { method, headers, body })
     const contentType = response.headers.get('content-type') ?? ''
     const rawBody = await response.text()
 
@@ -175,11 +205,24 @@ async function handleProxy(
         ? (JSON.parse(rawBody) as unknown)
         : rawBody
 
-    if (!response.ok) return createCorsResponse(data, response.status)
+    if (!response.ok) {
+      const errorResponse = createCorsResponse(data, response.status)
+      const retryAfter = response.headers.get('Retry-After')
+
+      if (retryAfter) errorResponse.headers.set('Retry-After', retryAfter)
+
+      return errorResponse
+    }
 
     const nextResponse = createCorsResponse(data, response.status)
 
     setAuthCookies(response, nextResponse, data, safePath)
+
+    // Persist refreshed tokens as cookies so subsequent requests use them
+    if (refreshedTokens) {
+      nextResponse.cookies.set(COOKIE_NAMES.access, refreshedTokens.token, AUTH_COOKIE_OPTIONS)
+      nextResponse.cookies.set(COOKIE_NAMES.refresh, refreshedTokens.refreshToken, AUTH_COOKIE_OPTIONS)
+    }
 
     return nextResponse
   } catch {

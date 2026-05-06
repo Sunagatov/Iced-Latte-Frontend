@@ -62,6 +62,21 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
           throw error
         }
 
+        // 429 Too Many Requests — retry once after Retry-After delay
+        if (
+          error.response?.status === 429 &&
+          !originalRequest.isRetry
+        ) {
+          originalRequest.isRetry = true
+          const retryAfter = error.response.headers?.['retry-after']
+          const delaySec = retryAfter ? Math.min(Number(retryAfter), 60) : 5
+          const delayMs = (Number.isFinite(delaySec) ? delaySec : 5) * 1000
+
+          await new Promise((resolve) => setTimeout(resolve, delayMs))
+
+          return apiClient.request(originalRequest)
+        }
+
         const authStatus = useAuthStore.getState().status
         const shouldRetry =
           error.response?.status === 401 &&
