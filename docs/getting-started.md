@@ -17,11 +17,15 @@ Pick the setup that fits you:
 |------|---------|----------|
 | Node.js | 20+ | https://nodejs.org/ (Options A, C only) |
 | Docker Desktop | latest | https://www.docker.com/products/docker-desktop/ |
+| Java JDK | 25 | https://adoptium.net/ (Options C, D only) |
+| Maven | 3.9+ | https://maven.apache.org/download.cgi (Options C, D only) |
 
 Verify your setup:
 ```bash
 node -v           # v20... or higher
 docker --version  # Docker version...
+java -version     # openjdk 25... (Options C, D only)
+mvn -version      # Apache Maven 3.9... (Options C, D only)
 ```
 
 ---

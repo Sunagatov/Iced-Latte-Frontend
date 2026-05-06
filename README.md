@@ -150,6 +150,7 @@ src/
 ├── shared/                # Cross-feature building blocks
 │   ├── api/               # Axios client
 │   ├── auth/              # Cookies, token helpers, session tracing
+│   ├── config/            # Feature flags, routes, constants
 │   ├── types/             # Shared TypeScript types
 │   ├── ui/                # Reusable UI primitives
 │   └── utils/             # Non-auth generic utilities
