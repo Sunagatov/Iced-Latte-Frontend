@@ -62,3 +62,4 @@ yarn-error.log*
 /.env.prod
 /ops/
 e2e/.auth.json
+e2e/.auth/
