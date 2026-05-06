@@ -201,7 +201,7 @@ Before opening a PR:
 - 🎯 Keep the change focused on one concern
 - ✅ Run `npm run lint`, `npm run tsc -- --noEmit`, and `npm test`
 - 🔗 Reference the related issue
-- 📖 Read the setup and testing docs before changing shared app behavior
+- 📖 Read the full [Contributing Guide](.github/CONTRIBUTING.md)
 
 > ⚠️ By contributing, you agree to the project license and contribution terms described in [LICENSE](LICENSE).
 
