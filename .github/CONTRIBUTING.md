@@ -167,6 +167,10 @@ A contribution is ready for review when:
 - Add or update tests when behavior changes.
 - Keep public routes and API behavior backward-compatible unless the issue explicitly says otherwise.
 
+Architecture reference:
+
+- [Feature Packaging Rule](../docs/architecture/feature-packaging.md)
+
 ---
 
 ## 🐛 Bug Reports

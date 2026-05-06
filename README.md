@@ -144,6 +144,7 @@ npm run test:e2e
 ## 📚 Guides & Features
 
 - 📄 [Getting Started](docs/getting-started.md) — local run modes, Docker setup, backend connection, environment variables, troubleshooting
+- 📄 [Architecture: Feature Packaging](docs/architecture/feature-packaging.md) — feature-first frontend structure: keep UI, state, hooks, and helpers close to the owning feature
 - 📄 [Authentication](docs/AUTH.md) — auth flows and frontend/backend auth behavior
 - 📄 [E2E Test Plan](docs/testing/e2e-test-plan.md) — Playwright coverage plan and scenarios
 - 📄 [Security Policy](SECURITY.md) — security policy and vulnerability reporting
