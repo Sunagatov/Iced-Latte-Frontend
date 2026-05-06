@@ -1,135 +1,297 @@
-# Auth Architecture
+# 🔐 Auth Architecture
 
-This document explains how authentication works in Iced Latte Frontend.
-
----
-
-## Model
-
-The app uses **cookie-session auth**. The backend owns the session and sets an `HttpOnly` cookie on login. The frontend never stores raw tokens in JavaScript-accessible storage.
-
-```
-Browser → Next.js proxy (/api/proxy) → Backend API
-                ↑
-         forwards cookie header
-```
+This document explains how authentication works in Iced Latte Frontend: where session state lives, how cookies flow through the Next.js proxy, how refresh works, and which files to check before changing auth behavior.
 
 ---
 
-## Auth State
+## 🧭 Model
 
-Auth state lives in `src/features/auth/store.ts` as a simple state machine:
+The app uses **token-backed cookie-session auth**.
+
+The backend issues access/refresh tokens. The frontend stores them in `HttpOnly` cookies through Next.js server actions / route handlers. The frontend does not store raw access or refresh tokens in JavaScript-accessible storage.
+
+```text
+Browser
+  ↓
+Next.js proxy / route handlers
+  ↓ forwards cookie header
+Backend API
+```
+
+Why this matters:
+
+- JavaScript cannot directly read `HttpOnly` cookies.
+- Browser requests can still carry cookies automatically.
+- The Next.js proxy forwards cookies to the backend.
+- Auth state in React is only a UI view of the backend-confirmed session.
+
+---
+
+## 🧠 Auth State
+
+Client auth state lives in:
+
+```text
+src/features/auth/store.ts
+```
+
+State shape:
 
 ```ts
 status: 'loading' | 'anonymous' | 'authenticated'
 userData: UserData | null
 ```
 
-- `loading` — session bootstrap in progress (app startup)
-- `anonymous` — no active session
-- `authenticated` — valid session confirmed by backend
+| Status | Meaning |
+|---|---|
+| `loading` | session bootstrap is in progress |
+| `anonymous` | no active session |
+| `authenticated` | backend confirmed a valid session |
 
-There are **no tokens in client state**. `isLoggedIn` is a computed getter (`status === 'authenticated'`) kept for backward compatibility.
+There are **no raw tokens in client state**.
 
----
+`isLoggedIn` is a computed compatibility helper:
 
-## Session Bootstrap
-
-On app startup, `AppInitProvider` calls `GET /auth/session` to ask the backend whether the current cookie is valid:
-
-```
-App mounts → apiGetSession() → { authenticated, user }
-                                      ↓
-                             setAuthenticated(user)  or  setAnonymous()
+```ts
+status === 'authenticated'
 ```
 
-This is the **single source of truth** for auth status on the client.
+---
+
+## 🚀 Session Bootstrap
+
+On app startup, the frontend checks whether the current cookie-backed session is valid:
+
+```text
+App mounts
+  ↓
+bootstrapClientSession()
+  ↓
+GET /users
+  ↓
+success: setAuthenticated(user)
+failure: POST /auth/refresh, then retry user lookup or setAnonymous()
+```
+
+This is the single source of truth for client auth status.
+
+Main files:
+
+| File | Responsibility |
+|---|---|
+| `src/app/providers/AppProviders.tsx` | app bootstrap and provider wiring |
+| `src/features/session/useSessionBootstrap.ts` | starts session bootstrap on app mount |
+| `src/features/session/session.ts` | bootstrap, refresh, clear, and store sync logic |
+| `src/features/user/api.ts` | `getUserData()` user lookup |
+| `src/features/auth/store.ts` | auth status state machine |
 
 ---
 
-## Login Flow
+## 🔑 Login Flow
 
-1. User submits credentials → `POST /auth/authenticate`
-2. Backend sets `HttpOnly` session cookie in the response
-3. Frontend calls `apiGetSession()` to populate auth state
-4. Redirect to `?next=` param or `/profile`
+```text
+User submits credentials
+  ↓
+POST /auth/authenticate
+  ↓
+Backend returns access/refresh tokens
+  ↓
+Next.js server action stores tokens in HttpOnly cookies
+  ↓
+Frontend fetches current user data
+  ↓
+Redirect to ?next=... or /profile
+```
 
-**Files:** `LoginForm.tsx`, `features/auth/api.ts`
+Main files:
 
----
-
-## Email Verification Flow
-
-1. User submits 9-digit code → `POST /auth/confirm` via `verifyEmailCode(code)`
-2. Backend sets session cookie
-3. Frontend calls `apiGetSession()` to populate auth state
-4. Redirect to `?next=` or `/profile`
-
-**Files:** `ConfirmPasswordComponent.tsx`, `features/auth/api.ts`
-
----
-
-## Token Refresh Flow
-
-Handled automatically by `AuthInterceptor`:
-
-1. Any API call returns `401`
-2. Interceptor calls `POST /auth/refresh` — backend reads refresh token from `HttpOnly` cookie
-3. On success: call `apiGetSession()` to re-sync auth state, retry original request
-4. On failure: call `logout()`
-
-**File:** `shared/providers/AuthInterceptor.tsx`
+| File | Responsibility |
+|---|---|
+| `src/features/auth/components/LoginForm.tsx` | sign-in form |
+| `src/features/auth/api.ts` | login and session API calls |
 
 ---
 
-## Google OAuth Flow
+## 📧 Email Verification Flow
 
-1. User clicks "Sign in with Google" → redirected to backend OAuth endpoint
-2. Backend handles OAuth and redirects to `/auth/google/callback#token=...&refreshToken=...`
-3. Callback page reads `window.location.hash`, posts the tokens to `/api/auth/google/callback`
-4. That API route sets the `HttpOnly` session cookies
-5. Callback page fetches the current user and redirects to `?next=` or `/`
+```text
+User submits 9-digit code
+  ↓
+POST /auth/confirm
+  ↓
+Backend returns access/refresh tokens
+  ↓
+Next.js server action stores tokens in HttpOnly cookies
+  ↓
+Frontend fetches current user data
+  ↓
+Redirect to ?next=... or /profile
+```
 
-**File:** `app/auth/google/callback/page.tsx`
+Main files:
 
----
-
-## Logout Flow
-
-1. `POST /auth/logout` — backend clears the session cookie
-2. Frontend resets all local stores (auth, cart, favourites)
-3. Redirect to `/signin`
-
-**File:** `features/auth/hooks/useLogout.ts`
-
----
-
-## Route Protection
-
-| Route type                             | How protected                                                                      |
-| -------------------------------------- | ---------------------------------------------------------------------------------- |
-| `/profile` (and other protected pages) | Server-side: reads cookie, redirects to `/signin?next=/profile` if missing/expired |
-| `/signin`, `/signup` (guest-only)      | `RestrictRoute` server component: redirects to `/` if session cookie present       |
-
-Protected pages redirect with `?next=<path>` so the user lands back after login.
+| File | Responsibility |
+|---|---|
+| `src/features/auth/components/VerifyEmailCodeForm.tsx` | confirmation form |
+| `src/features/auth/api.ts` | `verifyEmailCode(code)` |
 
 ---
 
-## Proxy
+## 🔄 Token Refresh Flow
 
-`src/app/api/proxy/[...path]/route.ts` forwards all browser requests to the backend. It forwards the `cookie` header so the backend can authenticate the request. No `Authorization` header is injected by the frontend.
+Refresh is handled automatically by the auth interceptor.
+
+```text
+Any API call returns 401
+  ↓
+POST /auth/refresh
+  ↓
+Proxy/backend use the refresh token from the HttpOnly cookie
+  ↓
+Success: fetch current user + retry original request
+Failure: clear local session and redirect to /signin
+```
+
+Main file:
+
+```text
+src/app/providers/AuthInterceptor.tsx
+```
+
+Important rule: frontend code should not manually read refresh tokens.
 
 ---
 
-## Key Files
+## 🌐 Google OAuth Flow
 
-| File                                   | Responsibility                       |
-| -------------------------------------- | ------------------------------------ |
-| `features/auth/store.ts`               | Auth status state machine            |
-| `features/auth/api.ts`                 | Auth API calls incl. `apiGetSession` |
-| `shared/providers/AppInitProvider.tsx` | Session bootstrap on app startup     |
-| `shared/providers/AuthInterceptor.tsx` | Auto-refresh on 401                  |
-| `shared/providers/RestrictRoute.tsx`   | Guest-only route guard               |
-| `shared/utils/cookieUtils.ts`          | Server-side cookie helpers           |
-| `app/api/proxy/[...path]/route.ts`     | API proxy (forwards cookie)          |
-| `app/profile/page.tsx`                 | Example of a server-protected page   |
+```text
+User clicks "Sign in with Google"
+  ↓
+Backend OAuth endpoint
+  ↓
+Google
+  ↓
+Backend callback
+  ↓
+/auth/google/callback#token=...&refreshToken=...
+  ↓
+Frontend posts tokens to /api/auth/google/callback
+  ↓
+Next.js route sets HttpOnly cookies
+  ↓
+Frontend fetches current user and redirects
+```
+
+Main file:
+
+```text
+src/app/auth/google/callback/page.tsx
+```
+
+Important rule: OAuth callback tokens are read from:
+
+```text
+window.location.hash
+```
+
+not:
+
+```text
+window.location.search
+```
+
+---
+
+## 🚪 Logout Flow
+
+```text
+POST /auth/logout
+  ↓
+Backend invalidates the session when possible
+  ↓
+Frontend clears HttpOnly cookies and local stores
+  ↓
+Redirect to /signin
+```
+
+Local stores reset on logout include auth, cart, and favorites.
+
+Main file:
+
+```text
+src/features/auth/hooks/useLogout.ts
+```
+
+---
+
+## 🛡️ Route Protection
+
+| Route type | Protection |
+|---|---|
+| Protected pages like `/profile` | server-side cookie check; redirect to `/signin?next=/profile` if missing or expired |
+| Guest-only pages like `/signin` and `/signup` | `RestrictRoute` redirects authenticated users away |
+
+The `?next=<path>` parameter preserves where the user wanted to go before login.
+
+---
+
+## 🔁 Proxy Behavior
+
+The proxy lives at:
+
+```text
+src/app/api/proxy/[...path]/route.ts
+```
+
+Responsibilities:
+
+- forward browser requests to the backend
+- forward the `cookie` header
+- avoid injecting JavaScript-readable `Authorization` tokens
+- preserve backend auth/session behavior
+
+---
+
+## ✅ Contributor Rules
+
+When changing auth code:
+
+- Do not store access or refresh tokens in `localStorage`, `sessionStorage`, Zustand, or React state.
+- Keep `HttpOnly` cookies as the session transport.
+- Keep `bootstrapClientSession()` + `getUserData()` as the source of truth for auth status.
+- Keep route redirects using `?next=` when login is required.
+- Update tests when login, logout, refresh, or route protection behavior changes.
+- Treat OAuth callback behavior as security-sensitive.
+
+---
+
+## 🧪 Suggested Test Coverage
+
+Auth changes should usually cover:
+
+- anonymous user redirects from protected pages
+- authenticated user redirects away from guest-only pages
+- login success
+- login failure
+- logout clears local state
+- refresh after `401`
+- Google callback success/failure if touched
+- password reset / email confirmation if touched
+
+---
+
+## 🗂️ Key Files
+
+| File | Responsibility |
+|---|---|
+| `src/features/auth/store.ts` | auth status state machine |
+| `src/features/auth/api.ts` | login, registration, confirmation, and logout API calls |
+| `src/features/session/session.ts` | session bootstrap, refresh, clear, and store sync logic |
+| `src/features/session/useSessionBootstrap.ts` | starts session bootstrap on app startup |
+| `src/app/providers/AppProviders.tsx` | app provider wiring |
+| `src/app/providers/AuthInterceptor.tsx` | auto-refresh on `401` |
+| `src/features/auth/RestrictRoute.tsx` | guest-only route guard |
+| `src/shared/auth/cookies.ts` | server-side cookie helpers |
+| `src/app/api/proxy/[...path]/route.ts` | API proxy that forwards cookies |
+| `src/app/profile/page.tsx` | example protected page |
+| `src/app/auth/google/callback/page.tsx` | Google OAuth callback page |

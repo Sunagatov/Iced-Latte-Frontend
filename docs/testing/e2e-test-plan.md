@@ -1,127 +1,176 @@
-# E2E Test Plan — Iced Latte Frontend
+# 🎭 E2E Test Plan — Iced Latte Frontend
 
-**Baseline:** 78 tests across 12 files (all passing)
+This document tracks Playwright coverage for critical user flows in Iced Latte Frontend.
 
----
-
-## Coverage map
-
-| Area                           | File                     | Tests | Status  |
-| ------------------------------ | ------------------------ | ----- | ------- |
-| Home page loads                | `home.spec.ts`           | 1     | ✅ done |
-| Navigation / routing           | `navigation.spec.ts`     | 11    | ✅ done |
-| Auth (sign in / sign up)       | `auth.spec.ts`           | 4     | ✅ done |
-| Product catalog / sort         | `catalog.spec.ts`        | 5     | ✅ done |
-| Filter sidebar                 | `filters.spec.ts`        | 14    | ✅ done |
-| Search bar                     | `search.spec.ts`         | 7     | ✅ done |
-| Product detail page            | `product-detail.spec.ts` | 5     | ✅ done |
-| Cart page (basic)              | `cart.spec.ts`           | 5     | ✅ done |
-| Favourites page (basic)        | `favourites.spec.ts`     | 3     | ✅ done |
-| Cart + fav sync on login       | `sync.spec.ts`           | 6     | ✅ done |
-| Plus/minus/trash/heart buttons | `buttons.spec.ts`        | 13    | ✅ done |
-| Logged-in user flows           | `user-flows.spec.ts`     | 4     | ✅ done |
+> **Status note:** E2E files are actively evolving. Treat this as the intended coverage map and update it whenever tests are renamed, moved, added, or deleted.
 
 ---
 
-## Gaps — new tests to add
+## 🎯 Goals
 
-### 1. `checkout.spec.ts` — Checkout flow
+E2E tests should prove that the app works from a user's point of view:
 
-**Why:** Checkout is a critical conversion path with zero e2e coverage.
+- core pages load
+- navigation works
+- auth-sensitive routes behave correctly
+- cart and favorites flows sync correctly
+- checkout and orders behave safely
+- important errors and empty states are visible
 
-| #   | Test                                                              | Priority  | Status  |
-| --- | ----------------------------------------------------------------- | --------- | ------- |
-| 1   | Guest redirected to `/signin` when visiting `/checkout`           | 🔴 High   | ⬜ todo |
-| 2   | Logged-in user with empty cart sees empty-cart message / redirect | 🔴 High   | ⬜ todo |
-| 3   | Checkout form renders with cart summary                           | 🔴 High   | ⬜ todo |
-| 4   | Required fields validation — submit blocked when fields empty     | 🔴 High   | ⬜ todo |
-| 5   | Successful order submission → redirects to `/orders`              | 🔴 High   | ⬜ todo |
-| 6   | API error on submit → shows error message, stays on page          | 🟡 Medium | ⬜ todo |
-| 7   | Cart is cleared after successful order                            | 🟡 Medium | ⬜ todo |
+E2E tests should not duplicate every unit test. Use them for user journeys and integration behavior.
 
 ---
 
-### 2. `orders.spec.ts` — Order history
+## ▶️ How To Run
 
-**Why:** Orders page has status filters, expandable cards, and empty/error states — none tested.
+Start the app first:
 
-| #   | Test                                                              | Priority  | Status  |
-| --- | ----------------------------------------------------------------- | --------- | ------- |
-| 1   | Orders page shows list of orders                                  | 🔴 High   | ⬜ todo |
-| 2   | Empty state shown when no orders                                  | 🔴 High   | ⬜ todo |
-| 3   | Clicking order card expands item details                          | 🟡 Medium | ⬜ todo |
-| 4   | Status filter tabs filter orders correctly                        | 🟡 Medium | ⬜ todo |
-| 5   | API error shows retry button                                      | 🟡 Medium | ⬜ todo |
-| 6   | Clicking product name in expanded order navigates to product page | 🟢 Low    | ⬜ todo |
+```bash
+npm run dev
+```
 
----
+Run E2E tests:
 
-### 3. `profile.spec.ts` — User profile editing
+```bash
+npm run test:e2e
+```
 
-**Why:** Profile form has validation, save flow, and image upload — none tested.
+Run against a specific base URL:
 
-| #   | Test                                            | Priority  | Status  |
-| --- | ----------------------------------------------- | --------- | ------- |
-| 1   | Profile page shows pre-filled user data         | 🔴 High   | ⬜ todo |
-| 2   | Editing first/last name and saving calls API    | 🔴 High   | ⬜ todo |
-| 3   | Validation error shown for invalid phone number | 🟡 Medium | ⬜ todo |
-| 4   | Save button disabled when form has errors       | 🟡 Medium | ⬜ todo |
-| 5   | API error on save shows error message           | 🟡 Medium | ⬜ todo |
+```bash
+BASE_URL=http://localhost:3000 npm run test:e2e
+```
 
----
+View report:
 
-### 4. `reviews.spec.ts` — Product reviews
-
-**Why:** Review form, star rating, and submit flow are untested.
-
-| #   | Test                                                            | Priority  | Status  |
-| --- | --------------------------------------------------------------- | --------- | ------- |
-| 1   | "Write a review" button redirects guest to `/signin`            | 🔴 High   | ⬜ todo |
-| 2   | Logged-in user sees review form after clicking "Write a review" | 🔴 High   | ⬜ todo |
-| 3   | Submit button disabled until rating + text both filled          | 🔴 High   | ⬜ todo |
-| 4   | Successful review submit adds review to list                    | 🟡 Medium | ⬜ todo |
-| 5   | Cancel button hides form and resets fields                      | 🟡 Medium | ⬜ todo |
-| 6   | Character counter updates as user types                         | 🟢 Low    | ⬜ todo |
+```bash
+npm run test:e2e:report
+```
 
 ---
 
-### 5. `auth-edge.spec.ts` — Auth edge cases
+## ✅ Coverage Map
 
-**Why:** Password reset, email confirmation, and Google OAuth flows are untested.
-
-| #   | Test                                                      | Priority  | Status  |
-| --- | --------------------------------------------------------- | --------- | ------- |
-| 1   | Forgot password form submits email and shows confirmation | 🔴 High   | ⬜ todo |
-| 2   | Reset password form validates new password and confirms   | 🔴 High   | ⬜ todo |
-| 3   | Sign-in form shows validation error for empty fields      | 🟡 Medium | ⬜ todo |
-| 4   | Sign-up form shows validation error for weak password     | 🟡 Medium | ⬜ todo |
-| 5   | Confirm registration page renders correctly               | 🟢 Low    | ⬜ todo |
-
----
-
-### 6. `favourites-page.spec.ts` — Favourites page interactions
-
-**Why:** Current `favourites.spec.ts` only tests the heart toggle on the catalog. The `/favourites` page itself (remove, empty state, navigate to product) is untested.
-
-| #   | Test                                                           | Priority  | Status  |
-| --- | -------------------------------------------------------------- | --------- | ------- |
-| 1   | Favourites page shows saved products                           | 🔴 High   | ⬜ todo |
-| 2   | Removing a favourite from the favourites page updates the list | 🔴 High   | ⬜ todo |
-| 3   | Empty state shown when all favourites removed                  | 🟡 Medium | ⬜ todo |
-| 4   | Clicking a favourite product navigates to product detail       | 🟢 Low    | ⬜ todo |
+| Area | Example files | Priority | Notes |
+|---|---|---|---|
+| Smoke / home | `smoke.e2e.ts`, `home` tests | 🔴 High | app loads and basic shell renders |
+| Navigation | navigation tests | 🔴 High | header links, route transitions |
+| Auth guest flows | `auth.guest.ts` | 🔴 High | sign-in, sign-up, protected redirects |
+| Catalog | `catalog.e2e.ts` | 🔴 High | product list, sort/filter/search |
+| Product detail | `product.e2e.ts` | 🔴 High | product details, reviews entry points |
+| Cart | `cart.e2e.ts` | 🔴 High | add/remove/update cart items |
+| Favorites | `favourites.e2e.ts` | 🟡 Medium | toggle, list page, empty state |
+| Checkout | `checkout.e2e.ts` | 🔴 High | protected route, form, submit behavior |
+| Orders | `profile-orders.e2e.ts` | 🟡 Medium | order history and order states |
+| Profile | `profile-orders.e2e.ts`, profile tests | 🟡 Medium | profile display/edit behavior |
 
 ---
 
-## Progress summary
+## 🔴 Critical Flows
 
-| File                      | Tests planned | Done  | Remaining |
-| ------------------------- | ------------- | ----- | --------- |
-| `checkout.spec.ts`        | 7             | 0     | 7         |
-| `orders.spec.ts`          | 6             | 0     | 6         |
-| `profile.spec.ts`         | 5             | 0     | 5         |
-| `reviews.spec.ts`         | 6             | 0     | 6         |
-| `auth-edge.spec.ts`       | 5             | 0     | 5         |
-| `favourites-page.spec.ts` | 4             | 0     | 4         |
-| **Total new**             | **33**        | **0** | **33**    |
+These should stay covered before releases.
 
-**Overall:** 78 existing + 33 planned = **111 target tests**
+### Auth
+
+- guest can open sign-in page
+- protected page redirects guest to `/signin?next=...`
+- authenticated user is not sent to guest-only pages
+- logout clears local user/cart/favorites state
+
+### Catalog and product detail
+
+- home/catalog loads products
+- search/filter/sort changes visible products
+- product card links to detail page
+- product detail page renders product data
+
+### Cart
+
+- user can add product to cart
+- user can increase/decrease quantity
+- user can remove item
+- cart badge and cart page stay in sync
+
+### Checkout
+
+- guest is redirected to sign-in
+- empty cart state is handled
+- required fields block submission
+- successful submit reaches the expected next page
+- API error is shown without losing user input
+
+### Favorites
+
+- favorite toggle updates UI
+- favorites page shows saved products
+- removing favorite updates list and empty state
+
+---
+
+## 🟡 Important Edge Cases
+
+Add or keep coverage when touching these areas:
+
+- expired session during API call
+- backend unavailable
+- empty product list
+- empty orders list
+- invalid reset-password token
+- email confirmation failure
+- checkout API failure
+- slow network / loading states
+
+---
+
+## 🧪 Test Data Rules
+
+- Prefer stable seed users from the backend local/dev profile.
+- Use `olivia@example.com / p@ss1logic11` when a normal logged-in user is needed.
+- Keep tests independent; one test should not require state created by a previous test.
+- Clean up browser state between tests.
+- Prefer page objects/helpers for repeated flows.
+
+---
+
+## 🧱 Test Structure
+
+Recommended shape:
+
+```text
+e2e/
+├── helpers/          # shared test helpers
+├── pages/            # page objects
+├── auth.guest.ts
+├── cart.e2e.ts
+├── catalog.e2e.ts
+├── checkout.e2e.ts
+├── favourites.e2e.ts
+├── product.e2e.ts
+└── profile-orders.e2e.ts
+```
+
+Keep helpers boring and explicit. Avoid hiding important assertions inside overly clever abstractions.
+
+---
+
+## ✅ Definition of Done for E2E Changes
+
+Before merging E2E changes:
+
+- tests pass locally
+- selectors are stable and user-oriented where possible
+- waits are based on UI/network conditions, not arbitrary sleeps
+- failures produce useful traces/screenshots
+- test names describe user behavior
+- docs are updated if files or scenarios are renamed
+
+---
+
+## 📌 Maintenance Notes
+
+When E2E files are renamed or split:
+
+- update this plan
+- update README or contributing docs if commands change
+- remove stale references to old `.spec.ts` names
+- keep CI and local commands aligned
