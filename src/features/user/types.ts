@@ -5,6 +5,7 @@ export interface UserData {
   phoneNumber?: string | null
   email: string
   avatarLink?: string
+  oauthUser?: boolean
   address: {
     country?: string | null
     city?: string | null

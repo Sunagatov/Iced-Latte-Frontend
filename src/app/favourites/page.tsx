@@ -1,9 +1,5 @@
-import SyncFav from '@/features/favorites/components/SyncFav/SyncFav'
+import FavouritesPage from '@/features/favorites/components/FavouritesPage'
 
-const FavPage = () => {
-  return (
-    <SyncFav />
-  )
+export default function FavoritesPage() {
+  return <FavouritesPage />
 }
-
-export default FavPage

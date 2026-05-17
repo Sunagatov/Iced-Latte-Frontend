@@ -1,11 +1,32 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
+import { isTokenExpired } from '@/shared/auth/token'
+import { isHttpsFrontend, secureCookieSuffix } from '@/shared/config/runtime'
+import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
 
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
-const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
+const ALLOWED_QUERY_PARAM_RE = /^[a-zA-Z0-9_.~:@!$&'()*+,;=%[\]-]*$/
+const FORWARDED_HEADERS = ['X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID', 'Idempotency-Key']
+const PROXY_FORWARD_HEADERS: Array<[string, string]> = [
+  ['x-forwarded-for', 'X-Forwarded-For'],
+  ['x-forwarded-proto', 'X-Forwarded-Proto'],
+  ['x-real-ip', 'X-Real-IP'],
+]
+const AUTH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: isHttpsFrontend(),
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: 60 * 60 * 24,
+}
+
+type TokenPair = {
+  token: string
+  refreshToken: string
+}
 
 function sanitizePath(segments: string[]): string | null {
   const joined = segments.join('/')
@@ -13,14 +34,35 @@ function sanitizePath(segments: string[]): string | null {
   return ALLOWED_PATH_RE.test(joined) ? joined : null
 }
 
-function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+function sanitizeQueryString(params: URLSearchParams): string {
+  const safe = new URLSearchParams()
+
+  for (const [key, value] of params.entries()) {
+    if (
+      ALLOWED_QUERY_PARAM_RE.test(key) &&
+      ALLOWED_QUERY_PARAM_RE.test(value)
+    ) {
+      safe.append(key, value)
+    }
+  }
+  const qs = safe.toString()
+
+  return qs ? `?${qs}` : ''
+}
+
+function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+): Promise<Response> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer))
+  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  )
 }
 
-function forwardHeaders(request: NextRequest): HeadersInit {
+function forwardHeaders(request: NextRequest, path: string): HeadersInit {
   const headers: Record<string, string> = {}
   const contentType = request.headers.get('Content-Type')
 
@@ -30,6 +72,31 @@ function forwardHeaders(request: NextRequest): HeadersInit {
     const value = request.headers.get(name)
 
     if (value) headers[name] = value
+  }
+
+  for (const [sourceName, targetName] of PROXY_FORWARD_HEADERS) {
+    const value = request.headers.get(sourceName)
+
+    if (value) headers[targetName] = value
+  }
+
+  const accessToken = request.cookies.get(COOKIE_NAMES.access)?.value
+  const refreshToken = request.cookies.get(COOKIE_NAMES.refresh)?.value
+
+  if (path === 'auth/refresh') {
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      headers['Authorization'] = `Bearer ${refreshToken}`
+    }
+
+    return headers
+  }
+
+  if (accessToken && !isTokenExpired(accessToken)) {
+    headers['Authorization'] = `Bearer ${accessToken}`
+  }
+
+  if (path === 'auth/logout' && refreshToken) {
+    headers['X-Refresh-Token'] = refreshToken
   }
 
   return headers
@@ -45,75 +112,168 @@ async function readBody(request: NextRequest): Promise<BodyInit | undefined> {
   }
 }
 
+function isTokenPair(data: unknown): data is TokenPair {
+  if (typeof data !== 'object' || data === null) return false
+  const d = data as Record<string, unknown>
+
+  return typeof d['token'] === 'string' && typeof d['refreshToken'] === 'string'
+}
+
+function setAuthCookies(
+  response: Response,
+  nextResponse: NextResponse,
+  data: unknown,
+  path: string,
+): void {
+  if (path !== 'auth/refresh' || !isTokenPair(data)) {
+    const setCookie = response.headers.get('set-cookie')
+
+    if (setCookie) nextResponse.headers.set('set-cookie', setCookie)
+
+    return
+  }
+
+  nextResponse.headers.append(
+    'Set-Cookie',
+    `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
+  )
+  nextResponse.headers.append(
+    'Set-Cookie',
+    `refreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax${secureCookieSuffix()}`,
+  )
+
+  nextResponse.cookies.set(COOKIE_NAMES.access, data.token, AUTH_COOKIE_OPTIONS)
+  nextResponse.cookies.set(COOKIE_NAMES.refresh, data.refreshToken, AUTH_COOKIE_OPTIONS)
+}
+
+async function refreshTokens(refreshToken: string): Promise<TokenPair | null> {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${refreshToken}`, 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) return null
+
+    const data: unknown = await response.json()
+
+    return isTokenPair(data) ? data : null
+  } catch {
+    return null
+  }
+}
+
 async function handleProxy(
   request: NextRequest,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string[],
 ) {
-  const pathString = path.join('/')
-
-  if (method === 'POST' && pathString.includes('telemetry')) {
-    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
-  }
-
   const safePath = sanitizePath(path)
 
   if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
 
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
+  const apiUrl = `${API_BASE_URL}/${safePath}${sanitizeQueryString(url.searchParams)}`
   const body = method === 'GET' ? undefined : await readBody(request)
+  const headers = forwardHeaders(request, safePath)
+
+  // If no Authorization was set and a valid refresh token exists, refresh inline
+  let refreshedTokens: TokenPair | null = null
+  const hdrs = headers as Record<string, string>
+
+  if (safePath !== 'auth/refresh' && !hdrs['Authorization']) {
+    const refreshToken = request.cookies.get(COOKIE_NAMES.refresh)?.value
+
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      refreshedTokens = await refreshTokens(refreshToken)
+
+      if (refreshedTokens) {
+        hdrs['Authorization'] = `Bearer ${refreshedTokens.token}`
+      }
+    }
+  }
 
   try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method,
-      headers: forwardHeaders(request),
-      body,
-    })
+    const response = await fetchWithTimeout(apiUrl, { method, headers, body })
     const contentType = response.headers.get('content-type') ?? ''
     const rawBody = await response.text()
 
-    const data: unknown = contentType.includes('application/json') && rawBody
-      ? (JSON.parse(rawBody) as unknown)
-      : rawBody
+    const data: unknown =
+      (contentType.includes('application/json') ||
+        contentType.includes('application/problem+json')) &&
+      rawBody
+        ? (JSON.parse(rawBody) as unknown)
+        : rawBody
 
-    if (!response.ok) return createCorsResponse(data, response.status)
+    if (!response.ok) {
+      const errorResponse = createCorsResponse(data, response.status)
+      const retryAfter = response.headers.get('Retry-After')
 
-    return createCorsResponse(data)
+      if (retryAfter) errorResponse.headers.set('Retry-After', retryAfter)
+
+      return errorResponse
+    }
+
+    const nextResponse = createCorsResponse(data, response.status)
+
+    setAuthCookies(response, nextResponse, data, safePath)
+
+    // Persist refreshed tokens as cookies so subsequent requests use them
+    if (refreshedTokens) {
+      nextResponse.cookies.set(COOKIE_NAMES.access, refreshedTokens.token, AUTH_COOKIE_OPTIONS)
+      nextResponse.cookies.set(COOKIE_NAMES.refresh, refreshedTokens.refreshToken, AUTH_COOKIE_OPTIONS)
+    }
+
+    return nextResponse
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503)
   }
 }
 
-export async function OPTIONS() {
-  return handleOptions()
+export function OPTIONS(request: NextRequest) {
+  return handleOptions(request)
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'GET', path)
 }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'POST', path)
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'PUT', path)
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'PATCH', path)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   const { path } = await params
 
   return handleProxy(request, 'DELETE', path)

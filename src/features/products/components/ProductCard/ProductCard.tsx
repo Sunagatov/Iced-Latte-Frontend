@@ -1,18 +1,24 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import { ROUTES } from '@/shared/config/routes'
 import { memo } from 'react'
-import productImg from '@/../public/coffee.png'
-import CircleAddBtn from '@/shared/components/Buttons/CircleAddBtn/CircleAddBtn'
-import getImgUrl from '@/shared/utils/getImgUrl'
-import { useCartStore } from '@/features/cart/store'
-import { useAuthStore } from '@/features/auth/store'
-import { useFavouritesStore } from '@/features/favorites/store'
+import {
+  MAX_CART_ITEM_QUANTITY,
+  useCartStore,
+} from '@/features/cart/cartStore'
+import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { IProduct } from '@/features/products/types'
-interface ICardProps { product: IProduct; priority?: boolean }
-import ProductRating from '@/features/products/components/ProductRating/ProductRating'
-import Counter from '@/shared/components/Counter/Counter'
+interface ICardProps {
+  product: IProduct
+  priority?: boolean
+}
+import ProductRating from '@/features/products/components/ProductRating'
+import ProductImage from '@/shared/ui/ProductImage'
+import Counter from '@/shared/ui/Counter'
 
-export default memo(function ProductCard({ product, priority = false }: Readonly<ICardProps>) {
+export default memo(function ProductCard({
+  product,
+  priority = false,
+}: Readonly<ICardProps>) {
   const {
     id,
     name,
@@ -25,6 +31,9 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   } = product
 
   const cartItems = useCartStore((state) => state.itemsIds)
+  const pendingProductIds: Set<string> = useCartStore(
+    (state) => state.pendingProductIds,
+  )
   const addToCart = useCartStore((state) => state.add)
   const removeFromCart = useCartStore((state) => state.remove)
   const removeFullProduct = useCartStore((state) => state.removeFullProduct)
@@ -32,77 +41,115 @@ export default memo(function ProductCard({ product, priority = false }: Readonly
   const productCartQuantity = cartItems?.find(
     (cartItem) => cartItem.productId === id,
   )?.productQuantity
+  const isCartPending = pendingProductIds.has(id)
 
-  const token = useAuthStore((state) => state.token)
+  const { toggleFavourite, pendingIds } = useFavouritesStore()
+  const favouriteIds: string[] = useFavouritesStore((s) => s.favouriteIds)
 
-  const { addFavourite, removeFavourite, favourites, favouriteIds } =
-    useFavouritesStore()
-
-  const isFavourited = token ? favourites?.some((fav) => fav.id === id) : favouriteIds.includes(id)
+  const isFavourited = favouriteIds.includes(id)
+  const isPending = pendingIds.has(id)
 
   const handleButtonClick = () => {
-    if (isFavourited) removeFavourite(id, token).catch(() => {})
-    else addFavourite(id, token).catch(() => {})
+    void toggleFavourite(id)
   }
 
   return (
     <li
       data-testid="product-card"
-      className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl border border-black/6 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:min-w-[190px]"
+      className="group relative flex w-full max-w-[240px] flex-col justify-self-center overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)] sm:min-w-[190px]"
     >
-      {/* Image */}
-      <Link href={`/product/${id}`} className="flex flex-1 flex-col">
-        <div className="relative h-[200px] w-full bg-[#F7F7F9] sm:h-[220px]">
-          <Image
-            src={getImgUrl(productFileUrl, productImg)}
-            alt={name}
-            style={{ objectFit: 'contain', padding: '16px' }}
-            fill={true}
-            sizes="(max-width: 768px) 50vw, 25vw"
-            priority={priority}
-          />
-          {/* Heart button — frosted glass top-right */}
-          <button
-            onClick={(e) => { e.preventDefault(); handleButtonClick() }}
-            data-testid="favourite-btn"
-            data-active={isFavourited ? 'true' : 'false'}
-            className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-sm transition-all outline-none focus:outline-none ${
-              isFavourited
-                ? 'bg-red-500/90 text-white'
-                : 'bg-white/70 text-gray-400 hover:bg-white hover:text-red-400'
-            }`}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavourited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
+      <div className="relative">
+        <div className="relative aspect-[4/5] w-full overflow-hidden">
+          <Link href={ROUTES.product(id)} className="relative block h-full w-full">
+            <ProductImage
+              productFileUrl={productFileUrl}
+              alt={name}
+              style={{ objectFit: 'contain', padding: '12px' }}
+              fill={true}
+              sizes="(max-width: 768px) 50vw, 25vw"
+              loading={priority ? 'eager' : 'lazy'}
+              className="transition-transform duration-300 group-hover:scale-105"
+            />
+          </Link>
         </div>
 
-        {/* Info */}
-        <div className="flex flex-1 flex-col gap-2 px-3 pb-3 pt-3">
+        <button
+          aria-busy={isPending}
+          aria-label={
+            isFavourited ? 'Remove from favourites' : 'Add to favourites'
+          }
+          aria-pressed={isFavourited}
+          className={`focus-visible:ring-brand-solid absolute top-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 ${
+            isFavourited
+              ? 'bg-brand-solid text-white animate-[heart-pop_0.3s_ease-out]'
+              : 'bg-white/80 text-black/40 hover:text-brand'
+          }`}
+          data-active={isFavourited ? 'true' : 'false'}
+          data-testid="favourite-btn"
+          disabled={isPending}
+          onClick={handleButtonClick}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill={isFavourited ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+      </div>
+
+      <Link href={ROUTES.product(id)} className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col gap-1 px-4 pt-3 pb-2">
+          <h2 className="text-primary line-clamp-2 text-sm leading-snug font-semibold">
+            {name}
+          </h2>
+          <p className="text-[11px] text-black/40">
+            {[brandName, sellerName].filter(Boolean).join(' · ')}
+          </p>
           <ProductRating rating={averageRating} reviewsCount={reviewsCount} />
-          <h2 className="line-clamp-2 text-sm font-semibold leading-tight text-primary sm:text-base">{name}</h2>
-          <p className="text-xs text-secondary">{brandName} · {sellerName}</p>
         </div>
       </Link>
 
-      {/* Price row */}
-      <div className="flex items-center justify-between border-t border-black/5 px-3 py-2.5">
-        <p data-testid="product-price" className="text-base font-bold text-primary">${price}</p>
+      <div className="flex items-center justify-between px-4 pb-3.5">
+        <p
+          data-testid="product-price"
+          className="text-base font-bold text-brand"
+        >
+          {price.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          })}
+        </p>
         {productCartQuantity ? (
           <Counter
             theme="light"
-            className={'h-8 gap-1 px-1 text-[12px] sm:text-M'}
+            className={'sm:text-M h-7 gap-1 px-1 text-[11px]'}
             count={productCartQuantity}
-            removeProduct={() => productCartQuantity === 1 ? removeFullProduct(id) : removeFromCart(id)}
+            disabled={isCartPending}
+            maxCount={MAX_CART_ITEM_QUANTITY}
+            removeProduct={() =>
+              productCartQuantity === 1
+                ? removeFullProduct(id)
+                : removeFromCart(id)
+            }
             addProduct={() => addToCart(id)}
           />
         ) : (
-          <CircleAddBtn
-            className="h-8 w-8 bg-brand-solid hover:bg-brand-solid-hover focus:bg-brand-solid active:bg-brand-solid sm:h-9 sm:w-9"
-            iconClassName="h-3 w-3 sm:h-4 sm:w-4"
+          <button
+            data-testid="add-to-cart-circle-btn"
+            disabled={isCartPending}
             onClick={() => addToCart(id)}
-          />
+            className="flex items-center gap-1 rounded-full border border-brand-solid/15 px-3 py-1.5 text-[11px] font-medium text-brand transition hover:bg-brand-solid hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Add
+          </button>
         )}
       </div>
     </li>

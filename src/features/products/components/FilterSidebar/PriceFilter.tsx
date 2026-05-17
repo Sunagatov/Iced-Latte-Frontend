@@ -1,117 +1,104 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { filterProductsByPriceSchema } from '@/features/products/validation'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useProductFiltersStore } from '@/features/products/store'
-import * as yup from 'yup'
-type IProductPriceFilter = yup.InferType<typeof filterProductsByPriceSchema>
 import FiltersGroupTitle from '@/features/products/components/FilterSidebar/FiltersGroupTitle'
+import { PRICE_FILTER_DEBOUNCE_MS } from '@/shared/config/constants'
 
-const getDecimalFromString = (input: string) => {
-  const cleanedValue = input.replace(/[^\d.]/g, '')
+const toDecimal = (input: string) => {
+  const cleaned = input.replace(/[^\d.]/g, '')
+  const dot = cleaned.indexOf('.')
 
-  const firstDotIndex = cleanedValue.indexOf('.')
+  if (dot === 0) return '0.' + cleaned.replace(/\D/g, '')
+  if (dot !== -1)
+    return cleaned.slice(0, dot + 1) + cleaned.slice(dot + 1).replace(/\./, '')
 
-  let resultValue = cleanedValue
-
-  if (firstDotIndex === 0) {
-    resultValue = '0.' + cleanedValue.replace(/\D/g, '')
-  } else if (firstDotIndex !== -1) {
-    resultValue =
-      cleanedValue.slice(0, firstDotIndex + 1) +
-      cleanedValue.slice(firstDotIndex + 1).replace(/\./, '')
-  }
-
-  return resultValue
+  return cleaned
 }
 
 const PriceFilter = () => {
-  const { register, setValue } = useForm<IProductPriceFilter>({
-    resolver: yupResolver(filterProductsByPriceSchema),
-    defaultValues: {
-      fromPriceInput: '',
-      toPriceInput: '',
-    },
-  })
-
-  const { updateProductFiltersStore, toPriceFilter, fromPriceFilter } =
-    useProductFiltersStore()
-
-  useEffect(() => {
-    setValue('toPriceInput', toPriceFilter)
-  }, [toPriceFilter, setValue])
-
-  useEffect(() => {
-    setValue('fromPriceInput', fromPriceFilter)
-  }, [fromPriceFilter, setValue])
-
-  const [timerId, setTimerId] = useState<null | ReturnType<typeof setTimeout>>(
-    null,
+  const setFilters = useProductFiltersStore((s) => s.setFilters)
+  const toPriceFilter: string = useProductFiltersStore((s) => s.toPriceFilter)
+  const fromPriceFilter: string = useProductFiltersStore(
+    (s) => s.fromPriceFilter,
   )
 
-  const handleFromInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const decimalInput = getDecimalFromString(event.target.value)
+  const [fromInput, setFromInput] = useState(fromPriceFilter)
+  const [toInput, setToInput] = useState(toPriceFilter)
+  const [rangeError, setRangeError] = useState('')
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-    setValue('fromPriceInput', decimalInput)
+  // Sync local state when store is reset externally
+  useEffect(() => {
+    setFromInput(fromPriceFilter)
+  }, [fromPriceFilter])
+  useEffect(() => {
+    setToInput(toPriceFilter)
+  }, [toPriceFilter])
 
-    handleSubmitWithDelay(() =>
-      updateProductFiltersStore({
-        fromPriceFilter: getDecimalFromString(event.target.value),
-      }),
-    )
+  const scheduleUpdate = (from: string, to: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      const fromNum = parseFloat(from)
+      const toNum = parseFloat(to)
+
+      if (from && to && !isNaN(fromNum) && !isNaN(toNum) && fromNum > toNum) {
+        setRangeError('Min price cannot be greater than max price')
+
+        return
+      }
+      setRangeError('')
+      setFilters({ fromPriceFilter: from, toPriceFilter: to })
+    }, PRICE_FILTER_DEBOUNCE_MS)
   }
 
-  const handleToInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const decimalInput = getDecimalFromString(event.target.value)
+  const handleFromChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const val = toDecimal(e.target.value)
 
-    setValue('toPriceInput', decimalInput)
-
-    handleSubmitWithDelay(() =>
-      updateProductFiltersStore({
-        toPriceFilter: getDecimalFromString(event.target.value),
-      }),
-    )
+    setFromInput(val)
+    setRangeError('')
+    scheduleUpdate(val, toInput)
   }
 
-  const handleSubmitWithDelay = (callback: () => void) => {
-    if (timerId) clearTimeout(timerId)
+  const handleToChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const val = toDecimal(e.target.value)
 
-    const newTimerId = setTimeout(() => {
-      callback()
-    }, 1000)
-
-    setTimerId(newTimerId)
+    setToInput(val)
+    setRangeError('')
+    scheduleUpdate(fromInput, val)
   }
 
   return (
     <div>
-      <FiltersGroupTitle title="Price, $" />
-      <form className="flex gap-2">
+      <FiltersGroupTitle title="Price" />
+      <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/40">from</span>
+          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/30">$</span>
           <input
+            className="text-primary focus:border-black/30 h-9 w-full rounded-lg border border-black/8 bg-white pr-3 pl-6 text-sm outline-none placeholder:text-black/30"
             id="from-price-input"
-            {...register('fromPriceInput')}
-            type="text"
+            onChange={handleFromChange}
             placeholder="Min"
-            onChange={handleFromInputChange}
-            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-10 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
-          />
-        </div>
-        <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/40">to</span>
-          <input
-            id="to-price-input"
-            {...register('toPriceInput')}
             type="text"
-            placeholder="Max"
-            onChange={handleToInputChange}
-            className="h-10 w-full rounded-lg border border-black/10 bg-white pl-7 pr-3 text-sm text-primary outline-none focus:border-brand-solid focus:ring-1 focus:ring-brand-solid placeholder:text-black/25"
+            value={fromInput}
           />
         </div>
-      </form>
+        <span className="text-black/20">—</span>
+        <div className="relative flex-1">
+          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/30">$</span>
+          <input
+            className="text-primary focus:border-black/30 h-9 w-full rounded-lg border border-black/8 bg-white pr-3 pl-6 text-sm outline-none placeholder:text-black/30"
+            id="to-price-input"
+            onChange={handleToChange}
+            placeholder="Max"
+            type="text"
+            value={toInput}
+          />
+        </div>
+      </div>
+      {rangeError && (
+        <p className="mt-1.5 text-xs text-red-500">{rangeError}</p>
+      )}
     </div>
   )
 }

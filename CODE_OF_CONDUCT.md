@@ -1,4 +1,6 @@
-# Contributor Covenant Code of Conduct
+# 🤝 Code of Conduct
+
+This project follows the Contributor Covenant. The goal is a practical, respectful engineering environment where contributors can ask questions, receive feedback, and improve without harassment or personal attacks.
 
 ## Our Pledge
 
@@ -60,7 +62,11 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-.
+the following contacts:
+
+- **Email:** [zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)
+- **Telegram:** [@lucky_1uck](https://t.me/lucky_1uck)
+
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

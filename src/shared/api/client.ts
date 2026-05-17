@@ -1,10 +1,10 @@
 import axios from 'axios'
-import { setupCache } from 'axios-cache-interceptor'
-import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
-import { useAuthStore } from '@/features/auth/store'
+import { setupCache, AxiosCacheInstance } from 'axios-cache-interceptor'
+import { getSessionId, generateTraceId } from '@/shared/auth/sessionTracing'
+import { API_TIMEOUT_SSR_MS, API_TIMEOUT_BROWSER_MS } from '@/shared/config/constants'
 
 const instance = axios.create({
-  timeout: typeof window === 'undefined' ? 5000 : 15000,
+  timeout: typeof window === 'undefined' ? API_TIMEOUT_SSR_MS : API_TIMEOUT_BROWSER_MS,
 })
 
 instance.interceptors.request.use((config) => {
@@ -18,13 +18,6 @@ instance.interceptors.request.use((config) => {
     config.url = `${baseUrl}/${path}`
   } else {
     config.url = `/api/proxy/${path}`
-
-    try {
-      const token = useAuthStore.getState().token
-
-      if (token) config.headers['Authorization'] = `Bearer ${token}`
-    } catch { /* store not yet initialized */ }
-
     config.headers['X-Session-ID'] = getSessionId()
     config.headers['X-Trace-ID'] = generateTraceId()
   }
@@ -38,4 +31,6 @@ instance.interceptors.request.use((config) => {
   return config
 })
 
-export const api = setupCache(instance, { cacheTakeover: false })
+export const api: AxiosCacheInstance = setupCache(instance, {
+  cacheTakeover: false,
+})

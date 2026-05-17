@@ -5,7 +5,7 @@ export interface Review {
   text: string | null
   createdAt: string | null
   userName: string | null
-  userLastName: string | null
+  userLastname: string | null
   isCurrentUserComment?: boolean
   likesCount: number
   dislikesCount: number

@@ -1,18 +1,18 @@
 'use client'
 
-import Button from '@/shared/components/Buttons/Button/Button'
-import ScrollUpBtn from '@/shared/components/Buttons/ScrollUpBtn/ScrollUpBtn'
+import ScrollUpBtn from '@/shared/ui/ScrollUpButton'
 import React from 'react'
 import {
   apiDeleteProductReview,
   apiRateProductReview,
 } from '@/features/reviews/api'
-import { useErrorHandler } from '@/shared/utils/apiError'
+import { useToastErrorHandler } from '@/shared/utils/apiError'
 import { Review as ReviewType } from '@/features/reviews/types'
-import Loader from '@/shared/components/Loader/Loader'
-import Review from '@/features/reviews/components/Review/Review'
+import Loader from '@/shared/ui/Loader'
+import Review from '@/features/reviews/components/Review'
 import { useAuthStore } from '@/features/auth/store'
 import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/shared/config/routes'
 
 interface IReviewsList {
   productId: string
@@ -35,58 +35,80 @@ const ReviewsList: React.FC<IReviewsList> = ({
   onReviewDeleted,
   onReviewRated,
 }) => {
-  const { token } = useAuthStore()
+  const isLoggedIn: boolean = useAuthStore((s) => s.isLoggedIn)
   const router = useRouter()
-  const { handleError } = useErrorHandler()
+  const { handleError } = useToastErrorHandler()
+  const [isPending, setIsPending] = React.useState(false)
 
-  const deleteReviewHandler = async (productReviewId: string): Promise<void> => {
+  const deleteReviewHandler = async (
+    productReviewId: string,
+  ): Promise<void> => {
+    if (isPending) return
+    setIsPending(true)
     try {
-      if (productReviewId) await apiDeleteProductReview(productReviewId, productId)
+      if (productReviewId)
+        await apiDeleteProductReview(productReviewId, productId)
       onReviewDeleted?.(productReviewId)
     } catch (error) {
       handleError(error)
+    } finally {
+      setIsPending(false)
     }
   }
 
   const handleRateReview = async (productReviewId: string, isLike: boolean) => {
+    if (isPending) return
+    setIsPending(true)
     try {
-      if (!token) {
-        router.push('/signin')
+      if (!isLoggedIn) {
+        router.push(ROUTES.signin)
 
         return
       }
-      const updated = await apiRateProductReview(productId, productReviewId, isLike)
+      const updated = await apiRateProductReview(
+        productId,
+        productReviewId,
+        isLike,
+      )
 
       onReviewRated?.(updated)
     } catch (error) {
       handleError(error)
+    } finally {
+      setIsPending(false)
     }
   }
 
   return (
     <>
       {userReview && (
-        <div className="mt-8 rounded-2xl border border-brand-solid/30 bg-brand-second/30 p-5">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-solid">Your review</div>
+        <div className="border-brand-solid/30 bg-brand-second/30 mt-8 rounded-2xl border p-5">
+          <div className="text-brand-solid mb-2 text-xs font-semibold tracking-wider uppercase">
+            Your review
+          </div>
           <Review
+            allowDelete
+            allowVoting={false}
+            deleteReview={deleteReviewHandler}
+            isPending={isPending}
             isUserReview
             review={userReview}
-            deleteReview={deleteReviewHandler}
-            rateReview={handleRateReview}
           />
         </div>
       )}
 
-      <ul className="mt-6 flex flex-col gap-3">
+      <ul className="mt-6 flex flex-col gap-4">
         {reviews.map((review) => (
           <li
-            className="rounded-2xl border border-primary/60 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="rounded-2xl border border-black/6 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
             key={review.productReviewId}
           >
             <Review
+              allowVoting
+              isPending={isPending}
               isUserReview={false}
-              review={review}
               rateReview={handleRateReview}
+              review={review}
             />
           </li>
         ))}
@@ -94,13 +116,15 @@ const ReviewsList: React.FC<IReviewsList> = ({
       </ul>
 
       {hasNextPage && !isFetchingNextPage && (
-        <Button
-          id="showmore-btn"
-          onClick={showMoreReviews}
-          className="mb-[94px] ml-auto mr-auto mt-6 flex w-[200px] items-center justify-center rounded-[47px] border-2 border-brand-solid bg-transparent text-[18px] font-semibold text-brand-solid shadow-sm hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95"
-        >
-          Show more
-        </Button>
+        <div className="mt-8 flex justify-center">
+          <button
+            id="showmore-btn"
+            onClick={showMoreReviews}
+            className="rounded-full border border-black/10 bg-white px-8 py-2.5 text-sm font-medium text-black/60 shadow-sm transition hover:border-black/20 hover:text-black/80 active:scale-[0.98]"
+          >
+            Show more reviews
+          </button>
+        </div>
       )}
       {isFetchingNextPage && (
         <div className={'mt-[24px] flex h-[54px] items-center'}>

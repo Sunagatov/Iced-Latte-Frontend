@@ -1,29 +1,32 @@
+import { isAxiosError } from 'axios'
 import { notFound } from 'next/navigation'
-import { IProduct } from '@/features/products/types'
-import { getProduct } from '@/features/products/api'
-import ProductWithReviews from '@/features/products/components/ProductWithReviews/ProductWithReviews'
+import ProductWithReviews from '@/features/products/components/ProductWithReviews'
+import { getProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/public'
 
-type ProductProps = {
+type ProductDetailsPageProps = {
   params: Promise<{
     id: string
   }>
 }
 
-async function getProductById(id: string): Promise<IProduct | null> {
+async function getProductById(id: string): Promise<IProduct> {
   try {
     return await getProduct(id)
-  } catch {
-    return null
+  } catch (err) {
+    if (isAxiosError(err) && [400, 404].includes(err.response?.status ?? 0)) {
+      notFound()
+    }
+
+    throw err
   }
 }
 
-export default async function Page({ params }: Readonly<ProductProps>) {
+export default async function ProductDetailsPage({
+  params,
+}: Readonly<ProductDetailsPageProps>) {
   const { id } = await params
   const product = await getProductById(id)
 
-  if (!product) notFound()
-
-  return (
-    <ProductWithReviews product={product} />
-  )
+  return <ProductWithReviews product={product} />
 }

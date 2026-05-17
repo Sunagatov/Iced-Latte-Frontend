@@ -1,0 +1,15 @@
+export const ROUTES = {
+  home: '/',
+  signin: '/signin',
+  signup: '/signup',
+  profile: '/profile',
+  cart: '/cart',
+  checkout: '/checkout',
+  orders: '/orders',
+  favourites: '/favourites',
+  confirmRegistration: '/confirm_registration',
+  resetpass: '/resetpass',
+  forgotpass: '/forgotpass',
+  termsOfUse: '/terms-of-use',
+  product: (id: string) => `/product/${id}`,
+} as const

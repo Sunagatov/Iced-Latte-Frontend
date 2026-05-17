@@ -1,18 +1,28 @@
 'use client'
+
 import { useState } from 'react'
-import { useProducts } from '@/features/products/hooks'
-import { sortOptions } from '@/features/products/constants'
-import Loader from '@/shared/components/Loader/Loader'
-import Dropdown from '@/shared/components/Dropdown/Dropdown'
-import ScrollUpBtn from '@/shared/components/Buttons/ScrollUpBtn/ScrollUpBtn'
+import { AxiosError } from 'axios'
+import useSWRInfinite from 'swr/infinite'
 import { twMerge } from 'tailwind-merge'
+import { useMediaQuery } from 'usehooks-ts'
+import { CATALOG_PAGE_SIZE_WIDE, CATALOG_PAGE_SIZE_DEFAULT } from '@/shared/config/constants'
 import FilterSidebar from '@/features/products/components/FilterSidebar/FilterSidebar'
-import MobileFilterSidebar from '@/features/products/components/FilterSidebar/MobileFilterSidebar'
 import Filters from '@/features/products/components/FilterSidebar/Filters'
-import { defaultProductsFilters, useProductFiltersStore } from '@/features/products/store'
-import { ISortParams } from '@/shared/types/ISortParams'
-import { IOption } from '@/shared/types/Dropdown'
-import ProductList from '../ProductList/ProductList'
+import MobileFilterSidebar from '@/features/products/components/FilterSidebar/MobileFilterSidebar'
+import { getAllProducts } from '@/features/products/api'
+import {
+  buildCatalogProductsPath,
+  flattenProductPages,
+} from '@/features/products/catalogQuery'
+import {
+  useProductFiltersStore,
+} from '@/features/products/store'
+import type { IProductsList } from '@/features/products/types'
+import ScrollUpBtn from '@/shared/ui/ScrollUpButton'
+import ActiveFilterChips from './ActiveFilterChips'
+import CatalogToolbar from './CatalogToolbar'
+import LoadMoreControl from './LoadMoreControl'
+import ProductList from '../ProductList'
 
 interface IProductCatalogProps {
   brands: string[]
@@ -23,58 +33,100 @@ export default function ProductCatalog({
   brands,
   sellers,
 }: Readonly<IProductCatalogProps>) {
-  const {
-    toPriceFilter,
-    fromPriceFilter,
-    selectedBrandOptions,
-    selectedSellerOptions,
-    selectedSortOption,
-    ratingFilter,
-    searchQuery,
-    updateProductFiltersStore,
-  } = useProductFiltersStore()
-
+  const toPriceFilter = useProductFiltersStore((state) => state.toPriceFilter)
+  const fromPriceFilter = useProductFiltersStore((state) => state.fromPriceFilter)
+  const selectedBrandOptions = useProductFiltersStore(
+    (state) => state.selectedBrandOptions,
+  )
+  const selectedSellerOptions = useProductFiltersStore(
+    (state) => state.selectedSellerOptions,
+  )
+  const selectedSortOption = useProductFiltersStore(
+    (state) => state.selectedSortOption,
+  )
+  const ratingFilter = useProductFiltersStore((state) => state.ratingFilter)
+  const searchQuery = useProductFiltersStore((state) => state.searchQuery)
+  const setFilters = useProductFiltersStore((state) => state.setFilters)
+  const resetFilters = useProductFiltersStore((state) => state.resetFilters)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [loadMoreError, setLoadMoreError] = useState(false)
+  const isWideScreen = useMediaQuery('(min-width: 1440px)')
+  const productSize = isWideScreen ? CATALOG_PAGE_SIZE_WIDE : CATALOG_PAGE_SIZE_DEFAULT
 
-  const {
-    data: products,
-    fetchNext,
-    hasNextPage,
-    isLoading,
-    isFetchingNextPage,
-    error,
-  } = useProducts(
-    selectedSortOption,
-    selectedBrandOptions,
-    selectedSellerOptions,
-    toPriceFilter,
-    fromPriceFilter,
-    ratingFilter,
-    searchQuery,
+  const { data, error, isLoading, size, setSize } = useSWRInfinite<
+    IProductsList,
+    AxiosError
+  >(
+    (pageIndex: number, previousData: IProductsList) => {
+      if (previousData && previousData.totalPages - 1 === previousData.page) {
+        return null
+      }
+
+      return buildCatalogProductsPath({
+        brandOptions: selectedBrandOptions,
+        fromPriceFilter,
+        pageIndex,
+        productSize,
+        ratingFilter,
+        searchQuery,
+        sellerOptions: selectedSellerOptions,
+        sortOption: selectedSortOption,
+        toPriceFilter,
+      })
+    },
+    (key: string) => getAllProducts(key),
+    {
+      initialSize: 1,
+      onErrorRetry: (retryError, _key, _config, revalidate, { retryCount }) => {
+        const status = retryError?.response?.status
+
+        if (status && status >= 400 && status !== 429) return
+        if (retryCount >= 3) return
+
+        const retryAfter = retryError?.response?.headers?.['retry-after']
+        const delay = status === 429 && retryAfter ? Number(retryAfter) * 1000 : 5000
+
+        setTimeout(() => {
+          void revalidate({ retryCount })
+        }, Number.isFinite(delay) ? delay : 5000)
+      },
+    },
   )
 
-  function handleSelectSortOption(selectedOption: IOption<ISortParams>) {
-    updateProductFiltersStore({
-      selectedSortOption: selectedOption,
-    })
-  }
+  const totalPages = data?.[0]?.totalPages ?? 0
+  const products = flattenProductPages(data)
+  const hasNextPage = size < totalPages
+  const isFetchingNextPage = Boolean(
+    size > 0 && data && typeof data[size - 1] === 'undefined',
+  )
 
-  const handleFilterClick = () => {
-    setIsMobileFilterOpen((prev) => !prev)
-  }
+  const hasPriceFilter = fromPriceFilter !== '' || toPriceFilter !== ''
+  const priceChipLabel =
+    fromPriceFilter && toPriceFilter
+      ? `$${fromPriceFilter} – $${toPriceFilter}`
+      : fromPriceFilter
+        ? `From $${fromPriceFilter}`
+        : `Up to $${toPriceFilter}`
+  const hasActiveChips =
+    Boolean(searchQuery) ||
+    selectedBrandOptions.length > 0 ||
+    selectedSellerOptions.length > 0 ||
+    hasPriceFilter ||
+    Boolean(ratingFilter)
 
-  const handleCloseMobileFilter = () => {
-    setIsMobileFilterOpen(false)
+  const handleLoadMore = (): void => {
+    setLoadMoreError(false)
+    setSize((currentSize) => currentSize + 1).then(
+      undefined,
+      () => setLoadMoreError(true),
+    )
   }
-
-  const isShowLoadMoreBtn = hasNextPage && !isFetchingNextPage
 
   return (
     <section
       id="catalog"
       className={twMerge(
-        'mx-4 mt-2 text-center min-[1124px]:mt-4',
-        !isShowLoadMoreBtn ? 'mb-14' : '',
+        'mx-4 mb-4 mt-2 scroll-mt-[120px] text-center min-[1124px]:mt-4',
       )}
     >
       <div
@@ -82,72 +134,42 @@ export default function ProductCatalog({
           'mx-auto flex max-w-[716px] flex-col items-center text-left min-[1100px]:max-w-[1014px] min-[1440px]:max-w-[1384px]'
         }
       >
-        <div className="sticky top-[64px] z-[9] mb-6 w-full bg-white/80 py-3 backdrop-blur-md">
-          {/* Row 1: title + filter btn + sort */}
-          <div className="flex items-center gap-3">
-            <div className="flex shrink-0 flex-col">
-              <p className="text-xs font-medium text-brand">Our Collection</p>
-              <h1 className="text-2XL font-bold tracking-tight text-primary min-[1124px]:text-3XL">
-                {searchQuery ? `"${searchQuery}"` : 'All Coffee'}
-              </h1>
-            </div>
-            <button
-              id="filter-btn"
-              onClick={handleFilterClick}
-              className="ml-auto block shrink-0 cursor-pointer text-L font-medium text-brand min-[1100px]:hidden"
-            >
-              Filter
-            </button>
-            {/* Mobile: compact icon-only sort */}
-            <Dropdown<ISortParams>
-              id="productDropdownMobile"
-              className="shrink-0 min-[1100px]:hidden"
-              options={sortOptions}
-              onChange={handleSelectSortOption}
-              selectedOption={selectedSortOption}
-              compact
+        <div className="sticky top-[56px] z-20 mb-6 w-full bg-[#F8F7F4] pt-3 pb-3 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
+          <CatalogToolbar
+            isMobileFilterOpen={isMobileFilterOpen}
+            onSelectSortOption={(selectedOption) =>
+              setFilters({ selectedSortOption: selectedOption })
+            }
+            onToggleMobileFilter={() =>
+              setIsMobileFilterOpen((previous) => !previous)
+            }
+            searchQuery={searchQuery}
+            selectedSortOption={selectedSortOption}
+            totalProducts={data?.[0]?.totalElements}
+          />
+
+          {hasActiveChips && (
+            <ActiveFilterChips
+              hasPriceFilter={hasPriceFilter}
+              priceChipLabel={priceChipLabel}
+              ratingFilter={ratingFilter}
+              searchQuery={searchQuery}
+              selectedBrandOptions={selectedBrandOptions}
+              selectedSellerOptions={selectedSellerOptions}
+              updateFilters={setFilters}
             />
-            {/* Desktop: full sort label */}
-            <Dropdown<ISortParams>
-              id="productDropdown"
-              className="hidden shrink-0 min-[1100px]:ml-auto min-[1100px]:block"
-              options={sortOptions}
-              onChange={handleSelectSortOption}
-              selectedOption={selectedSortOption}
-            />
-          </div>
-          {/* Row 2: active filter chips (only when present) */}
-          {(searchQuery || selectedBrandOptions.length > 0 || (ratingFilter && ratingFilter !== 'any')) && (
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              {searchQuery && (
-                <span className="flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
-                  🔍 {searchQuery}
-                  <button onClick={() => updateProductFiltersStore({ searchQuery: '' })} className="ml-1 hover:opacity-70">✕</button>
-                </span>
-              )}
-              {selectedBrandOptions.map((b) => (
-                <span key={b} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
-                  {b}
-                  <button onClick={() => updateProductFiltersStore({ selectedBrandOptions: selectedBrandOptions.filter((x) => x !== b) })} className="hover:opacity-70">✕</button>
-                </span>
-              ))}
-              {ratingFilter && ratingFilter !== 'any' && (
-                <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-primary">
-                  {'⭐'.repeat(Number(ratingFilter))}+
-                  <button onClick={() => updateProductFiltersStore({ ratingFilter: null })} className="hover:opacity-70">✕</button>
-                </span>
-              )}
-            </div>
           )}
         </div>
-        <div className=" flex w-full justify-center gap-x-8 ">
-          <FilterSidebar className=" sticky top-[180px] hidden max-h-[calc(100vh-150px)] overflow-y-auto min-[1100px]:block ">
+
+        <div className="flex w-full justify-center gap-x-8">
+          <FilterSidebar className="sticky top-[120px] hidden max-h-[calc(100vh-140px)] self-start overflow-y-auto min-[1100px]:block">
             <Filters brands={brands} sellers={sellers} />
           </FilterSidebar>
           {isMobileFilterOpen && (
             <MobileFilterSidebar
-              onClose={handleCloseMobileFilter}
-              className="overflow-y-auto  min-[1100px]:hidden"
+              id="mobile-filter-sidebar"
+              onClose={() => setIsMobileFilterOpen(false)}
+              className="overflow-y-auto min-[1100px]:hidden"
             >
               <Filters brands={brands} sellers={sellers} />
             </MobileFilterSidebar>
@@ -157,25 +179,17 @@ export default function ProductCatalog({
             error={error}
             isLoading={isLoading}
             searchQuery={searchQuery}
-            onResetFilters={() => updateProductFiltersStore(defaultProductsFilters)}
-            onSuggestionClick={(q) => updateProductFiltersStore({ searchQuery: q })}
+            onResetFilters={resetFilters}
+            onSuggestionClick={(query) => setFilters({ searchQuery: query })}
           />
         </div>
-        {isShowLoadMoreBtn && (
-          <button
-            className={'m-3 mt-[24px] h-[54px] w-[160px] rounded-[46px] border-2 border-brand-solid text-L font-semibold text-brand-solid shadow-sm transition-all duration-200 hover:bg-brand-solid hover:text-white hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'}
-            onClick={() => {
-              fetchNext().catch(() => {})
-            }}
-          >
-            Show more
-          </button>
-        )}
-        {isFetchingNextPage && (
-          <div className={'mt-[24px] flex h-[54px] items-center'}>
-            <Loader />
-          </div>
-        )}
+
+        <LoadMoreControl
+          isFetchingNextPage={isFetchingNextPage}
+          isVisible={hasNextPage && !isFetchingNextPage}
+          loadMoreError={loadMoreError}
+          onLoadMore={handleLoadMore}
+        />
         <ScrollUpBtn />
       </div>
     </section>

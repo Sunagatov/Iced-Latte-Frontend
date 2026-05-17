@@ -16,16 +16,35 @@ export default function AddressForm({ editing, onClose }: Props) {
   const { add, update } = useAddressStore()
   const overlayRef = useRef<HTMLDivElement>(null)
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<AddressFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<AddressFormData>({
     defaultValues: editing
-      ? { label: editing.label, country: editing.country, city: editing.city, line: editing.line, postcode: editing.postcode }
+      ? {
+        label: editing.label,
+        country: editing.country,
+        city: editing.city,
+        line: editing.line,
+        postcode: editing.postcode,
+      }
       : { label: '', country: '', city: '', line: '', postcode: '' },
   })
 
   useEffect(() => {
-    reset(editing
-      ? { label: editing.label, country: editing.country, city: editing.city, line: editing.line, postcode: editing.postcode }
-      : { label: '', country: '', city: '', line: '', postcode: '' })
+    reset(
+      editing
+        ? {
+          label: editing.label,
+          country: editing.country,
+          city: editing.city,
+          line: editing.line,
+          postcode: editing.postcode,
+        }
+        : { label: '', country: '', city: '', line: '', postcode: '' },
+    )
   }, [editing, reset])
 
   const onSubmit = async (data: AddressFormData) => {
@@ -40,18 +59,28 @@ export default function AddressForm({ editing, onClose }: Props) {
   return (
     <div
       ref={overlayRef}
-      onClick={(e) => { if (e.target === overlayRef.current) onClose() }}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      onClick={(e) => {
+        if (e.target === overlayRef.current) onClose()
+      }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm sm:items-center"
     >
-      <div className="w-full max-w-md rounded-2xl bg-primary shadow-2xl">
+      <div className="bg-primary w-full max-w-md rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
-          <h2 className="font-semibold text-primary">{editing ? 'Edit address' : 'Add new address'}</h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-secondary hover:bg-secondary">
+          <h2 className="text-primary font-semibold">
+            {editing ? 'Edit address' : 'Add new address'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-secondary hover:bg-secondary rounded-lg p-1.5"
+          >
             <RiCloseLine className="h-5 w-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 p-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-3 p-5"
+        >
           <Field label="Label (e.g. Home, Work)" error={errors.label?.message}>
             <input
               {...register('label', { required: 'Label is required' })}
@@ -76,7 +105,11 @@ export default function AddressForm({ editing, onClose }: Props) {
                 className={inputCls}
               />
             </Field>
-            <Field label="Postcode" error={errors.postcode?.message} className="flex-1">
+            <Field
+              className="flex-1"
+              error={errors.postcode?.message}
+              label="Postcode"
+            >
               <input
                 {...register('postcode', { required: 'Postcode is required' })}
                 placeholder="SW1A 1AA"
@@ -86,10 +119,17 @@ export default function AddressForm({ editing, onClose }: Props) {
           </div>
 
           <Field label="Country" error={errors.country?.message}>
-            <select {...register('country', { required: 'Country is required' })} className={inputCls}>
-              <option value="" disabled>Select country</option>
+            <select
+              {...register('country', { required: 'Country is required' })}
+              className={inputCls}
+            >
+              <option value="" disabled>
+                Select country
+              </option>
               {countries.map((c) => (
-                <option key={c.value} value={c.value}>{c.label}</option>
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
               ))}
             </select>
           </Field>
@@ -98,16 +138,20 @@ export default function AddressForm({ editing, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-black/10 py-2.5 text-sm font-medium text-secondary transition hover:bg-secondary"
+              className="text-secondary hover:bg-secondary flex-1 rounded-xl border border-black/10 py-2.5 text-sm font-medium transition"
             >
               Cancel
             </button>
             <button
-              type="submit"
+              className="bg-brand hover:bg-brand-solid-hover flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition disabled:opacity-60"
               disabled={isSubmitting}
-              className="flex-1 rounded-xl bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-solid-hover disabled:opacity-60"
+              type="submit"
             >
-              {isSubmitting ? 'Saving…' : editing ? 'Save changes' : 'Add address'}
+              {isSubmitting
+                ? 'Saving…'
+                : editing
+                  ? 'Save changes'
+                  : 'Add address'}
             </button>
           </div>
         </form>
@@ -116,9 +160,15 @@ export default function AddressForm({ editing, onClose }: Props) {
   )
 }
 
-const inputCls = 'w-full rounded-xl border border-black/10 bg-secondary px-3 py-2.5 text-sm text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20'
+const inputCls =
+  'w-full rounded-xl border border-black/10 bg-secondary px-3 py-2.5 text-sm text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20'
 
-function Field({ label, error, children, className }: {
+function Field({
+  label,
+  error,
+  children,
+  className,
+}: {
   label: string
   error?: string
   children: React.ReactNode
@@ -126,9 +176,9 @@ function Field({ label, error, children, className }: {
 }) {
   return (
     <div className={`flex flex-col gap-1 ${className ?? ''}`}>
-      <label className="text-xs font-medium text-secondary">{label}</label>
+      <label className="text-secondary text-xs font-medium">{label}</label>
       {children}
-      {error && <p className="text-xs text-negative">{error}</p>}
+      {error && <p className="text-negative text-xs">{error}</p>}
     </div>
   )
 }

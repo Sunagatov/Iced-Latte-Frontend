@@ -1,7 +1,10 @@
-import ResetPassForm from '@/features/auth/components/ResetPassword/ResetPassFrom'
+import { Suspense } from 'react'
+import ResetPassForm from '@/features/auth/components/ResetPassword/ResetPassForm'
 
-export default function ResetPass() {
+export default function ResetPasswordPage() {
   return (
-    <ResetPassForm />
+    <Suspense>
+      <ResetPassForm />
+    </Suspense>
   )
 }

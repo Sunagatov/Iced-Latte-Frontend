@@ -8,7 +8,7 @@ import FilterCheckboxGroup from '@/features/products/components/FilterSidebar/Fi
 import PriceFilter from '@/features/products/components/FilterSidebar/PriceFilter'
 import ProductRatingFilter, {
   StarsType,
-} from '@/features/products/components/ProductRatingFilter/ProductRatingFilter'
+} from '@/features/products/components/ProductRatingFilter'
 
 interface IFilters {
   brands: string[]
@@ -17,47 +17,44 @@ interface IFilters {
 export default function Filters({ sellers, brands }: Readonly<IFilters>) {
   const {
     selectedBrandOptions,
-    selectBrandOption,
-    removeBrandOption,
-    selectSellerOption,
     selectedSellerOptions,
     ratingFilter,
-    removeSellerOption,
-    updateProductFiltersStore,
+    setFilters,
+    resetFilters,
     fromPriceFilter,
     toPriceFilter,
   } = useProductFiltersStore()
 
   const handleBrandCheckboxChange = (value: string) => {
-    if (selectedBrandOptions.includes(value)) {
-      removeBrandOption(value)
-    } else {
-      selectBrandOption(value)
-    }
+    setFilters({
+      selectedBrandOptions: selectedBrandOptions.includes(value)
+        ? selectedBrandOptions.filter((option) => option !== value)
+        : [...selectedBrandOptions, value],
+    })
   }
 
   const handleSellerCheckboxChange = (value: string) => {
-    if (selectedSellerOptions.includes(value)) {
-      removeSellerOption(value)
-    } else {
-      selectSellerOption(value)
-    }
+    setFilters({
+      selectedSellerOptions: selectedSellerOptions.includes(value)
+        ? selectedSellerOptions.filter((option) => option !== value)
+        : [...selectedSellerOptions, value],
+    })
   }
 
   const resetSelectedBrandsHandler = () => {
-    updateProductFiltersStore({
+    setFilters({
       selectedBrandOptions: defaultProductsFilters.selectedBrandOptions,
     })
   }
 
   const resetSelectedSellerHandler = () => {
-    updateProductFiltersStore({
+    setFilters({
       selectedSellerOptions: defaultProductsFilters.selectedSellerOptions,
     })
   }
 
-  const ratingFilterChangeHandler = (value: null | 'any' | StarsType) => {
-    updateProductFiltersStore({ ratingFilter: value })
+  const ratingFilterChangeHandler = (value: null | StarsType) => {
+    setFilters({ ratingFilter: value })
   }
 
   const hasActiveFilters =
@@ -68,22 +65,27 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
     toPriceFilter !== ''
 
   return (
-    <div className={'flex flex-col divide-y divide-black/6'}>
+    <div className={'flex flex-col gap-6'}>
       {hasActiveFilters && (
-        <div className="pb-3">
+        <div>
           <button
-            onClick={() => updateProductFiltersStore(defaultProductsFilters)}
-            className="text-xs font-medium text-brand-solid hover:opacity-70"
+            onClick={resetFilters}
+            className="text-[12px] font-medium text-brand hover:underline"
           >
-            ✕ Reset all filters
+            Reset all filters
           </button>
         </div>
       )}
-      <div className="py-4"><PriceFilter /></div>
-      <div className="py-4">
-        <ProductRatingFilter onChange={ratingFilterChangeHandler} selectedOption={ratingFilter} />
+      <div>
+        <PriceFilter />
       </div>
-      <div className="py-4">
+      <div>
+        <ProductRatingFilter
+          onChange={ratingFilterChangeHandler}
+          selectedOption={ratingFilter}
+        />
+      </div>
+      <div className="border-t border-black/[0.06] pt-5">
         <FilterCheckboxGroup
           selectedItems={selectedBrandOptions}
           items={brands}
@@ -92,7 +94,7 @@ export default function Filters({ sellers, brands }: Readonly<IFilters>) {
           onReset={resetSelectedBrandsHandler}
         />
       </div>
-      <div className="py-4">
+      <div className="border-t border-black/[0.06] pt-5">
         <FilterCheckboxGroup
           selectedItems={selectedSellerOptions}
           items={sellers}

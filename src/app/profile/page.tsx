@@ -1,9 +1,9 @@
-import FiledProfile from '@/features/user/components/FilledProfile/FiledProfile'
+import ProfileScreen from '@/features/user/components/profile/ProfileScreen'
+import { requireRecoverableSession } from '@/shared/auth/guards'
+import { ROUTES } from '@/shared/config/routes'
 
-const ProfilePage = () => {
-  return (
-    <FiledProfile />
-  )
+export default async function ProfilePage() {
+  await requireRecoverableSession(ROUTES.profile)
+
+  return <ProfileScreen />
 }
-
-export default ProfilePage
