@@ -5,6 +5,7 @@ import {
   mergeGuestCartIntoBackend,
 } from '@/features/cart/cart.mutations'
 import type { ICartItem } from '@/features/cart/cartTypes'
+import { normalizeCartItems } from '@/features/cart/utils/cartUtils'
 import {
   setCartError,
   setCartItems,
@@ -67,7 +68,7 @@ export async function syncCartStoreWithSession(
   }
 
   if (!get().isSync && get().itemsIds.length > 0) {
-    await mergeGuestCartIntoBackend(set, get().itemsIds)
+    await mergeGuestCartIntoBackend(set, normalizeCartItems(get().itemsIds))
 
     return
   }
@@ -119,7 +120,8 @@ async function loadGuestCart(set: StoreSet, get: StoreGet): Promise<void> {
   set({ status: 'loading', lastError: null })
 
   try {
-    const ids = get().itemsIds.map((item) => item.productId)
+    const itemsIds = normalizeCartItems(get().itemsIds)
+    const ids = itemsIds.map((item) => item.productId)
 
     if (ids.length === 0) {
       set({
@@ -138,7 +140,7 @@ async function loadGuestCart(set: StoreSet, get: StoreGet): Promise<void> {
     const cartItems: ICartItem[] = productList.map((item) => ({
       id: item.id,
       productInfo: { ...item },
-      productQuantity: get().itemsIds.find(
+      productQuantity: itemsIds.find(
         (cartItem) => cartItem.productId === item.id,
       )!.productQuantity,
     }))

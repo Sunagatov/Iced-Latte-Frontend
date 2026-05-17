@@ -1,7 +1,10 @@
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import { memo } from 'react'
-import { useCartStore } from '@/features/cart/cartStore'
+import {
+  MAX_CART_ITEM_QUANTITY,
+  useCartStore,
+} from '@/features/cart/cartStore'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { IProduct } from '@/features/products/types'
 interface ICardProps {
@@ -127,6 +130,7 @@ export default memo(function ProductCard({
             className={'sm:text-M h-7 gap-1 px-1 text-[11px]'}
             count={productCartQuantity}
             disabled={isCartPending}
+            maxCount={MAX_CART_ITEM_QUANTITY}
             removeProduct={() =>
               productCartQuantity === 1
                 ? removeFullProduct(id)

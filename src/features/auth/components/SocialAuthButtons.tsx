@@ -52,12 +52,12 @@ export default function SocialAuthButtons({
 }: {
   mode: 'signin' | 'signup'
 }) {
-  if (!FEATURES.googleAuth) return null
-
-  const googleLabel =
-    mode === 'signin' ? 'Continue with Google' : 'Sign up with Google'
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const googleLabel =
+    mode === 'signin' ? 'Continue with Google' : 'Sign up with Google'
+
+  if (!FEATURES.googleAuth) return null
 
   const handleGoogleAuth = () => {
     const requestedNext = searchParams.get('next')

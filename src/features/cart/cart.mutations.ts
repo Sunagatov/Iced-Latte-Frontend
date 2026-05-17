@@ -4,7 +4,6 @@ import {
   removeCartItem,
 } from '@/features/cart/cartApi'
 import type {
-  ICartItem,
   ICartPushItem,
   ICartUpdatedItem,
 } from '@/features/cart/cartTypes'
@@ -20,11 +19,11 @@ import {
   getProductCartSlotId,
   getProductsCount,
   getTotalPrice,
+  MAX_CART_ITEM_QUANTITY,
+  normalizeCartItems,
   removeItem,
   setPending,
 } from '@/features/cart/utils/cartUtils'
-
-const MAX_CART_ITEM_QUANTITY = 99
 
 export function applyGuestAdd(
   set: StoreSet,
@@ -273,7 +272,7 @@ export async function mergeGuestCartIntoBackend(
   set({ status: 'syncing' })
 
   try {
-    const mergedCart = await mergeCarts({ items })
+    const mergedCart = await mergeCarts({ items: normalizeCartItems(items) })
 
     setCartItems(set, mergedCart.items, {
       count: mergedCart.productsQuantity,

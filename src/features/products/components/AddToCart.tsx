@@ -2,7 +2,10 @@
 import { useCallback } from 'react'
 import Button from '@/shared/ui/Button'
 import Counter from '@/shared/ui/Counter'
-import { useCartStore } from '@/features/cart/cartStore'
+import {
+  MAX_CART_ITEM_QUANTITY,
+  useCartStore,
+} from '@/features/cart/cartStore'
 import { IProduct } from '@/features/products/types'
 interface Props {
   product: IProduct
@@ -48,6 +51,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
           theme="dark"
           className="h-[42px] w-[110px] md:h-[48px] md:w-[120px]"
           count={productQuantity}
+          maxCount={MAX_CART_ITEM_QUANTITY}
           addProduct={addProduct}
           removeProduct={removeProduct}
         />

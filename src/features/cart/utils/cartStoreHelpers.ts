@@ -2,7 +2,10 @@ import type {
   ICartItem,
   ICartPushItem,
 } from '@/features/cart/cartTypes'
-import { createItemsIdsFromCart } from '@/features/cart/utils/cartUtils'
+import {
+  createItemsIdsFromCart,
+  normalizeCartItemList,
+} from '@/features/cart/utils/cartUtils'
 
 export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
 
@@ -32,11 +35,13 @@ export function getCartSnapshot(items: ICartItem[]): Pick<
   CartStoreState,
   'count' | 'itemsIds' | 'tempItems' | 'totalPrice'
 > {
+  const normalizedItems = normalizeCartItemList(items)
+
   return {
-    count: items.reduce((sum, item) => sum + item.productQuantity, 0),
-    itemsIds: createItemsIdsFromCart(items),
-    tempItems: items,
-    totalPrice: items.reduce(
+    count: normalizedItems.reduce((sum, item) => sum + item.productQuantity, 0),
+    itemsIds: createItemsIdsFromCart(normalizedItems),
+    tempItems: normalizedItems,
+    totalPrice: normalizedItems.reduce(
       (sum, item) => sum + item.productInfo.price * item.productQuantity,
       0,
     ),

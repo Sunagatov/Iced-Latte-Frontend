@@ -16,15 +16,16 @@ import {
   syncCartStoreWithSession,
 } from '@/features/cart/cart.sync'
 import {
-  createItemsIdsFromCart,
+  MAX_CART_ITEM_QUANTITY,
 } from '@/features/cart/utils/cartUtils'
 import {
+  getCartSnapshot,
   type CartStoreState,
   type StoreGet,
   type StoreSet,
 } from '@/features/cart/utils/cartStoreHelpers'
 
-export const MAX_CART_ITEM_QUANTITY = 99
+export { MAX_CART_ITEM_QUANTITY }
 export type { CartStatus } from '@/features/cart/utils/cartStoreHelpers'
 
 type CartSliceState = CartStoreState
@@ -103,14 +104,8 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
 
   setTempItems: (items) =>
     set({
-      count: items.reduce((sum, item) => sum + item.productQuantity, 0),
+      ...getCartSnapshot(items),
       isSync: true,
-      itemsIds: createItemsIdsFromCart(items),
-      tempItems: items,
-      totalPrice: items.reduce(
-        (sum, item) => sum + item.productInfo.price * item.productQuantity,
-        0,
-      ),
     }),
 
   resetCart: () =>

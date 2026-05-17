@@ -12,9 +12,9 @@ export const loginSchema = yup.object().shape({
     .max(254, 'Email must be at most 254 characters'),
   password: yup
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .matches(PASSWORD_REGEX, PASSWORD_HINT)
-    .required('Password is a required field'),
+    .required('Password is a required field')
+    .min(1, 'Password is a required field')
+    .max(128, 'Password must be at most 128 characters'),
 })
 
 const nameRules = (field: string) =>
@@ -85,11 +85,7 @@ export const forgotPassSchema = yup.object().shape({
     .string()
     .required('Email is required')
     .email('Enter a valid email address')
-    .test('email-format', 'Enter a valid email address', (value) => {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-      return emailRegex.test(value ?? '')
-    }),
+    .max(254, 'Email must be at most 254 characters'),
 })
 
 export const verifyEmailCodeSchema = yup.object().shape({

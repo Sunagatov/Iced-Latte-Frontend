@@ -1,4 +1,7 @@
-import { useCartStore } from '@/features/cart/cartStore'
+import {
+  MAX_CART_ITEM_QUANTITY,
+  useCartStore,
+} from '@/features/cart/cartStore'
 import { useAuthStore } from '@/features/auth/store'
 import * as cartApi from '@/features/cart/cartApi'
 import * as productsApi from '@/features/products/api'
@@ -76,6 +79,18 @@ describe('cart store — guest add/remove', () => {
     expect(useCartStore.getState().count).toBe(2)
   })
 
+  it('add does not increase quantity above the cart item limit', () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
+      tempItems: [makeCartItem('p1', MAX_CART_ITEM_QUANTITY)],
+      count: MAX_CART_ITEM_QUANTITY,
+      totalPrice: 990,
+      isSync: false,
+    })
+    useCartStore.getState().add('p1')
+    expect(useCartStore.getState().count).toBe(MAX_CART_ITEM_QUANTITY)
+  })
+
   it('remove decrements quantity', () => {
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 2 }],
@@ -99,6 +114,21 @@ describe('cart store — guest add/remove', () => {
     useCartStore.getState().remove('p1')
     expect(useCartStore.getState().count).toBe(0)
     expect(useCartStore.getState().itemsIds).toHaveLength(0)
+  })
+
+  it('remove drops stale negative quantities from guest cart ids', () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: -2 }],
+      tempItems: [],
+      count: -2,
+      totalPrice: 0,
+      isSync: false,
+    })
+
+    useCartStore.getState().remove('p1')
+
+    expect(useCartStore.getState().itemsIds).toHaveLength(0)
+    expect(useCartStore.getState().count).toBe(0)
   })
 })
 
@@ -128,6 +158,25 @@ describe('cart store — resetCart / setTempItems', () => {
     expect(s.totalPrice).toBe(30)
     expect(s.isSync).toBe(true)
   })
+
+  it('setTempItems normalizes duplicate and out-of-range item quantities', () => {
+    const items = [
+      makeCartItem('p1', 70),
+      makeCartItem('p1', 70),
+      makeCartItem('p2', -1),
+    ]
+
+    useCartStore.getState().setTempItems(items)
+    const s = useCartStore.getState()
+
+    expect(s.count).toBe(MAX_CART_ITEM_QUANTITY)
+    expect(s.totalPrice).toBe(990)
+    expect(s.itemsIds).toEqual([
+      { productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY },
+    ])
+    expect(s.tempItems).toHaveLength(1)
+    expect(s.tempItems[0].productQuantity).toBe(MAX_CART_ITEM_QUANTITY)
+  })
 })
 
 describe('cart store — syncSession', () => {
@@ -153,6 +202,63 @@ describe('cart store — syncSession', () => {
     await useCartStore.getState().syncSession()
     expect(useCartStore.getState().totalPrice).toBe(20)
     expect(useCartStore.getState().isSync).toBe(true)
+  })
+
+  it('normalizes stale guest quantities before backend merge', async () => {
+    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 150 }],
+      tempItems: [],
+      count: 150,
+      totalPrice: 0,
+      isSync: false,
+    })
+    mockedCartApi.mergeCarts.mockResolvedValue({
+      id: 'c1',
+      userId: 'u1',
+      createdAt: '',
+      closedAt: null,
+      itemsQuantity: 1,
+      itemsTotalPrice: 990,
+      productsQuantity: MAX_CART_ITEM_QUANTITY,
+      items: [makeCartItem('p1', MAX_CART_ITEM_QUANTITY)],
+    })
+
+    await useCartStore.getState().syncSession()
+
+    expect(mockedCartApi.mergeCarts).toHaveBeenCalledWith({
+      items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
+    })
+  })
+
+  it('merges duplicate stale guest ids before backend merge', async () => {
+    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    useCartStore.setState({
+      itemsIds: [
+        { productId: 'p1', productQuantity: 60 },
+        { productId: 'p1', productQuantity: 60 },
+      ],
+      tempItems: [],
+      count: 120,
+      totalPrice: 0,
+      isSync: false,
+    })
+    mockedCartApi.mergeCarts.mockResolvedValue({
+      id: 'c1',
+      userId: 'u1',
+      createdAt: '',
+      closedAt: null,
+      itemsQuantity: 1,
+      itemsTotalPrice: 990,
+      productsQuantity: MAX_CART_ITEM_QUANTITY,
+      items: [makeCartItem('p1', MAX_CART_ITEM_QUANTITY)],
+    })
+
+    await useCartStore.getState().syncSession()
+
+    expect(mockedCartApi.mergeCarts).toHaveBeenCalledWith({
+      items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
+    })
   })
 })
 

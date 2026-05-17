@@ -11,6 +11,7 @@ interface PropsCounter {
   className?: string
   count: number
   disabled?: boolean
+  maxCount?: number
   addProduct: () => void
   removeProduct: () => void
 }
@@ -23,6 +24,7 @@ const Counter = ({
   className,
   count,
   disabled = false,
+  maxCount,
   addProduct,
   removeProduct,
 }: Readonly<PropsCounter>) => {
@@ -39,6 +41,7 @@ const Counter = ({
   const addRef = useRef(addProduct)
   const removeRef = useRef(removeProduct)
   const countRef = useRef(count)
+  const maxCountRef = useRef(maxCount)
 
   useEffect(() => {
     addRef.current = addProduct
@@ -49,10 +52,19 @@ const Counter = ({
   useEffect(() => {
     countRef.current = count
   }, [count])
+  useEffect(() => {
+    maxCountRef.current = maxCount
+  }, [maxCount])
 
   const onPlus = useRef(
     debounce(() => {
-      if (countRef.current + 1 > 99) return
+      if (
+        maxCountRef.current !== undefined &&
+        countRef.current >= maxCountRef.current
+      ) {
+        return
+      }
+
       addRef.current()
     }, 300),
   ).current
@@ -87,7 +99,10 @@ const Counter = ({
         id="plus-btn"
         data-testid="counter-plus-btn"
         onClick={onPlus}
-        disabled={disabled}
+        disabled={
+          disabled ||
+          (maxCount !== undefined && count >= maxCount)
+        }
         className="flex items-center justify-center p-1 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <Image src={theme === 'dark' ? plus : plusDark} alt="plus" />
