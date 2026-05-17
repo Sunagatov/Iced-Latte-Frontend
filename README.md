@@ -1,6 +1,6 @@
 <div align="center">
   <br>
-  <img src="public/assets/images/iced-latte-avatar-readme.jpg" alt="Iced Latte Frontend">
+  <img src="https://github.com/Sunagatov/Iced-Latte/raw/development/docs/assets/iced-latte-avatar-readme.jpg" alt="Iced Latte Frontend">
   <h1>Iced Latte Frontend</h1>
   <p><strong>☕ Production-grade Next.js 16 / React 19 frontend for a coffee marketplace.</strong></p>
   <p>🚀 A real-world learning project with catalog browsing, authentication, cart, checkout, favorites, orders, reviews, responsive UI, client state, and test automation.</p>
@@ -37,7 +37,7 @@
 ## 📸 Preview
 
 <div align="center">
-  <img src="public/assets/images/iced-latte-preview.png" alt="Iced Latte Frontend" style="max-width: 825px; width: 100%;">
+  <img src="https://github.com/Sunagatov/Iced-Latte/raw/development/docs/assets/iced-latte-preview.png" alt="Iced Latte Frontend" style="max-width: 825px; width: 100%;">
   <p><em>Live application interface: <a href="https://iced-latte.uk/">iced-latte.uk</a></em></p>
 </div>
 
