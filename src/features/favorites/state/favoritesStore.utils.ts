@@ -20,6 +20,24 @@ export type FavStoreGet = () => FavStoreSlice
 export const uniqueIds = (ids: readonly string[]): string[] =>
   Array.from(new Set(ids))
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+const isProductId = (value: unknown): value is string =>
+  typeof value === 'string' && UUID_PATTERN.test(value.trim())
+
+export const normalizeFavouriteIds = (ids: unknown): string[] => {
+  if (!Array.isArray(ids)) {
+    return []
+  }
+
+  return uniqueIds(
+    ids
+      .filter(isProductId)
+      .map((id) => id.trim()),
+  )
+}
+
 const isProduct = (value: unknown): value is IProduct => {
   if (typeof value !== 'object' || value === null) {
     return false
@@ -27,7 +45,7 @@ const isProduct = (value: unknown): value is IProduct => {
 
   const candidate = value as Partial<IProduct>
 
-  return typeof candidate.id === 'string'
+  return isProductId(candidate.id)
 }
 
 export const normalizeProducts = (products: unknown): IProduct[] => {

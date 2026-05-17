@@ -8,10 +8,10 @@ import {
   toggleFavouriteInStore,
 } from '@/features/favorites/favorites.mutations'
 import {
-  type FavStatus,
   type FavStoreGet,
   type FavStoreSet,
   type FavStoreSlice,
+  normalizeFavouriteIds,
 } from '@/features/favorites/state/favoritesStore.utils'
 
 export type { FavStatus } from '@/features/favorites/state/favoritesStore.utils'
@@ -68,7 +68,7 @@ export const useFavouritesStore = create<FavStoreState>()(
     {
       name: 'fav-storage',
       partialize: (state): Pick<FavSliceState, 'favouriteIds' | 'isSync'> => ({
-        favouriteIds: state.favouriteIds,
+        favouriteIds: normalizeFavouriteIds(state.favouriteIds),
         isSync: state.isSync,
       }),
     },

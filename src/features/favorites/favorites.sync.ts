@@ -6,9 +6,9 @@ import {
 import {
   type FavStoreGet,
   type FavStoreSet,
+  normalizeFavouriteIds,
   mapProductsToFavourites,
   normalizeProducts,
-  uniqueIds,
 } from '@/features/favorites/state/favoritesStore.utils'
 import { getProductByIds } from '@/features/products/api'
 import { toastError } from '@/shared/utils/apiError'
@@ -39,14 +39,18 @@ export async function hydrateFavouritesStore(
 
       const incoming = normalizeProducts(products)
 
-      if (incoming.length === 0 && get().favouriteIds.length > 0 && !get().isSync) {
+      if (
+        incoming.length === 0 &&
+        normalizeFavouriteIds(get().favouriteIds).length > 0 &&
+        !get().isSync
+      ) {
         set({ status: 'ready' })
 
         return
       }
 
       set({
-        ...mapProductsToFavourites(products),
+        ...mapProductsToFavourites(incoming),
         isSync: incoming.length > 0,
         status: 'ready',
       })
@@ -54,13 +58,15 @@ export async function hydrateFavouritesStore(
       return
     }
 
-    if (get().favouriteIds.length === 0) {
+    const favouriteIds = normalizeFavouriteIds(get().favouriteIds)
+
+    if (favouriteIds.length === 0) {
       set({ favouriteIds: [], favourites: [], status: 'ready' })
 
       return
     }
 
-    const products = await getProductByIds(get().favouriteIds)
+    const products = await getProductByIds(favouriteIds)
 
     set({ ...mapProductsToFavourites(products), status: 'ready' })
   } catch (err) {
@@ -100,8 +106,16 @@ export async function syncFavouritesStoreWithSession(
     return
   }
 
-  if (!get().isSync && get().favouriteIds.length > 0) {
+  const favouriteIds = normalizeFavouriteIds(get().favouriteIds)
+
+  if (!get().isSync && favouriteIds.length > 0) {
     await syncGuestFavouritesIntoBackend(set, get)
+
+    return
+  }
+
+  if (!get().isSync && get().favouriteIds.length > 0) {
+    set({ favouriteIds: [], favourites: [], status: 'ready' })
 
     return
   }
@@ -116,8 +130,16 @@ async function syncGuestFavouritesIntoBackend(
   set({ status: 'syncing' })
 
   try {
+    const favouriteIds = normalizeFavouriteIds(get().favouriteIds)
+
+    if (favouriteIds.length === 0) {
+      set({ favouriteIds: [], favourites: [], isSync: false, status: 'ready' })
+
+      return
+    }
+
     const response = await syncFavourites({
-      productIds: uniqueIds(get().favouriteIds),
+      productIds: favouriteIds,
     })
 
     set({
