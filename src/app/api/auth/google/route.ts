@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(null, { status: 400 })
   }
 
-  const backendUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`)
+  const backendUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}/auth/oauth/google`)
 
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
   const callbackUrl = new URL(`${frontendUrl}/auth/google/callback`)
