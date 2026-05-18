@@ -13,6 +13,7 @@ import type {
   CheckoutAddressSelection,
   CheckoutFormValues,
 } from '@/features/checkout/checkoutTypes'
+import { redirectToHostedCheckout } from '@/features/checkout/redirect'
 
 function getInitialFormValues(): CheckoutFormValues {
   const userData = useAuthStore.getState().userData
@@ -113,9 +114,9 @@ export function useCheckoutForm() {
         idempotencyKey,
       )
 
-      // Redirect to Stripe Hosted Checkout — do NOT resetCart() here.
-      // Cart is cleared by the backend webhook after payment confirmation.
-      window.location.href = checkout.checkoutUrl
+      // Redirect to Stripe Hosted Checkout; the backend webhook clears the cart
+      // after payment confirmation.
+      redirectToHostedCheckout(checkout.checkoutUrl)
     } catch {
       setError(getCheckoutUnavailableMessage())
     } finally {

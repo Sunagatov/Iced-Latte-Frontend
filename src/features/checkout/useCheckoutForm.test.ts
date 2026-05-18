@@ -3,14 +3,17 @@ import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
 import * as paymentApi from '@/features/payment/paymentApi'
 import { useCartStore } from '@/features/cart/cartStore'
 import { useAuthStore } from '@/features/auth/store'
+import { redirectToHostedCheckout } from '@/features/checkout/redirect'
 
 jest.mock('@/features/payment/paymentApi')
+jest.mock('@/features/checkout/redirect')
 jest.mock('@/features/payment/config', () => ({
   hostedCheckoutEnabled: true,
   getCheckoutUnavailableMessage: () => 'Checkout unavailable',
 }))
 
 const mockedPaymentApi = jest.mocked(paymentApi)
+const mockedRedirectToHostedCheckout = jest.mocked(redirectToHostedCheckout)
 
 function mockSubmitEvent() {
   return { preventDefault: jest.fn() } as unknown as React.SyntheticEvent<HTMLFormElement>
@@ -40,19 +43,17 @@ describe('useCheckoutForm', () => {
 
     const { result } = renderHook(() => useCheckoutForm())
 
-    // jsdom throws on window.location.href assignment — catch it
     await act(async () => {
-      try {
-        await result.current.handleSubmit(mockSubmitEvent())
-      } catch {
-        // Expected: jsdom rejects navigation to external URL
-      }
+      await result.current.handleSubmit(mockSubmitEvent())
     })
 
     expect(mockedPaymentApi.createCheckout).toHaveBeenCalledTimes(1)
     expect(mockedPaymentApi.createCheckout).toHaveBeenCalledWith(
       expect.objectContaining({ recipientName: 'Test', recipientSurname: 'User' }),
       expect.any(String),
+    )
+    expect(mockedRedirectToHostedCheckout).toHaveBeenCalledWith(
+      'https://checkout.stripe.com/test',
     )
   })
 
@@ -66,11 +67,7 @@ describe('useCheckoutForm', () => {
     const { result } = renderHook(() => useCheckoutForm())
 
     await act(async () => {
-      try {
-        await result.current.handleSubmit(mockSubmitEvent())
-      } catch {
-        // Expected: jsdom rejects navigation
-      }
+      await result.current.handleSubmit(mockSubmitEvent())
     })
 
     const idempotencyKey = mockedPaymentApi.createCheckout.mock.calls[0][1]
@@ -88,11 +85,7 @@ describe('useCheckoutForm', () => {
     const { result } = renderHook(() => useCheckoutForm())
 
     await act(async () => {
-      try {
-        await result.current.handleSubmit(mockSubmitEvent())
-      } catch {
-        // Expected: jsdom rejects navigation
-      }
+      await result.current.handleSubmit(mockSubmitEvent())
     })
 
     expect(useCartStore.getState().count).toBe(1)
