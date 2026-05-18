@@ -4,6 +4,7 @@ import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'reac
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/cartStore'
 import {
+  getCheckoutErrorMessage,
   getCheckoutUnavailableMessage,
   hostedCheckoutEnabled,
 } from '@/features/payment/config'
@@ -117,8 +118,8 @@ export function useCheckoutForm() {
       // Redirect to Stripe Hosted Checkout; the backend webhook clears the cart
       // after payment confirmation.
       redirectToHostedCheckout(checkout.checkoutUrl)
-    } catch {
-      setError(getCheckoutUnavailableMessage())
+    } catch (error) {
+      setError(getCheckoutErrorMessage(error))
     } finally {
       setLoading(false)
     }

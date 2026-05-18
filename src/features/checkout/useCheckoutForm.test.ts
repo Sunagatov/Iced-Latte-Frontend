@@ -9,6 +9,7 @@ jest.mock('@/features/payment/paymentApi')
 jest.mock('@/features/checkout/redirect')
 jest.mock('@/features/payment/config', () => ({
   hostedCheckoutEnabled: true,
+  getCheckoutErrorMessage: () => 'Checkout failed with backend detail',
   getCheckoutUnavailableMessage: () => 'Checkout unavailable',
 }))
 

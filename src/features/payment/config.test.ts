@@ -1,5 +1,23 @@
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios'
+
 describe('payment config', () => {
   const originalEnv = process.env
+
+  function makeAxiosError(status: number, data: unknown): AxiosError {
+    return new AxiosError(
+      'Request failed',
+      undefined,
+      {} as InternalAxiosRequestConfig,
+      undefined,
+      {
+        status,
+        statusText: 'Error',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+        data,
+      },
+    )
+  }
 
   afterEach(() => {
     process.env = originalEnv
@@ -54,5 +72,34 @@ describe('payment config', () => {
     const { getCheckoutUnavailableMessage } = await import('@/features/payment/config')
 
     expect(getCheckoutUnavailableMessage()).toContain('unavailable')
+  })
+
+  it('getCheckoutErrorMessage returns backend detail when checkout fails', async () => {
+    process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'true' }
+    const { getCheckoutErrorMessage } = await import('@/features/payment/config')
+
+    expect(getCheckoutErrorMessage(makeAxiosError(400, {
+      detail: 'Either deliveryAddressId or address must be provided.',
+    }))).toBe('Either deliveryAddressId or address must be provided.')
+  })
+
+  it('getCheckoutErrorMessage explains frontend/backend Stripe mismatch on 404', async () => {
+    process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'true' }
+    const { getCheckoutErrorMessage } = await import('@/features/payment/config')
+
+    expect(getCheckoutErrorMessage(makeAxiosError(404, {
+      detail: 'No resource found for POST /api/v1/payment/checkout',
+    }))).toContain('backend payment endpoint is unavailable')
+  })
+
+  it('getCheckoutErrorMessage surfaces validation field messages', async () => {
+    process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'true' }
+    const { getCheckoutErrorMessage } = await import('@/features/payment/config')
+
+    expect(getCheckoutErrorMessage(makeAxiosError(400, {
+      errors: [
+        { field: 'recipientName', message: 'must be between 2 and 128 characters' },
+      ],
+    }))).toBe('must be between 2 and 128 characters')
   })
 })
