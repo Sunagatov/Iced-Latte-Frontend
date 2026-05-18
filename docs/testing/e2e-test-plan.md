@@ -124,8 +124,9 @@ Add or keep coverage when touching these areas:
 
 ## 🧪 Test Data Rules
 
-- Prefer stable seed users from the backend local/dev profile.
-- Use `olivia@example.com / p@ss1logic11` when a normal logged-in user is needed.
+- Prefer test accounts created through the same public flows users use.
+- Use Google authentication when configured, or sign up with an email address
+  and complete email confirmation when a normal logged-in user is needed.
 - Keep tests independent; one test should not require state created by a previous test.
 - Clean up browser state between tests.
 - Prefer page objects/helpers for repeated flows.

@@ -242,11 +242,9 @@ Use this checklist after starting any option:
 | http://localhost:8083/api/docs/swagger-ui/index.html | Swagger UI opens |
 | http://localhost:9001 | MinIO console opens if infrastructure is running |
 
-Seed login:
-
-```text
-olivia@example.com / p@ss1logic11
-```
+Create your own account before testing authenticated flows. Use Google
+authentication when it is configured, or sign up with an email address and
+complete the email confirmation flow.
 
 ---
 
@@ -331,7 +329,7 @@ docker compose --env-file .env.example --profile backend --profile frontend up -
 | Frontend container cannot reach local backend | Rebuild frontend with `FRONTEND_DOCKER_API_URL=http://host.docker.internal:8083/api/v1` |
 | E2E tests fail immediately | Make sure the dev server is running on `http://localhost:3000` |
 | `npm ci` fails | Make sure Node.js is version 20 or higher |
-| Login returns `401` | Use seed login `olivia@example.com / p@ss1logic11` |
+| Login returns `401` | Create a fresh account through Google authentication or email sign-up with email confirmation, then sign in with that account |
 | Windows says `export` or `source` not found | Use IntelliJ for backend startup, or run the backend command in Git Bash |
 
 Port override examples:
