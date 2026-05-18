@@ -9,7 +9,8 @@ export default function SignUpPage() {
   return (
     <RestrictRoute>
       <div className="flex min-h-[calc(100vh-112px)]">
-        <div className="hidden flex-col justify-end gap-10 bg-brand-solid px-12 pt-10 pb-12 text-white lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-112px)] lg:w-[45%]">
+        <div className="hidden bg-brand-solid lg:block lg:w-[45%]">
+          <div className="sticky top-0 flex h-[calc(100vh-112px)] flex-col justify-end gap-10 px-12 pt-10 pb-12 text-white">
           <div>
             <p className="text-4xl leading-tight font-bold">
               Join thousands of
@@ -38,6 +39,7 @@ export default function SignUpPage() {
           <p className="text-xs text-white/30">
             © 2026 Iced Latte. Open-source community.
           </p>
+          </div>
         </div>
 
         <div className="flex flex-1 items-start justify-center overflow-y-auto px-6 py-12">

@@ -49,7 +49,7 @@ export default function FormInput<T extends FieldValues>({
       <div className="relative">
         <input
           className={twMerge(
-            'bg-secondary text-L text-primary outline-focus placeholder:text-placeholder block h-[54px] w-full rounded-lg p-2.5',
+            'bg-secondary text-L text-primary outline-focus placeholder:text-placeholder block h-[54px] w-full rounded-lg border border-black/10 p-2.5',
             endAdornment && 'pr-10',
             error && 'border-error border-2',
             inputClassName,

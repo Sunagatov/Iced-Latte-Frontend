@@ -9,7 +9,8 @@ export default function SignInPage() {
   return (
     <RestrictRoute>
       <div className="flex min-h-[calc(100vh-112px)]">
-        <div className="hidden flex-col justify-end gap-16 bg-[#0D0D0D] px-12 pt-10 pb-12 text-white lg:sticky lg:top-0 lg:flex lg:h-[calc(100vh-112px)] lg:w-[45%]">
+        <div className="hidden bg-[#0D0D0D] lg:block lg:w-[45%]">
+          <div className="sticky top-0 flex h-[calc(100vh-112px)] flex-col justify-end gap-16 px-12 pt-10 pb-12 text-white">
           <div>
             <p className="text-4xl leading-tight font-bold">
               Your daily brew,
@@ -23,6 +24,7 @@ export default function SignInPage() {
           <p className="text-xs text-white/30">
             © 2026 Iced Latte. Open-source community.
           </p>
+          </div>
         </div>
 
         <div className="flex flex-1 items-center justify-center overflow-y-auto px-6 py-12">
