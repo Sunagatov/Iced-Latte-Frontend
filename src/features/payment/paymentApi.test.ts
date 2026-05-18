@@ -2,10 +2,10 @@ import { createCheckout, getCheckoutStatus } from '@/features/payment/paymentApi
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({
-  api: { get: jest.fn(), post: jest.fn() },
+  api: jest.fn(),
 }))
 
-const mockedApi = api as jest.Mocked<typeof api>
+const mockedApi = jest.mocked(api)
 
 describe('paymentApi', () => {
   beforeEach(() => jest.clearAllMocks())
@@ -15,15 +15,19 @@ describe('paymentApi', () => {
       const payload = { recipientName: 'John', recipientSurname: 'Doe' }
       const response = { orderId: 'o1', stripeSessionId: 'cs_test', checkoutUrl: 'https://checkout.stripe.com/test' }
 
-      ;(mockedApi.post as jest.Mock).mockResolvedValue({ data: response })
+      mockedApi.mockResolvedValue({ data: response })
 
       const result = await createCheckout(payload, 'key-123')
 
-      expect(mockedApi.post).toHaveBeenCalledWith(
-        '/payment/checkout',
-        payload,
-        { headers: { 'Idempotency-Key': 'key-123' } },
-      )
+      expect(mockedApi).toHaveBeenCalledWith({
+        data: payload,
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': 'key-123',
+        },
+        method: 'POST',
+        url: '/payment/checkout',
+      })
       expect(result).toEqual(response)
     })
   })
@@ -33,14 +37,16 @@ describe('paymentApi', () => {
       const status = { orderId: 'o1', orderStatus: 'PAID', paymentStatus: 'PAID' }
       const signal = new AbortController().signal
 
-      ;(mockedApi.get as jest.Mock).mockResolvedValue({ data: status })
+      mockedApi.mockResolvedValue({ data: status })
 
       const result = await getCheckoutStatus('o1', signal)
 
-      expect(mockedApi.get).toHaveBeenCalledWith(
-        '/payment/checkout/o1/status',
-        { cache: false, signal },
-      )
+      expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+        cache: false,
+        method: 'GET',
+        signal,
+        url: '/payment/checkout/o1/status',
+      }))
       expect(result).toEqual(status)
     })
   })

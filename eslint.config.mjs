@@ -133,6 +133,7 @@ export default defineConfig([
     'test-results/**',
     'next-env.d.ts',
     'node_modules/**',
+    'src/shared/api/generated/**',
     'jest.config.js',
     'jest.setup.js',
     'lint-staged.config.js',

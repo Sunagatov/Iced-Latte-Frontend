@@ -11,19 +11,19 @@ export default function SignInPage() {
       <div className="flex min-h-[calc(100vh-112px)]">
         <div className="hidden bg-brand-solid lg:block lg:w-[45%]">
           <div className="sticky top-0 flex h-[calc(100vh-112px)] flex-col justify-end gap-16 px-12 pt-10 pb-12 text-white">
-          <div>
-            <p className="text-4xl leading-tight font-bold">
+            <div>
+              <p className="text-4xl leading-tight font-bold">
               Your daily brew,
-              <br />
+                <br />
               delivered with love.
-            </p>
-            <p className="mt-4 text-sm text-white/50">
+              </p>
+              <p className="mt-4 text-sm text-white/50">
               Specialty coffee, curated for you.
-            </p>
-          </div>
-          <p className="text-xs text-white/30">
+              </p>
+            </div>
+            <p className="text-xs text-white/30">
             © 2026 Iced Latte. Open-source community.
-          </p>
+            </p>
           </div>
         </div>
 

@@ -34,6 +34,7 @@ test.describe('Catalog', () => {
     await homePage.goto()
     await homePage.searchFor('zzznoresultsxxx')
     const pill = homePage['page'].getByTestId('suggestion-pill').first()
+
     await pill.waitFor({ timeout: 8_000 })
     await pill.click()
     await expect(homePage['page'].locator('#catalog')).toBeInViewport()
@@ -69,6 +70,7 @@ test.describe('Search', () => {
     await homePage.goto()
     await homePage.searchInput.fill('latte')
     const dropdown = homePage['page'].getByTestId('search-dropdown')
+
     await expect(dropdown).toBeVisible({ timeout: 5_000 })
     await homePage.searchInput.press('Escape')
     await expect(dropdown).not.toBeVisible()
@@ -78,11 +80,13 @@ test.describe('Search', () => {
     await homePage.goto()
     await homePage.searchInput.fill('latte')
     const dropdown = homePage['page'].getByTestId('search-dropdown')
+
     await expect(dropdown).toBeVisible({ timeout: 5_000 })
     await homePage.searchInput.press('ArrowDown')
     await homePage.searchInput.press('Enter')
     // After selecting, input should have the suggestion text
     const value = await homePage.searchInput.inputValue()
+
     expect(value.length).toBeGreaterThan(0)
   })
 
@@ -99,6 +103,7 @@ test.describe('Filters', () => {
   test('filter sidebar shows all sections', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
+
     await expect(page.getByText('Price, $')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Rating' })).toBeVisible()
     await expect(page.getByText('Brand')).toBeVisible()
@@ -108,6 +113,7 @@ test.describe('Filters', () => {
   test('price from input accepts numeric values', async ({ homePage }) => {
     await homePage.goto()
     const fromInput = homePage['page'].locator('#from-price-input')
+
     await fromInput.fill('3')
     await expect(fromInput).toHaveValue('3')
   })
@@ -115,6 +121,7 @@ test.describe('Filters', () => {
   test('price to input accepts numeric values', async ({ homePage }) => {
     await homePage.goto()
     const toInput = homePage['page'].locator('#to-price-input')
+
     await toInput.fill('6')
     await expect(toInput).toHaveValue('6')
   })
@@ -122,6 +129,7 @@ test.describe('Filters', () => {
   test('price filter rejects non-numeric input', async ({ homePage }) => {
     await homePage.goto()
     const fromInput = homePage['page'].locator('#from-price-input')
+
     await fromInput.fill('abc')
     await expect(fromInput).toHaveValue('')
   })
@@ -129,6 +137,7 @@ test.describe('Filters', () => {
   test('price filter filters products by range', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
+
     await page.locator('#from-price-input').fill('3')
     await page.locator('#to-price-input').fill('6')
     await expect(
@@ -139,6 +148,7 @@ test.describe('Filters', () => {
   test('rating filter - selecting 4 stars', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
+
     await page.locator('#checkbox-4').click()
     await expect(page.locator('#checkbox-4')).toHaveClass(/bg-brand-solid/)
   })
@@ -146,6 +156,7 @@ test.describe('Filters', () => {
   test('rating filter - selecting Any shows all', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
+
     await page.locator('#checkbox-any').waitFor({ state: 'visible', timeout: 5_000 })
     await page.locator('#checkbox-any').click()
     await expect(page.locator('#checkbox-any')).toHaveClass(/bg-brand-solid/, { timeout: 3_000 })
@@ -154,6 +165,7 @@ test.describe('Filters', () => {
   test('rating filter - only one option selected at a time', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
+
     await page.locator('#checkbox-4').click()
     await page.locator('#checkbox-3').click()
     await expect(page.locator('#checkbox-4')).not.toHaveClass(/bg-brand-solid/)
@@ -164,6 +176,7 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
     const checkbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+
     if (!(await checkbox.isVisible())) return
     await checkbox.click()
     await expect(checkbox).toBeChecked()
@@ -174,6 +187,7 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
     const checkbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+
     if (!(await checkbox.isVisible())) return
     await checkbox.click()
     await expect(page.locator('#Brand-reset-btn')).toBeVisible({ timeout: 5_000 })
@@ -186,11 +200,14 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
     const showMoreBtn = page.locator('#Brand-filter-btn')
+
     if (!(await showMoreBtn.isVisible())) return
     const brandGroup = page.locator('[data-testid="filter-group-brand"]')
     const beforeCount = await brandGroup.locator('input[type="checkbox"]').count()
+
     await showMoreBtn.click()
     const afterCount = await brandGroup.locator('input[type="checkbox"]').count()
+
     expect(afterCount).toBeGreaterThan(beforeCount)
   })
 
@@ -198,6 +215,7 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
     const checkbox = page.locator('[data-testid="filter-group-seller"] input[type="checkbox"]').first()
+
     if (!(await checkbox.isVisible())) return
     await checkbox.click()
     await expect(checkbox).toBeChecked()
@@ -208,6 +226,7 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
     const checkbox = page.locator('[data-testid="filter-group-seller"] input[type="checkbox"]').first()
+
     if (!(await checkbox.isVisible())) return
     await checkbox.click()
     await page.locator('#Seller-reset-btn').click()
@@ -218,6 +237,7 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
     const checkbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+
     if (await checkbox.isVisible()) await checkbox.click()
     await page.locator('#from-price-input').fill('3')
     await expect(

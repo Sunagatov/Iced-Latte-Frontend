@@ -38,6 +38,7 @@ export default function LoginForm() {
     try {
       setLoading(true)
       const { token, refreshToken } = await apiLoginUser({ ...formData, turnstileToken })
+
       await completeAuthSession(token, refreshToken)
       reset()
     } catch (error) {

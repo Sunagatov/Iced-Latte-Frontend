@@ -1,5 +1,3 @@
-import type { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { api } from '@/shared/api/client'
 import { UserData } from './types'
 import {
   SuccessResponse,
@@ -7,6 +5,16 @@ import {
   GuestResetPasswordCredentials,
   AuthChangePasswordCredentials,
 } from '@/features/auth/types'
+import {
+  changeUserPassword,
+  editUserProfile as editGeneratedUserProfile,
+  getUserProfile,
+  uploadUserAvatar,
+} from '@/shared/api/generated/user'
+import {
+  changePassword,
+  forgotPassword,
+} from '@/shared/api/generated/security'
 
 function normalizeUserData(data: UserData): UserData {
   return {
@@ -15,19 +23,19 @@ function normalizeUserData(data: UserData): UserData {
   }
 }
 
-type UserRequestConfig = AxiosRequestConfig & {
+type UserRequestConfig = object & {
   skipAuthRetry?: boolean
 }
 
 export const getUserData = async (
   config?: UserRequestConfig,
 ): Promise<UserData> => {
-  const response: AxiosResponse<UserData> = await api.get('/users', {
+  const data = await getUserProfile({
     cache: false,
     ...config,
-  })
+  } as object) as UserData
 
-  return normalizeUserData(response.data)
+  return normalizeUserData(data)
 }
 
 export const editUserProfile = async (
@@ -42,47 +50,37 @@ export const editUserProfile = async (
     address: isEmptyAddress ? null : address,
   }
 
-  await api.put('/users', payload)
+  await editGeneratedUserProfile(
+    payload as unknown as Parameters<typeof editGeneratedUserProfile>[0],
+  )
 
   return getUserData()
 }
 
 export async function uploadImage(file: File): Promise<void> {
-  const formData = new FormData()
-
-  formData.append('file', file)
-  await api.post('/users/avatar', formData)
+  await uploadUserAvatar({ file })
 }
 
 export async function apiForgotPassword(
   email: ForgotPasswordCredentials,
 ): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/auth/password/forgot',
-    email,
-  )
+  await forgotPassword(email)
 
-  return response.data
+  return {}
 }
 
 export async function apiGuestResetPassword(
   credentials: GuestResetPasswordCredentials,
 ): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post(
-    '/auth/password/change',
-    credentials,
-  )
+  await changePassword(credentials)
 
-  return response.data
+  return {}
 }
 
 export async function apiAuthChangePassword(
   credentials: AuthChangePasswordCredentials,
 ): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.patch(
-    '/users',
-    credentials,
-  )
+  await changeUserPassword(credentials)
 
-  return response.data
+  return {}
 }

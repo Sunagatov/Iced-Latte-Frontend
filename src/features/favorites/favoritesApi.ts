@@ -1,29 +1,27 @@
-import type { AxiosResponse } from 'axios'
 import type { IProduct } from '@/features/products/types'
 import type {
   FavouritesResponse,
   SyncFavouritesRequest,
 } from '@/features/favorites/favoritesTypes'
-import { api } from '@/shared/api/client'
+import {
+  addListOfFavoriteProducts,
+  getListOfFavoriteProducts,
+  removeProductFromFavorite,
+} from '@/shared/api/generated/favorite'
 
 export async function syncFavourites(
   requestItems: SyncFavouritesRequest,
 ): Promise<FavouritesResponse> {
-  const response: AxiosResponse<FavouritesResponse> = await api.post(
-    '/favorites',
-    requestItems,
-  )
-
-  return response.data
+  return addListOfFavoriteProducts(requestItems) as Promise<FavouritesResponse>
 }
 
 export async function removeFavourite(id: string): Promise<void> {
-  await api.delete(`/favorites/${id}`)
+  await removeProductFromFavorite(id)
 }
 
 export async function fetchFavourites(signal?: AbortSignal): Promise<IProduct[]> {
-  const response: AxiosResponse<{ products: IProduct[] }> =
-    await api.get('/favorites', { cache: false, signal })
+  const options = { cache: false, signal }
+  const response = await getListOfFavoriteProducts(options) as FavouritesResponse
 
-  return response.data?.products || []
+  return response.products || []
 }

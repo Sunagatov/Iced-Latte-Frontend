@@ -1,4 +1,7 @@
-import { api } from '@/shared/api/client'
+import {
+  createCheckout as createGeneratedCheckout,
+  getCheckoutStatus as getGeneratedCheckoutStatus,
+} from '@/shared/api/generated/payment'
 
 export interface CreateCheckoutRequest {
   recipientName: string
@@ -39,25 +42,14 @@ export async function createCheckout(
   payload: CreateCheckoutRequest,
   idempotencyKey: string,
 ): Promise<CheckoutResponse> {
-  const response = await api.post<CheckoutResponse>(
-    '/payment/checkout',
-    payload,
-    {
-      headers: { 'Idempotency-Key': idempotencyKey },
-    },
-  )
-
-  return response.data
+  return createGeneratedCheckout(payload, { 'Idempotency-Key': idempotencyKey })
 }
 
 export async function getCheckoutStatus(
   orderId: string,
   signal?: AbortSignal,
 ): Promise<CheckoutStatus> {
-  const response = await api.get<CheckoutStatus>(
-    `/payment/checkout/${orderId}/status`,
-    { cache: false, signal },
-  )
+  const options = { cache: false, signal }
 
-  return response.data
+  return getGeneratedCheckoutStatus(orderId, options)
 }

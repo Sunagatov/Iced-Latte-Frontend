@@ -71,6 +71,7 @@ test.describe('Checkout', () => {
     ])
 
     const body = await response.json() as { checkoutUrl?: string }
+
     expect(body.checkoutUrl).toBeTruthy()
   })
 

@@ -2,27 +2,31 @@ import * as userApi from '@/features/user/api'
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({
-  api: { get: jest.fn(), put: jest.fn(), post: jest.fn(), patch: jest.fn() },
+  api: jest.fn(),
 }))
 
-const mockedApi = api as jest.Mocked<typeof api>
+const mockedApi = jest.mocked(api)
 
 describe('user api', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('getUserData calls GET /users with cache disabled', async () => {
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValue({
       data: { firstName: 'John' },
     })
 
     const result = await userApi.getUserData()
 
-    expect(mockedApi.get).toHaveBeenCalledWith('/users', { cache: false })
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+      cache: false,
+      method: 'GET',
+      url: '/users',
+    }))
     expect(result.firstName).toBe('John')
   })
 
   it('getUserData normalizes nullable backend address to an empty object', async () => {
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValue({
       data: {
         firstName: 'John',
         lastName: 'Doe',
@@ -37,28 +41,36 @@ describe('user api', () => {
   })
 
   it('editUserProfile calls PUT /users and normalizes empty address to null', async () => {
-    ;(mockedApi.put as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: { firstName: 'Jane' },
     })
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: { firstName: 'Jane' },
     })
 
     const result = await userApi.editUserProfile({ firstName: 'Jane' })
 
-    expect(mockedApi.put).toHaveBeenCalledWith('/users', {
-      firstName: 'Jane',
-      address: null,
-    })
-    expect(mockedApi.get).toHaveBeenCalledWith('/users', { cache: false })
+    expect(mockedApi).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      data: {
+        firstName: 'Jane',
+        address: null,
+      },
+      method: 'PUT',
+      url: '/users',
+    }))
+    expect(mockedApi).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      cache: false,
+      method: 'GET',
+      url: '/users',
+    }))
     expect(result.firstName).toBe('Jane')
   })
 
   it('editUserProfile keeps non-empty address', async () => {
-    ;(mockedApi.put as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: { firstName: 'Jane' },
     })
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: { firstName: 'Jane' },
     })
 
@@ -72,22 +84,26 @@ describe('user api', () => {
       },
     })
 
-    expect(mockedApi.put).toHaveBeenCalledWith('/users', {
-      firstName: 'Jane',
-      address: {
-        country: 'UK',
-        city: 'London',
-        line: '221B Baker Street',
-        postcode: 'NW1',
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+      data: {
+        firstName: 'Jane',
+        address: {
+          country: 'UK',
+          city: 'London',
+          line: '221B Baker Street',
+          postcode: 'NW1',
+        },
       },
-    })
+      method: 'PUT',
+      url: '/users',
+    }))
   })
 
   it('editUserProfile normalizes nullable backend address in the response', async () => {
-    ;(mockedApi.put as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: { firstName: 'Jane' },
     })
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: {
         firstName: 'Jane',
         lastName: 'Doe',
@@ -102,13 +118,13 @@ describe('user api', () => {
   })
 
   it('editUserProfile returns refreshed user data with avatarLink from GET /users', async () => {
-    ;(mockedApi.put as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: {
         firstName: 'Jane',
         avatarLink: null,
       },
     })
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValueOnce({
       data: {
         firstName: 'Jane',
         lastName: 'Doe',
@@ -124,33 +140,35 @@ describe('user api', () => {
   })
 
   it('apiForgotPassword posts to /auth/password/forgot', async () => {
-    ;(mockedApi.post as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValue({
       data: { message: 'ok' },
     })
 
-    const result = await userApi.apiForgotPassword({ email: 'a@b.com' })
+    await userApi.apiForgotPassword({ email: 'a@b.com' })
 
-    expect(mockedApi.post).toHaveBeenCalledWith('/auth/password/forgot', {
-      email: 'a@b.com',
-    })
-    expect(result.message).toBe('ok')
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+      data: { email: 'a@b.com' },
+      method: 'POST',
+      url: '/auth/password/forgot',
+    }))
   })
 
   it('apiGuestResetPassword posts to /auth/password/change', async () => {
-    ;(mockedApi.post as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValue({
       data: { message: 'ok' },
     })
 
     await userApi.apiGuestResetPassword({ code: 'abc', password: 'newpass' })
 
-    expect(mockedApi.post).toHaveBeenCalledWith('/auth/password/change', {
-      code: 'abc',
-      password: 'newpass',
-    })
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+      data: { code: 'abc', password: 'newpass' },
+      method: 'POST',
+      url: '/auth/password/change',
+    }))
   })
 
   it('apiAuthChangePassword patches /users', async () => {
-    ;(mockedApi.patch as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValue({
       data: { message: 'ok' },
     })
 
@@ -159,9 +177,10 @@ describe('user api', () => {
       newPassword: 'new',
     })
 
-    expect(mockedApi.patch).toHaveBeenCalledWith('/users', {
-      oldPassword: 'old',
-      newPassword: 'new',
-    })
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+      data: { newPassword: 'new', oldPassword: 'old' },
+      method: 'PATCH',
+      url: '/users',
+    }))
   })
 })

@@ -2,10 +2,10 @@ import { fetchFavourites } from '@/features/favorites/favoritesApi'
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({
-  api: { get: jest.fn() },
+  api: jest.fn(),
 }))
 
-const mockedApi = api as jest.Mocked<typeof api>
+const mockedApi = jest.mocked(api)
 
 describe('favorites api', () => {
   beforeEach(() => jest.clearAllMocks())
@@ -13,15 +13,17 @@ describe('favorites api', () => {
   it('fetchFavourites disables cache for authenticated server data', async () => {
     const signal = new AbortController().signal
 
-    ;(mockedApi.get as jest.Mock).mockResolvedValue({
+    mockedApi.mockResolvedValue({
       data: { products: [] },
     })
 
     await fetchFavourites(signal)
 
-    expect(mockedApi.get).toHaveBeenCalledWith('/favorites', {
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
       cache: false,
+      method: 'GET',
       signal,
-    })
+      url: '/favorites',
+    }))
   })
 })

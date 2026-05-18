@@ -1,25 +1,25 @@
-import { AxiosResponse } from 'axios'
-import { api } from '@/shared/api/client'
 import { LoginCredentials, RegisterCredentials } from './types'
+import {
+  authenticate,
+  confirmEmail,
+  logout,
+  register,
+} from '@/shared/api/generated/security'
 
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
 ): Promise<{ token: string; refreshToken: string } | null> {
-  const response = await api.post('/auth/register', credentials)
+  const response = await register(credentials)
 
-  return response.data?.token ? response.data : null
+  return response.token ? response : null
 }
 
 export async function verifyEmailCode(
   code: string,
 ): Promise<{ token: string; refreshToken: string }> {
   if (!code) throw new Error('Verification code is required')
-  const response = await api.post<{ token: string; refreshToken: string }>(
-    '/auth/confirm',
-    { token: code },
-  )
 
-  return response.data
+  return confirmEmail({ token: code })
 }
 
 export interface LoginResponse {
@@ -30,14 +30,9 @@ export interface LoginResponse {
 export async function apiLoginUser(
   credentials: LoginCredentials,
 ): Promise<LoginResponse> {
-  const response: AxiosResponse<LoginResponse> = await api.post(
-    '/auth/authenticate',
-    credentials,
-  )
-
-  return response.data
+  return authenticate(credentials)
 }
 
 export async function apiLogoutUser(): Promise<void> {
-  await api.post('/auth/logout')
+  await logout()
 }

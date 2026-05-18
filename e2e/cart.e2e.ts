@@ -20,6 +20,7 @@ test.describe('Cart (authenticated)', () => {
     await clearCart(page)
     await page.goto(`/product/${PRODUCT_ID}`)
     const addBtn = page.getByTestId('add-to-cart-btn')
+
     await expect(addBtn).toBeVisible({ timeout: 15_000 })
 
     await Promise.all([
@@ -28,8 +29,10 @@ test.describe('Cart (authenticated)', () => {
     ])
 
     const badge = page.getByTestId('header-cart-badge')
+
     await expect(badge).toBeVisible({ timeout: 10_000 })
     const text = await badge.textContent()
+
     expect(parseInt(text ?? '0')).toBeGreaterThan(0)
   })
 
@@ -37,6 +40,7 @@ test.describe('Cart (authenticated)', () => {
     await clearCart(homePage['page'])
     await homePage.goto()
     const addBtn = homePage['page'].getByTestId('add-to-cart-circle-btn').first()
+
     await addBtn.waitFor({ timeout: 10_000 })
 
     await Promise.all([
@@ -45,6 +49,7 @@ test.describe('Cart (authenticated)', () => {
     ])
 
     const badge = homePage['page'].getByTestId('header-cart-badge')
+
     await expect(badge).toBeVisible({ timeout: 10_000 })
   })
 
@@ -71,6 +76,7 @@ test.describe('Cart (authenticated)', () => {
     const removeBtn = page.getByTestId('cart-item').first().getByRole('button', { name: /remove|delete/i }).or(
       page.getByTestId('cart-item').first().locator('[data-testid="remove-item-btn"]'),
     )
+
     if (await removeBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await removeBtn.click()
       await cartPage.expectEmpty()
@@ -81,8 +87,10 @@ test.describe('Cart (authenticated)', () => {
     await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 2 }])
     await page.goto('/')
     const badge = page.getByTestId('header-cart-badge')
+
     await expect(badge).toBeVisible({ timeout: 12_000 })
     const text = await badge.textContent()
+
     expect(parseInt(text ?? '0')).toBeGreaterThanOrEqual(2)
   })
 })

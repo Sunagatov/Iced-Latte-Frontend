@@ -32,6 +32,7 @@ test.describe('Profile', () => {
       ),
       profilePage.saveButton.click(),
     ])
+
     expect(response.status()).toBeLessThan(300)
   })
 
@@ -93,6 +94,7 @@ test.describe('Orders', () => {
     if (await ordersPage.orderCards.count() === 0) return
     await ordersPage.expandFirstOrder()
     const link = page.getByTestId('order-product-link').first()
+
     if (!(await link.isVisible({ timeout: 3_000 }).catch(() => false))) return
     await link.click()
     await expect(page).toHaveURL(/\/product\//, { timeout: 8_000 })

@@ -43,6 +43,7 @@ test.describe('Favourites (authenticated)', () => {
     await homePage.goto()
     const page = homePage['page']
     const cards = await homePage.productCards.count()
+
     if (cards === 0) return
     await expect(page.getByTestId('favourite-btn').first()).toBeVisible({ timeout: 5_000 })
   })
@@ -51,8 +52,10 @@ test.describe('Favourites (authenticated)', () => {
     await homePage.goto()
     const page = homePage['page']
     const heartBtn = page.getByTestId('favourite-btn').first()
+
     await heartBtn.waitFor({ timeout: 10_000 })
     const before = await heartBtn.getAttribute('data-active')
+
     await heartBtn.click()
     await expect(heartBtn).toHaveAttribute('data-active', before === 'true' ? 'false' : 'true', { timeout: 5_000 })
   })

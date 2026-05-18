@@ -79,7 +79,7 @@ describe('catalogQuery', () => {
       fromPriceFilter: '10',
       pageIndex: 0,
       productSize: 6,
-      ratingFilter: 4,
+      ratingFilter: 5,
       searchQuery: 'latte',
       sellerOptions: [],
       sortOption,
@@ -88,7 +88,7 @@ describe('catalogQuery', () => {
 
     expect(key).toContain('min_price=10')
     expect(key).toContain('max_price=40')
-    expect(key).toContain('minimum_average_rating=4')
+    expect(key).toContain('minimum_average_rating=5')
     expect(key).toContain('keyword=latte')
   })
 

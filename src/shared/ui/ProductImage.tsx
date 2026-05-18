@@ -9,12 +9,13 @@ type Props = Omit<ImageProps, 'src'> & {
   productFileUrl: string | null | undefined
 }
 
-export default function ProductImage({ productFileUrl, ...props }: Props) {
+export default function ProductImage({ alt = '', productFileUrl, ...props }: Props) {
   const [src, setSrc] = useState(() => getImgUrl(productFileUrl, productImg))
 
   return (
     <Image
       {...props}
+      alt={alt}
       src={src}
       onError={() => setSrc(productImg)}
     />

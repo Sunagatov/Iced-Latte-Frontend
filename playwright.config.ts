@@ -53,10 +53,10 @@ export default defineConfig({
 
   webServer: BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')
     ? {
-        command: 'npm run dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: true,
-        timeout: 120_000,
-      }
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: true,
+      timeout: 120_000,
+    }
     : undefined,
 })

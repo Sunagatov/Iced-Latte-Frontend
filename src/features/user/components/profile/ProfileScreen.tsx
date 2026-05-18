@@ -8,7 +8,7 @@ import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import type { UserData } from '@/features/user/types'
-import { api } from '@/shared/api/client'
+import { getOrders } from '@/shared/api/generated/order'
 import Loader from '@/shared/ui/Loader'
 import ImageUpload from '../ImageUpload'
 import {
@@ -54,11 +54,10 @@ export default function ProfileScreen() {
 
     const loadOrderCount = async (): Promise<void> => {
       try {
-        const response = await api.get<{ totalElements: number }>('/orders', {
-          cache: false,
-        })
+        const options = { cache: false } as object
+        const response = await getOrders(undefined, options)
 
-        setOrderCount(response.data.totalElements)
+        setOrderCount(response.totalElements ?? 0)
       } catch {
         // non-critical
       }

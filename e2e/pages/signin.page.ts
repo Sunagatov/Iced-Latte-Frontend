@@ -17,6 +17,7 @@ export class SignInPage extends BasePage {
 
   async goto(next?: string) {
     const url = next ? `/signin?next=${next}` : '/signin'
+
     await this.page.goto(url)
     await this.expectLoaded()
   }

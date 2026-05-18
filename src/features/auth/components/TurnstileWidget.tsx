@@ -10,6 +10,7 @@ interface Props {
 const TurnstileWidget = forwardRef<TurnstileInstance, Props>(
   ({ onVerify }, ref) => {
     if (!FEATURES.turnstile) return null
+
     return (
       <div className="mt-4">
         <Turnstile

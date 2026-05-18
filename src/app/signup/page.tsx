@@ -11,34 +11,34 @@ export default function SignUpPage() {
       <div className="flex min-h-[calc(100vh-112px)]">
         <div className="hidden bg-brand-solid lg:block lg:w-[45%]">
           <div className="sticky top-0 flex h-[calc(100vh-112px)] flex-col justify-end gap-10 px-12 pt-10 pb-12 text-white">
-          <div>
-            <p className="text-4xl leading-tight font-bold">
+            <div>
+              <p className="text-4xl leading-tight font-bold">
               Join thousands of
-              <br />
+                <br />
               coffee lovers.
-            </p>
-            <p className="mt-4 text-sm text-white/60">
+              </p>
+              <p className="mt-4 text-sm text-white/60">
               Discover, order, and enjoy specialty coffee — curated by the
               community.
-            </p>
-            <div className="mt-8 flex flex-col gap-2">
-              {[
-                'Free shipping on first order',
-                'Exclusive member deals',
-                'Community reviews',
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-2 text-sm text-white/80"
-                >
-                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg> {item}
-                </div>
-              ))}
+              </p>
+              <div className="mt-8 flex flex-col gap-2">
+                {[
+                  'Free shipping on first order',
+                  'Exclusive member deals',
+                  'Community reviews',
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-2 text-sm text-white/80"
+                  >
+                    <svg className="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg> {item}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          <p className="text-xs text-white/30">
+            <p className="text-xs text-white/30">
             © 2026 Iced Latte. Open-source community.
-          </p>
+            </p>
           </div>
         </div>
 

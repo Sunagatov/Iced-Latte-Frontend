@@ -4,7 +4,7 @@ import { useCartStore } from '@/features/cart/cartStore'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 import { getUserData } from '@/features/user/api'
 import type { UserData } from '@/features/user/types'
-import { api } from '@/shared/api/client'
+import { refreshToken } from '@/shared/api/generated/security'
 import { clearAuthCookies } from '@/shared/auth/cookies'
 
 export async function bootstrapClientSession(): Promise<void> {
@@ -26,7 +26,7 @@ export async function bootstrapClientSession(): Promise<void> {
 export async function refreshAuthenticatedSession(options?: {
   skipAuthRetry?: boolean
 }): Promise<UserData> {
-  await api.post('/auth/refresh', null, options ? (options as object) : undefined)
+  await refreshToken(options ? (options as object) : undefined)
 
   const userData = await getUserData()
 

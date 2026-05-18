@@ -13,6 +13,7 @@ test.describe('Product Detail', () => {
     await productDetailPage.expectLoaded()
     await expect(productDetailPage.title).toBeVisible()
     const text = await productDetailPage.title.textContent()
+
     expect(text?.length).toBeGreaterThan(0)
   })
 
@@ -34,6 +35,7 @@ test.describe('Product Detail', () => {
   test('add to cart button works', async ({ page }) => {
     await page.goto(`/product/${PRODUCT_ID}`)
     const addBtn = page.getByTestId('add-to-cart-btn')
+
     await expect(addBtn).toBeVisible({ timeout: 10_000 })
 
     await Promise.all([
@@ -42,6 +44,7 @@ test.describe('Product Detail', () => {
     ])
 
     const badge = page.getByTestId('header-cart-badge')
+
     await expect(badge).toBeVisible({ timeout: 10_000 })
   })
 
