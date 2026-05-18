@@ -9,7 +9,7 @@ export default function SignInPage() {
   return (
     <RestrictRoute>
       <div className="flex min-h-[calc(100vh-112px)]">
-        <div className="hidden bg-[#0D0D0D] lg:block lg:w-[45%]">
+        <div className="hidden bg-brand-solid lg:block lg:w-[45%]">
           <div className="sticky top-0 flex h-[calc(100vh-112px)] flex-col justify-end gap-16 px-12 pt-10 pb-12 text-white">
           <div>
             <p className="text-4xl leading-tight font-bold">

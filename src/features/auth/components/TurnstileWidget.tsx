@@ -17,7 +17,7 @@ const TurnstileWidget = forwardRef<TurnstileInstance, Props>(
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
           onSuccess={onVerify}
           onExpire={() => onVerify('')}
-          options={{ refreshExpired: 'auto' }}
+          options={{ refreshExpired: 'auto', theme: 'light', size: 'flexible' }}
         />
       </div>
     )
