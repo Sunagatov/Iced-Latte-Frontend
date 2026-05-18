@@ -1,6 +1,7 @@
 export type LoginCredentials = {
   email: string
   password: string
+  turnstileToken?: string
 }
 
 export type RegisterCredentials = {
@@ -8,6 +9,7 @@ export type RegisterCredentials = {
   lastName: string
   email: string
   password: string
+  turnstileToken?: string
 }
 
 export interface ErrorResponse {

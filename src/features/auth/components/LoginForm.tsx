@@ -5,7 +5,7 @@ import Loader from '@/shared/ui/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiLoginUser } from '@/features/auth/api'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { loginSchema } from '@/features/auth/validation'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 interface IFormValues {
@@ -14,9 +14,13 @@ interface IFormValues {
 }
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
+import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const { completeAuthSession } = useCompleteAuthSession()
   const {
     register,
@@ -33,12 +37,12 @@ export default function LoginForm() {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
-      const { token, refreshToken } = await apiLoginUser(formData)
-
+      const { token, refreshToken } = await apiLoginUser({ ...formData, turnstileToken })
       await completeAuthSession(token, refreshToken)
       reset()
     } catch (error) {
       handleError(error)
+      turnstileRef.current?.reset()
     } finally {
       setLoading(false)
     }
@@ -81,6 +85,7 @@ export default function LoginForm() {
           </button>
         }
       />
+      <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
       <Button
         id="login-btn"
         type="submit"

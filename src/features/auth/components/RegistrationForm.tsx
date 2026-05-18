@@ -5,7 +5,7 @@ import Loader from '@/shared/ui/Loader'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { apiRegisterUser } from '@/features/auth/api'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { registrationSchema } from '@/features/auth/validation'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 import { useRouter } from 'next/navigation'
@@ -18,9 +18,13 @@ interface IFormValues {
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { ROUTES } from '@/shared/config/routes'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
+import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const router = useRouter()
   const { completeAuthSession } = useCompleteAuthSession()
 
@@ -47,7 +51,7 @@ export default function RegistrationForm() {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
-      const data = await apiRegisterUser(formData)
+      const data = await apiRegisterUser({ ...formData, turnstileToken })
 
       if (data) {
         await completeAuthSession(data.token, data.refreshToken)
@@ -56,6 +60,7 @@ export default function RegistrationForm() {
       }
     } catch (error) {
       handleError(error)
+      turnstileRef.current?.reset()
     } finally {
       setLoading(false)
     }
@@ -114,6 +119,7 @@ export default function RegistrationForm() {
           </button>
         }
       />
+      <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
       <Button
         id="register-btn"
         disabled={false}
