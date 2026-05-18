@@ -83,13 +83,13 @@ describe('payment config', () => {
     }))).toBe('Either deliveryAddressId or address must be provided.')
   })
 
-  it('getCheckoutErrorMessage explains frontend/backend Stripe mismatch on 404', async () => {
+  it('getCheckoutErrorMessage returns a safe unavailable message on 404', async () => {
     process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'true' }
     const { getCheckoutErrorMessage } = await import('@/features/payment/config')
 
     expect(getCheckoutErrorMessage(makeAxiosError(404, {
       detail: 'No resource found for POST /api/v1/payment/checkout',
-    }))).toContain('backend payment endpoint is unavailable')
+    }))).toBe('Checkout is currently unavailable. Please try again later.')
   })
 
   it('getCheckoutErrorMessage surfaces validation field messages', async () => {

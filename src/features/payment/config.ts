@@ -27,7 +27,7 @@ export function getCheckoutErrorMessage(error: unknown): string {
   const fieldErrors = axiosError.response?.data?.errors
 
   if (status === 404) {
-    return 'Checkout is enabled in the frontend, but the backend payment endpoint is unavailable. Check payment configuration and try again.'
+    return 'Checkout is currently unavailable. Please try again later.'
   }
 
   if (fieldErrors && fieldErrors.length > 0) {
