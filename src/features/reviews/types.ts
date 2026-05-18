@@ -1,3 +1,5 @@
+import type { RatingMap } from '@/shared/api/generated/productReview'
+
 export interface Review {
   productId: string
   productReviewId: string | null
@@ -15,5 +17,5 @@ export interface Review {
 export interface IProductReviewsStatistics {
   avgRating: number
   reviewsCount: number
-  ratingMap: Record<string, number>
+  ratingMap: RatingMap
 }

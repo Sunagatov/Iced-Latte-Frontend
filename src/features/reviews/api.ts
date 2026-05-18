@@ -8,6 +8,7 @@ import {
   getRatingAndReviewStat,
   getUserReviews,
   type GetProductReviewsAndRatingsParams,
+  type ProductReviewRatingStats,
 } from '@/shared/api/generated/productReview'
 
 export interface IReviews {
@@ -115,9 +116,10 @@ export async function apiGetProductReviewsStatistics(
   productId: string,
 ): Promise<IProductReviewsStatistics> {
   const options = { cache: false } as object
-  const statistics = await getRatingAndReviewStat(productId, options)
+  const statistics: ProductReviewRatingStats =
+    await getRatingAndReviewStat(productId, options)
 
-  return statistics as unknown as IProductReviewsStatistics
+  return statistics
 }
 
 export async function apiRateProductReview(

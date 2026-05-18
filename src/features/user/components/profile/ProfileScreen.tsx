@@ -7,8 +7,8 @@ import AddressManager from '@/features/addresses/components/AddressManager'
 import { useLogout } from '@/features/auth/hooks'
 import { useAuthStore, type AuthStore } from '@/features/auth/store'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
+import { fetchOrders } from '@/features/orders/ordersApi'
 import type { UserData } from '@/features/user/types'
-import { getOrders } from '@/shared/api/generated/order'
 import Loader from '@/shared/ui/Loader'
 import ImageUpload from '../ImageUpload'
 import {
@@ -54,8 +54,7 @@ export default function ProfileScreen() {
 
     const loadOrderCount = async (): Promise<void> => {
       try {
-        const options = { cache: false } as object
-        const response = await getOrders(undefined, options)
+        const response = await fetchOrders()
 
         setOrderCount(response.totalElements ?? 0)
       } catch {
