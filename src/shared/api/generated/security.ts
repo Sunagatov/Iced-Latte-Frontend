@@ -324,6 +324,24 @@ export interface DeliveryAddressRequest {
 
 export type ErrorResponseD2fd7b5 = ErrorResponse;
 
+export type InitiateOAuthParams = {
+/**
+ * Frontend callback URL to return to after OAuth completes.
+ */
+redirectUrl?: string;
+};
+
+export type CompleteOAuthCallbackParams = {
+/**
+ * OAuth authorization code returned by the provider.
+ */
+code?: string;
+/**
+ * State token created during OAuth initiation.
+ */
+state?: string;
+};
+
 export type LogoutHeaders = {
 /**
  * Raw refresh token value to invalidate (no 'Bearer' prefix). Obtain from the refreshToken field of the authentication response.
@@ -335,6 +353,34 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
   /**
+ * @summary Start OAuth sign-in
+ */
+export const initiateOAuth = (
+    provider: string,
+    params?: InitiateOAuthParams,
+ options?: SecondParameter<typeof orvalMutator<unknown>>,) => {
+      return orvalMutator<unknown>(
+      {url: `/api/v1/auth/oauth/${provider}`, method: 'GET',
+        params
+    },
+      options);
+    }
+
+/**
+ * @summary Complete OAuth sign-in
+ */
+export const completeOAuthCallback = (
+    provider: string,
+    params?: CompleteOAuthCallbackParams,
+ options?: SecondParameter<typeof orvalMutator<unknown>>,) => {
+      return orvalMutator<unknown>(
+      {url: `/api/v1/auth/oauth/${provider}/callback`, method: 'GET',
+        params
+    },
+      options);
+    }
+
+/**
  * @summary Register a new user
  */
 export const register = (
@@ -465,6 +511,8 @@ export const changePassword = (
       options);
     }
 
+export type InitiateOAuthResult = NonNullable<Awaited<ReturnType<typeof initiateOAuth>>>
+export type CompleteOAuthCallbackResult = NonNullable<Awaited<ReturnType<typeof completeOAuthCallback>>>
 export type RegisterResult = NonNullable<Awaited<ReturnType<typeof register>>>
 export type ConfirmEmailResult = NonNullable<Awaited<ReturnType<typeof confirmEmail>>>
 export type AuthenticateResult = NonNullable<Awaited<ReturnType<typeof authenticate>>>

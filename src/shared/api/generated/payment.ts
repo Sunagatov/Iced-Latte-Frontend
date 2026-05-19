@@ -444,6 +444,13 @@ export type CreateCheckoutHeaders = {
 'Idempotency-Key': string;
 };
 
+export type ProcessStripeWebhookHeaders = {
+/**
+ * Stripe webhook signature header.
+ */
+'Stripe-Signature': string;
+};
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -478,5 +485,23 @@ export const getCheckoutStatus = (
       options);
     }
 
+/**
+ * Stripe calls this endpoint to deliver checkout and refund events. The Stripe-Signature header is required for webhook verification.
+
+ * @summary Process Stripe webhook
+ */
+export const processStripeWebhook = (
+    processStripeWebhookBody: BodyType<string>,
+    headers: ProcessStripeWebhookHeaders,
+ options?: SecondParameter<typeof orvalMutator<void>>,) => {
+      return orvalMutator<void>(
+      {url: `/api/v1/payment/stripe/webhook`, method: 'POST',
+      headers: {'Content-Type': 'application/json', ...headers},
+      data: processStripeWebhookBody
+    },
+      options);
+    }
+
 export type CreateCheckoutResult = NonNullable<Awaited<ReturnType<typeof createCheckout>>>
 export type GetCheckoutStatusResult = NonNullable<Awaited<ReturnType<typeof getCheckoutStatus>>>
+export type ProcessStripeWebhookResult = NonNullable<Awaited<ReturnType<typeof processStripeWebhook>>>

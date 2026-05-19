@@ -403,10 +403,22 @@ export type CreateOrderHeaders = {
 };
 
 export type GetAllOrdersParams = {
+/**
+ * @minimum 0
+ */
 page?: number;
+/**
+ * @minimum 1
+ * @maximum 50
+ */
 size?: number;
 status?: OrderStatus[];
 userId?: string;
+sortBy?: string;
+sortDirection?: string;
+year?: number;
+dateFrom?: string;
+dateTo?: string;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
