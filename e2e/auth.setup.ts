@@ -18,7 +18,7 @@ setup('authenticate', async ({ page }) => {
   await page.goto('/signin')
 
   await page.getByLabel('Enter your email address').fill(EMAIL)
-  await page.getByLabel('Password').fill(PASSWORD)
+  await page.locator('#password').fill(PASSWORD)
   await page.getByRole('button', { name: 'Login' }).click()
 
   // Wait until redirected away from signin

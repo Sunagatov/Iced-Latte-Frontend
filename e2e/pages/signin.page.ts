@@ -10,7 +10,7 @@ export class SignInPage extends BasePage {
   constructor(page: Page) {
     super(page)
     this.emailInput = page.getByLabel('Enter your email address')
-    this.passwordInput = page.getByLabel('Password')
+    this.passwordInput = page.locator('#password')
     this.loginButton = page.getByRole('button', { name: 'Login' })
     this.errorMessage = page.locator('.text-negative')
   }

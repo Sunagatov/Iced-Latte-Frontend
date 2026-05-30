@@ -7,7 +7,8 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
   retries: IS_CI ? 2 : 1,
-  fullyParallel: true,
+  fullyParallel: IS_CI,
+  workers: IS_CI ? undefined : 1,
 
   reporter: IS_CI
     ? [['dot'], ['html', { open: 'never' }]]

@@ -125,7 +125,15 @@ function setAuthCookies(
   data: unknown,
   path: string,
 ): void {
-  if (path !== 'auth/refresh' || !isTokenPair(data)) {
+  if (
+    ![
+      'auth/authenticate',
+      'auth/register',
+      'auth/confirm',
+      'auth/refresh',
+    ].includes(path) ||
+    !isTokenPair(data)
+  ) {
     const setCookie = response.headers.get('set-cookie')
 
     if (setCookie) nextResponse.headers.set('set-cookie', setCookie)
@@ -144,6 +152,22 @@ function setAuthCookies(
 
   nextResponse.cookies.set(COOKIE_NAMES.access, data.token, AUTH_COOKIE_OPTIONS)
   nextResponse.cookies.set(COOKIE_NAMES.refresh, data.refreshToken, AUTH_COOKIE_OPTIONS)
+}
+
+function responseBodyForClient(data: unknown, path: string): unknown {
+  if (
+    [
+      'auth/authenticate',
+      'auth/register',
+      'auth/confirm',
+      'auth/refresh',
+    ].includes(path) &&
+    isTokenPair(data)
+  ) {
+    return { authenticated: true }
+  }
+
+  return data
 }
 
 async function refreshTokens(refreshToken: string): Promise<TokenPair | null> {
@@ -214,7 +238,10 @@ async function handleProxy(
       return errorResponse
     }
 
-    const nextResponse = createCorsResponse(data, response.status)
+    const nextResponse = createCorsResponse(
+      responseBodyForClient(data, safePath),
+      response.status,
+    )
 
     setAuthCookies(response, nextResponse, data, safePath)
 

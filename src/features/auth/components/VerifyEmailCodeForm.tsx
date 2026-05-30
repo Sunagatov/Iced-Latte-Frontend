@@ -31,9 +31,9 @@ const VerifyEmailCodeForm = () => {
   const onSubmit: SubmitHandler<IFormValues> = async (values) => {
     try {
       setLoading(true)
-      const { token, refreshToken } = await verifyEmailCode(values.verificationCode)
+      await verifyEmailCode(values.verificationCode)
 
-      await completeAuthSession(token, refreshToken)
+      await completeAuthSession()
       reset()
     } catch (error) {
       handleError(error)

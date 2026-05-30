@@ -37,11 +37,7 @@ export function isAuthRefreshExcludedRequest(url?: string): boolean {
       .replace(/^\/api\/proxy/, '')
       .replace(/^\/api\/v1/, '')
 
-    return (
-      normalizedPath === '/auth/authenticate' ||
-      normalizedPath === '/auth/refresh' ||
-      normalizedPath === '/auth/logout'
-    )
+    return normalizedPath.startsWith('/auth/')
   } catch {
     return false
   }
@@ -65,7 +61,9 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
         // 429 Too Many Requests — retry once after Retry-After delay
         if (
           error.response?.status === 429 &&
-          !originalRequest.isRetry
+          !originalRequest.isRetry &&
+          !originalRequest.skipAuthRetry &&
+          !isAuthRefreshExcludedRequest(originalRequest.url)
         ) {
           originalRequest.isRetry = true
           const retryAfter = error.response.headers?.['retry-after']

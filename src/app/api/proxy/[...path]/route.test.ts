@@ -156,7 +156,7 @@ describe('proxy route', () => {
     expect(await res.json()).toEqual({ id: 'created-id' })
   })
 
-  it('refresh persists rotated auth cookies from response body', async () => {
+  it('refresh persists rotated auth cookies and redacts token body', async () => {
     mockFetch(200, { token: 'new-access', refreshToken: 'new-refresh' })
 
     const res = await POST(makeRequest('POST', 'auth/refresh'), {
@@ -172,6 +172,47 @@ describe('proxy route', () => {
     expect(
       setCookie.some((value) => value.includes('refreshToken=new-refresh')),
     ).toBe(true)
+    expect(await res.json()).toEqual({ authenticated: true })
+  })
+
+  it('authenticate persists auth cookies and does not expose tokens to client', async () => {
+    mockFetch(200, { token: 'access-token', refreshToken: 'refresh-token' })
+
+    const res = await POST(
+      makeRequest('POST', 'auth/authenticate', {
+        email: 'olivia@example.com',
+        password: 'p@ss1logic11',
+      }),
+      {
+        params: Promise.resolve({ path: ['auth', 'authenticate'] }),
+      },
+    )
+
+    const setCookie = res.headers.getSetCookie()
+
+    expect(res.status).toBe(200)
+    expect(setCookie.some((value) => value.includes('token=access-token'))).toBe(true)
+    expect(setCookie.some((value) => value.includes('refreshToken=refresh-token'))).toBe(true)
+    expect(await res.json()).toEqual({ authenticated: true })
+  })
+
+  it('register persists auth cookies and does not expose tokens to client', async () => {
+    mockFetch(200, { token: 'access-token', refreshToken: 'refresh-token' })
+
+    const res = await POST(
+      makeRequest('POST', 'auth/register', {
+        firstName: 'Olivia',
+        lastName: 'Example',
+        email: 'olivia@example.com',
+        password: 'p@ss1logic11',
+      }),
+      {
+        params: Promise.resolve({ path: ['auth', 'register'] }),
+      },
+    )
+
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ authenticated: true })
   })
 
   it('logout forwards access token as bearer auth and refresh token in X-Refresh-Token', async () => {

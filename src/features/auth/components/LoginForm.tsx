@@ -37,9 +37,9 @@ export default function LoginForm() {
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     try {
       setLoading(true)
-      const { token, refreshToken } = await apiLoginUser({ ...formData, turnstileToken })
+      await apiLoginUser({ ...formData, turnstileToken })
 
-      await completeAuthSession(token, refreshToken)
+      await completeAuthSession()
       reset()
     } catch (error) {
       handleError(error)

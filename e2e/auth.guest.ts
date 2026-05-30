@@ -5,6 +5,7 @@ config({ path: '.env.local' })
 
 const EMAIL = process.env.E2E_EMAIL ?? 'olivia@example.com'
 const PASSWORD = process.env.E2E_PASSWORD ?? 'p@ss1logic11'
+const EMAIL_CONFIRMATION_ENABLED = process.env.NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED === 'true'
 
 test.describe('Sign in', () => {
   test('form renders correctly', async ({ signInPage }) => {
@@ -84,17 +85,25 @@ test.describe('Navigation links', () => {
 })
 
 test.describe('Password reset', () => {
-  test('forgot password page renders email input', async ({ page }) => {
-    await page.goto('/forgotpass')
-    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5_000 })
-  })
+  if (EMAIL_CONFIRMATION_ENABLED) {
+    test('forgot password page renders email input', async ({ page }) => {
+      await page.goto('/forgotpass')
+      await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5_000 })
+    })
 
-  test('forgot password form submits and shows confirmation', async ({ page }) => {
-    await page.goto('/forgotpass')
-    await page.locator('input[type="email"]').fill('test@example.com')
-    await page.locator('button[type="submit"]').click()
-    await expect(page.locator('body')).toContainText(/sent|check|email/i, { timeout: 8_000 })
-  })
+    test('forgot password form submits and shows confirmation', async ({ page }) => {
+      await page.goto('/forgotpass')
+      await page.locator('input[type="email"]').fill('test@example.com')
+      await page.locator('button[type="submit"]').click()
+      await expect(page.locator('body')).toContainText(/sent|check|email/i, { timeout: 8_000 })
+    })
+  } else {
+    test('forgot password page shows unavailable state when email is disabled', async ({ page }) => {
+      await page.goto('/forgotpass')
+      await expect(page.getByRole('heading', { name: /password reset unavailable/i })).toBeVisible()
+      await expect(page.getByRole('link', { name: /back to sign in/i })).toBeVisible()
+    })
+  }
 
   test('reset password page renders form', async ({ page }) => {
     await page.goto('/resetpass?token=fake-reset-token')

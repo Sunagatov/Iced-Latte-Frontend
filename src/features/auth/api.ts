@@ -6,31 +6,30 @@ import {
   register,
 } from '@/shared/api/generated/security'
 
+type AuthSessionResult = {
+  authenticated?: boolean
+}
+
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
-): Promise<{ token: string; refreshToken: string } | null> {
-  const response = await register(credentials)
+): Promise<boolean> {
+  const result = (await register(credentials)) as unknown as AuthSessionResult
 
-  return response.token ? response : null
+  return result.authenticated === true
 }
 
 export async function verifyEmailCode(
   code: string,
-): Promise<{ token: string; refreshToken: string }> {
+): Promise<void> {
   if (!code) throw new Error('Verification code is required')
 
-  return confirmEmail({ token: code })
-}
-
-export interface LoginResponse {
-  token: string
-  refreshToken: string
+  await confirmEmail({ token: code })
 }
 
 export async function apiLoginUser(
   credentials: LoginCredentials,
-): Promise<LoginResponse> {
-  return authenticate(credentials)
+): Promise<void> {
+  await authenticate(credentials)
 }
 
 export async function apiLogoutUser(): Promise<void> {
