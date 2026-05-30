@@ -8,9 +8,16 @@ import FavoriteToggleButton from '@/features/favorites/components/FavoriteToggle
 import { useFavoriteProductActions } from '@/features/favorites/useFavoriteProductActions'
 import ProductImage from '@/shared/ui/ProductImage'
 
-type Props = Readonly<FavElementProps & { view?: 'list' | 'grid' }>
+type Props = Readonly<FavElementProps & {
+  priority?: boolean
+  view?: 'list' | 'grid'
+}>
 
-export default function FavElement({ product, view = 'list' }: Props) {
+export default function FavElement({
+  product,
+  priority = false,
+  view = 'list',
+}: Props) {
   const {
     addToCart,
     decreaseCartQuantity,
@@ -41,6 +48,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
               alt={product.name}
               className="object-contain transition-transform duration-300 group-hover:scale-105"
               fill
+              preload={priority}
               productFileUrl={product.productFileUrl}
               sizes="(max-width: 768px) 50vw, 240px"
             />
@@ -100,6 +108,7 @@ export default function FavElement({ product, view = 'list' }: Props) {
               alt={product.name}
               className="object-contain transition-transform duration-300 group-hover:scale-105"
               fill
+              preload={priority}
               productFileUrl={product.productFileUrl}
               sizes="140px"
             />

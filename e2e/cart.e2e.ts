@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 import { seedCart, clearCart } from './helpers/api'
 import { PRODUCT_ID, PRODUCT_ID_2 } from './helpers/constants'
 
@@ -84,13 +84,14 @@ test.describe('Cart (authenticated)', () => {
   })
 
   test('cart header badge shows correct count', async ({ page }) => {
-    await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 2 }])
+    await seedCart(page, [
+      { productId: PRODUCT_ID, productQuantity: 1 },
+      { productId: PRODUCT_ID_2, productQuantity: 1 },
+    ])
     await page.goto('/')
     const badge = page.getByTestId('header-cart-badge')
 
     await expect(badge).toBeVisible({ timeout: 12_000 })
-    const text = await badge.textContent()
-
-    expect(parseInt(text ?? '0')).toBeGreaterThanOrEqual(2)
+    await expect(badge).toHaveText('2', { timeout: 12_000 })
   })
 })

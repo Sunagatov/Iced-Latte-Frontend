@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import FavElement from './FavElement'
-import type { IProduct } from '@/features/products/types'
+import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
 import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
 
 const FAVOURITES_VIEW_KEY = 'favourites-view'
@@ -33,7 +33,7 @@ function GridIcon({ active }: { active: boolean }) {
 }
 
 export default function FavouritesFull() {
-  const favourites: IProduct[] = useFavouritesStore((s) => s.favourites)
+  const favourites: FavoriteProduct[] = useFavouritesStore((s) => s.favourites)
   const [view, setView] = useState<'list' | 'grid'>(() => {
     if (typeof window === 'undefined') return 'list'
     const saved = window.localStorage.getItem(FAVOURITES_VIEW_KEY)
@@ -49,8 +49,13 @@ export default function FavouritesFull() {
     if (view === 'grid') {
       return (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {favourites.map((item: IProduct) => (
-            <FavElement key={item.id} product={item} view="grid" />
+          {favourites.map((item: FavoriteProduct, index) => (
+            <FavElement
+              key={item.id}
+              priority={index === 0}
+              product={item}
+              view="grid"
+            />
           ))}
         </div>
       )
@@ -58,8 +63,13 @@ export default function FavouritesFull() {
 
     return (
       <div className="flex flex-col gap-3">
-        {favourites.map((item: IProduct) => (
-          <FavElement key={item.id} product={item} view="list" />
+        {favourites.map((item: FavoriteProduct, index) => (
+          <FavElement
+            key={item.id}
+            priority={index === 0}
+            product={item}
+            view="list"
+          />
         ))}
       </div>
     )

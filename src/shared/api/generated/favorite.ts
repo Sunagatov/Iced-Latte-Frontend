@@ -19,6 +19,68 @@ export interface ListOfFavoriteProducts {
 }
 
 /**
+ * Summary information about a product for list, cart, and favorite views.
+ */
+export interface ProductSummaryDto {
+  /** Unique identifier for the product. */
+  id: string;
+  /** Name of the product. */
+  name: string;
+  /** Price of the product. */
+  price: number;
+  /** URL of the product's primary image or file. */
+  productFileUrl?: string;
+}
+
+/**
+ * A list of products marked as favorites by the user.
+ */
+export interface ListOfFavoriteProductsDto {
+  /** An array of product details for the favorite products. */
+  products: ProductSummaryDto[];
+}
+
+export type ErrorResponseErrorsItem = {
+  field?: string;
+  message?: string;
+};
+
+/**
+ * RFC 9457 Problem Details error response
+ */
+export interface ErrorResponse {
+  /** Stable URI identifying the error type */
+  type: string;
+  /** Short human-readable label */
+  title: string;
+  /**
+     * HTTP status code
+     * @minimum 100
+     * @maximum 599
+     */
+  status: number;
+  /** Human-readable diagnostic text */
+  detail?: string;
+  /** Request path */
+  instance?: string;
+  /** ISO-8601 timestamp */
+  timestamp?: string;
+  /** Field-level validation errors */
+  errors?: ErrorResponseErrorsItem[];
+}
+
+/**
+ * Standard success response format
+ */
+export interface SuccessResponse {
+  /**
+     * Success message
+     * @minLength 1
+     */
+  message: string;
+}
+
+/**
  * Detailed information about a product in the Iced Latte catalog.
  */
 export interface ProductInfoDto {
@@ -73,54 +135,6 @@ export interface ProductInfoDto {
   dateAdded: string;
   /** Computed popularity score based on sales volume and average rating. */
   popularityScore: number;
-}
-
-/**
- * A list of products marked as favorites by the user.
- */
-export interface ListOfFavoriteProductsDto {
-  /** An array of product details for the favorite products. */
-  products: ProductInfoDto[];
-}
-
-export type ErrorResponseErrorsItem = {
-  field?: string;
-  message?: string;
-};
-
-/**
- * RFC 9457 Problem Details error response
- */
-export interface ErrorResponse {
-  /** Stable URI identifying the error type */
-  type: string;
-  /** Short human-readable label */
-  title: string;
-  /**
-     * HTTP status code
-     * @minimum 100
-     * @maximum 599
-     */
-  status: number;
-  /** Human-readable diagnostic text */
-  detail?: string;
-  /** Request path */
-  instance?: string;
-  /** ISO-8601 timestamp */
-  timestamp?: string;
-  /** Field-level validation errors */
-  errors?: ErrorResponseErrorsItem[];
-}
-
-/**
- * Standard success response format
- */
-export interface SuccessResponse {
-  /**
-     * Success message
-     * @minLength 1
-     */
-  message: string;
 }
 
 /**

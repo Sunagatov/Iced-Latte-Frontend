@@ -8,6 +8,20 @@
 import { orvalMutator } from '../orvalMutator';
 import type { BodyType } from '../orvalMutator';
 /**
+ * Summary information about a product for list, cart, and favorite views.
+ */
+export interface ProductSummaryDto {
+  /** Unique identifier for the product. */
+  id: string;
+  /** Name of the product. */
+  name: string;
+  /** Price of the product. */
+  price: number;
+  /** URL of the product's primary image or file. */
+  productFileUrl?: string;
+}
+
+/**
  * Detailed information about a product in the Iced Latte catalog.
  */
 export interface ProductInfoDto {

@@ -7,16 +7,13 @@ import { getUserData } from '@/features/user/api'
 import { getSafeNext } from '@/shared/utils/navigation'
 import { ROUTES } from '@/shared/config/routes'
 
-function getTokensFromHash() {
+function getOAuthCodeFromHash() {
   const hash = window.location.hash.startsWith('#')
     ? window.location.hash.slice(1)
     : window.location.hash
   const params = new URLSearchParams(hash)
 
-  return {
-    token: params.get('token'),
-    refreshToken: params.get('refreshToken'),
-  }
+  return params.get('oauthCode')
 }
 
 function GoogleCallbackInner() {
@@ -37,22 +34,20 @@ function GoogleCallbackInner() {
       return
     }
 
-    const { token, refreshToken } = getTokensFromHash()
+    const oauthCode = getOAuthCodeFromHash()
 
-    if (!token || !refreshToken) {
+    if (!oauthCode) {
       router.replace(signInUrl)
 
       return
     }
 
     // useSessionBootstrap is suppressed on this page via the pathname check.
-    // Exchange fragment tokens for HttpOnly cookies via the same-origin API route,
-    // then fetch the current user from the backend-backed session.
-    fetch('/api/auth/google/callback', {
+    // Exchange the backend's one-time OAuth handoff code for HttpOnly cookies
+    // via the same-origin proxy, then fetch the current user from the session.
+    fetch(`/api/proxy/auth/oauth/token?code=${encodeURIComponent(oauthCode)}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
-      body: JSON.stringify({ token, refreshToken }),
     })
       .then((response) => {
         if (!response.ok) {

@@ -22,65 +22,22 @@ export interface AddNewItemsToShoppingCartRequest {
 }
 
 /**
- * Detailed information about a product in the Iced Latte catalog.
+ * Summary information about a product for cart views.
  */
-export interface ProductInfoDto {
+export interface ProductSummaryDto {
   /** Unique identifier for the product. */
   id: string;
   /** Name of the product. */
   name: string;
-  /** Description of the product. */
-  description: string;
   /** Price of the product. */
   price: number;
-  /** Available quantity of the product. */
-  quantity: number;
-  /** Indicates if the product is active. */
-  active: boolean;
   /** URL of the product's primary image or file. */
   productFileUrl?: string;
-  /**
-     * URLs of all product images (max 10).
-     * @maxItems 10
-     */
-  productImageUrls?: string[];
-  /** Average rating of the product. */
-  averageRating: number;
-  /** Number of reviews for the product. */
-  reviewsCount: number;
-  /** AI-generated summary of customer reviews. Null until generated. */
-  aiSummary?: string;
-  /** Brand of the product. */
-  brandName: string;
-  /** Seller of the product. */
-  sellerName: string;
-  /** Country where the product is manufactured. */
-  originCountry: string;
-  /** Weight of the product in grams. */
-  weight: number;
-  /** Length of the product in millimetres. */
-  length: number;
-  /** Width of the product in millimetres. */
-  width: number;
-  /** Height of the product in millimetres. */
-  height: number;
-  /** Total number of units of this product sold across all orders. */
-  soldProductsCount: number;
-  /**
-     * Discount applied to the product as a percentage (0–100).
-     * @minimum 0
-     * @maximum 100
-     */
-  discount: number;
-  /** Date and time when the product was added. */
-  dateAdded: string;
-  /** Computed popularity score based on sales volume and average rating. */
-  popularityScore: number;
 }
 
 export interface ShoppingCartItemDto {
   id: string;
-  productInfo: ProductInfoDto;
+  productInfo: ProductSummaryDto;
   /**
      * @minimum 1
      * @maximum 99
@@ -152,46 +109,6 @@ export interface SuccessResponse {
      * @minLength 1
      */
   message: string;
-}
-
-/**
- * Paginated list of products with pagination metadata.
- */
-export interface ProductListWithPaginationInfoDto {
-  /** List of products. */
-  products: ProductInfoDto[];
-  /** Current page number. */
-  page: number;
-  /** Number of products per page. */
-  size: number;
-  /** Total number of products. */
-  totalElements: number;
-  /** Total number of pages. */
-  totalPages: number;
-}
-
-export interface ProductIdsDto {
-  /**
-     * List of product IDs.
-     * @minItems 1
-     */
-  productIds: string[];
-}
-
-/**
- * List of distinct product sellers.
- */
-export interface SellersDto {
-  /** List of product sellers. */
-  sellers: string[];
-}
-
-/**
- * List of distinct product brands.
- */
-export interface BrandsDto {
-  /** List of product brands. */
-  brands: string[];
 }
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];

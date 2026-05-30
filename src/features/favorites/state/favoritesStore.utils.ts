@@ -1,10 +1,10 @@
-import type { IProduct } from '@/features/products/types'
+import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
 
 export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
 
 export type FavStoreSlice = {
   favouriteIds: string[]
-  favourites: IProduct[]
+  favourites: FavoriteProduct[]
   isSync: boolean
   pendingIds: Set<string>
   status: FavStatus
@@ -38,23 +38,23 @@ export const normalizeFavouriteIds = (ids: unknown): string[] => {
   )
 }
 
-const isProduct = (value: unknown): value is IProduct => {
+const isProduct = (value: unknown): value is FavoriteProduct => {
   if (typeof value !== 'object' || value === null) {
     return false
   }
 
-  const candidate = value as Partial<IProduct>
+  const candidate = value as Partial<FavoriteProduct>
 
   return isProductId(candidate.id)
 }
 
-export const normalizeProducts = (products: unknown): IProduct[] => {
+export const normalizeProducts = (products: unknown): FavoriteProduct[] => {
   if (!Array.isArray(products)) {
     return []
   }
 
   const seen = new Set<string>()
-  const unique: IProduct[] = []
+  const unique: FavoriteProduct[] = []
 
   for (const item of products) {
     if (!isProduct(item) || seen.has(item.id)) {
@@ -70,7 +70,7 @@ export const normalizeProducts = (products: unknown): IProduct[] => {
 
 export function mapProductsToFavourites(products: unknown): {
   favouriteIds: string[]
-  favourites: IProduct[]
+  favourites: FavoriteProduct[]
 } {
   const unique = normalizeProducts(products)
 
@@ -107,9 +107,9 @@ export function clearPendingFavourite(
 }
 
 export function restoreRemovedFavourite(
-  favourites: IProduct[],
-  previousProduct: IProduct | null,
-): IProduct[] {
+  favourites: FavoriteProduct[],
+  previousProduct: FavoriteProduct | null,
+): FavoriteProduct[] {
   return previousProduct
     ? mapProductsToFavourites([...favourites, previousProduct]).favourites
     : favourites

@@ -8,7 +8,7 @@ import {
   type FavStoreState,
 } from '@/features/favorites/state/favoritesStore'
 import { useAuthStore, AuthStatus } from '@/features/auth/store'
-import type { IProduct } from '@/features/products/types'
+import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
 import { useEffect, useState } from 'react'
 
 interface PersistApi {
@@ -19,8 +19,8 @@ interface PersistApi {
 }
 
 export default function FavouritesPage() {
-  const favourites: IProduct[] = useFavouritesStore(
-    (s: FavStoreState): IProduct[] => s.favourites,
+  const favourites: FavoriteProduct[] = useFavouritesStore(
+    (s: FavStoreState): FavoriteProduct[] => s.favourites,
   )
   const status: FavStatus = useFavouritesStore((s) => s.status)
   const hydrate: () => Promise<void> = useFavouritesStore(

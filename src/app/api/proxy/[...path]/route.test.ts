@@ -175,6 +175,32 @@ describe('proxy route', () => {
     expect(await res.json()).toEqual({ authenticated: true })
   })
 
+  it('oauth token handoff persists auth cookies and does not expose tokens to client', async () => {
+    mockFetch(200, { token: 'oauth-access', refreshToken: 'oauth-refresh' })
+
+    const res = await POST(
+      makeRequest('POST', 'auth/oauth/token?code=handoff-code'),
+      {
+        params: Promise.resolve({ path: ['auth', 'oauth', 'token'] }),
+      },
+    )
+
+    const setCookie = res.headers.getSetCookie()
+
+    expect(res.status).toBe(200)
+    expect(setCookie.some((value) => value.includes('token=oauth-access'))).toBe(
+      true,
+    )
+    expect(
+      setCookie.some((value) => value.includes('refreshToken=oauth-refresh')),
+    ).toBe(true)
+    expect(await res.json()).toEqual({ authenticated: true })
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/auth/oauth/token?code=handoff-code'),
+      expect.objectContaining({ method: 'POST' }),
+    )
+  })
+
   it('authenticate persists auth cookies and does not expose tokens to client', async () => {
     mockFetch(200, { token: 'access-token', refreshToken: 'refresh-token' })
 

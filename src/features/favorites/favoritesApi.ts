@@ -1,5 +1,5 @@
-import type { IProduct } from '@/features/products/types'
 import type {
+  FavoriteProduct,
   FavouritesResponse,
   SyncFavouritesRequest,
 } from '@/features/favorites/favoritesTypes'
@@ -19,7 +19,7 @@ export async function removeFavourite(id: string): Promise<void> {
   await removeProductFromFavorite(id)
 }
 
-export async function fetchFavourites(signal?: AbortSignal): Promise<IProduct[]> {
+export async function fetchFavourites(signal?: AbortSignal): Promise<FavoriteProduct[]> {
   const options = { cache: false, signal }
   const response = await getListOfFavoriteProducts(options) as FavouritesResponse
 

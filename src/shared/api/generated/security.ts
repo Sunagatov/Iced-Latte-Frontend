@@ -111,9 +111,9 @@ export interface UserAuthenticationRequest {
 export interface ConfirmEmailRequest {
   /**
      * Token for confirming the email address.
-     * @minLength 9
-     * @maxLength 9
-     * @pattern ^\d{9}$
+     * @minLength 43
+     * @maxLength 43
+     * @pattern ^[A-Za-z0-9_-]{43}$
      */
   token: string;
 }
@@ -128,10 +128,10 @@ export interface ForgotPasswordRequest {
 
 export interface ChangePasswordRequest {
   /**
-     * Verification code sent to the user's email.
-     * @minLength 9
-     * @maxLength 9
-     * @pattern ^\d{9}$
+     * Password reset token sent to the user's email.
+     * @minLength 43
+     * @maxLength 43
+     * @pattern ^[A-Za-z0-9_-]{43}$
      */
   code: string;
   password: PasswordField;
@@ -200,14 +200,14 @@ export interface UpdateUserAccountRequest {
      * @maxLength 64
      * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]+$
      */
-  firstName?: string;
+  firstName: string;
   /**
      * The last name of the user.
      * @minLength 2
      * @maxLength 64
      * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]+$
      */
-  lastName?: string;
+  lastName: string;
   /** The birth date of the user. */
   birthDate?: string;
   /** The phone number of the user. */
@@ -342,6 +342,16 @@ code?: string;
 state?: string;
 };
 
+export type CompleteOAuthTokenHandoffParams = {
+/**
+ * Short-lived one-time OAuth handoff code from the frontend callback fragment.
+ * @minLength 43
+ * @maxLength 43
+ * @pattern ^[A-Za-z0-9_-]{43}$
+ */
+code: string;
+};
+
 export type LogoutHeaders = {
 /**
  * Raw refresh token value to invalidate (no 'Bearer' prefix). Obtain from the refreshToken field of the authentication response.
@@ -375,6 +385,19 @@ export const completeOAuthCallback = (
  options?: SecondParameter<typeof orvalMutator<unknown>>,) => {
       return orvalMutator<unknown>(
       {url: `/api/v1/auth/oauth/${provider}/callback`, method: 'GET',
+        params
+    },
+      options);
+    }
+
+/**
+ * @summary Exchange OAuth handoff code for tokens
+ */
+export const completeOAuthTokenHandoff = (
+    params: CompleteOAuthTokenHandoffParams,
+ options?: SecondParameter<typeof orvalMutator<UserAuthenticationResponse>>,) => {
+      return orvalMutator<UserAuthenticationResponse>(
+      {url: `/api/v1/auth/oauth/token`, method: 'POST',
         params
     },
       options);
@@ -513,6 +536,7 @@ export const changePassword = (
 
 export type InitiateOAuthResult = NonNullable<Awaited<ReturnType<typeof initiateOAuth>>>
 export type CompleteOAuthCallbackResult = NonNullable<Awaited<ReturnType<typeof completeOAuthCallback>>>
+export type CompleteOAuthTokenHandoffResult = NonNullable<Awaited<ReturnType<typeof completeOAuthTokenHandoff>>>
 export type RegisterResult = NonNullable<Awaited<ReturnType<typeof register>>>
 export type ConfirmEmailResult = NonNullable<Awaited<ReturnType<typeof confirmEmail>>>
 export type AuthenticateResult = NonNullable<Awaited<ReturnType<typeof authenticate>>>

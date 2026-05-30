@@ -22,6 +22,13 @@ const AUTH_COOKIE_OPTIONS = {
   path: '/',
   maxAge: 60 * 60 * 24,
 }
+const AUTH_TOKEN_RESPONSE_PATHS = [
+  'auth/authenticate',
+  'auth/register',
+  'auth/confirm',
+  'auth/refresh',
+  'auth/oauth/token',
+]
 
 type TokenPair = {
   token: string
@@ -126,12 +133,7 @@ function setAuthCookies(
   path: string,
 ): void {
   if (
-    ![
-      'auth/authenticate',
-      'auth/register',
-      'auth/confirm',
-      'auth/refresh',
-    ].includes(path) ||
+    !AUTH_TOKEN_RESPONSE_PATHS.includes(path) ||
     !isTokenPair(data)
   ) {
     const setCookie = response.headers.get('set-cookie')
@@ -156,12 +158,7 @@ function setAuthCookies(
 
 function responseBodyForClient(data: unknown, path: string): unknown {
   if (
-    [
-      'auth/authenticate',
-      'auth/register',
-      'auth/confirm',
-      'auth/refresh',
-    ].includes(path) &&
+    AUTH_TOKEN_RESPONSE_PATHS.includes(path) &&
     isTokenPair(data)
   ) {
     return { authenticated: true }

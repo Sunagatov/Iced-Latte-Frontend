@@ -1,4 +1,9 @@
 import type { IProduct } from '@/features/products/types'
+import type { ProductSummaryDto } from '@/shared/api/generated/cart'
+
+type CartProductInfo = Omit<ProductSummaryDto, 'productFileUrl'> & {
+  productFileUrl?: string | null
+} & Partial<Omit<IProduct, keyof ProductSummaryDto>>
 
 export interface ICart {
   id: string
@@ -13,7 +18,7 @@ export interface ICart {
 
 export interface ICartItem {
   id: string
-  productInfo: IProduct
+  productInfo: CartProductInfo
   productQuantity: number
 }
 

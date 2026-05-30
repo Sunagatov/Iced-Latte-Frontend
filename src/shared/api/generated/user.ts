@@ -51,14 +51,14 @@ export interface UpdateUserAccountRequest {
      * @maxLength 64
      * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]+$
      */
-  firstName?: string;
+  firstName: string;
   /**
      * The last name of the user.
      * @minLength 2
      * @maxLength 64
      * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]+$
      */
-  lastName?: string;
+  lastName: string;
   /** The birth date of the user. */
   birthDate?: string;
   /** The phone number of the user. */
@@ -273,36 +273,6 @@ export const deleteUserProfile = (
     }
 
 /**
- * Initiate a user password reset.
- * @summary Reset user password
- */
-export const resetUserPassword = (
-    initiatePasswordResetRequest: BodyType<InitiatePasswordResetRequest>,
- options?: SecondParameter<typeof orvalMutator<void>>,) => {
-      return orvalMutator<void>(
-      {url: `/api/v1/users/password/reset`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: initiatePasswordResetRequest
-    },
-      options);
-    }
-
-/**
- * Confirm a user's password reset.
- * @summary Confirm password reset
- */
-export const confirmResetUserPassword = (
-    confirmPasswordResetRequest: BodyType<ConfirmPasswordResetRequest>,
- options?: SecondParameter<typeof orvalMutator<void>>,) => {
-      return orvalMutator<void>(
-      {url: `/api/v1/users/password/reset/confirm`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: confirmPasswordResetRequest
-    },
-      options);
-    }
-
-/**
  * @summary Get delivery addresses
  */
 export const getDeliveryAddresses = (
@@ -414,8 +384,6 @@ export type GetUserProfileResult = NonNullable<Awaited<ReturnType<typeof getUser
 export type EditUserProfileResult = NonNullable<Awaited<ReturnType<typeof editUserProfile>>>
 export type ChangeUserPasswordResult = NonNullable<Awaited<ReturnType<typeof changeUserPassword>>>
 export type DeleteUserProfileResult = NonNullable<Awaited<ReturnType<typeof deleteUserProfile>>>
-export type ResetUserPasswordResult = NonNullable<Awaited<ReturnType<typeof resetUserPassword>>>
-export type ConfirmResetUserPasswordResult = NonNullable<Awaited<ReturnType<typeof confirmResetUserPassword>>>
 export type GetDeliveryAddressesResult = NonNullable<Awaited<ReturnType<typeof getDeliveryAddresses>>>
 export type AddDeliveryAddressResult = NonNullable<Awaited<ReturnType<typeof addDeliveryAddress>>>
 export type UpdateDeliveryAddressResult = NonNullable<Awaited<ReturnType<typeof updateDeliveryAddress>>>

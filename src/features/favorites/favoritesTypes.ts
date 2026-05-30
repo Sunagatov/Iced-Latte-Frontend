@@ -1,7 +1,12 @@
 import type { IProduct } from '@/features/products/types'
+import type { ProductSummaryDto } from '@/shared/api/generated/favorite'
+
+export type FavoriteProduct = Omit<ProductSummaryDto, 'productFileUrl'> & {
+  productFileUrl?: string | null
+} & Partial<Omit<IProduct, keyof ProductSummaryDto>>
 
 export interface FavouritesResponse {
-  products: IProduct[]
+  products: FavoriteProduct[]
 }
 
 export interface SyncFavouritesRequest {
@@ -9,5 +14,5 @@ export interface SyncFavouritesRequest {
 }
 
 export interface FavElementProps {
-  product: IProduct
+  product: FavoriteProduct
 }
