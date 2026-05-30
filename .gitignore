@@ -51,6 +51,7 @@ yarn-error.log*
 *.iml
 
 # misc
+.codegraph/
 .amazonq/
 /Taskfile.yml
 /PLAYWRIGHT_FIX_HANDOFF.md
