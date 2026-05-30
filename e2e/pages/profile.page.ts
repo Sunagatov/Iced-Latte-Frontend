@@ -28,17 +28,40 @@ export class ProfilePage extends BasePage {
 
   async expectLoaded() {
     await expect(this.page.locator('main')).toBeVisible({ timeout: 10_000 })
+    await expect(
+      this.page.getByRole('heading', { name: 'Account summary' }),
+    ).toBeVisible({ timeout: 10_000 })
   }
 
   async openPersonalDetails() {
-    const sidebar = this.page.locator('aside').getByRole('button', { name: 'Personal details' })
-    const chip = this.page.getByRole('button', { name: 'Personal details' }).first()
+    const buttons = this.page.getByRole('button', { name: 'Personal details' })
 
-    if (await sidebar.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await sidebar.click()
-    } else if (await chip.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await chip.click()
+    for (let index = 0; index < await buttons.count(); index += 1) {
+      const button = buttons.nth(index)
+
+      if (await button.isVisible({ timeout: 500 }).catch(() => false)) {
+        await button.click()
+        break
+      }
     }
+
+    if (await this.personalDetailsHeading.isVisible({ timeout: 1000 }).catch(() => false)) {
+      return
+    }
+
+    const editProfileAction = this.page.getByRole('button', {
+      name: /edit profile|^edit$/i,
+    })
+
+    for (let index = 0; index < await editProfileAction.count(); index += 1) {
+      const button = editProfileAction.nth(index)
+
+      if (await button.isVisible({ timeout: 500 }).catch(() => false)) {
+        await button.click()
+        break
+      }
+    }
+
     await expect(this.personalDetailsHeading).toBeVisible({ timeout: 10_000 })
   }
 

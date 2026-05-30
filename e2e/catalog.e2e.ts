@@ -104,10 +104,10 @@ test.describe('Filters', () => {
     await homePage.goto()
     const page = homePage['page']
 
-    await expect(page.getByText('Price, $')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Price' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Rating' })).toBeVisible()
-    await expect(page.getByText('Brand')).toBeVisible()
-    await expect(page.getByText('Seller')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Brand' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Seller' })).toBeVisible()
   })
 
   test('price from input accepts numeric values', async ({ homePage }) => {
@@ -175,10 +175,11 @@ test.describe('Filters', () => {
   test('brand filter checkbox toggles', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
-    const checkbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+    const option = page.locator('[data-testid="filter-group-brand"] label').first()
+    const checkbox = option.getByRole('checkbox')
 
-    if (!(await checkbox.isVisible())) return
-    await checkbox.click()
+    if (!(await option.isVisible())) return
+    await option.click()
     await expect(checkbox).toBeChecked()
     await expect(page.locator('#Brand-reset-btn')).toBeVisible()
   })
@@ -186,10 +187,11 @@ test.describe('Filters', () => {
   test('brand filter reset clears selection', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
-    const checkbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+    const option = page.locator('[data-testid="filter-group-brand"] label').first()
+    const checkbox = option.getByRole('checkbox')
 
-    if (!(await checkbox.isVisible())) return
-    await checkbox.click()
+    if (!(await option.isVisible())) return
+    await option.click()
     await expect(page.locator('#Brand-reset-btn')).toBeVisible({ timeout: 5_000 })
     await page.locator('#Brand-reset-btn').click()
     await expect(checkbox).not.toBeChecked()
@@ -214,10 +216,11 @@ test.describe('Filters', () => {
   test('seller filter checkbox toggles', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
-    const checkbox = page.locator('[data-testid="filter-group-seller"] input[type="checkbox"]').first()
+    const option = page.locator('[data-testid="filter-group-seller"] label').first()
+    const checkbox = option.getByRole('checkbox')
 
-    if (!(await checkbox.isVisible())) return
-    await checkbox.click()
+    if (!(await option.isVisible())) return
+    await option.click()
     await expect(checkbox).toBeChecked()
     await expect(page.locator('#Seller-reset-btn')).toBeVisible()
   })
@@ -225,10 +228,11 @@ test.describe('Filters', () => {
   test('seller filter reset clears selection', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
-    const checkbox = page.locator('[data-testid="filter-group-seller"] input[type="checkbox"]').first()
+    const option = page.locator('[data-testid="filter-group-seller"] label').first()
+    const checkbox = option.getByRole('checkbox')
 
-    if (!(await checkbox.isVisible())) return
-    await checkbox.click()
+    if (!(await option.isVisible())) return
+    await option.click()
     await page.locator('#Seller-reset-btn').click()
     await expect(checkbox).not.toBeChecked()
   })
@@ -236,9 +240,9 @@ test.describe('Filters', () => {
   test('combined brand + price narrows results', async ({ homePage }) => {
     await homePage.goto()
     const page = homePage['page']
-    const checkbox = page.locator('[data-testid="filter-group-brand"] input[type="checkbox"]').first()
+    const option = page.locator('[data-testid="filter-group-brand"] label').first()
 
-    if (await checkbox.isVisible()) await checkbox.click()
+    if (await option.isVisible()) await option.click()
     await page.locator('#from-price-input').fill('3')
     await expect(
       homePage.productCards.first().or(page.getByTestId('empty-state')),

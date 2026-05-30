@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures/index'
+import { clearCart } from './helpers/api'
 import { PRODUCT_ID, PRODUCT_ID_WITH_REVIEWS } from './helpers/constants'
 
 test.describe('Product Detail', () => {
@@ -28,13 +29,15 @@ test.describe('Product Detail', () => {
   })
 
   test('has add to cart button', async ({ page }) => {
+    await clearCart(page)
     await page.goto(`/product/${PRODUCT_ID}`)
-    await expect(page.getByTestId('add-to-cart-btn')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByRole('button', { name: 'Add to cart' })).toBeVisible({ timeout: 10_000 })
   })
 
   test('add to cart button works', async ({ page }) => {
+    await clearCart(page)
     await page.goto(`/product/${PRODUCT_ID}`)
-    const addBtn = page.getByTestId('add-to-cart-btn')
+    const addBtn = page.getByRole('button', { name: 'Add to cart' })
 
     await expect(addBtn).toBeVisible({ timeout: 10_000 })
 
@@ -50,7 +53,9 @@ test.describe('Product Detail', () => {
 
   test('favourite button is visible', async ({ page }) => {
     await page.goto(`/product/${PRODUCT_ID}`)
-    await expect(page.getByTestId('favourite-btn')).toBeVisible({ timeout: 10_000 })
+    await expect(
+      page.getByRole('button', { name: /^(add to|remove from) favourites$/i }),
+    ).toBeVisible({ timeout: 10_000 })
   })
 
   test('back navigation returns to home', async ({ homePage, page }) => {

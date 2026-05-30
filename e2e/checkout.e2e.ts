@@ -2,6 +2,8 @@ import { test, expect } from './fixtures/index'
 import { seedCart, clearCart } from './helpers/api'
 import { PRODUCT_ID } from './helpers/constants'
 
+const HOSTED_CHECKOUT_ENABLED = process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true'
+
 test.describe('Checkout', () => {
   test.afterEach(async ({ page }) => { await clearCart(page) })
 
@@ -13,7 +15,7 @@ test.describe('Checkout', () => {
   test('form renders required fields', async ({ page, checkoutPage }) => {
     await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 1 }])
     await checkoutPage.goto()
-    await checkoutPage.expectReady()
+    await expect(checkoutPage.placeOrderButton).toBeVisible()
     await expect(checkoutPage.recipientName).toBeVisible()
     await expect(checkoutPage.recipientSurname).toBeVisible()
     await expect(checkoutPage.addressLine).toBeVisible()
@@ -25,20 +27,26 @@ test.describe('Checkout', () => {
   test('order summary shows price and quantity', async ({ page, checkoutPage }) => {
     await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 1 }])
     await checkoutPage.goto()
-    await checkoutPage.expectReady()
+    await expect(checkoutPage.placeOrderButton).toBeVisible()
     await expect(page.getByText(/\$\d+\.\d{2}/).first()).toBeVisible({ timeout: 8_000 })
     await expect(page.getByText(/×\d+/).first()).toBeVisible({ timeout: 8_000 })
   })
 
-  test('Place order button is visible and enabled', async ({ page, checkoutPage }) => {
+  test('Place order button reflects checkout availability', async ({ page, checkoutPage }) => {
     await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 1 }])
     await checkoutPage.goto()
-    await checkoutPage.expectReady()
     await expect(checkoutPage.placeOrderButton).toBeVisible()
-    await expect(checkoutPage.placeOrderButton).toBeEnabled()
+
+    if (HOSTED_CHECKOUT_ENABLED) {
+      await expect(checkoutPage.placeOrderButton).toBeEnabled()
+    } else {
+      await expect(checkoutPage.placeOrderButton).toBeDisabled()
+      await expect(page.getByText('Hosted checkout is disabled for this environment.')).toBeVisible()
+    }
   })
 
   test('placing order sends Idempotency-Key header', async ({ page, checkoutPage }) => {
+    test.skip(!HOSTED_CHECKOUT_ENABLED, 'Hosted checkout is disabled in this environment')
     await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 1 }])
     await checkoutPage.goto()
     await checkoutPage.expectReady()
@@ -57,6 +65,7 @@ test.describe('Checkout', () => {
   })
 
   test('successful checkout returns checkoutUrl', async ({ page, checkoutPage }) => {
+    test.skip(!HOSTED_CHECKOUT_ENABLED, 'Hosted checkout is disabled in this environment')
     await seedCart(page, [{ productId: PRODUCT_ID, productQuantity: 1 }])
     await checkoutPage.goto()
     await checkoutPage.expectReady()
