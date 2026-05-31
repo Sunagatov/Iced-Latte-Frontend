@@ -33,11 +33,16 @@ export function useFavoriteProductActions(productId: string) {
   const items = useCartStore(
     (state: CartSliceStore): CartSliceStore['itemsIds'] => state.itemsIds,
   )
+  const pendingProductIds = useCartStore(
+    (state: CartSliceStore): CartSliceStore['pendingProductIds'] =>
+      state.pendingProductIds,
+  )
 
   const quantity =
     items.find((item) => item.productId === productId)?.productQuantity ?? 0
   const isFavourited = favouriteIds.includes(productId)
   const isPending = pendingIds.has(productId)
+  const isCartPending = pendingProductIds.has(productId)
 
   const handleToggleFavourite = (): void => {
     if (!isPending) {
@@ -49,6 +54,7 @@ export function useFavoriteProductActions(productId: string) {
     addToCart: () => add(productId),
     decreaseCartQuantity: () => remove(productId),
     handleToggleFavourite,
+    isCartPending,
     isFavourited,
     isPending,
     quantity,

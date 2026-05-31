@@ -22,6 +22,7 @@ export default function FavElement({
     addToCart,
     decreaseCartQuantity,
     handleToggleFavourite,
+    isCartPending,
     isFavourited,
     isPending,
     quantity,
@@ -86,6 +87,7 @@ export default function FavElement({
           <div className="mt-2.5">
             <FavoriteCartStepper
               onAdd={addToCart}
+              disabled={isCartPending}
               onRemove={decreaseCartQuantity}
               onRemoveAll={removeFromCart}
               quantity={quantity}
@@ -163,6 +165,7 @@ export default function FavElement({
         <div className="mt-4">
           <FavoriteCartStepper
             onAdd={addToCart}
+            disabled={isCartPending}
             onRemove={decreaseCartQuantity}
             onRemoveAll={removeFromCart}
             quantity={quantity}

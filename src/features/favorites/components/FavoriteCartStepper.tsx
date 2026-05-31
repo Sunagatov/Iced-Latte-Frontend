@@ -1,6 +1,7 @@
 'use client'
 
 interface FavoriteCartStepperProps {
+  disabled?: boolean
   onAdd: () => void
   onRemove: () => void
   onRemoveAll: () => void
@@ -8,6 +9,7 @@ interface FavoriteCartStepperProps {
 }
 
 export default function FavoriteCartStepper({
+  disabled = false,
   onAdd,
   onRemove,
   onRemoveAll,
@@ -18,7 +20,9 @@ export default function FavoriteCartStepper({
       {quantity > 0 ? (
         <div className="inline-flex items-center gap-1 rounded-full bg-brand-solid px-1 py-1">
           <button
-            className="flex h-7 w-7 items-center justify-center rounded-full text-white hover:bg-white/20"
+            aria-label={quantity === 1 ? 'Remove item' : 'Decrease quantity'}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-white hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={disabled}
             onClick={quantity === 1 ? onRemoveAll : onRemove}
           >
             {quantity === 1 ? (
@@ -31,7 +35,9 @@ export default function FavoriteCartStepper({
             {quantity}
           </span>
           <button
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30"
+            aria-label="Increase quantity"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={disabled}
             onClick={onAdd}
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
@@ -39,7 +45,8 @@ export default function FavoriteCartStepper({
         </div>
       ) : (
         <button
-          className="h-9 rounded-full bg-brand-solid px-4 text-xs font-semibold text-white transition hover:bg-brand-solid-hover"
+          className="h-9 rounded-full bg-brand-solid px-4 text-xs font-semibold text-white transition hover:bg-brand-solid-hover disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={disabled}
           onClick={onAdd}
         >
           Add to cart
