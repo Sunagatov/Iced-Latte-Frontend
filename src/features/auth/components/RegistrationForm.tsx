@@ -122,7 +122,7 @@ export default function RegistrationForm() {
       <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
       <Button
         id="register-btn"
-        disabled={false}
+        disabled={loading}
         type="submit"
         className="hover:bg-brand-solid-hover mt-6 flex w-full items-center justify-center"
       >

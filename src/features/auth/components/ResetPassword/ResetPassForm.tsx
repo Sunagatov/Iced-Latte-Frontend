@@ -14,11 +14,9 @@ export default function ResetPassForm() {
 
   useEffect(() => {
     if (status === 'authenticated' && userData?.oauthUser) {
-      const params = new URLSearchParams({ email: userData.email })
-
-      router.replace(`${ROUTES.forgotpass}?${params}`)
+      router.replace(ROUTES.forgotpass)
     }
-  }, [status, userData, router])
+  }, [status, userData?.oauthUser, router])
 
   if (status === 'loading') {
     return null

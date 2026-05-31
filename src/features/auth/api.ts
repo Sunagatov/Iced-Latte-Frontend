@@ -13,7 +13,8 @@ type AuthSessionResult = {
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
 ): Promise<boolean> {
-  const result = (await register(credentials)) as unknown as AuthSessionResult
+  const result: Awaited<ReturnType<typeof register>> & AuthSessionResult =
+    await register(credentials)
 
   return result.authenticated === true
 }

@@ -189,6 +189,7 @@ export default function ForgotPassForm() {
           <Button
             id="send-reset-btn"
             type="submit"
+            disabled={loading}
             className="hover:bg-brand-solid-hover mt-6 flex w-full items-center justify-center"
           >
             {loading ? <Loader /> : 'Send reset instructions'}

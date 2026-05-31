@@ -90,6 +90,7 @@ export default function LoginForm() {
       <Button
         id="login-btn"
         type="submit"
+        disabled={loading}
         className="hover:bg-brand-solid-hover mt-6 flex w-full items-center justify-center"
       >
         {loading ? <Loader /> : 'Login'}

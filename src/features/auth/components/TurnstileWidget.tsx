@@ -11,13 +11,18 @@ const TurnstileWidget = forwardRef<TurnstileInstance, Props>(
   ({ onVerify }, ref) => {
     if (!FEATURES.turnstile) return null
 
+    const clearToken = () => onVerify('')
+
     return (
       <div className="mt-4">
         <Turnstile
           ref={ref}
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
           onSuccess={onVerify}
-          onExpire={() => onVerify('')}
+          onExpire={clearToken}
+          onError={clearToken}
+          onTimeout={clearToken}
+          onUnsupported={clearToken}
           options={{ refreshExpired: 'auto', theme: 'light', size: 'flexible' }}
         />
       </div>

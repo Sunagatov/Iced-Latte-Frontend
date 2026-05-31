@@ -35,6 +35,7 @@ export default function GuestResetPassForm() {
   const {
     handleSubmit,
     register,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<IChangeValues>({
@@ -59,6 +60,8 @@ export default function GuestResetPassForm() {
       setLoading(true)
       await apiGuestResetPassword(data)
       setResetSuccessful(true)
+      reset()
+      setNewPw('')
     } catch (error) {
       handleError(error)
     } finally {
@@ -160,6 +163,7 @@ export default function GuestResetPassForm() {
                 <Button
                   id="reset-btn"
                   type="submit"
+                  disabled={loading}
                   className="hover:bg-brand-solid-hover mt-2 w-full justify-center"
                 >
                   {loading ? <Loader /> : 'Reset password'}
