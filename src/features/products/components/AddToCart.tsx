@@ -16,6 +16,8 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
   const remove = useCartStore((state) => state.remove)
   const removeFullProduct = useCartStore((state) => state.removeFullProduct)
   const items = useCartStore((state) => state.itemsIds)
+  const pendingProductIds = useCartStore((state) => state.pendingProductIds)
+  const isPending = pendingProductIds.has(product.id)
 
   const productQuantity = items?.find(
     (item) => item.productId === product.id,
@@ -40,6 +42,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
           <Button
             id="add-btn"
             className="h-[42px] w-full px-4 font-semibold shadow-md hover:shadow-lg hover:brightness-110 md:h-[54px] md:w-[280px]"
+            disabled={isPending}
             onClick={addProduct}
           >
             Add to cart
@@ -51,6 +54,7 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
           theme="dark"
           className="h-[42px] w-[110px] md:h-[48px] md:w-[120px]"
           count={productQuantity}
+          disabled={isPending}
           maxCount={MAX_CART_ITEM_QUANTITY}
           addProduct={addProduct}
           removeProduct={removeProduct}
