@@ -93,4 +93,23 @@ describe('google auth route', () => {
 
     expect(res.status).toBe(307)
   })
+
+  it('falls back to the request origin when frontend URL is not configured', async () => {
+    const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
+
+    delete process.env.NEXT_PUBLIC_FRONTEND_URL
+    global.fetch = jest.fn().mockResolvedValue({
+      status: 302,
+      headers: new Headers({ location: 'https://accounts.google.com/auth' }),
+    })
+
+    const res = await getRoute()(makeRequest('/orders'))
+    const requestedUrl = new URL(jest.mocked(global.fetch).mock.calls[0][0] as string)
+    const redirectUrl = requestedUrl.searchParams.get('redirectUrl')
+
+    process.env.NEXT_PUBLIC_FRONTEND_URL = originalFrontendUrl
+
+    expect(res.status).toBe(307)
+    expect(redirectUrl).toBe('http://localhost/auth/google/callback?next=%2Forders')
+  })
 })

@@ -48,7 +48,7 @@ const VerifyEmailCodeForm = () => {
         Confirm registration
       </h1>
       <p className="text-primary mb-[40px] text-[18px] font-medium">
-        Enter code that was sent to your email to confirm registration.
+        Enter the confirmation token from your email to confirm registration.
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         {errorMessage && (
@@ -58,10 +58,10 @@ const VerifyEmailCodeForm = () => {
           <FormInput
             id="verificationCode"
             register={register}
-            label="Enter code that was sent to your email"
+            label="Enter confirmation token from your email"
             name="verificationCode"
             type="text"
-            placeholder="Confirmation code"
+            placeholder="Confirmation token"
             error={errors.verificationCode}
             className="w-full"
           />
@@ -69,6 +69,7 @@ const VerifyEmailCodeForm = () => {
         <Button
           id="confirm-pass-btn"
           type="submit"
+          disabled={loading}
           className="hover:bg-brand-solid-hover mt-6 flex w-[220px] items-center justify-center"
         >
           {loading ? <Loader /> : 'Confirm Registration'}

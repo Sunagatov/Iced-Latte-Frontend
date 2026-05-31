@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+const URL_SAFE_TOKEN_REGEX = /^[A-Za-z0-9_-]{43}$/
 const PASSWORD_HINT =
   'Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit'
 
@@ -48,7 +49,7 @@ export const changePassSchema = yup.object().shape({
   code: yup
     .string()
     .required('Code is required')
-    .matches(/^\d{9}$/, 'Code must be exactly 9 digits'),
+    .matches(URL_SAFE_TOKEN_REGEX, 'Code must be a valid reset token'),
   password: yup
     .string()
     .required('Password is a required field')
@@ -92,7 +93,7 @@ export const verifyEmailCodeSchema = yup.object().shape({
   verificationCode: yup
     .string()
     .required('Confirmation code is required')
-    .matches(/^\d{9}$/, 'Invalid code format'),
+    .matches(URL_SAFE_TOKEN_REGEX, 'Invalid confirmation token format'),
 })
 
 /** @deprecated use verifyEmailCodeSchema */
@@ -100,5 +101,5 @@ export const confirmPasswordSchema = yup.object().shape({
   confirmPassword: yup
     .string()
     .required('Confirmation code is required')
-    .matches(/^\d{9}$/, 'Invalid code format'),
+    .matches(URL_SAFE_TOKEN_REGEX, 'Invalid confirmation token format'),
 })
