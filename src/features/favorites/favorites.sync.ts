@@ -10,7 +10,7 @@ import {
   mapProductsToFavourites,
   normalizeProducts,
 } from '@/features/favorites/state/favoritesStore.utils'
-import { getProductByIds } from '@/features/products/api'
+import { getProductByIds } from '@/features/products/public'
 import { toastError } from '@/shared/utils/apiError'
 
 function isAbortError(err: unknown): boolean {

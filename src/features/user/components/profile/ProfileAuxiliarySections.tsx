@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
-import UserReviews from '@/features/reviews/components/UserReviews'
+import { UserReviews } from '@/features/reviews/public'
 
 type NotificationPreferenceRowProps = {
   defaultOn?: boolean

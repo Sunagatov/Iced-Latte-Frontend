@@ -12,7 +12,7 @@ import {
   restoreRemovedFavourite,
   setPendingFavourite,
 } from '@/features/favorites/state/favoritesStore.utils'
-import { getProductByIds } from '@/features/products/api'
+import { getProductByIds } from '@/features/products/public'
 import { toastError } from '@/shared/utils/apiError'
 
 export async function toggleFavouriteInStore(

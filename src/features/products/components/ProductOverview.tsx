@@ -5,8 +5,55 @@ import { IProduct } from '@/features/products/types'
 import AddToCartButton from '@/features/products/components/AddToCart'
 import HeartWrapper from '@/features/products/components/HeartWrapper'
 import Rating from '@/shared/ui/Rating'
-import type { IProductReviewsStatistics } from '@/features/reviews/types'
+import type { IProductReviewsStatistics } from '@/features/reviews/public'
 import ProductImageGallery from '@/features/products/components/ProductImageGallery/ProductImageGallery'
+
+const PRODUCT_SPEC_CHIPS = [
+  '500 g',
+  'Whole Bean',
+  'Medium Roast',
+  'Single Origin',
+] as const
+
+const TRUST_BADGES = [
+  {
+    icon: (
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path d="M13 16V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1m8-1a1 1 0 0 1-1 1H9m4-1V8a1 1 0 0 1 1-1h2.586a1 1 0 0 1 .707.293l3.414 3.414a1 1 0 0 1 .293.707V16a1 1 0 0 1-1 1h-1m-6-1a1 1 0 0 1 1 1h1" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" />
+      </svg>
+    ),
+    label: 'Free shipping',
+    sub: 'on orders over $30',
+  },
+  {
+    icon: (
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0ZM12 8v4l3 3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    label: 'Easy returns',
+    sub: '30-day return policy',
+  },
+  {
+    icon: (
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    label: 'Fast delivery',
+    sub: 'shipped within 48h',
+  },
+  {
+    icon: (
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    label: 'Secure checkout',
+    sub: 'SSL encrypted',
+  },
+] as const
 
 interface IProductOverview {
   product: IProduct
@@ -78,12 +125,7 @@ const ProductOverview: React.FC<IProductOverview> = ({
 
         {/* Spec chips */}
         <div className="flex flex-wrap gap-2">
-          {[
-            '500 g',
-            'Whole Bean',
-            'Medium Roast',
-            'Single Origin',
-          ].map((label) => (
+          {PRODUCT_SPEC_CHIPS.map((label) => (
             <span
               key={label}
               className="border-primary/10 text-secondary-foreground rounded-xl border bg-white px-3 py-1.5 text-xs font-medium shadow-sm"
@@ -136,45 +178,7 @@ const ProductOverview: React.FC<IProductOverview> = ({
 
         {/* Trust badges */}
         <div className="grid grid-cols-2 gap-3 pt-1">
-          {[
-            {
-              icon: (
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path d="M13 16V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1m8-1a1 1 0 0 1-1 1H9m4-1V8a1 1 0 0 1 1-1h2.586a1 1 0 0 1 .707.293l3.414 3.414a1 1 0 0 1 .293.707V16a1 1 0 0 1-1 1h-1m-6-1a1 1 0 0 1 1 1h1" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" />
-                </svg>
-              ),
-              label: 'Free shipping',
-              sub: 'on orders over $30',
-            },
-            {
-              icon: (
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0ZM12 8v4l3 3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ),
-              label: 'Easy returns',
-              sub: '30-day return policy',
-            },
-            {
-              icon: (
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ),
-              label: 'Fast delivery',
-              sub: 'shipped within 48h',
-            },
-            {
-              icon: (
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ),
-              label: 'Secure checkout',
-              sub: 'SSL encrypted',
-            },
-          ].map(({ icon, label, sub }) => (
+          {TRUST_BADGES.map(({ icon, label, sub }) => (
             <div
               key={label}
               className="border-primary/8 flex items-start gap-2.5 rounded-2xl border bg-white p-3 shadow-sm"

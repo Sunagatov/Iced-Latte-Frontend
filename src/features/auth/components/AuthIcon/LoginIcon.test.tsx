@@ -11,22 +11,23 @@ jest.mock('next/link', () => ({
     children: React.ReactNode
   }) => <a href={href}>{children}</a>,
 }))
-jest.mock('@/features/user/components/UserBar', () => ({
-  __esModule: true,
-  default: () => <div>UserBar</div>,
-}))
-
 const mockUseAuthStore = jest.fn()
 
 jest.mock('@/features/auth/store', () => ({
-  useAuthStore: (selector: (s: { isLoggedIn: boolean }) => unknown) =>
+  useAuthStore: (selector: (s: {
+    isLoggedIn: boolean
+    userData: { firstName: string; lastName: string } | null
+  }) => unknown) =>
     mockUseAuthStore(selector),
 }))
 
 beforeEach(() => {
   mockUseAuthStore.mockImplementation(
-    (selector: (s: { isLoggedIn: boolean }) => unknown) =>
-      selector({ isLoggedIn: false }),
+    (selector: (s: {
+      isLoggedIn: boolean
+      userData: { firstName: string; lastName: string } | null
+    }) => unknown) =>
+      selector({ isLoggedIn: false, userData: null }),
   )
 })
 
@@ -48,15 +49,21 @@ describe('LoginIcon', () => {
     )
   })
 
-  it('shows UserBar when authenticated', async () => {
+  it('shows user initials when authenticated', async () => {
     mockUseAuthStore.mockImplementation(
-      (selector: (s: { isLoggedIn: boolean }) => unknown) =>
-        selector({ isLoggedIn: true }),
+      (selector: (s: {
+        isLoggedIn: boolean
+        userData: { firstName: string; lastName: string } | null
+      }) => unknown) =>
+        selector({
+          isLoggedIn: true,
+          userData: { firstName: 'Jane', lastName: 'Latte' },
+        }),
     )
     await act(async () => {
       render(<LoginIcon />)
     })
-    expect(screen.getByText('UserBar')).toBeInTheDocument()
+    expect(screen.getByText('JL')).toBeInTheDocument()
     expect(screen.getByRole('link')).toHaveAttribute('href', '/profile')
   })
 })

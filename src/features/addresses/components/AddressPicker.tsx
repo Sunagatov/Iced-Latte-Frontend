@@ -13,6 +13,7 @@ interface Props {
 export default function AddressPicker({ onSelect, selected }: Props) {
   const { addresses, fetch } = useAddressStore()
   const [mode, setMode] = useState<'saved' | 'new'>('saved')
+  const defaultAddress = addresses.find((address) => address.isDefault) ?? addresses[0] ?? null
 
   useEffect(() => {
     void fetch()
@@ -26,12 +27,9 @@ export default function AddressPicker({ onSelect, selected }: Props) {
       return
     }
     if (mode === 'saved' && !selected) {
-      const def = addresses.find((a) => a.isDefault) ?? addresses[0]
-
-      onSelect(def)
+      onSelect(defaultAddress)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addresses])
+  }, [addresses, defaultAddress, mode, onSelect, selected])
 
   if (addresses.length === 0) return null
 
@@ -43,10 +41,7 @@ export default function AddressPicker({ onSelect, selected }: Props) {
           active={mode === 'saved'}
           onClick={() => {
             setMode('saved')
-            const def = (addresses.find((a) => a.isDefault) ??
-              addresses[0]) as DeliveryAddress
-
-            onSelect(def)
+            onSelect(defaultAddress)
           }}
         >
           Saved addresses
