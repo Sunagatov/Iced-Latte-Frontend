@@ -24,9 +24,6 @@ export type OrderStatus =
   | 'REFUNDED'
   | 'PAYMENT_FAILED'
   | 'PAYMENT_EXPIRED'
-  // deprecated — kept for backward compatibility during transition
-  | 'DELIVERY'
-  | 'FINISHED'
 
 export interface OrderSummaryDto {
   id: string

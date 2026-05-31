@@ -38,6 +38,25 @@ describe('catalogQuery', () => {
     expect(flattenProductPages(pages)).toHaveLength(1)
   })
 
+  it('keeps products without images in flattened server results', () => {
+    const withImage = { ...makeProduct('p1'), productFileUrl: '/coffee.jpg' }
+    const withoutImage = { ...makeProduct('p2'), productFileUrl: null }
+    const pages: IProductsList[] = [
+      {
+        products: [withImage, withoutImage],
+        page: 0,
+        totalPages: 1,
+        totalElements: 2,
+        size: 6,
+      },
+    ]
+
+    expect(flattenProductPages(pages).map((product) => product.id)).toEqual([
+      'p1',
+      'p2',
+    ])
+  })
+
   it('includes brand and seller in catalog query', () => {
     const key = buildCatalogProductsPath({
       brandOptions: ['BrandA'],

@@ -69,4 +69,28 @@ describe('CheckoutSuccess', () => {
 
     jest.useRealTimers()
   })
+
+  it('clears pending retry timer on unmount', async () => {
+    jest.useFakeTimers()
+    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
+
+    mockedPaymentApi.getCheckoutStatus.mockResolvedValue({
+      orderId: 'o1',
+      orderStatus: 'PENDING_PAYMENT',
+      paymentStatus: 'STRIPE_SESSION_CREATED',
+    })
+
+    const { unmount } = render(<CheckoutSuccess orderId="o1" />)
+
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    unmount()
+
+    expect(clearTimeoutSpy).toHaveBeenCalled()
+
+    clearTimeoutSpy.mockRestore()
+    jest.useRealTimers()
+  })
 })

@@ -20,6 +20,15 @@ export interface IProduct {
   brandName: string
   sellerName: string
   aiSummary?: string | null
+  originCountry?: string | null
+  weight?: number | null
+  length?: number | null
+  width?: number | null
+  height?: number | null
+  soldProductsCount?: number | null
+  discount?: number | null
+  dateAdded?: string | null
+  popularityScore?: number | null
 }
 
 export interface IGetProductSellers {

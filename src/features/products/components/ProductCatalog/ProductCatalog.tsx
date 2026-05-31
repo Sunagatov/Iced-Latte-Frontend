@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AxiosError } from 'axios'
 import useSWRInfinite from 'swr/infinite'
 import { twMerge } from 'tailwind-merge'
@@ -50,6 +50,7 @@ export default function ProductCatalog({
   const resetFilters = useProductFiltersStore((state) => state.resetFilters)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [loadMoreError, setLoadMoreError] = useState(false)
+  const previousProductSize = useRef<number | null>(null)
   const isWideScreen = useMediaQuery('(min-width: 1440px)')
   const productSize = isWideScreen ? CATALOG_PAGE_SIZE_WIDE : CATALOG_PAGE_SIZE_DEFAULT
 
@@ -99,6 +100,20 @@ export default function ProductCatalog({
   const isFetchingNextPage = Boolean(
     size > 0 && data && typeof data[size - 1] === 'undefined',
   )
+
+  useEffect(() => {
+    if (previousProductSize.current === null) {
+      previousProductSize.current = productSize
+
+      return
+    }
+
+    if (previousProductSize.current !== productSize) {
+      previousProductSize.current = productSize
+      setLoadMoreError(false)
+      void setSize(1)
+    }
+  }, [productSize, setSize])
 
   const hasPriceFilter = fromPriceFilter !== '' || toPriceFilter !== ''
   const priceChipLabel =

@@ -20,15 +20,6 @@ interface IProductListProps {
   onSuggestionClick?: (query: string) => void
 }
 
-const hasImage = (p: IProduct) =>
-  typeof p.productFileUrl === 'string' && p.productFileUrl !== 'default file'
-
-function filterByImage(products: IProduct[]): IProduct[] {
-  const withImage = products.filter(hasImage)
-
-  return withImage.length > 0 ? withImage : products
-}
-
 export default function ProductList({
   products,
   error,
@@ -62,9 +53,7 @@ export default function ProductList({
     )
   }
 
-  const visible = filterByImage(products)
-
-  if (visible.length === 0) {
+  if (products.length === 0) {
     return (
       <div
         data-testid="empty-state"
@@ -125,7 +114,7 @@ export default function ProductList({
         'grid h-max grow grid-cols-2 justify-center gap-x-[18px] gap-y-7 min-[602px]:grid-cols-3 min-[1440px]:grid-cols-4'
       }
     >
-      {visible.map((product, index) => (
+      {products.map((product, index) => (
         <ProductCard key={product.id} product={product} priority={index < 2} />
       ))}
     </ul>

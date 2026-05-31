@@ -7,13 +7,21 @@ import HeartWrapper from '@/features/products/components/HeartWrapper'
 import Rating from '@/shared/ui/Rating'
 import type { IProductReviewsStatistics } from '@/features/reviews/public'
 import ProductImageGallery from '@/features/products/components/ProductImageGallery/ProductImageGallery'
+import { FREE_SHIPPING_THRESHOLD } from '@/shared/config/constants'
 
-const PRODUCT_SPEC_CHIPS = [
-  '500 g',
-  'Whole Bean',
-  'Medium Roast',
-  'Single Origin',
-] as const
+function getProductSpecChips(product: IProduct): string[] {
+  const dimensions =
+    product.length && product.width && product.height
+      ? `${product.length} x ${product.width} x ${product.height} cm`
+      : null
+
+  return [
+    product.weight ? `${product.weight} g` : null,
+    product.originCountry ? `Origin: ${product.originCountry}` : null,
+    dimensions,
+    product.discount ? `${product.discount}% off` : null,
+  ].filter((chip): chip is string => Boolean(chip))
+}
 
 const TRUST_BADGES = [
   {
@@ -24,30 +32,12 @@ const TRUST_BADGES = [
       </svg>
     ),
     label: 'Free shipping',
-    sub: 'on orders over $30',
-  },
-  {
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0ZM12 8v4l3 3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: 'Easy returns',
-    sub: '30-day return policy',
+    sub: `on orders over $${FREE_SHIPPING_THRESHOLD}`,
   },
   {
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: 'Fast delivery',
-    sub: 'shipped within 48h',
-  },
-  {
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
     label: 'Secure checkout',
@@ -71,6 +61,7 @@ const ProductOverview: React.FC<IProductOverview> = ({
 
   const inStock = product.quantity > 0
   const lowStock = product.quantity > 0 && product.quantity <= 5
+  const productSpecChips = getProductSpecChips(product)
 
   return (
     <>
@@ -123,17 +114,18 @@ const ProductOverview: React.FC<IProductOverview> = ({
           </div>
         </div>
 
-        {/* Spec chips */}
-        <div className="flex flex-wrap gap-2">
-          {PRODUCT_SPEC_CHIPS.map((label) => (
-            <span
-              key={label}
-              className="border-primary/10 text-secondary-foreground rounded-xl border bg-white px-3 py-1.5 text-xs font-medium shadow-sm"
-            >
-              {label}
-            </span>
-          ))}
-        </div>
+        {productSpecChips.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {productSpecChips.map((label) => (
+              <span
+                key={label}
+                className="border-primary/10 text-secondary-foreground rounded-xl border bg-white px-3 py-1.5 text-xs font-medium shadow-sm"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Stock status */}
         <div className="flex items-center gap-2 text-sm">

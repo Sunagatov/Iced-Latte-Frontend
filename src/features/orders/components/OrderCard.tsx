@@ -22,6 +22,7 @@ import {
 } from '@/features/orders/ordersApi'
 import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/orderTypes'
 import Loader from '@/shared/ui/Loader'
+import { useCartStore } from '@/features/cart/cartStore'
 
 interface OrderCardProps {
   order: OrderSummaryDto
@@ -35,8 +36,10 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
   const [loadingDetail, setLoadingDetail] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [actionError, setActionError] = useState('')
+  const [actionMessage, setActionMessage] = useState('')
   const [modal, setModal] = useState<'cancel' | 'refund' | null>(null)
   const [refundReason, setRefundReason] = useState('')
+  const hydrateCart = useCartStore((state) => state.hydrate)
 
   const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -69,6 +72,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
     setModal(null)
     setActionLoading(true)
     setActionError('')
+    setActionMessage('')
     try {
       const updated = await cancelOrder(order.id)
 
@@ -88,6 +92,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
     setRefundReason('')
     setActionLoading(true)
     setActionError('')
+    setActionMessage('')
     try {
       const updated = await refundOrder(order.id, reason ? { reason } : undefined)
 
@@ -103,6 +108,7 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
   const handleReorder = async () => {
     setActionLoading(true)
     setActionError('')
+    setActionMessage('')
     try {
       const result = await reorderOrder(order.id)
       const msg =
@@ -110,7 +116,8 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
           ? `${result.addedItems} items added. ${result.unavailableItems.length} unavailable.`
           : `${result.addedItems} items added to cart.`
 
-      alert(msg)
+      await hydrateCart()
+      setActionMessage(msg)
       router.push(ROUTES.cart)
     } catch {
       setActionError('Could not re-order.')
@@ -198,6 +205,9 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
 
                 {actionError && (
                   <p className="text-negative text-xs">{actionError}</p>
+                )}
+                {actionMessage && (
+                  <p className="text-positive text-xs">{actionMessage}</p>
                 )}
 
                 <div className="mt-3 flex flex-wrap gap-2">

@@ -10,6 +10,14 @@ import type {
 
 export type OrderFilter = '' | OrderStatus
 
+function isCanceledRequest(err: unknown): boolean {
+  return (
+    (err as { code?: string }).code === 'ERR_CANCELED' ||
+    (err as { name?: string }).name === 'AbortError' ||
+    (err as { name?: string }).name === 'CanceledError'
+  )
+}
+
 export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
   const [orders, setOrders] = useState<OrderSummaryDto[]>([])
   const [page, setPage] = useState(0)
@@ -25,6 +33,7 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
 
   useEffect(() => {
     const controller = new AbortController()
+    let active = true
 
     setLoading(true)
     setError(false)
@@ -41,23 +50,38 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
       controller.signal,
     )
       .then((data: OrderPageDto) => {
+        if (!active || controller.signal.aborted) return
+
         setOrders(data.content)
         setTotalPages(data.totalPages)
         setTotalElements(data.totalElements)
       })
       .catch((err) => {
-        if (err?.code !== 'ERR_CANCELED') {
+        if (active && !isCanceledRequest(err)) {
           setError(true)
         }
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        if (active && !controller.signal.aborted) {
+          setLoading(false)
+        }
+      })
 
     return () => {
+      active = false
       controller.abort()
     }
   }, [filter, page, pageSize, year, retryKey])
 
-  const goToPage = useCallback((p: number) => setPage(p), [])
+  const goToPage = useCallback(
+    (p: number) =>
+      setPage(() => {
+        if (totalPages <= 0) return Math.max(0, p)
+
+        return Math.min(Math.max(0, p), totalPages - 1)
+      }),
+    [totalPages],
+  )
 
   return {
     error,

@@ -51,6 +51,37 @@ function resolveShippingAddress(
   }
 }
 
+function trimFormValues(form: CheckoutFormValues): CheckoutFormValues {
+  return {
+    recipientName: form.recipientName.trim(),
+    recipientSurname: form.recipientSurname.trim(),
+    recipientPhone: form.recipientPhone.trim(),
+    country: form.country.trim(),
+    city: form.city.trim(),
+    line: form.line.trim(),
+    postcode: form.postcode.trim(),
+  }
+}
+
+function hasRequiredCheckoutFields(
+  form: CheckoutFormValues,
+  selectedAddress: DeliveryAddress | null,
+): boolean {
+  const hasRecipient = Boolean(form.recipientName && form.recipientSurname)
+
+  if (selectedAddress) {
+    return hasRecipient
+  }
+
+  return Boolean(
+    hasRecipient &&
+      form.country &&
+      form.city &&
+      form.line &&
+      form.postcode,
+  )
+}
+
 export function useCheckoutForm() {
   const { userData } = useAuthStore()
   const { tempItems } = useCartStore()
@@ -102,15 +133,22 @@ export function useCheckoutForm() {
 
     try {
       const idempotencyKey = crypto.randomUUID()
+      const trimmedForm = trimFormValues(form)
+
+      if (!hasRequiredCheckoutFields(trimmedForm, selectedAddress)) {
+        setError('Please complete all required checkout fields.')
+
+        return
+      }
 
       const checkout = await createCheckout(
         {
-          recipientName: form.recipientName,
-          recipientSurname: form.recipientSurname,
-          recipientPhone: form.recipientPhone || undefined,
+          recipientName: trimmedForm.recipientName,
+          recipientSurname: trimmedForm.recipientSurname,
+          recipientPhone: trimmedForm.recipientPhone || undefined,
           ...(selectedAddress
             ? { deliveryAddressId: selectedAddress.id }
-            : { address: resolveShippingAddress(form, null) }),
+            : { address: resolveShippingAddress(trimmedForm, null) }),
         },
         idempotencyKey,
       )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/features/cart/cartStore'
 import { getCheckoutStatus } from '@/features/payment/public'
@@ -12,9 +12,15 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
   const { resetCart } = useCartStore()
   const [status, setStatus] = useState<'loading' | 'paid' | 'pending' | 'error'>('loading')
   const [retries, setRetries] = useState(0)
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
+
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current)
+      retryTimerRef.current = null
+    }
 
     async function poll() {
       try {
@@ -28,7 +34,10 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
         }
 
         if (result.orderStatus === 'PENDING_PAYMENT' && retries < MAX_RETRIES) {
-          setTimeout(() => setRetries((r) => r + 1), POLL_INTERVAL_MS)
+          retryTimerRef.current = setTimeout(() => {
+            retryTimerRef.current = null
+            setRetries((r) => r + 1)
+          }, POLL_INTERVAL_MS)
 
           return
         }
@@ -45,6 +54,14 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
 
     return () => controller.abort()
   }, [orderId, retries, resetCart])
+
+  useEffect(() => {
+    return () => {
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current)
+      }
+    }
+  }, [])
 
   if (status === 'loading') {
     return (

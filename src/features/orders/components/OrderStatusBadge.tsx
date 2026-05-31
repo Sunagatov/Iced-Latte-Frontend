@@ -64,17 +64,6 @@ const STATUS_CONFIG: Record<
     icon: <RiTimeLine className="h-4 w-4" />,
     color: 'text-gray-600 bg-gray-100',
   },
-  // deprecated aliases
-  DELIVERY: {
-    label: 'Shipped',
-    icon: <RiTruckLine className="h-4 w-4" />,
-    color: 'text-blue-700 bg-blue-50',
-  },
-  FINISHED: {
-    label: 'Delivered',
-    icon: <RiCheckboxCircleLine className="h-4 w-4" />,
-    color: 'text-green-700 bg-green-50',
-  },
 }
 
 interface OrderStatusBadgeProps {
