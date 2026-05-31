@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { FEATURES } from '@/shared/config/features'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { apiForgotPassword } from '@/features/user/api'
+import { apiForgotPassword } from '@/features/auth/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { forgotPassSchema } from '@/features/auth/validation'
 

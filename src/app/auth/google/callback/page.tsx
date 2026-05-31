@@ -7,6 +7,8 @@ import { getUserData } from '@/features/user/api'
 import { getSafeNext } from '@/shared/utils/navigation'
 import { ROUTES } from '@/shared/config/routes'
 
+const OAUTH_HANDOFF_CODE_RE = /^[A-Za-z0-9_-]{43}$/
+
 function getOAuthCodeFromHash() {
   const hash = window.location.hash.startsWith('#')
     ? window.location.hash.slice(1)
@@ -36,7 +38,7 @@ function GoogleCallbackInner() {
 
     const oauthCode = getOAuthCodeFromHash()
 
-    if (!oauthCode) {
+    if (!oauthCode || !OAUTH_HANDOFF_CODE_RE.test(oauthCode)) {
       router.replace(signInUrl)
 
       return

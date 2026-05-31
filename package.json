@@ -13,7 +13,7 @@
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "test:e2e:local": "BASE_URL=http://localhost:3000 playwright test",
-    "test:e2e:prod": "BASE_URL=https://iced-latte.uk playwright test",
+    "test:e2e:prod": "node -e \"if (!process.env.BASE_URL) { console.error('Set BASE_URL to the deployed frontend URL'); process.exit(1) }\" && playwright test",
     "test:e2e:report": "playwright show-report",
     "api:generate": "orval --config orval.config.ts",
     "api:check": "npm run api:generate && git diff --exit-code -- src/shared/api/generated && git diff --cached --exit-code -- src/shared/api/generated && test -z \"$(git ls-files --others --exclude-standard src/shared/api/generated)\""

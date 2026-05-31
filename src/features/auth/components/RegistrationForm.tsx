@@ -60,6 +60,7 @@ export default function RegistrationForm() {
       }
     } catch (error) {
       handleError(error)
+      setTurnstileToken('')
       turnstileRef.current?.reset()
     } finally {
       setLoading(false)

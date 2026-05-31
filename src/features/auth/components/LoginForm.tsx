@@ -43,6 +43,7 @@ export default function LoginForm() {
       reset()
     } catch (error) {
       handleError(error)
+      setTurnstileToken('')
       turnstileRef.current?.reset()
     } finally {
       setLoading(false)

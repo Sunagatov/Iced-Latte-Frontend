@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import AuthResetPassForm from './AuthResetPassForm'
 import GuestResetPassForm from './GuestResetPassForm'
 import { useAuthStore } from '@/features/auth/store'
@@ -11,23 +11,28 @@ export default function ResetPassForm() {
   const router = useRouter()
   const status = useAuthStore((state) => state.status)
   const userData = useAuthStore((state) => state.userData)
+  const [passwordChanged, setPasswordChanged] = useState(false)
 
   useEffect(() => {
-    if (status === 'authenticated' && userData?.oauthUser) {
+    if (!passwordChanged && status === 'authenticated' && userData?.oauthUser) {
       router.replace(ROUTES.forgotpass)
     }
-  }, [status, userData?.oauthUser, router])
+  }, [status, userData?.oauthUser, router, passwordChanged])
 
   if (status === 'loading') {
     return null
   }
 
-  if (status === 'authenticated' && userData?.oauthUser) {
+  if (!passwordChanged && status === 'authenticated' && userData?.oauthUser) {
     return null
   }
 
+  if (passwordChanged) {
+    return <AuthResetPassForm initialChangeSuccessful />
+  }
+
   return status === 'authenticated' ? (
-    <AuthResetPassForm />
+    <AuthResetPassForm onPasswordChanged={() => setPasswordChanged(true)} />
   ) : (
     <GuestResetPassForm />
   )

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { AuthChangePasswordCredentials } from '@/features/auth/types'
-import { apiAuthChangePassword } from '@/features/user/api'
+import { apiAuthChangePassword } from '@/features/auth/api'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { authChangePassSchema } from '@/features/auth/validation'
 import {
@@ -26,10 +26,18 @@ interface IChangeAuthValues {
   newPassword: string
 }
 
-export default function AuthResetPassForm() {
+interface AuthResetPassFormProps {
+  initialChangeSuccessful?: boolean
+  onPasswordChanged?: () => void
+}
+
+export default function AuthResetPassForm({
+  initialChangeSuccessful = false,
+  onPasswordChanged,
+}: Readonly<AuthResetPassFormProps>) {
   const [loading, setLoading] = useState(false)
   const [newPw, setNewPw] = useState('')
-  const [changeSuccessful, setChangeSuccessful] = useState(false)
+  const [changeSuccessful, setChangeSuccessful] = useState(initialChangeSuccessful)
   const { errorMessage, handleError } = useErrorHandler()
   const {
     handleSubmit,
@@ -52,9 +60,10 @@ export default function AuthResetPassForm() {
     try {
       setLoading(true)
       await apiAuthChangePassword(data)
-      await clearClientSession()
       setChangeSuccessful(true)
+      onPasswordChanged?.()
       reset()
+      await clearClientSession()
     } catch (error) {
       handleError(error)
     } finally {

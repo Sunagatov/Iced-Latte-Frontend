@@ -3,7 +3,9 @@
  */
 import { NextRequest } from 'next/server'
 
-process.env.NEXT_PUBLIC_FRONTEND_URL = 'https://iced-latte.uk'
+const FRONTEND_ORIGIN = 'https://frontend.example'
+
+process.env.NEXT_PUBLIC_FRONTEND_URL = FRONTEND_ORIGIN
 
 describe('google callback route', () => {
   function getRoute() {
@@ -43,7 +45,7 @@ describe('google callback route', () => {
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
-      'https://iced-latte.uk/signin?error=auth_failed',
+      `${FRONTEND_ORIGIN}/signin?error=auth_failed`,
     )
     expect(setCookie).toEqual([])
   })
@@ -55,7 +57,7 @@ describe('google callback route', () => {
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
-      'https://iced-latte.uk/signin?error=auth_failed',
+      `${FRONTEND_ORIGIN}/signin?error=auth_failed`,
     )
   })
 
@@ -68,7 +70,7 @@ describe('google callback route', () => {
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
-      'https://iced-latte.uk/signin?error=auth_failed&next=%2Fcheckout%3Fcoupon%3DSAVE10',
+      `${FRONTEND_ORIGIN}/signin?error=auth_failed&next=%2Fcheckout%3Fcoupon%3DSAVE10`,
     )
   })
 })

@@ -4,7 +4,7 @@
 import { NextRequest } from 'next/server'
 
 process.env.NEXT_PUBLIC_API_URL = 'http://backend'
-process.env.NEXT_PUBLIC_FRONTEND_URL = 'https://iced-latte.uk'
+process.env.NEXT_PUBLIC_FRONTEND_URL = 'https://frontend.example'
 
 function makeRequest(next?: string): NextRequest {
   const url = next

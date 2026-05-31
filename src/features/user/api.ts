@@ -1,20 +1,9 @@
 import { UserData } from './types'
 import {
-  SuccessResponse,
-  ForgotPasswordCredentials,
-  GuestResetPasswordCredentials,
-  AuthChangePasswordCredentials,
-} from '@/features/auth/types'
-import {
-  changeUserPassword,
   editUserProfile as editGeneratedUserProfile,
   getUserProfile,
   uploadUserAvatar,
 } from '@/shared/api/generated/user'
-import {
-  changePassword,
-  forgotPassword,
-} from '@/shared/api/generated/security'
 
 function normalizeUserData(data: UserData): UserData {
   return {
@@ -59,28 +48,4 @@ export const editUserProfile = async (
 
 export async function uploadImage(file: File): Promise<void> {
   await uploadUserAvatar({ file })
-}
-
-export async function apiForgotPassword(
-  email: ForgotPasswordCredentials,
-): Promise<SuccessResponse> {
-  await forgotPassword(email)
-
-  return {}
-}
-
-export async function apiGuestResetPassword(
-  credentials: GuestResetPasswordCredentials,
-): Promise<SuccessResponse> {
-  await changePassword(credentials)
-
-  return {}
-}
-
-export async function apiAuthChangePassword(
-  credentials: AuthChangePasswordCredentials,
-): Promise<SuccessResponse> {
-  await changeUserPassword(credentials)
-
-  return {}
 }

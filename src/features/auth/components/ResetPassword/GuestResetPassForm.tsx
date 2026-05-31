@@ -9,7 +9,7 @@ import { ROUTES } from '@/shared/config/routes'
 import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { apiGuestResetPassword } from '@/features/user/api'
+import { apiGuestResetPassword } from '@/features/auth/api'
 import { useForm } from 'react-hook-form'
 import { GuestResetPasswordCredentials } from '@/features/auth/types'
 import {
