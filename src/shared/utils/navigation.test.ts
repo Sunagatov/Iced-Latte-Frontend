@@ -22,4 +22,21 @@ describe('getSafeNext', () => {
   it('rejects backslash-based paths', () => {
     expect(getSafeNext('/\\evil')).toBeNull()
   })
+
+  it('rejects paths with leading or trailing whitespace', () => {
+    expect(getSafeNext(' /checkout')).toBeNull()
+    expect(getSafeNext('/checkout ')).toBeNull()
+  })
+
+  it('rejects paths with control characters', () => {
+    expect(getSafeNext('/checkout\n')).toBeNull()
+    expect(getSafeNext('/checkout\u0000')).toBeNull()
+  })
+
+  it('rejects encoded control characters and path separators', () => {
+    expect(getSafeNext('/checkout%0a')).toBeNull()
+    expect(getSafeNext('/checkout%00')).toBeNull()
+    expect(getSafeNext('/%2f%2fevil.com')).toBeNull()
+    expect(getSafeNext('/%5Cevil')).toBeNull()
+  })
 })

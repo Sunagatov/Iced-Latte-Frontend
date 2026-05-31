@@ -149,6 +149,39 @@ describe('proxy route', () => {
     expect(global.fetch).toHaveBeenCalled()
   })
 
+  it('returns 413 for oversized request bodies before proxying', async () => {
+    global.fetch = jest.fn()
+
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }, {
+        'content-length': String(5 * 1024 * 1024 + 1),
+      }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(413)
+    expect(await res.json()).toEqual({ error: 'Request body too large' })
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('returns 413 for invalid declared content lengths', async () => {
+    global.fetch = jest.fn()
+
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }, {
+        'content-length': '-1',
+      }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(413)
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
   it('does not forward browser-supplied proxy identity headers', async () => {
     mockFetch(200, { ok: true })
 

@@ -6,6 +6,8 @@ import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 const FETCH_TIMEOUT_MS = 30000
+const MAX_PROXY_BODY_BYTES = 5 * 1024 * 1024
+const REQUEST_BODY_TOO_LARGE = Symbol('REQUEST_BODY_TOO_LARGE')
 
 const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
 const ALLOWED_QUERY_PARAM_RE = /^[a-zA-Z0-9_.~:@!$&'()*+,;=%[\]-]*$/
@@ -98,14 +100,74 @@ function forwardHeaders(request: NextRequest, path: string): HeadersInit {
   return headers
 }
 
-async function readBody(request: NextRequest): Promise<BodyInit | undefined> {
-  try {
-    const arrayBuffer = await request.arrayBuffer()
+async function readBody(
+  request: NextRequest,
+): Promise<BodyInit | undefined | typeof REQUEST_BODY_TOO_LARGE> {
+  const contentLength = request.headers.get('content-length')
+  const declaredLength = contentLength ? Number(contentLength) : 0
 
-    return arrayBuffer.byteLength > 0 ? arrayBuffer : undefined
+  if (
+    contentLength &&
+    (!Number.isFinite(declaredLength) ||
+      !Number.isInteger(declaredLength) ||
+      declaredLength < 0 ||
+      declaredLength > MAX_PROXY_BODY_BYTES)
+  ) {
+    return REQUEST_BODY_TOO_LARGE
+  }
+
+  try {
+    if (!request.body) return undefined
+
+    const reader = request.body.getReader()
+    const chunks: Uint8Array[] = []
+    let total = 0
+
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) break
+
+      total += value.byteLength
+
+      if (total > MAX_PROXY_BODY_BYTES) {
+        await reader.cancel()
+
+        return REQUEST_BODY_TOO_LARGE
+      }
+
+      chunks.push(value)
+    }
+
+    if (total === 0) return undefined
+
+    const body = new Uint8Array(total)
+    let offset = 0
+
+    for (const chunk of chunks) {
+      body.set(chunk, offset)
+      offset += chunk.byteLength
+    }
+
+    return body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength)
   } catch {
     return undefined
   }
+}
+
+async function readProxyBody(
+  request: NextRequest,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+): Promise<BodyInit | undefined | NextResponse> {
+  if (method === 'GET') return undefined
+
+  const body = await readBody(request)
+
+  if (body === REQUEST_BODY_TOO_LARGE) {
+    return createCorsResponse({ error: 'Request body too large' }, 413)
+  }
+
+  return body
 }
 
 function isTokenPair(data: unknown): data is TokenPair {
@@ -180,7 +242,10 @@ async function handleProxy(
 
   const url = new URL(request.url)
   const apiUrl = `${API_BASE_URL}/${safePath}${sanitizeQueryString(url.searchParams)}`
-  const body = method === 'GET' ? undefined : await readBody(request)
+  const body = await readProxyBody(request, method)
+
+  if (body instanceof NextResponse) return body
+
   const headers = forwardHeaders(request, safePath)
 
   // If no Authorization was set and a valid refresh token exists, refresh inline
