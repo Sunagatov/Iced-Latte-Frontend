@@ -173,31 +173,35 @@ Google
   ↓
 Backend callback
   ↓
-/auth/google/callback#token=...&refreshToken=...
+/auth/google/callback#oauthCode=...
   ↓
-Frontend posts tokens to /api/auth/google/callback
+Frontend exchanges the one-time code through /api/proxy/auth/oauth/token
   ↓
-Next.js route sets HttpOnly cookies
+Next.js proxy stores returned tokens in HttpOnly cookies
   ↓
 Frontend fetches current user and redirects
 ```
 
-Main file:
+Main files:
 
-```text
-src/app/auth/google/callback/page.tsx
-```
+| File | Responsibility |
+|---|---|
+| `src/app/api/auth/google/route.ts` | starts OAuth and constrains provider redirects |
+| `src/app/auth/google/callback/page.tsx` | reads the one-time `oauthCode` from the URL hash and exchanges it |
+| `src/app/api/proxy/[...path]/route.ts` | persists token responses from `auth/oauth/token` as HttpOnly cookies |
 
-Important rule: OAuth callback tokens are read from:
+Important rule: the browser callback handles a one-time OAuth handoff code, not raw access or refresh tokens. Raw OAuth tokens must not be accepted from `/api/auth/google/callback`, `window.location.search`, or `window.location.hash`.
+
+The handoff code is read from:
 
 ```text
 window.location.hash
 ```
 
-not:
+and the raw value is:
 
 ```text
-window.location.search
+oauthCode
 ```
 
 ---
@@ -246,9 +250,10 @@ src/app/api/proxy/[...path]/route.ts
 Responsibilities:
 
 - forward browser requests to the backend
-- forward the `cookie` header
-- avoid injecting JavaScript-readable `Authorization` tokens
-- preserve backend auth/session behavior
+- translate HttpOnly auth cookies into backend `Authorization` headers
+- avoid exposing JavaScript-readable `Authorization` tokens
+- persist only known token-pair responses as frontend auth cookies
+- avoid forwarding browser-supplied proxy identity headers such as `X-Forwarded-For`
 
 ---
 
