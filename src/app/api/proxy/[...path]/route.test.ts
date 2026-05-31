@@ -44,12 +44,19 @@ function mockFetch(
   status: number,
   body: unknown,
   contentType = 'application/json',
+  extraHeaders?: Record<string, string>,
 ) {
   global.fetch = jest.fn().mockResolvedValue({
     ok: status < 400,
     status,
     headers: {
-      get: (h: string) => (h === 'content-type' ? contentType : null),
+      get: (h: string) => {
+        const normalized = h.toLowerCase()
+
+        if (normalized === 'content-type') return contentType
+
+        return extraHeaders?.[normalized] ?? null
+      },
     },
     text: () => Promise.resolve(JSON.stringify(body)),
   })
@@ -140,6 +147,49 @@ describe('proxy route', () => {
 
     expect(res.status).toBe(200)
     expect(global.fetch).toHaveBeenCalled()
+  })
+
+  it('does not forward browser-supplied proxy identity headers', async () => {
+    mockFetch(200, { ok: true })
+
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }, {
+        'x-forwarded-for': '203.0.113.10',
+        'x-forwarded-proto': 'https',
+        'x-real-ip': '203.0.113.11',
+      }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(200)
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.not.objectContaining({
+          'X-Forwarded-For': expect.any(String),
+          'X-Forwarded-Proto': expect.any(String),
+          'X-Real-IP': expect.any(String),
+        }),
+      }),
+    )
+  })
+
+  it('does not forward backend Set-Cookie from non-auth-token paths', async () => {
+    mockFetch(200, { ok: true }, 'application/json', {
+      'set-cookie': 'backendSession=abc; Path=/; HttpOnly',
+    })
+
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(200)
+    expect(res.headers.getSetCookie()).toEqual([])
   })
 
   it('preserves backend 201 created responses', async () => {

@@ -20,19 +20,7 @@ describe('google callback route', () => {
     return handlers!
   }
 
-  it('returns 400 when POST body is missing tokens', async () => {
-    const request = new NextRequest('http://localhost/api/auth/google/callback', {
-      method: 'POST',
-      body: JSON.stringify({ token: 'only-access-token' }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-
-    const response = await getRoute().POST(request)
-
-    expect(response.status).toBe(400)
-  })
-
-  it('sets auth cookies when POST body has both tokens', async () => {
+  it('rejects POST token handoffs', async () => {
     const request = new NextRequest('http://localhost/api/auth/google/callback', {
       method: 'POST',
       body: JSON.stringify({ token: 'jwt-token', refreshToken: 'refresh-token' }),
@@ -40,16 +28,12 @@ describe('google callback route', () => {
     })
 
     const response = await getRoute().POST(request)
-    const setCookie = response.headers.getSetCookie()
 
-    expect(response.status).toBe(200)
-    expect(setCookie.some((value) => value.includes('token=jwt-token'))).toBe(true)
-    expect(
-      setCookie.some((value) => value.includes('refreshToken=refresh-token')),
-    ).toBe(true)
+    expect(response.status).toBe(410)
+    expect(response.headers.getSetCookie()).toEqual([])
   })
 
-  it('supports legacy GET callbacks with query parameters', async () => {
+  it('redirects legacy GET callbacks with query tokens without setting cookies', async () => {
     const request = new NextRequest(
       'http://localhost/api/auth/google/callback?token=jwt-token&refreshToken=refresh-token',
     )
@@ -57,11 +41,11 @@ describe('google callback route', () => {
     const response = await getRoute().GET(request)
     const setCookie = response.headers.getSetCookie()
 
-    expect(response.status).toBe(200)
-    expect(setCookie.some((value) => value.includes('token=jwt-token'))).toBe(true)
-    expect(
-      setCookie.some((value) => value.includes('refreshToken=refresh-token')),
-    ).toBe(true)
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe(
+      'https://iced-latte.uk/signin?error=auth_failed',
+    )
+    expect(setCookie).toEqual([])
   })
 
   it('redirects to signin when legacy GET callback is missing tokens', async () => {

@@ -17,6 +17,13 @@ function remoteImageSources() {
 }
 
 const imageSources = remoteImageSources()
+const scriptSrc = [
+  'script-src',
+  '\'self\'',
+  '\'unsafe-inline\'',
+  ...(process.env.NODE_ENV === 'production' ? [] : ['\'unsafe-eval\'']),
+  'https://challenges.cloudflare.com',
+].join(' ')
 
 const nextConfig = {
   output: 'standalone',
@@ -42,7 +49,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               'default-src \'self\'',
-              'script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://challenges.cloudflare.com', // unsafe-eval required by Next.js dev mode
+              scriptSrc,
               'style-src \'self\' \'unsafe-inline\'',
               ['img-src \'self\' data: blob:', ...imageSources].join(' '),
               'font-src \'self\'',
