@@ -10,6 +10,7 @@ import type {
 import {
   setCartError,
   setCartItems,
+  type CartStoreState,
   type StoreGet,
   type StoreSet,
 } from '@/features/cart/utils/cartStoreHelpers'
@@ -145,11 +146,10 @@ export function applyAuthenticatedAdd(
     shoppingCartItemId,
   })
     .catch(() => {
-      set({
-        count: getProductsCount(itemsIds),
+      rollbackOptimisticProductQuantity(set, get, productId, {
+        expectedQuantity: cartItem.productQuantity + 1,
         itemsIds,
         tempItems,
-        totalPrice: getTotalPrice(tempItems),
       })
     })
     .finally(() => clearPending(set, productId))
@@ -200,14 +200,51 @@ export function applyAuthenticatedRemove(
     shoppingCartItemId,
   })
     .catch(() => {
-      set({
-        count: getProductsCount(itemsIds),
+      rollbackOptimisticProductQuantity(set, get, productId, {
+        expectedQuantity: (currentItem?.productQuantity ?? 0) - 1,
         itemsIds,
         tempItems,
-        totalPrice: getTotalPrice(tempItems),
       })
     })
     .finally(() => clearPending(set, productId))
+}
+
+function rollbackOptimisticProductQuantity(
+  set: StoreSet,
+  get: StoreGet,
+  productId: string,
+  snapshot: Pick<CartStoreState, 'itemsIds' | 'tempItems'> & {
+    expectedQuantity: number
+  },
+): void {
+  const current = get()
+  const currentItem = current.itemsIds.find((item) => item.productId === productId)
+
+  if (currentItem?.productQuantity !== snapshot.expectedQuantity) {
+    return
+  }
+
+  const snapshotItem = snapshot.itemsIds.find((item) => item.productId === productId)
+  const snapshotTempItem = snapshot.tempItems.find(
+    (item) => item.productInfo.id === productId,
+  )
+  const itemsIds = snapshotItem
+    ? current.itemsIds.map((item) =>
+      item.productId === productId ? snapshotItem : item,
+    )
+    : current.itemsIds.filter((item) => item.productId !== productId)
+  const tempItems = snapshotTempItem
+    ? current.tempItems.map((item) =>
+      item.productInfo.id === productId ? snapshotTempItem : item,
+    )
+    : current.tempItems.filter((item) => item.productInfo.id !== productId)
+
+  set({
+    count: getProductsCount(itemsIds),
+    itemsIds,
+    tempItems,
+    totalPrice: getTotalPrice(tempItems),
+  })
 }
 
 export function applyAuthenticatedRemoveFullProduct(

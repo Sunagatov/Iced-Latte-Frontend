@@ -36,6 +36,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   'payment-session-failed': 'We couldn\'t process your payment. Please try again.',
 }
 
+const GENERIC_ERROR_MESSAGE = 'Something went wrong. Please try again.'
+
 function errorTypeSlug(type: string): string {
   try {
     const pathname = new URL(type).pathname
@@ -58,5 +60,5 @@ export function getUserMessage(error: unknown): string {
     return ERROR_MESSAGES[typeSlug]
   }
 
-  return data?.detail || data?.message || data?.error || 'Something went wrong. Please try again.'
+  return GENERIC_ERROR_MESSAGE
 }

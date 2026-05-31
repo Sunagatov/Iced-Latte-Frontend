@@ -16,12 +16,15 @@ function makeAxiosError(status: number, data: Record<string, unknown>) {
 }
 
 describe('handleAxiosError', () => {
-  it('returns backend message for 401 when present', () => {
+  it('returns mapped message for 401 when a known type is present', () => {
     expect(
       handleAxiosError(
-        makeAxiosError(401, { message: 'Session expired. Please sign in again.' }),
+        makeAxiosError(401, {
+          type: 'https://iced-latte.local/problems/session-expired',
+          message: 'raw backend message',
+        }),
       ),
-    ).toBe('Session expired. Please sign in again.')
+    ).toBe('Your session expired. Please sign in again.')
   })
 
   it('returns fallback message for 401 without message', () => {
@@ -30,10 +33,15 @@ describe('handleAxiosError', () => {
     )
   })
 
-  it('returns backend message for 403 when present', () => {
+  it('returns mapped message for 403 when a known type is present', () => {
     expect(
-      handleAxiosError(makeAxiosError(403, { message: 'Access denied.' })),
-    ).toBe('Access denied.')
+      handleAxiosError(
+        makeAxiosError(403, {
+          type: 'https://iced-latte.local/problems/access-denied',
+          message: 'raw backend message',
+        }),
+      ),
+    ).toBe('You do not have permission to perform this action.')
   })
 
   it('returns fallback message for 403 without message', () => {
@@ -42,23 +50,27 @@ describe('handleAxiosError', () => {
     )
   })
 
-  it('prefers detail over message (ProblemDetail)', () => {
+  it('maps known ProblemDetail type before backend detail text', () => {
     expect(
       handleAxiosError(
-        makeAxiosError(400, { detail: 'Validation failed', message: 'old' }),
+        makeAxiosError(400, {
+          type: 'https://iced-latte.local/problems/validation-failed',
+          detail: 'raw validation internals',
+          message: 'old',
+        }),
       ),
-    ).toBe('Validation failed')
+    ).toBe('Please check the form for errors.')
   })
 
-  it('returns data.message for other status', () => {
+  it('does not expose backend message for unknown server errors', () => {
     expect(
       handleAxiosError(makeAxiosError(500, { message: 'Server error' })),
-    ).toBe('Server error')
+    ).toBe('Something went wrong. Please try again.')
   })
 
-  it('returns data.error when message is absent', () => {
+  it('does not expose backend error when message is absent', () => {
     expect(handleAxiosError(makeAxiosError(500, { error: 'Oops' }))).toBe(
-      'Oops',
+      'Something went wrong. Please try again.',
     )
   })
 

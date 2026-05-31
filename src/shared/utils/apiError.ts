@@ -7,29 +7,23 @@ import { getUserMessage } from '@/shared/utils/errorMessages'
 
 export const handleAxiosError = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
-    const axiosError = error as AxiosError<ErrorResponse>
-
-    if (axiosError.response) {
-      const { status, data } = axiosError.response
+    if (error.response) {
+      const status = error.response.status
+      const userMessage = getUserMessage(error)
 
       if (status === 401) {
-        return data?.detail || data?.message || 'Please sign in to continue.'
+        return userMessage === 'Something went wrong. Please try again.'
+          ? 'Please sign in to continue.'
+          : userMessage
       }
 
       if (status === 403) {
-        return (
-          data?.detail ||
-          data?.message ||
-          'You do not have permission to perform this action.'
-        )
+        return userMessage === 'Something went wrong. Please try again.'
+          ? 'You do not have permission to perform this action.'
+          : userMessage
       }
 
-      return (
-        data?.detail ||
-        data?.message ||
-        data?.error ||
-        'An unknown error occurred'
-      )
+      return userMessage
     }
 
     return 'Network error. Please check your connection.'

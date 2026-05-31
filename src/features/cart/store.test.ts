@@ -287,6 +287,47 @@ describe('cart store — authenticated add', () => {
     await Promise.resolve()
     expect(useCartStore.getState().totalPrice).toBe(10)
   })
+
+  it('does not remove newer cart changes when an optimistic quantity update fails', async () => {
+    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 1 }],
+      tempItems: [makeCartItem('p1', 1)],
+      count: 1,
+      totalPrice: 10,
+      isSync: true,
+    })
+
+    let rejectUpdate!: (error: Error) => void
+
+    mockedCartApi.changeCartItemQuantity.mockReturnValue(
+      new Promise((_, reject) => {
+        rejectUpdate = reject
+      }),
+    )
+
+    useCartStore.getState().add('p1')
+    useCartStore.setState({
+      itemsIds: [
+        { productId: 'p1', productQuantity: 2 },
+        { productId: 'p2', productQuantity: 1 },
+      ],
+      tempItems: [makeCartItem('p1', 2), makeCartItem('p2', 1)],
+      count: 3,
+      totalPrice: 30,
+    })
+
+    rejectUpdate(new Error('backend rejected update'))
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(useCartStore.getState().itemsIds).toEqual([
+      { productId: 'p1', productQuantity: 1 },
+      { productId: 'p2', productQuantity: 1 },
+    ])
+    expect(useCartStore.getState().count).toBe(2)
+    expect(useCartStore.getState().totalPrice).toBe(20)
+  })
 })
 
 describe('cart store — clearCart (guest)', () => {

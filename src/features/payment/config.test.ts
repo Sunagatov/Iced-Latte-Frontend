@@ -74,13 +74,13 @@ describe('payment config', () => {
     expect(getCheckoutUnavailableMessage()).toContain('unavailable')
   })
 
-  it('getCheckoutErrorMessage returns backend detail when checkout fails', async () => {
+  it('getCheckoutErrorMessage does not expose raw backend detail when checkout fails', async () => {
     process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'true' }
     const { getCheckoutErrorMessage } = await import('@/features/payment/config')
 
     expect(getCheckoutErrorMessage(makeAxiosError(400, {
       detail: 'Either deliveryAddressId or address must be provided.',
-    }))).toBe('Either deliveryAddressId or address must be provided.')
+    }))).toBe('Something went wrong. Please try again.')
   })
 
   it('getCheckoutErrorMessage returns a safe unavailable message on 404', async () => {
