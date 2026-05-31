@@ -35,6 +35,7 @@ export function useSearchBar({ onBlur }: UseSearchBarOptions = {}) {
   const [activeIdx, setActiveIdx] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (!debouncedInput.trim()) {
@@ -84,6 +85,14 @@ export function useSearchBar({ onBlur }: UseSearchBarOptions = {}) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    return () => {
+      if (blurTimerRef.current) {
+        clearTimeout(blurTimerRef.current)
+      }
+    }
+  }, [])
+
   const runSearch = useCallback(
     (query: string): void => {
       const trimmedQuery = query.trim()
@@ -109,7 +118,12 @@ export function useSearchBar({ onBlur }: UseSearchBarOptions = {}) {
   }
 
   const handleBlur = (): void => {
-    setTimeout(() => {
+    if (blurTimerRef.current) {
+      clearTimeout(blurTimerRef.current)
+    }
+
+    blurTimerRef.current = setTimeout(() => {
+      blurTimerRef.current = null
       if (!containerRef.current?.contains(document.activeElement)) {
         onBlur?.()
       }

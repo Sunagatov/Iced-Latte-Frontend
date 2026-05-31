@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
@@ -40,6 +40,13 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
   const [modal, setModal] = useState<'cancel' | 'refund' | null>(null)
   const [refundReason, setRefundReason] = useState('')
   const hydrateCart = useCartStore((state) => state.hydrate)
+  const detailRequestRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    return () => {
+      detailRequestRef.current?.abort()
+    }
+  }, [])
 
   const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -49,21 +56,37 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
 
   const handleToggle = useCallback(async () => {
     if (expanded) {
+      detailRequestRef.current?.abort()
+      detailRequestRef.current = null
       setExpanded(false)
 
       return
     }
+
     setExpanded(true)
     if (!detail) {
+      detailRequestRef.current?.abort()
+      const controller = new AbortController()
+
+      detailRequestRef.current = controller
       setLoadingDetail(true)
       try {
-        const data = await fetchOrder(order.id)
+        const data = await fetchOrder(order.id, controller.signal)
 
-        setDetail(data)
+        if (!controller.signal.aborted && detailRequestRef.current === controller) {
+          setDetail(data)
+        }
       } catch {
+        if (controller.signal.aborted) {
+          return
+        }
+
         setActionError('Could not load order details.')
       } finally {
-        setLoadingDetail(false)
+        if (!controller.signal.aborted && detailRequestRef.current === controller) {
+          setLoadingDetail(false)
+          detailRequestRef.current = null
+        }
       }
     }
   }, [expanded, detail, order.id])
@@ -109,21 +132,32 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
     setActionLoading(true)
     setActionError('')
     setActionMessage('')
+    let msg = ''
+
     try {
       const result = await reorderOrder(order.id)
-      const msg =
+
+      msg =
         result.unavailableItems.length > 0
           ? `${result.addedItems} items added. ${result.unavailableItems.length} unavailable.`
           : `${result.addedItems} items added to cart.`
-
-      await hydrateCart()
-      setActionMessage(msg)
-      router.push(ROUTES.cart)
     } catch {
       setActionError('Could not re-order.')
+      setActionLoading(false)
+
+      return
+    }
+
+    try {
+      await hydrateCart()
+    } catch {
+      setActionError('Items were added, but the cart could not refresh.')
     } finally {
       setActionLoading(false)
     }
+
+    setActionMessage(msg)
+    router.push(ROUTES.cart)
   }
 
   const displayStatus = detail?.status ?? order.status

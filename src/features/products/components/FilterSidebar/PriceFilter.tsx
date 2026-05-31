@@ -36,6 +36,14 @@ const PriceFilter = () => {
     setToInput(toPriceFilter)
   }, [toPriceFilter])
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+    }
+  }, [])
+
   const scheduleUpdate = (from: string, to: string) => {
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {

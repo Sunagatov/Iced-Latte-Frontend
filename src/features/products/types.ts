@@ -1,24 +1,33 @@
-export interface IProductsList {
+import type {
+  BrandsDto,
+  ProductInfoDto,
+  ProductListWithPaginationInfoDto,
+  SellersDto,
+} from '@/shared/api/generated/product'
+
+export type IProductsList = Omit<
+  ProductListWithPaginationInfoDto,
+  'products'
+> & {
   products: IProduct[] | null
-  page: number
-  size: number
-  totalElements: number
-  totalPages: number
 }
 
-export interface IProduct {
-  id: string
-  name: string
-  description: string
-  price: number
-  quantity: number
-  active: boolean
-  productFileUrl: string | null
-  productImageUrls?: string[]
-  averageRating: number
-  reviewsCount: number
-  brandName: string
-  sellerName: string
+export interface IProduct
+  extends Omit<
+    ProductInfoDto,
+    | 'aiSummary'
+    | 'dateAdded'
+    | 'discount'
+    | 'height'
+    | 'length'
+    | 'originCountry'
+    | 'popularityScore'
+    | 'productFileUrl'
+    | 'soldProductsCount'
+    | 'weight'
+    | 'width'
+  > {
+  productFileUrl?: string | null
   aiSummary?: string | null
   originCountry?: string | null
   weight?: number | null
@@ -31,10 +40,6 @@ export interface IProduct {
   popularityScore?: number | null
 }
 
-export interface IGetProductSellers {
-  sellers: string[]
-}
+export type IGetProductSellers = SellersDto
 
-export interface IGetProductBrands {
-  brands: string[]
-}
+export type IGetProductBrands = BrandsDto

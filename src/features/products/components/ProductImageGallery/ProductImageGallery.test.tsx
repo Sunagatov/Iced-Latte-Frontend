@@ -58,7 +58,21 @@ describe('ProductImageGallery', () => {
     expect(screen.getByText('3 / 3')).toBeInTheDocument()
   })
 
-  it('responds to ArrowRight keyboard event', () => {
+  it('responds to ArrowRight keyboard event when the gallery has focus', () => {
+    render(
+      <ProductImageGallery
+        productFileUrl={null}
+        productImageUrls={['/a.jpg', '/b.jpg']}
+        productName="Latte"
+      />,
+    )
+    act(() => {
+      fireEvent.keyDown(screen.getByRole('region'), { key: 'ArrowRight' })
+    })
+    expect(screen.getByText('2 / 2')).toBeInTheDocument()
+  })
+
+  it('does not respond to page-level arrow key events', () => {
     render(
       <ProductImageGallery
         productFileUrl={null}
@@ -69,10 +83,10 @@ describe('ProductImageGallery', () => {
     act(() => {
       fireEvent.keyDown(window, { key: 'ArrowRight' })
     })
-    expect(screen.getByText('2 / 2')).toBeInTheDocument()
+    expect(screen.getByText('1 / 2')).toBeInTheDocument()
   })
 
-  it('responds to ArrowLeft keyboard event', () => {
+  it('responds to ArrowLeft keyboard event when the gallery has focus', () => {
     render(
       <ProductImageGallery
         productFileUrl={null}
@@ -81,7 +95,7 @@ describe('ProductImageGallery', () => {
       />,
     )
     act(() => {
-      fireEvent.keyDown(window, { key: 'ArrowLeft' })
+      fireEvent.keyDown(screen.getByRole('region'), { key: 'ArrowLeft' })
     })
     expect(screen.getByText('2 / 2')).toBeInTheDocument()
   })

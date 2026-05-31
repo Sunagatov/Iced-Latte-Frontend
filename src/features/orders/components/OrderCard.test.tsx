@@ -77,4 +77,30 @@ describe('OrderCard', () => {
     })
     expect(push).toHaveBeenCalledWith('/cart')
   })
+
+  it('does not report reorder failure when only cart hydration fails', async () => {
+    const hydrate = jest.fn().mockRejectedValue(new Error('hydrate failed'))
+
+    useCartStore.setState({ hydrate } as Partial<CartSliceStore>)
+
+    mockedOrdersApi.fetchOrder.mockResolvedValue(detail)
+    mockedOrdersApi.reorderOrder.mockResolvedValue({
+      addedItems: 1,
+      unavailableItems: [],
+    })
+
+    render(<OrderCard order={order} />)
+
+    fireEvent.click(screen.getByRole('button', { name: /order #order-12/i }))
+
+    await screen.findByRole('button', { name: /buy again/i })
+
+    fireEvent.click(screen.getByRole('button', { name: /buy again/i }))
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/cart')
+    })
+
+    expect(screen.queryByText('Could not re-order.')).not.toBeInTheDocument()
+  })
 })

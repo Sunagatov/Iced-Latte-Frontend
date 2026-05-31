@@ -5,13 +5,13 @@ import Image from 'next/image'
 import getImgUrl from '@/shared/utils/getImgUrl'
 
 interface ProductImageGalleryProps {
-  productFileUrl: string | null
+  productFileUrl?: string | null
   productImageUrls?: string[]
   productName: string
 }
 
 function buildGallery(
-  productFileUrl: string | null,
+  productFileUrl?: string | null,
   productImageUrls?: string[],
 ): string[] {
   if (productImageUrls && productImageUrls.length > 0) {
@@ -44,17 +44,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     setActiveIndex(0)
   }, [productFileUrl, productImageUrls])
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') prev()
-      if (e.key === 'ArrowRight') next()
-    }
-
-    window.addEventListener('keydown', onKey)
-
-    return () => window.removeEventListener('keydown', onKey)
-  }, [prev, next])
-
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
   }
@@ -73,6 +62,18 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     touchStartX.current = null
   }
 
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      prev()
+    }
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      next()
+    }
+  }
+
   const hasMany = images.length > 1
 
   return (
@@ -80,6 +81,8 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       className="flex flex-col gap-3 md:flex-row md:gap-3"
       role="region"
       aria-label={`${productName} image gallery`}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
       suppressHydrationWarning
     >
       {/* Vertical thumbnail strip — desktop only */}

@@ -1,4 +1,4 @@
-import {
+import type {
   IGetProductBrands,
   IGetProductSellers,
   IProduct,
@@ -41,22 +41,22 @@ function getProductParamsFromPath(url: string): GetProductsParams {
   }
 }
 
-export async function getAllProducts(url: string) {
-  return getProducts(getProductParamsFromPath(url)) as Promise<IProductsList>
+export async function getAllProducts(url: string): Promise<IProductsList> {
+  return getProducts(getProductParamsFromPath(url))
 }
 
-export async function getProduct(id: string) {
-  return getProductById(id) as Promise<IProduct>
+export async function getProduct(id: string): Promise<IProduct> {
+  return getProductById(id)
 }
 
-export async function getProductByIds(ids: string[]) {
-  return getProductsByIds({ productIds: ids }) as Promise<IProduct[]>
+export async function getProductByIds(ids: string[]): Promise<IProduct[]> {
+  return getProductsByIds({ productIds: ids })
 }
 
 export const getProductSellers = async (): Promise<IGetProductSellers> => {
-  return getAllSellers() as Promise<IGetProductSellers>
+  return getAllSellers()
 }
 
 export const getProductBrands = async (): Promise<IGetProductBrands> => {
-  return getAllBrands() as Promise<IGetProductBrands>
+  return getAllBrands()
 }

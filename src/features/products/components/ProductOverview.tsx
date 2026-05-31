@@ -12,7 +12,7 @@ import { FREE_SHIPPING_THRESHOLD } from '@/shared/config/constants'
 function getProductSpecChips(product: IProduct): string[] {
   const dimensions =
     product.length && product.width && product.height
-      ? `${product.length} x ${product.width} x ${product.height} cm`
+      ? `${product.length} x ${product.width} x ${product.height} mm`
       : null
 
   return [
