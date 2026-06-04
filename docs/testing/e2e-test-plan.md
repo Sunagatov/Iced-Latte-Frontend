@@ -132,6 +132,20 @@ Add or keep coverage when touching these areas:
 - Clean up browser state between tests.
 - Prefer page objects/helpers for repeated flows.
 
+## 🧯 Local Provider-Disabled Smoke
+
+Run this after starting any documented local setup on `http://localhost:3000`:
+
+```bash
+npm run test:e2e:local-smoke
+```
+
+This targeted smoke covers the contributor default where Stripe, Google OAuth,
+email confirmation, AI, and Cloudflare Turnstile are disabled. It verifies
+catalog browsing, product details, email sign-up/sign-in without confirmation,
+protected route redirects, forgot password unavailable state, checkout disabled
+state, and absence of Turnstile iframes.
+
 ---
 
 ## 🧱 Test Structure

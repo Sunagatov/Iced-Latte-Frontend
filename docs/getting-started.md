@@ -271,6 +271,16 @@ E2E tests require the frontend running on `http://localhost:3000`:
 npm run test:e2e
 ```
 
+Provider-disabled local smoke test:
+
+```bash
+npm run test:e2e:local-smoke
+```
+
+That smoke test clicks through catalog, product details, email sign-up/sign-in,
+protected route redirects, forgot password, and disabled checkout/Turnstile
+states with the default local feature flags.
+
 View E2E report:
 
 ```bash

@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: '22.17.0'
+          node-version: '22.18.0'
           cache: 'npm'
 
       - name: Install dependencies
@@ -94,7 +94,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: '22.17.0'
+          node-version: '22.18.0'
           cache: 'npm'
 
       - name: Install dependencies
@@ -134,3 +134,75 @@ jobs:
           curl -s -X POST https://api.telegram.org/bot${BOT_TOKEN}/sendMessage \
             -d chat_id=${CHAT_ID} \
             -d text="[ALERT] NPM Audit: High vulnerabilities found%0ARepo: ${REPO}%0ABranch: ${BRANCH}%0ASha: ${SHA:0:7}%0ABy: ${ACTOR}%0AMsg: ${MSG}%0A${RUN_URL}"
+
+  local-smoke:
+    name: Local Provider-Disabled Smoke
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - name: Checkout frontend
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          path: Iced-Latte-Frontend
+
+      - name: Checkout backend
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: Sunagatov/Iced-Latte
+          ref: development
+          path: Iced-Latte
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.18.0'
+          cache: 'npm'
+          cache-dependency-path: Iced-Latte-Frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: Iced-Latte-Frontend
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: Iced-Latte-Frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Start default local app
+        working-directory: Iced-Latte
+        run: docker compose --env-file .env.example --profile backend --profile frontend up -d --build
+
+      - name: Wait for app readiness
+        run: |
+          for i in {1..90}; do
+            if curl -fsS http://localhost:8083/actuator/health >/dev/null && curl -fsS http://localhost:3000 >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cd Iced-Latte
+          docker compose --env-file .env.example --profile backend --profile frontend logs --tail=200
+          exit 1
+
+      - name: Run local provider-disabled smoke
+        working-directory: Iced-Latte-Frontend
+        env:
+          NEXT_PUBLIC_STRIPE_ENABLED: "false"
+          NEXT_PUBLIC_GOOGLE_AUTH_ENABLED: "false"
+          NEXT_PUBLIC_AI_ENABLED: "false"
+          NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED: "false"
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
+          NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED: "false"
+        run: npm run test:e2e:local-smoke
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-smoke-playwright-report
+          path: Iced-Latte-Frontend/playwright-report/
+
+      - name: Stop local app
+        if: always()
+        working-directory: Iced-Latte
+        run: docker compose --env-file .env.example --profile backend --profile frontend down
