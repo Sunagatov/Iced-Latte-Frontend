@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import OrderHistory from '@/features/orders/components/OrderHistory'
 import * as ordersApi from '@/features/orders/ordersApi'
 
@@ -17,6 +17,23 @@ const mockedOrdersApi = jest.mocked(ordersApi)
 
 describe('OrderHistory', () => {
   beforeEach(() => jest.clearAllMocks())
+
+  it('renders filters for all user-visible backend order statuses', async () => {
+    mockedOrdersApi.fetchOrders.mockResolvedValue({
+      content: [],
+      page: 0,
+      size: 10,
+      totalElements: 0,
+      totalPages: 0,
+    })
+
+    render(<OrderHistory />)
+
+    expect(screen.getByRole('button', { name: 'Refund requested' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Refunded' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Payment failed' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Payment expired' })).toBeInTheDocument()
+  })
 
   it('loads orders through the orders api', async () => {
     mockedOrdersApi.fetchOrders.mockResolvedValue({

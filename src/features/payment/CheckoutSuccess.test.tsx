@@ -45,6 +45,19 @@ describe('CheckoutSuccess', () => {
     expect(error).toBeInTheDocument()
   })
 
+  it('shows failed state when backend reports terminal payment failure', async () => {
+    mockedPaymentApi.getCheckoutStatus.mockResolvedValue({
+      orderId: 'o1',
+      orderStatus: 'PAYMENT_FAILED',
+      paymentStatus: 'FAILED',
+    })
+
+    const { findByText } = render(<CheckoutSuccess orderId="o1" />)
+
+    expect(await findByText('Payment could not be completed')).toBeInTheDocument()
+    expect(useCartStore.getState().count).toBe(1)
+  })
+
   it('shows pending state after exhausting retries', async () => {
     jest.useFakeTimers()
 

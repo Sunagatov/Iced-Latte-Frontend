@@ -5,6 +5,9 @@ import { API_TIMEOUT_SSR_MS, API_TIMEOUT_BROWSER_MS } from '@/shared/config/cons
 
 const instance = axios.create({
   timeout: typeof window === 'undefined' ? API_TIMEOUT_SSR_MS : API_TIMEOUT_BROWSER_MS,
+  paramsSerializer: {
+    indexes: null,
+  },
 })
 
 instance.interceptors.request.use((config) => {

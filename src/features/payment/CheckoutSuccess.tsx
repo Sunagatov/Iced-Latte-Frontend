@@ -7,10 +7,19 @@ import { getCheckoutStatus } from '@/features/payment/public'
 
 const MAX_RETRIES = 5
 const POLL_INTERVAL_MS = 2000
+const FAILED_ORDER_STATUSES = new Set(['PAYMENT_FAILED', 'PAYMENT_EXPIRED'])
+const FAILED_PAYMENT_STATUSES = new Set([
+  'FAILED',
+  'EXPIRED',
+  'REFUNDED',
+  'RECONCILIATION_FAILED',
+])
 
 export function CheckoutSuccess({ orderId }: { orderId: string }) {
   const { resetCart } = useCartStore()
-  const [status, setStatus] = useState<'loading' | 'paid' | 'pending' | 'error'>('loading')
+  const [status, setStatus] = useState<
+    'loading' | 'paid' | 'pending' | 'failed' | 'error'
+  >('loading')
   const [retries, setRetries] = useState(0)
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -29,6 +38,15 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
         if (result.orderStatus === 'PAID') {
           setStatus('paid')
           resetCart()
+
+          return
+        }
+
+        if (
+          FAILED_ORDER_STATUSES.has(result.orderStatus) ||
+          (result.paymentStatus && FAILED_PAYMENT_STATUSES.has(result.paymentStatus))
+        ) {
+          setStatus('failed')
 
           return
         }
@@ -101,6 +119,24 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
         <h1 className="text-xl font-bold">Something went wrong</h1>
         <p className="text-gray-600">
           We couldn&apos;t confirm your payment status. Please check your orders.
+        </p>
+        <Link
+          href="/orders"
+          className="mt-4 rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
+        >
+          View your orders
+        </Link>
+      </div>
+    )
+  }
+
+  if (status === 'failed') {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+        <h1 className="text-xl font-bold">Payment could not be completed</h1>
+        <p className="mt-2 text-gray-600">
+          The payment failed or expired. Please check your orders before trying
+          again.
         </p>
         <Link
           href="/orders"

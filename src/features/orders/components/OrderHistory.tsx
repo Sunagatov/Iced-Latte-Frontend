@@ -15,6 +15,10 @@ const FILTERS: { label: string; value: OrderFilter }[] = [
   { label: 'Shipped', value: 'SHIPPED' },
   { label: 'Delivered', value: 'DELIVERED' },
   { label: 'Cancelled', value: 'CANCELLED' },
+  { label: 'Refund requested', value: 'REFUND_REQUESTED' },
+  { label: 'Refunded', value: 'REFUNDED' },
+  { label: 'Payment failed', value: 'PAYMENT_FAILED' },
+  { label: 'Payment expired', value: 'PAYMENT_EXPIRED' },
 ]
 
 export default function OrderHistory() {

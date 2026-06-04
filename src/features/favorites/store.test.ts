@@ -230,6 +230,34 @@ describe('favourites store — syncSession', () => {
     expect(getFavState().isSync).toBe(true)
   })
 
+  it('syncs guest favourites in backend-sized batches', async () => {
+    setAuthStatus('authenticated')
+    const favouriteIds = Array.from(
+      { length: 101 },
+      (_, index) => `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`,
+    )
+
+    setFavState({ favouriteIds, isSync: false })
+    mockedSyncFavourites
+      .mockResolvedValueOnce({
+        products: favouriteIds.slice(0, 100).map(makeProduct),
+      })
+      .mockResolvedValueOnce({
+        products: favouriteIds.slice(100).map(makeProduct),
+      })
+
+    await getFavState().syncSession()
+
+    expect(mockedSyncFavourites).toHaveBeenNthCalledWith(1, {
+      productIds: favouriteIds.slice(0, 100),
+    })
+    expect(mockedSyncFavourites).toHaveBeenNthCalledWith(2, {
+      productIds: favouriteIds.slice(100),
+    })
+    expect(getFavState().favouriteIds).toEqual(favouriteIds)
+    expect(getFavState().isSync).toBe(true)
+  })
+
   it('drops invalid stale guest ids without calling sync api', async () => {
     setAuthStatus('authenticated')
     setFavState({ favouriteIds: ['not-a-product-id', ''] })

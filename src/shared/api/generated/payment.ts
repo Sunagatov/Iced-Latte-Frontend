@@ -472,7 +472,7 @@ export const createCheckout = (
     }
 
 /**
- * Read-only endpoint for the success page to poll. Returns current order and payment status. Does NOT create or modify anything.
+ * Status endpoint for the success page to poll. Returns current order and payment status. If the webhook has not arrived yet, the backend may reconcile with Stripe and update local payment/order state.
 
  * @summary Check payment status for an order
  */

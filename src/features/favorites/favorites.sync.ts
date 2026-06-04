@@ -13,6 +13,8 @@ import {
 import { getProductByIds } from '@/features/products/public'
 import { toastError } from '@/shared/utils/apiError'
 
+const FAVORITES_SYNC_BATCH_SIZE = 100
+
 function isAbortError(err: unknown): boolean {
   return (
     (err as { name?: string }).name === 'AbortError' ||
@@ -138,12 +140,18 @@ async function syncGuestFavouritesIntoBackend(
       return
     }
 
-    const response = await syncFavourites({
-      productIds: favouriteIds,
-    })
+    const products = []
+
+    for (let index = 0; index < favouriteIds.length; index += FAVORITES_SYNC_BATCH_SIZE) {
+      const response = await syncFavourites({
+        productIds: favouriteIds.slice(index, index + FAVORITES_SYNC_BATCH_SIZE),
+      })
+
+      products.push(...response.products)
+    }
 
     set({
-      ...mapProductsToFavourites(response.products),
+      ...mapProductsToFavourites(products),
       isSync: true,
       status: 'ready',
     })

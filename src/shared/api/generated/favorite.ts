@@ -14,6 +14,7 @@ export interface ListOfFavoriteProducts {
   /**
      * An array of unique identifiers for the products.
      * @minItems 1
+     * @maxItems 100
      */
   productIds: string[];
 }
