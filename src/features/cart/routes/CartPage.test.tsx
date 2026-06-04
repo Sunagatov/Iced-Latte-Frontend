@@ -1,5 +1,5 @@
 import { render, screen, act } from '@testing-library/react'
-import Cart from '@/app/cart/page'
+import CartPage from '@/features/cart/routes/CartPage'
 import { useCartStore } from '@/features/cart/cartStore'
 
 jest.mock('@/features/cart/components/CartFull', () => ({
@@ -27,7 +27,7 @@ beforeEach(() => {
 
 describe('Cart page', () => {
   it('shows CartEmpty when no items after hydration', () => {
-    render(<Cart />)
+    render(<CartPage />)
     expect(screen.getByText('CartEmpty')).toBeInTheDocument()
   })
 
@@ -58,7 +58,7 @@ describe('Cart page', () => {
       isSync: false,
     })
     await act(async () => {
-      render(<Cart />)
+      render(<CartPage />)
     })
     expect(screen.getByText('CartFull')).toBeInTheDocument()
   })

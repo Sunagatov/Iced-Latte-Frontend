@@ -3,9 +3,10 @@
 import Loader from '@/shared/ui/Loader'
 import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
-import { useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
+import { FEATURES } from '@/shared/config/features'
 import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useErrorHandler } from '@/shared/utils/apiError'
@@ -19,6 +20,8 @@ import {
 } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
+import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface IChangeValues {
   code: string
@@ -30,6 +33,9 @@ export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const [newPw, setNewPw] = useState('')
   const [resetSuccessful, setResetSuccessful] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState('')
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const { errorMessage, handleError } = useErrorHandler()
 
   const {
@@ -54,7 +60,13 @@ export default function GuestResetPassForm() {
 
   const onSubmit = async (values: IChangeValues) => {
     const { code, password } = values
-    const data: GuestResetPasswordCredentials = { code, password }
+    const data: GuestResetPasswordCredentials = { code, password, turnstileToken }
+
+    if (FEATURES.turnstile && !turnstileToken) {
+      setTurnstileError('Please complete verification before resetting your password.')
+
+      return
+    }
 
     try {
       setLoading(true)
@@ -64,6 +76,9 @@ export default function GuestResetPassForm() {
       setNewPw('')
     } catch (error) {
       handleError(error)
+      setTurnstileToken('')
+      setTurnstileError('')
+      turnstileRef.current?.reset()
     } finally {
       setLoading(false)
     }
@@ -116,9 +131,9 @@ export default function GuestResetPassForm() {
             {/* Form */}
             <div className="p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {errorMessage && (
+                {(errorMessage || turnstileError) && (
                   <div className="text-negative rounded-lg bg-red-50 px-4 py-3 text-sm">
-                    {errorMessage}
+                    {errorMessage || turnstileError}
                   </div>
                 )}
 
@@ -158,6 +173,14 @@ export default function GuestResetPassForm() {
                   type="password"
                   placeholder="Repeat your new password"
                   error={errors.confirmPassword}
+                />
+
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  onVerify={(token) => {
+                    setTurnstileToken(token)
+                    setTurnstileError('')
+                  }}
                 />
 
                 <Button

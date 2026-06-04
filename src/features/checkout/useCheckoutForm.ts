@@ -1,9 +1,16 @@
 'use client'
 
-import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type SyntheticEvent,
+} from 'react'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/cartStore'
 import {
+  checkoutTurnstileEnabled,
   getCheckoutErrorMessage,
   getCheckoutUnavailableMessage,
   hostedCheckoutEnabled,
@@ -15,6 +22,7 @@ import type {
   CheckoutFormValues,
 } from '@/features/checkout/checkoutTypes'
 import { redirectToHostedCheckout } from '@/features/checkout/redirect'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 function getInitialFormValues(): CheckoutFormValues {
   const userData = useAuthStore.getState().userData
@@ -90,6 +98,8 @@ export function useCheckoutForm() {
   const [form, setForm] = useState<CheckoutFormValues>(getInitialFormValues)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileRef = useRef<TurnstileInstance>(null)
 
   useEffect(() => {
     if (!userData) {
@@ -129,6 +139,12 @@ export function useCheckoutForm() {
       return
     }
 
+    if (checkoutTurnstileEnabled && !turnstileToken) {
+      setError('Please complete verification before placing your order.')
+
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -146,6 +162,7 @@ export function useCheckoutForm() {
           recipientName: trimmedForm.recipientName,
           recipientSurname: trimmedForm.recipientSurname,
           recipientPhone: trimmedForm.recipientPhone || undefined,
+          ...(checkoutTurnstileEnabled ? { turnstileToken } : {}),
           ...(selectedAddress
             ? { deliveryAddressId: selectedAddress.id }
             : { address: resolveShippingAddress(trimmedForm, null) }),
@@ -158,6 +175,8 @@ export function useCheckoutForm() {
       redirectToHostedCheckout(checkout.checkoutUrl)
     } catch (error) {
       setError(getCheckoutErrorMessage(error))
+      setTurnstileToken('')
+      turnstileRef.current?.reset()
     } finally {
       setLoading(false)
     }
@@ -165,12 +184,15 @@ export function useCheckoutForm() {
 
   return {
     error,
+    checkoutTurnstileEnabled,
     form,
     handleSubmit,
     hostedCheckoutEnabled,
     loading,
     selectedAddress,
     setSelectedAddress,
+    setTurnstileToken,
+    turnstileRef,
     updateField,
   }
 }

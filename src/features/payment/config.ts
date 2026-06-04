@@ -6,6 +6,7 @@ import { getUserMessage } from '@/shared/utils/errorMessages'
 // Stripe checkout is only enabled when explicitly set to 'true'.
 // Local and local-Docker builds stay disabled by default.
 export const hostedCheckoutEnabled = FEATURES.stripe
+export const checkoutTurnstileEnabled = FEATURES.checkoutTurnstile
 
 export function getCheckoutUnavailableMessage(): string {
   return hostedCheckoutEnabled

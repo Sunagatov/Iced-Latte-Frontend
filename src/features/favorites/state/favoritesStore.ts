@@ -1,5 +1,6 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { type AuthStatus, useAuthStore } from '@/features/auth/store'
 import {
   hydrateFavouritesStore,
   syncFavouritesStoreWithSession,
@@ -19,9 +20,9 @@ export type { FavStatus } from '@/features/favorites/state/favoritesStore.utils'
 type FavSliceState = FavStoreSlice
 
 interface FavSliceActions {
-  hydrate: (signal?: AbortSignal) => Promise<void>
+  hydrate: (signal?: AbortSignal, authStatus?: AuthStatus) => Promise<void>
   resetFav: () => void
-  syncSession: (signal?: AbortSignal) => Promise<void>
+  syncSession: (signal?: AbortSignal, authStatus?: AuthStatus) => Promise<void>
   toggleFavourite: (id: string) => Promise<void>
 }
 
@@ -42,13 +43,24 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
   ...initialState,
 
   toggleFavourite: (id) =>
-    toggleFavouriteInStore(set as FavStoreSet, get as FavStoreGet, id),
-  hydrate: (signal) =>
-    hydrateFavouritesStore(set as FavStoreSet, get as FavStoreGet, signal),
-  syncSession: (signal) =>
+    toggleFavouriteInStore(
+      set as FavStoreSet,
+      get as FavStoreGet,
+      id,
+      useAuthStore.getState().status === 'authenticated',
+    ),
+  hydrate: (signal, authStatus = useAuthStore.getState().status) =>
+    hydrateFavouritesStore(
+      set as FavStoreSet,
+      get as FavStoreGet,
+      authStatus,
+      signal,
+    ),
+  syncSession: (signal, authStatus = useAuthStore.getState().status) =>
     syncFavouritesStoreWithSession(
       set as FavStoreSet,
       get as FavStoreGet,
+      authStatus,
       signal,
     ),
 

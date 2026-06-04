@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/features/auth/store'
+import type { AuthStatus } from '@/features/auth/store'
 import { fetchCart } from '@/features/cart/cartApi'
 import {
   clearCartStore as clearCartStoreState,
@@ -24,10 +24,9 @@ function isAbortError(err: unknown): boolean {
 export async function hydrateCartStore(
   set: StoreSet,
   get: StoreGet,
+  authStatus: AuthStatus,
   signal?: AbortSignal,
 ): Promise<void> {
-  const authStatus = useAuthStore.getState().status
-
   if (authStatus === 'authenticated') {
     await loadAuthenticatedCart(set, get, signal)
 
@@ -40,10 +39,9 @@ export async function hydrateCartStore(
 export async function syncCartStoreWithSession(
   set: StoreSet,
   get: StoreGet,
+  authStatus: AuthStatus,
   signal?: AbortSignal,
 ): Promise<void> {
-  const authStatus = useAuthStore.getState().status
-
   if (authStatus === 'anonymous') {
     if (get().isSync) {
       set({
@@ -76,10 +74,12 @@ export async function syncCartStoreWithSession(
   await loadAuthenticatedCart(set, get, signal)
 }
 
-export async function clearCartStore(set: StoreSet, get: StoreGet): Promise<void> {
-  const isAuthenticated = useAuthStore.getState().status === 'authenticated'
-
-  await clearCartStoreState(set, get, isAuthenticated)
+export async function clearCartStoreForSession(
+  set: StoreSet,
+  get: StoreGet,
+  authStatus: AuthStatus,
+): Promise<void> {
+  await clearCartStoreState(set, get, authStatus === 'authenticated')
 }
 
 async function loadAuthenticatedCart(

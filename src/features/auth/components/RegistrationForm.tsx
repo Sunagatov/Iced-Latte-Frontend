@@ -20,10 +20,12 @@ import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSes
 import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { ROUTES } from '@/shared/config/routes'
+import { FEATURES } from '@/shared/config/features'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
   const { completeAuthSession } = useCompleteAuthSession()
   const router = useRouter()
@@ -49,6 +51,12 @@ export default function RegistrationForm() {
   const { errorMessage, handleError } = useFormErrorHandler<IFormValues>(setError)
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+    if (FEATURES.turnstile && !turnstileToken) {
+      setTurnstileError('Please complete verification before creating your account.')
+
+      return
+    }
+
     try {
       setLoading(true)
       const authenticated = await apiRegisterUser({ ...formData, turnstileToken })
@@ -61,6 +69,7 @@ export default function RegistrationForm() {
     } catch (error) {
       handleError(error)
       setTurnstileToken('')
+      setTurnstileError('')
       turnstileRef.current?.reset()
     } finally {
       setLoading(false)
@@ -69,7 +78,11 @@ export default function RegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && <div className="text-negative mt-4">{errorMessage}</div>}
+      {(errorMessage || turnstileError) && (
+        <div className="text-negative mt-4">
+          {errorMessage || turnstileError}
+        </div>
+      )}
       <FormInput
         id="firstName"
         register={register}
@@ -120,7 +133,13 @@ export default function RegistrationForm() {
           </button>
         }
       />
-      <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
+      <TurnstileWidget
+        ref={turnstileRef}
+        onVerify={(token) => {
+          setTurnstileToken(token)
+          setTurnstileError('')
+        }}
+      />
       <Button
         id="register-btn"
         disabled={loading}

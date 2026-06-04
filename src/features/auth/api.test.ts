@@ -15,10 +15,13 @@ describe('auth api', () => {
       data: { message: 'ok' },
     })
 
-    await authApi.apiForgotPassword({ email: 'a@b.com' })
+    await authApi.apiForgotPassword({
+      email: 'a@b.com',
+      turnstileToken: 'turnstile-token',
+    })
 
     expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-      data: { email: 'a@b.com' },
+      data: { email: 'a@b.com', turnstileToken: 'turnstile-token' },
       method: 'POST',
       url: '/auth/password/forgot',
     }))
@@ -29,10 +32,18 @@ describe('auth api', () => {
       data: { message: 'ok' },
     })
 
-    await authApi.apiGuestResetPassword({ code: 'abc', password: 'newpass' })
+    await authApi.apiGuestResetPassword({
+      code: 'abc',
+      password: 'newpass',
+      turnstileToken: 'turnstile-token',
+    })
 
     expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-      data: { code: 'abc', password: 'newpass' },
+      data: {
+        code: 'abc',
+        password: 'newpass',
+        turnstileToken: 'turnstile-token',
+      },
       method: 'POST',
       url: '/auth/password/change',
     }))

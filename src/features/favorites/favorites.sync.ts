@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/features/auth/store'
+import type { AuthStatus } from '@/features/auth/store'
 import {
   fetchFavourites,
   syncFavourites,
@@ -25,14 +25,13 @@ function isAbortError(err: unknown): boolean {
 export async function hydrateFavouritesStore(
   set: FavStoreSet,
   get: FavStoreGet,
+  authStatus: AuthStatus,
   signal?: AbortSignal,
 ): Promise<void> {
-  const isAuthenticated = useAuthStore.getState().status === 'authenticated'
-
   set({ status: 'syncing' })
 
   try {
-    if (isAuthenticated) {
+    if (authStatus === 'authenticated') {
       const products = await fetchFavourites(signal)
 
       if (signal?.aborted) {
@@ -84,10 +83,9 @@ export async function hydrateFavouritesStore(
 export async function syncFavouritesStoreWithSession(
   set: FavStoreSet,
   get: FavStoreGet,
+  authStatus: AuthStatus,
   signal?: AbortSignal,
 ): Promise<void> {
-  const authStatus = useAuthStore.getState().status
-
   if (authStatus === 'anonymous') {
     if (get().isSync) {
       set({
@@ -102,7 +100,7 @@ export async function syncFavouritesStoreWithSession(
     }
 
     if (get().favouriteIds.length > 0) {
-      await hydrateFavouritesStore(set, get, signal)
+      await hydrateFavouritesStore(set, get, authStatus, signal)
     }
 
     return
@@ -122,7 +120,7 @@ export async function syncFavouritesStoreWithSession(
     return
   }
 
-  await hydrateFavouritesStore(set, get, signal)
+  await hydrateFavouritesStore(set, get, authStatus, signal)
 }
 
 async function syncGuestFavouritesIntoBackend(

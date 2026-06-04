@@ -1,4 +1,3 @@
-import { useAuthStore } from '@/features/auth/store'
 import {
   removeFavourite,
   syncFavourites,
@@ -19,6 +18,7 @@ export async function toggleFavouriteInStore(
   set: FavStoreSet,
   get: FavStoreGet,
   productId: string,
+  isAuthenticated: boolean,
 ): Promise<void> {
   const [normalizedProductId] = normalizeFavouriteIds([productId])
 
@@ -32,7 +32,6 @@ export async function toggleFavouriteInStore(
     return
   }
 
-  const isAuthenticated = useAuthStore.getState().status === 'authenticated'
   const normalizedFavouriteIds = normalizeFavouriteIds(favouriteIds)
   const wasAdded = !normalizedFavouriteIds.includes(normalizedProductId)
   const previousProduct =

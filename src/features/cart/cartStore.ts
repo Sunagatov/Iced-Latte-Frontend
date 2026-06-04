@@ -1,6 +1,6 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { useAuthStore } from '@/features/auth/store'
+import { type AuthStatus, useAuthStore } from '@/features/auth/store'
 import {
   applyAuthenticatedAdd,
   applyAuthenticatedRemove,
@@ -11,7 +11,7 @@ import {
 } from '@/features/cart/cart.mutations'
 import type { ICartItem } from '@/features/cart/cartTypes'
 import {
-  clearCartStore,
+  clearCartStoreForSession,
   hydrateCartStore,
   syncCartStoreWithSession,
 } from '@/features/cart/cart.sync'
@@ -33,13 +33,13 @@ type CartSliceState = CartStoreState
 interface CartSliceActions {
   add: (id: string) => void
   clearCart: () => Promise<void>
-  hydrate: (signal?: AbortSignal) => Promise<void>
+  hydrate: (signal?: AbortSignal, authStatus?: AuthStatus) => Promise<void>
   remove: (id: string) => void
   removeFullProduct: (id: string) => void
   resetCart: () => void
   retryHydration: () => void
   setTempItems: (items: ICartItem[]) => void
-  syncSession: (signal?: AbortSignal) => Promise<void>
+  syncSession: (signal?: AbortSignal, authStatus?: AuthStatus) => Promise<void>
 }
 
 export type CartSliceStore = CartSliceState & CartSliceActions
@@ -97,10 +97,21 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
     applyGuestRemoveFullProduct(set as StoreSet, get as StoreGet, id)
   },
 
-  hydrate: (signal) => hydrateCartStore(set as StoreSet, get as StoreGet, signal),
-  syncSession: (signal) =>
-    syncCartStoreWithSession(set as StoreSet, get as StoreGet, signal),
-  clearCart: () => clearCartStore(set as StoreSet, get as StoreGet),
+  hydrate: (signal, authStatus = useAuthStore.getState().status) =>
+    hydrateCartStore(set as StoreSet, get as StoreGet, authStatus, signal),
+  syncSession: (signal, authStatus = useAuthStore.getState().status) =>
+    syncCartStoreWithSession(
+      set as StoreSet,
+      get as StoreGet,
+      authStatus,
+      signal,
+    ),
+  clearCart: () =>
+    clearCartStoreForSession(
+      set as StoreSet,
+      get as StoreGet,
+      useAuthStore.getState().status,
+    ),
 
   setTempItems: (items) =>
     set({

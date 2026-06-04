@@ -12,6 +12,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   'user-not-found': 'User not found.',
   'session-not-found': 'Your session could not be found. Please sign in again.',
   'session-access-denied': 'You do not have access to this session.',
+  'turnstile-failed': 'Verification failed. Please retry the challenge and submit again.',
 
   // Orders
   'order-not-found': 'We couldn\'t find this order.',

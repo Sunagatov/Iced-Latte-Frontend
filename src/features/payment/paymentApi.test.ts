@@ -12,7 +12,11 @@ describe('paymentApi', () => {
 
   describe('createCheckout', () => {
     it('sends POST /payment/checkout with Idempotency-Key header', async () => {
-      const payload = { recipientName: 'John', recipientSurname: 'Doe' }
+      const payload = {
+        recipientName: 'John',
+        recipientSurname: 'Doe',
+        turnstileToken: 'turnstile-token',
+      }
       const response = { orderId: 'o1', stripeSessionId: 'cs_test', checkoutUrl: 'https://checkout.stripe.com/test' }
 
       mockedApi.mockResolvedValue({ data: response })

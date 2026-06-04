@@ -56,7 +56,7 @@ export async function syncSessionStores(
     }
 
     if (useCartStore.getState().itemsIds.length > 0) {
-      void useCartStore.getState().hydrate().catch(() => {})
+      void useCartStore.getState().hydrate(undefined, status).catch(() => {})
     }
 
     if (useFavouritesStore.getState().isSync) {
@@ -70,15 +70,15 @@ export async function syncSessionStores(
   const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
 
   if (!cartIsSync && itemsIds.length > 0) {
-    void useCartStore.getState().syncSession(signal).catch(() => {})
+    void useCartStore.getState().syncSession(signal, status).catch(() => {})
   } else {
-    void useCartStore.getState().hydrate(signal).catch(() => {})
+    void useCartStore.getState().hydrate(signal, status).catch(() => {})
   }
 
   if (!favIsSync && favouriteIds.length > 0) {
-    void useFavouritesStore.getState().syncSession(signal).catch(() => {})
+    void useFavouritesStore.getState().syncSession(signal, status).catch(() => {})
   } else {
-    void useFavouritesStore.getState().hydrate(signal).catch(() => {})
+    void useFavouritesStore.getState().hydrate(signal, status).catch(() => {})
   }
 }
 

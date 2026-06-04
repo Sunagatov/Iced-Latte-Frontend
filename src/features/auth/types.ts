@@ -18,6 +18,7 @@ export interface ErrorResponse {
 
 export interface ForgotPasswordCredentials {
   email: string
+  turnstileToken?: string
 }
 
 export interface AuthChangePasswordCredentials {
@@ -28,6 +29,7 @@ export interface AuthChangePasswordCredentials {
 export interface GuestResetPasswordCredentials {
   code: string
   password: string
+  turnstileToken?: string
 }
 
 export interface SuccessResponse {

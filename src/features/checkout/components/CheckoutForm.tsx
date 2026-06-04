@@ -4,12 +4,14 @@ import type { ChangeEvent } from 'react'
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import AddressPicker from '@/features/addresses/components/AddressPicker'
+import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
 import CheckoutSummary from '@/features/checkout/components/CheckoutSummary'
 import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
 import Loader from '@/shared/ui/Loader'
 
 export default function CheckoutForm() {
   const {
+    checkoutTurnstileEnabled,
     error,
     form,
     handleSubmit,
@@ -17,6 +19,8 @@ export default function CheckoutForm() {
     loading,
     selectedAddress,
     setSelectedAddress,
+    setTurnstileToken,
+    turnstileRef,
     updateField,
   } = useCheckoutForm()
 
@@ -96,6 +100,10 @@ export default function CheckoutForm() {
               required
             />
           </>
+        )}
+
+        {checkoutTurnstileEnabled && (
+          <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
         )}
 
         {error && <p className="text-negative text-sm">{error}</p>}

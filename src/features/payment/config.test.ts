@@ -67,6 +67,28 @@ describe('payment config', () => {
     expect(hostedCheckoutEnabled).toBe(false)
   })
 
+  it('checkoutTurnstileEnabled is true when checkout Turnstile and site key are configured', async () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: 'site-key',
+      NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED: 'true',
+    }
+    const { checkoutTurnstileEnabled } = await import('@/features/payment/config')
+
+    expect(checkoutTurnstileEnabled).toBe(true)
+  })
+
+  it('checkoutTurnstileEnabled is false when checkout Turnstile is disabled', async () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: 'site-key',
+      NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED: 'false',
+    }
+    const { checkoutTurnstileEnabled } = await import('@/features/payment/config')
+
+    expect(checkoutTurnstileEnabled).toBe(false)
+  })
+
   it('getCheckoutUnavailableMessage returns disabled message when checkout is off', async () => {
     process.env = { ...originalEnv, NEXT_PUBLIC_STRIPE_ENABLED: 'false' }
     const { getCheckoutUnavailableMessage } = await import('@/features/payment/config')

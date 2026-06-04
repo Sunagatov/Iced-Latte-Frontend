@@ -124,6 +124,11 @@ export interface ForgotPasswordRequest {
      * @maxLength 254
      */
   email: string;
+  /**
+     * Cloudflare Turnstile verification token. Required in production.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
 }
 
 export interface ChangePasswordRequest {
@@ -135,6 +140,11 @@ export interface ChangePasswordRequest {
      */
   code: string;
   password: PasswordField;
+  /**
+     * Cloudflare Turnstile verification token. Required in production.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
 }
 
 export type ErrorResponseErrorsItem = {

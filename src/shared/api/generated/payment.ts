@@ -57,6 +57,11 @@ export interface CreateCheckoutRequestDto {
   /** ID of a saved delivery address. Mutually exclusive with address. */
   deliveryAddressId?: string;
   address?: AddressDto;
+  /**
+     * Cloudflare Turnstile verification token. Required when checkout bot protection is enabled.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
 }
 
 /**

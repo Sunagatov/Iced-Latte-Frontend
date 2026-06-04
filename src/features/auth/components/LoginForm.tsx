@@ -16,10 +16,12 @@ import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { FEATURES } from '@/shared/config/features'
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
   const { completeAuthSession } = useCompleteAuthSession()
   const {
@@ -35,6 +37,12 @@ export default function LoginForm() {
   const { errorMessage, handleError } = useFormErrorHandler<IFormValues>(setError)
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+    if (FEATURES.turnstile && !turnstileToken) {
+      setTurnstileError('Please complete verification before signing in.')
+
+      return
+    }
+
     try {
       setLoading(true)
       await apiLoginUser({ ...formData, turnstileToken })
@@ -44,6 +52,7 @@ export default function LoginForm() {
     } catch (error) {
       handleError(error)
       setTurnstileToken('')
+      setTurnstileError('')
       turnstileRef.current?.reset()
     } finally {
       setLoading(false)
@@ -54,7 +63,11 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {errorMessage && <div className="text-negative mt-4">{errorMessage}</div>}
+      {(errorMessage || turnstileError) && (
+        <div className="text-negative mt-4">
+          {errorMessage || turnstileError}
+        </div>
+      )}
       <FormInput
         id="email"
         register={register}
@@ -87,7 +100,13 @@ export default function LoginForm() {
           </button>
         }
       />
-      <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
+      <TurnstileWidget
+        ref={turnstileRef}
+        onVerify={(token) => {
+          setTurnstileToken(token)
+          setTurnstileError('')
+        }}
+      />
       <Button
         id="login-btn"
         type="submit"

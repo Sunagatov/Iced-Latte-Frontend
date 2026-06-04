@@ -8,6 +8,7 @@ export interface CreateCheckoutRequest {
   recipientSurname: string
   recipientPhone?: string
   deliveryAddressId?: string
+  turnstileToken?: string
   address?: {
     country: string
     city: string

@@ -4,4 +4,7 @@ export const FEATURES = {
   ai: process.env.NEXT_PUBLIC_AI_ENABLED === 'true',
   emailConfirmation: process.env.NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED === 'true',
   turnstile: !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+  checkoutTurnstile:
+    !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
+    process.env.NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED === 'true',
 }

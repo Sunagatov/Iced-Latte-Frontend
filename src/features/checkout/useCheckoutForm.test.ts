@@ -5,9 +5,14 @@ import { useCartStore } from '@/features/cart/cartStore'
 import { useAuthStore } from '@/features/auth/store'
 import { redirectToHostedCheckout } from '@/features/checkout/redirect'
 
+let mockCheckoutTurnstileEnabled = false
+
 jest.mock('@/features/payment/paymentApi')
 jest.mock('@/features/checkout/redirect')
 jest.mock('@/features/payment/config', () => ({
+  get checkoutTurnstileEnabled() {
+    return mockCheckoutTurnstileEnabled
+  },
   hostedCheckoutEnabled: true,
   getCheckoutErrorMessage: () => 'Checkout failed with backend detail',
   getCheckoutUnavailableMessage: () => 'Checkout unavailable',
@@ -23,6 +28,7 @@ function mockSubmitEvent() {
 describe('useCheckoutForm', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockCheckoutTurnstileEnabled = false
 
     useAuthStore.setState({
       userData: {
@@ -66,6 +72,45 @@ describe('useCheckoutForm', () => {
     )
     expect(mockedRedirectToHostedCheckout).toHaveBeenCalledWith(
       'https://checkout.stripe.com/test',
+    )
+  })
+
+  it('includes Turnstile token when checkout Turnstile is enabled', async () => {
+    mockCheckoutTurnstileEnabled = true
+    mockedPaymentApi.createCheckout.mockResolvedValue({
+      orderId: 'o1',
+      stripeSessionId: 'cs_test',
+      checkoutUrl: 'https://checkout.stripe.com/test',
+    })
+
+    const { result } = renderHook(() => useCheckoutForm())
+
+    act(() => {
+      result.current.setTurnstileToken('turnstile-token')
+    })
+
+    await act(async () => {
+      await result.current.handleSubmit(mockSubmitEvent())
+    })
+
+    expect(mockedPaymentApi.createCheckout).toHaveBeenCalledWith(
+      expect.objectContaining({ turnstileToken: 'turnstile-token' }),
+      expect.any(String),
+    )
+  })
+
+  it('does not submit checkout when Turnstile is enabled and token is missing', async () => {
+    mockCheckoutTurnstileEnabled = true
+
+    const { result } = renderHook(() => useCheckoutForm())
+
+    await act(async () => {
+      await result.current.handleSubmit(mockSubmitEvent())
+    })
+
+    expect(mockedPaymentApi.createCheckout).not.toHaveBeenCalled()
+    expect(result.current.error).toBe(
+      'Please complete verification before placing your order.',
     )
   })
 
