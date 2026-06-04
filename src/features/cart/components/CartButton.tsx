@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useCartStore } from '@/features/cart/cartStore'
+import { useCartStore } from '@/features/cart/public'
 import { ROUTES } from '@/shared/config/routes'
 
 export default function CartButton() {

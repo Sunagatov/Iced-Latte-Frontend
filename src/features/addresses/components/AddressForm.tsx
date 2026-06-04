@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { DeliveryAddress, AddressFormData } from '../types'
 import { useAddressStore } from '../store'
-import countries from '@/features/user/constants'
+import countries from '@/shared/config/countries'
 import { RiCloseLine } from 'react-icons/ri'
 
 interface Props {

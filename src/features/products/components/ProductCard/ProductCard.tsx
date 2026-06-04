@@ -4,8 +4,8 @@ import { memo } from 'react'
 import {
   MAX_CART_ITEM_QUANTITY,
   useCartStore,
-} from '@/features/cart/cartStore'
-import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
+} from '@/features/cart/public'
+import { useFavouritesStore } from '@/features/favorites/public'
 import { IProduct } from '@/features/products/types'
 interface ICardProps {
   product: IProduct

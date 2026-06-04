@@ -1,7 +1,7 @@
 import { render, waitFor, act } from '@testing-library/react'
 import { CheckoutSuccess } from '@/features/payment/CheckoutSuccess'
 import * as paymentApi from '@/features/payment/paymentApi'
-import { useCartStore } from '@/features/cart/cartStore'
+import { useCartStore } from '@/features/cart/public'
 
 jest.mock('@/features/payment/paymentApi')
 jest.mock('next/link', () => ({

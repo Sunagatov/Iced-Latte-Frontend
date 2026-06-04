@@ -1,10 +1,11 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import ImageUpload from '@/features/user/components/ImageUpload'
 import { getUserData, uploadImage } from '@/features/user/api'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import type { ForwardedRef } from 'react'
 
 let mockAvatarTurnstileEnabled = false
+const mockTurnstileReset = jest.fn()
 
 jest.mock('@/features/user/api', () => ({
   getUserData: jest.fn(),
@@ -24,7 +25,7 @@ jest.mock('@/shared/ui/TurnstileWidget', () => {
       { onVerify }: { onVerify: (token: string) => void },
       ref: ForwardedRef<{ reset: () => void }>,
     ) => {
-      React.useImperativeHandle(ref, () => ({ reset: jest.fn() }))
+      React.useImperativeHandle(ref, () => ({ reset: mockTurnstileReset }))
 
       return (
         <button type="button" onClick={() => onVerify('turnstile-token')}>
@@ -64,6 +65,7 @@ function avatarFile() {
 describe('ImageUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockTurnstileReset.mockClear()
     mockAvatarTurnstileEnabled = false
     Object.defineProperty(URL, 'createObjectURL', {
       configurable: true,
@@ -104,12 +106,22 @@ describe('ImageUpload', () => {
     })
   })
 
-  it('keeps avatar input disabled until Turnstile is completed when avatar protection is enabled', () => {
+  it('shows an inline error when avatar protection is enabled and token is missing', async () => {
     mockAvatarTurnstileEnabled = true
 
     render(<ImageUpload />)
+    const file = avatarFile()
 
-    expect(screen.getByLabelText('Upload profile photo')).toBeDisabled()
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [file] },
+    })
+
+    expect(mockedUploadImage).not.toHaveBeenCalled()
+    expect(
+      await screen.findByText(
+        'Please complete verification before uploading your profile photo.',
+      ),
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Verify challenge' })).toBeInTheDocument()
   })
 
@@ -126,5 +138,6 @@ describe('ImageUpload', () => {
     await waitFor(() => {
       expect(mockedUploadImage).toHaveBeenCalledWith(file, 'turnstile-token')
     })
+    expect(mockTurnstileReset).toHaveBeenCalledTimes(1)
   })
 })

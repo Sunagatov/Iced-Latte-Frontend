@@ -1,4 +1,4 @@
-import { useCartStore } from '@/features/cart/cartStore'
+import { useCartStore } from '@/features/cart/public'
 
 export default function CheckoutSummary() {
   const { tempItems, totalPrice } = useCartStore()

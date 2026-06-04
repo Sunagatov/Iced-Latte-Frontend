@@ -4,7 +4,7 @@ import search from '@/../public/search_cart.png'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 
 export default function FavouritesEmpty() {
   const router = useRouter()

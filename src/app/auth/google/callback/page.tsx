@@ -2,8 +2,8 @@
 
 import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuthStore } from '@/features/auth/store'
-import { getUserData } from '@/features/user/api'
+import { useAuthStore } from '@/features/auth/public'
+import { getUserData } from '@/features/user/public'
 import { getSafeNext } from '@/shared/utils/navigation'
 import { ROUTES } from '@/shared/config/routes'
 

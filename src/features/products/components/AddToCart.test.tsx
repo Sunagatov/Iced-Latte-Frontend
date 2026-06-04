@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import AddToCartButton from '@/features/products/components/AddToCart'
-import { useCartStore } from '@/features/cart/cartStore'
+import { useCartStore } from '@/features/cart/public'
 import type { IProduct } from '@/features/products/types'
 
 const product: IProduct = {

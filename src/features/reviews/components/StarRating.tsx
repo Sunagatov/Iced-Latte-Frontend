@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useProductRatingStore } from '@/features/reviews/store'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 

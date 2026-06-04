@@ -6,8 +6,8 @@ import {
   useFavouritesStore,
   type FavStatus,
   type FavStoreState,
-} from '@/features/favorites/state/favoritesStore'
-import { useAuthStore, AuthStatus } from '@/features/auth/store'
+} from '@/features/favorites/public'
+import { useAuthStore, AuthStatus } from '@/features/auth/public'
 import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
 import { useEffect, useState } from 'react'
 

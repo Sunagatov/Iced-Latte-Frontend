@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import AuthResetPassForm from '@/features/auth/components/ResetPassword/AuthResetPassForm'
 import { apiAuthChangePassword } from '@/features/auth/api'
-import { clearClientSession } from '@/features/session/session'
+import { clearClientSession } from '@/features/session/public'
 import { ROUTES } from '@/shared/config/routes'
 
 const mockPush = jest.fn()
@@ -18,7 +18,7 @@ jest.mock('@/features/auth/api', () => ({
   apiAuthChangePassword: jest.fn(),
 }))
 
-jest.mock('@/features/session/session', () => ({
+jest.mock('@/features/session/public', () => ({
   clearClientSession: jest.fn(),
 }))
 

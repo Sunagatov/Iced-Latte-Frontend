@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import OrderCard from '@/features/orders/components/OrderCard'
 import * as ordersApi from '@/features/orders/ordersApi'
-import { type CartSliceStore, useCartStore } from '@/features/cart/cartStore'
+import { type CartSliceStore, useCartStore } from '@/features/cart/public'
 import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/orderTypes'
 
 const push = jest.fn()

@@ -1,8 +1,8 @@
 import {
   MAX_CART_ITEM_QUANTITY,
   useCartStore,
-} from '@/features/cart/cartStore'
-import { useAuthStore } from '@/features/auth/store'
+} from '@/features/cart/public'
+import { useAuthStore } from '@/features/auth/public'
 import * as cartApi from '@/features/cart/cartApi'
 import * as productsApi from '@/features/products/api'
 import type { ICartItem } from '@/features/cart/cartTypes'
@@ -15,7 +15,7 @@ jest.mock('@/features/cart/cartApi', () => ({
 jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
-jest.mock('@/features/auth/store', () => ({
+jest.mock('@/features/auth/public', () => ({
   useAuthStore: { getState: jest.fn(() => ({ token: null })) },
 }))
 

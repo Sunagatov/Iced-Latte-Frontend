@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { apiLogoutUser } from '../api'
-import { clearClientSession } from '@/features/session/session'
+import { clearClientSession } from '@/features/session/public'
 import { useCallback, useState } from 'react'
 import { ROUTES } from '@/shared/config/routes'
 

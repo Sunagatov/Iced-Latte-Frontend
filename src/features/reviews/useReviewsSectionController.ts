@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import { apiGetProductUserReview } from '@/features/reviews/api'
 import { reviewsSortOptions } from '@/features/reviews/constants'
 import { useReviews } from '@/features/reviews/hooks'

@@ -1,4 +1,4 @@
-import type { DeliveryAddress } from '@/features/addresses/types'
+import type { DeliveryAddress } from '@/features/addresses/public'
 
 export interface CheckoutFormValues {
   recipientName: string

@@ -1,4 +1,4 @@
-import type { IProduct } from '@/features/products/types'
+import type { IProduct } from '@/features/products/public'
 import type { ProductSummaryDto } from '@/shared/api/generated/favorite'
 
 export type FavoriteProduct = Omit<ProductSummaryDto, 'productFileUrl'> & {

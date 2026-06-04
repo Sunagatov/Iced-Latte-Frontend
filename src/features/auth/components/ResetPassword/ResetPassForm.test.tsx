@@ -23,7 +23,7 @@ jest.mock('next/navigation', () => ({
   }),
 }))
 
-jest.mock('@/features/auth/store', () => ({
+jest.mock('@/features/auth/public', () => ({
   useAuthStore: (selector: (state: typeof mockAuthState) => unknown) =>
     selector(mockAuthState),
 }))

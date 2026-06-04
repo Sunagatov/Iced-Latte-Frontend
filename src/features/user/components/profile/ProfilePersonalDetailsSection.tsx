@@ -2,7 +2,7 @@
 
 import FormProfile from '@/features/user/components/FormProfile'
 import type { UserData } from '@/features/user/types'
-import type { AuthStore } from '@/features/auth/store'
+import type { AuthStore } from '@/features/auth/public'
 import type { ProfileSummary } from './profileTypes'
 
 type ProfilePersonalDetailsSectionProps = {

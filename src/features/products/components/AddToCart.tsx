@@ -5,7 +5,7 @@ import Counter from '@/shared/ui/Counter'
 import {
   MAX_CART_ITEM_QUANTITY,
   useCartStore,
-} from '@/features/cart/cartStore'
+} from '@/features/cart/public'
 import { IProduct } from '@/features/products/types'
 interface Props {
   product: IProduct

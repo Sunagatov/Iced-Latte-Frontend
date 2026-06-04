@@ -1,4 +1,4 @@
-import type { AuthStatus } from '@/features/auth/store'
+import type { AuthStatus } from '@/features/auth/public'
 import {
   fetchFavourites,
   syncFavourites,

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import ReviewForm from '@/features/reviews/components/ReviewForm'
 import { apiAddProductReview } from '@/features/reviews/api'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import { useProductRatingStore } from '@/features/reviews/store'
 import type { ForwardedRef } from 'react'
 

@@ -1,9 +1,9 @@
-import type { AuthStatus } from '@/features/auth/store'
-import { useAuthStore } from '@/features/auth/store'
+import type { AuthStatus } from '@/features/auth/public'
+import { useAuthStore } from '@/features/auth/public'
 import { useCartStore } from '@/features/cart/public'
 import { useFavouritesStore } from '@/features/favorites/public'
-import { getUserData } from '@/features/user/api'
-import type { UserData } from '@/features/user/types'
+import { getUserData } from '@/features/user/public'
+import type { UserData } from '@/features/user/public'
 import { refreshToken } from '@/shared/api/generated/security'
 import { clearAuthCookies } from '@/shared/auth/cookies'
 

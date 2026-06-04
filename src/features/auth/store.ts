@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { UserData } from '@/features/user/types'
+import { UserData } from '@/features/user/public'
 
 export type AuthStatus = 'loading' | 'anonymous' | 'authenticated'
 

@@ -10,7 +10,7 @@ import { useToastErrorHandler } from '@/shared/utils/apiError'
 import { Review as ReviewType } from '@/features/reviews/types'
 import Loader from '@/shared/ui/Loader'
 import Review from '@/features/reviews/components/Review'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 

@@ -1,6 +1,6 @@
 import { render, screen, act } from '@testing-library/react'
 import CartPage from '@/features/cart/routes/CartPage'
-import { useCartStore } from '@/features/cart/cartStore'
+import { useCartStore } from '@/features/cart/public'
 
 jest.mock('@/features/cart/components/CartFull', () => ({
   __esModule: true,

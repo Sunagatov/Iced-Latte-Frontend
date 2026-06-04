@@ -7,16 +7,16 @@ import {
   type ChangeEvent,
   type SyntheticEvent,
 } from 'react'
-import { useAuthStore } from '@/features/auth/store'
-import { useCartStore } from '@/features/cart/cartStore'
+import { useAuthStore } from '@/features/auth/public'
+import { useCartStore } from '@/features/cart/public'
 import {
   checkoutTurnstileEnabled,
   getCheckoutErrorMessage,
   getCheckoutUnavailableMessage,
   hostedCheckoutEnabled,
-} from '@/features/payment/config'
+} from '@/features/payment/public'
 import { createCheckout } from '@/features/payment/public'
-import type { DeliveryAddress } from '@/features/addresses/types'
+import type { DeliveryAddress } from '@/features/addresses/public'
 import type {
   CheckoutAddressSelection,
   CheckoutFormValues,
@@ -182,6 +182,14 @@ export function useCheckoutForm() {
     }
   }
 
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token)
+
+    if (token) {
+      setError('')
+    }
+  }
+
   return {
     error,
     checkoutTurnstileEnabled,
@@ -191,7 +199,7 @@ export function useCheckoutForm() {
     loading,
     selectedAddress,
     setSelectedAddress,
-    setTurnstileToken,
+    handleTurnstileVerify,
     turnstileRef,
     updateField,
   }

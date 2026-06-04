@@ -19,7 +19,7 @@ import {
 } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
-import { clearClientSession } from '@/features/session/session'
+import { clearClientSession } from '@/features/session/public'
 
 interface IChangeAuthValues {
   oldPassword: string

@@ -1,6 +1,6 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { type AuthStatus, useAuthStore } from '@/features/auth/store'
+import { type AuthStatus, useAuthStore } from '@/features/auth/public'
 import {
   applyAuthenticatedAdd,
   applyAuthenticatedRemove,

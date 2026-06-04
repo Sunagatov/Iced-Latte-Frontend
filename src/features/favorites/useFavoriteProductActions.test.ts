@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
-import { useCartStore } from '@/features/cart/cartStore'
-import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
+import { useCartStore } from '@/features/cart/public'
+import { useFavouritesStore } from '@/features/favorites/public'
 import { useFavoriteProductActions } from '@/features/favorites/useFavoriteProductActions'
 
 const PRODUCT_ID = '418499f3-d951-40bf-9414-5cb90ab21ecb'

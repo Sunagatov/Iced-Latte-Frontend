@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import FavElement from './FavElement'
 import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
-import { useFavouritesStore } from '@/features/favorites/state/favoritesStore'
+import { useFavouritesStore } from '@/features/favorites/public'
 
 const FAVOURITES_VIEW_KEY = 'favourites-view'
 

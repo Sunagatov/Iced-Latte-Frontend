@@ -1,14 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useAuthStore, type AuthStore } from '@/features/auth/store'
+import { useAuthStore, type AuthStore } from '@/features/auth/public'
 import { ROUTES } from '@/shared/config/routes'
 import { FREE_SHIPPING_THRESHOLD } from '@/shared/config/constants'
 import {
   type CartSliceStore,
   useCartStore,
-} from '@/features/cart/cartStore'
-import { hostedCheckoutEnabled } from '@/features/payment/config'
+} from '@/features/cart/public'
+import { hostedCheckoutEnabled } from '@/features/payment/public'
 import type { ICartItem as CartItem } from '@/features/cart/cartTypes'
 import CartElement from './CartElement'
 

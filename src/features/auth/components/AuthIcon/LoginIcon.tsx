@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import type { AuthStore } from '@/features/auth/store'
-import { useAuthStore } from '@/features/auth/store'
+import type { AuthStore } from '@/features/auth/public'
+import { useAuthStore } from '@/features/auth/public'
 import { ROUTES } from '@/shared/config/routes'
 
 export default function LoginIcon() {

@@ -13,7 +13,7 @@ jest.mock('next/link', () => ({
 }))
 const mockUseAuthStore = jest.fn()
 
-jest.mock('@/features/auth/store', () => ({
+jest.mock('@/features/auth/public', () => ({
   useAuthStore: (selector: (s: {
     isLoggedIn: boolean
     userData: { firstName: string; lastName: string } | null

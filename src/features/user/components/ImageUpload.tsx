@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { uploadImage, getUserData } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import Loader from '@/shared/ui/Loader'
 import { RiCameraLine } from 'react-icons/ri'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
@@ -55,6 +55,7 @@ const ImageUpload = () => {
 
       setUserData(updated)
       setTurnstileToken('')
+      turnstileRef.current?.reset()
     } catch (error) {
       handleError(error)
       setPreview(null)
@@ -82,11 +83,7 @@ const ImageUpload = () => {
   return (
     <div>
       <label
-        className={`group relative block h-24 w-24 ${
-          avatarTurnstileEnabled && !turnstileToken
-            ? 'cursor-not-allowed opacity-80'
-            : 'cursor-pointer'
-        }`}
+        className="group relative block h-24 w-24 cursor-pointer"
       >
         <input
           className="sr-only"
@@ -95,7 +92,6 @@ const ImageUpload = () => {
           onChange={handleInputChange}
           key={inputKey}
           aria-label="Upload profile photo"
-          disabled={avatarTurnstileEnabled && !turnstileToken}
         />
         {hasAvatar || preview ? (
           <Image

@@ -5,7 +5,7 @@ import { ROUTES } from '@/shared/config/routes'
 import { useEffect, useState } from 'react'
 import AuthResetPassForm from './AuthResetPassForm'
 import GuestResetPassForm from './GuestResetPassForm'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 
 export default function ResetPassForm() {
   const router = useRouter()

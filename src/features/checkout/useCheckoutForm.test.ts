@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react'
 import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
 import * as paymentApi from '@/features/payment/paymentApi'
-import { useCartStore } from '@/features/cart/cartStore'
-import { useAuthStore } from '@/features/auth/store'
+import { useCartStore } from '@/features/cart/public'
+import { useAuthStore } from '@/features/auth/public'
 import { redirectToHostedCheckout } from '@/features/checkout/redirect'
 
 let mockCheckoutTurnstileEnabled = false
@@ -86,7 +86,7 @@ describe('useCheckoutForm', () => {
     const { result } = renderHook(() => useCheckoutForm())
 
     act(() => {
-      result.current.setTurnstileToken('turnstile-token')
+      result.current.handleTurnstileVerify('turnstile-token')
     })
 
     await act(async () => {
@@ -112,6 +112,26 @@ describe('useCheckoutForm', () => {
     expect(result.current.error).toBe(
       'Please complete verification before placing your order.',
     )
+  })
+
+  it('clears missing Turnstile error after verification succeeds', async () => {
+    mockCheckoutTurnstileEnabled = true
+
+    const { result } = renderHook(() => useCheckoutForm())
+
+    await act(async () => {
+      await result.current.handleSubmit(mockSubmitEvent())
+    })
+
+    expect(result.current.error).toBe(
+      'Please complete verification before placing your order.',
+    )
+
+    act(() => {
+      result.current.handleTurnstileVerify('turnstile-token')
+    })
+
+    expect(result.current.error).toBe('')
   })
 
   it('trims recipient and address fields before submitting checkout', async () => {

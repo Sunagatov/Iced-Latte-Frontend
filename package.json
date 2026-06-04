@@ -29,7 +29,6 @@
     "axios": "1.16.1",
     "axios-cache-interceptor": "^1.11.4",
     "lodash": "^4.17.23",
-    "nanoid": "^5.1.6",
     "next": "16.2.6",
     "postcss": "8.5.10",
     "react": "^19.2.4",

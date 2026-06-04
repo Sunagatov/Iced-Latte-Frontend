@@ -1,5 +1,5 @@
 'use client'
-import type { IProduct } from '@/features/products/types'
+import type { IProduct } from '@/features/products/public'
 import ReviewForm from './ReviewForm'
 import type {
   IProductReviewsStatistics,

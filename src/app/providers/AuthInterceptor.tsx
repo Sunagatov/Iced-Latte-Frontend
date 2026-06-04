@@ -2,12 +2,12 @@
 
 import { useEffect, type ReactNode } from 'react'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { useAuthStore } from '@/features/auth/store'
+import { useAuthStore } from '@/features/auth/public'
 import { api } from '@/shared/api/client'
 import {
   clearClientSession,
   refreshAuthenticatedSession,
-} from '@/features/session/session'
+} from '@/features/session/public'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 
