@@ -14,5 +14,5 @@ export const EXTERNAL_LINKS = {
     whatsapp: 'https://wa.me/447405503609',
   },
   email: 'mailto:zufar.sunagatov@gmail.com',
-  license: 'https://creativecommons.org/licenses/by-nc/4.0/legalcode',
+  license: 'https://www.apache.org/licenses/LICENSE-2.0',
 } as const

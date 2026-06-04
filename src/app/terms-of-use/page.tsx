@@ -17,16 +17,14 @@ const sections = [
     ],
   },
   {
-    title: '2. License & Prohibited Use',
+    title: '2. License & Brand Assets',
     body: [
-      'The source code is licensed under the Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license.',
-      'You are free to share, copy, redistribute, adapt, remix, transform, and build upon the material, provided that you give appropriate credit to Zufar Sunagatov, provide a link to the license, indicate if changes were made, and do not use the material for commercial purposes.',
+      'The source code is licensed under the Apache License 2.0. See the LICENSE file for details.',
+      'The Apache License 2.0 allows use, modification, distribution, private use, and commercial use, subject to its terms.',
     ],
     bullets: [
-      'Commercial use of any kind without prior written permission.',
-      'Use in educational courses, bootcamps, workshops, tutorials, or training programs, whether free or paid.',
-      'Use by companies, organizations, or individuals as a foundation, template, or reference implementation for commercial products or services.',
-      'Redistribution under a different license or without proper attribution.',
+      'The Iced Latte name, logo, domain, visual identity, and other brand assets are not licensed for use in a way that suggests official endorsement, partnership, or ownership without explicit written permission.',
+      'You must preserve license notices and attribution required by the Apache License 2.0.',
     ],
   },
   {
@@ -102,7 +100,7 @@ const sections = [
   {
     title: '10. Contributing',
     body: [
-      'By submitting a pull request or other contribution to the Iced Latte repositories, you agree that your contribution is your original work or you have the right to submit it, your contribution is licensed under the same CC BY-NC 4.0 license as the project, and you grant the project maintainers the right to use, modify, and distribute your contribution.',
+      'Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Iced Latte is submitted under the Apache License 2.0, without any additional terms or conditions. By opening a pull request, you confirm that you have the right to submit the contribution and that it can be licensed as part of the project under Apache License 2.0.',
     ],
   },
   {
@@ -243,7 +241,7 @@ export default function TermsOfUsePage() {
                     rel="noopener noreferrer"
                     className="font-medium text-brand underline decoration-brand/30 underline-offset-4 transition hover:decoration-brand"
                   >
-                    CC BY-NC 4.0 legal code
+                    Apache License 2.0 legal code
                   </a>
                   . Contributors can also review the{' '}
                   <a
