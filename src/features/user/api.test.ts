@@ -139,4 +139,24 @@ describe('user api', () => {
     expect(result.avatarLink).toBe('https://cdn.example.com/avatar.jpg')
   })
 
+  it('uploadImage sends the file and optional Turnstile token', async () => {
+    const file = new File(['avatar'], 'avatar.png', { type: 'image/png' })
+
+    mockedApi.mockResolvedValue({ data: undefined })
+
+    await userApi.uploadImage(file, 'turnstile-token')
+
+    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.any(FormData),
+      method: 'POST',
+      url: '/users/avatar',
+    }))
+
+    const request = mockedApi.mock.calls[0][0] as unknown as { data: FormData }
+    const formData = request.data
+
+    expect(formData.get('file')).toBe(file)
+    expect(formData.get('turnstileToken')).toBe('turnstile-token')
+  })
+
 })

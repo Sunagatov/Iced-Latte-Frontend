@@ -46,6 +46,9 @@ export const editUserProfile = async (
   return getUserData()
 }
 
-export async function uploadImage(file: File): Promise<void> {
-  await uploadUserAvatar({ file })
+export async function uploadImage(file: File, turnstileToken?: string): Promise<void> {
+  await uploadUserAvatar({
+    file,
+    ...(turnstileToken ? { turnstileToken } : {}),
+  })
 }

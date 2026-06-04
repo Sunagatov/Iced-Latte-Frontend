@@ -241,6 +241,11 @@ export interface SuccessResponse {
 
 export interface UploadUserAvatarRequest {
   file: Blob;
+  /**
+     * Cloudflare Turnstile verification token. Required when avatar upload bot protection is enabled.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
 }
 
 /**

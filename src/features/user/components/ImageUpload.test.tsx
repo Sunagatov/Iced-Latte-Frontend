@@ -1,0 +1,130 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import ImageUpload from '@/features/user/components/ImageUpload'
+import { getUserData, uploadImage } from '@/features/user/api'
+import { useAuthStore } from '@/features/auth/store'
+import type { ForwardedRef } from 'react'
+
+let mockAvatarTurnstileEnabled = false
+
+jest.mock('@/features/user/api', () => ({
+  getUserData: jest.fn(),
+  uploadImage: jest.fn(),
+}))
+
+jest.mock('@/features/user/config', () => ({
+  get avatarTurnstileEnabled() {
+    return mockAvatarTurnstileEnabled
+  },
+}))
+
+jest.mock('@/shared/ui/TurnstileWidget', () => {
+  const React = jest.requireActual('react')
+  const MockTurnstileWidget = React.forwardRef(
+    (
+      { onVerify }: { onVerify: (token: string) => void },
+      ref: ForwardedRef<{ reset: () => void }>,
+    ) => {
+      React.useImperativeHandle(ref, () => ({ reset: jest.fn() }))
+
+      return (
+        <button type="button" onClick={() => onVerify('turnstile-token')}>
+          Verify challenge
+        </button>
+      )
+    },
+  )
+
+  MockTurnstileWidget.displayName = 'MockTurnstileWidget'
+
+  return {
+    __esModule: true,
+    default: MockTurnstileWidget,
+  }
+})
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({
+    fill: _fill,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => {
+    return (
+      <img {...props} alt={props.alt ?? ''} />
+    )
+  },
+}))
+
+const mockedGetUserData = jest.mocked(getUserData)
+const mockedUploadImage = jest.mocked(uploadImage)
+
+function avatarFile() {
+  return new File(['avatar'], 'avatar.png', { type: 'image/png' })
+}
+
+describe('ImageUpload', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockAvatarTurnstileEnabled = false
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: jest.fn(() => 'blob:avatar'),
+    })
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      configurable: true,
+      value: jest.fn(),
+    })
+    useAuthStore.setState({
+      userData: {
+        id: 'u1',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        email: 'ada@example.com',
+      } as never,
+    })
+    mockedUploadImage.mockResolvedValue(undefined)
+    mockedGetUserData.mockResolvedValue({
+      id: 'u1',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      email: 'ada@example.com',
+      avatarLink: 'https://cdn.example.com/avatar.png',
+    } as never)
+  })
+
+  it('uploads avatar without Turnstile token when avatar protection is disabled', async () => {
+    render(<ImageUpload />)
+    const file = avatarFile()
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [file] },
+    })
+
+    await waitFor(() => {
+      expect(mockedUploadImage).toHaveBeenCalledWith(file, undefined)
+    })
+  })
+
+  it('keeps avatar input disabled until Turnstile is completed when avatar protection is enabled', () => {
+    mockAvatarTurnstileEnabled = true
+
+    render(<ImageUpload />)
+
+    expect(screen.getByLabelText('Upload profile photo')).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Verify challenge' })).toBeInTheDocument()
+  })
+
+  it('uploads avatar with Turnstile token after verification', async () => {
+    mockAvatarTurnstileEnabled = true
+    render(<ImageUpload />)
+    const file = avatarFile()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Verify challenge' }))
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [file] },
+    })
+
+    await waitFor(() => {
+      expect(mockedUploadImage).toHaveBeenCalledWith(file, 'turnstile-token')
+    })
+  })
+})

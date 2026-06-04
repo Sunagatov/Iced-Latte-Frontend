@@ -10,4 +10,7 @@ export const FEATURES = {
   reviewsTurnstile:
     !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
     process.env.NEXT_PUBLIC_TURNSTILE_REVIEWS_ENABLED === 'true',
+  avatarTurnstile:
+    !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
+    process.env.NEXT_PUBLIC_TURNSTILE_AVATAR_ENABLED === 'true',
 }

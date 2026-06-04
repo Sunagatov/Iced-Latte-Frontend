@@ -9,6 +9,11 @@ import { orvalMutator } from '../orvalMutator';
 import type { BodyType } from '../orvalMutator';
 export interface UploadUserAvatarRequest {
   file: Blob;
+  /**
+     * Cloudflare Turnstile verification token. Required when avatar upload bot protection is enabled.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
 }
 
 /**
@@ -345,6 +350,9 @@ export const uploadUserAvatar = (
     uploadUserAvatarRequest: BodyType<UploadUserAvatarRequest>,
  options?: SecondParameter<typeof orvalMutator<void>>,) => {const formData = new FormData();
 formData.append(`file`, uploadUserAvatarRequest.file);
+if(uploadUserAvatarRequest.turnstileToken !== undefined) {
+ formData.append(`turnstileToken`, uploadUserAvatarRequest.turnstileToken);
+ }
 
       return orvalMutator<void>(
       {url: `/api/v1/users/avatar`, method: 'POST',
