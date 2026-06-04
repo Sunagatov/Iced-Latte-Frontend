@@ -29,6 +29,8 @@ describe('OrderHistory', () => {
 
     render(<OrderHistory />)
 
+    await waitFor(() => expect(mockedOrdersApi.fetchOrders).toHaveBeenCalled())
+
     expect(screen.getByRole('button', { name: 'Refund requested' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Refunded' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Payment failed' })).toBeInTheDocument()
