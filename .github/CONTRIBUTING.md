@@ -1,64 +1,46 @@
-# 🤝 Contributing to Iced Latte Frontend
+# Contributing to Iced Latte Frontend
 
-Thanks for your interest in contributing. Iced Latte Frontend is built in the open so engineers can practice on a real Next.js/React codebase with product flows, API integration, state management, UI work, tests, and pull requests.
+Iced Latte Frontend is built in the open so engineers can practice on a real
+Next.js and React codebase with product flows, API integration, state
+management, UI work, tests, and pull requests.
 
-> **Contribution license notice:** Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Iced Latte is submitted under the Apache License 2.0, without any additional terms or conditions. By opening a pull request, you confirm that you have the right to submit the contribution and that it can be licensed as part of the project under Apache License 2.0.
+## License
 
----
+Iced Latte Frontend is licensed under the Apache License 2.0. See
+[LICENSE](../LICENSE) for details.
 
-## 📜 License & Contribution Terms
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in Iced Latte Frontend is submitted under the Apache License 2.0,
+without any additional terms or conditions.
 
-Before contributing, read the [Apache License 2.0](../LICENSE).
+By opening a pull request, you confirm that you have the right to submit the
+contribution and that it can be licensed as part of the project under Apache
+License 2.0.
 
-Important points:
+The Iced Latte name, logo, domain, visual identity, and other brand assets are
+project brand assets. The Apache License 2.0 does not grant trademark rights or
+permission to use those assets in a way that suggests official endorsement,
+partnership, or ownership.
 
-- Contributions are accepted under the Apache License 2.0.
-- By opening a PR, you confirm that you have the right to submit the contribution.
-- The Iced Latte name, logo, domain, visual identity, and other brand assets are not licensed for use in a way that suggests official endorsement, partnership, or ownership without explicit written permission.
-- Do not contribute code, text, images, assets, or designs you do not have the right to submit.
+## Ground Rules
 
-If you do not agree with these terms, do not submit a contribution.
+- Keep changes focused on one concern.
+- Preserve the existing Next.js, React, TypeScript, and feature-package
+  architecture.
+- Keep route files in `src/app` thin and compose feature-owned components there.
+- Put feature-specific code under the owning `src/features/<feature>` package.
+- Use `src/shared` only for genuinely shared UI, API, auth, config, types, or
+  utilities.
+- Do not hand-edit generated API clients under `src/shared/api/generated`.
+- Do not include unrelated refactors, formatting churn, or generated noise.
 
----
+## Local Setup
 
-## 🧭 Start Here
+Use the full [Getting Started Guide](../docs/getting-started.md) for local
+frontend setup, backend connection, Docker modes, environment variables, tests,
+and troubleshooting.
 
-| I want to... | What to do |
-|---|---|
-| 🟢 Make my first contribution | Pick a [`good first issue`](https://github.com/Sunagatov/Iced-Latte-Frontend/issues?q=is%3Aopen+label%3A%22good+first+issue%22) and comment "I'm on it" |
-| 🐛 Report a bug | [Open an issue](https://github.com/Sunagatov/Iced-Latte-Frontend/issues/new) with clear observed vs expected behavior |
-| 💡 Suggest a feature | Start a [Discussion](https://github.com/Sunagatov/Iced-Latte-Frontend/discussions) before implementation |
-| 🔧 Make a larger change | Comment on the issue first so constraints can be clarified |
-| 🔐 Report a vulnerability | Follow the [Security Policy](../SECURITY.md) instead of opening a public issue |
-
----
-
-## 🏷️ Issue Labels
-
-| Label | Meaning |
-|---|---|
-| 🟢 `good first issue` | Simple, well-scoped, and good for first-time contributors |
-| 🔴 `bug` | Something is broken |
-| 🔵 `high priority` | Important work that should be handled first |
-| 🟡 `enhancement` | Improvement to an existing feature or UI flow |
-| 🟠 `new feature` | New functionality; discuss before starting |
-| ⚪ `idea` | Needs design discussion; do not implement yet |
-
----
-
-## 🚀 Local Setup
-
-Use the full [Getting Started Guide](../docs/getting-started.md). It covers:
-
-- frontend-local setup
-- backend + frontend setup
-- Docker modes
-- backend connection
-- environment variables
-- tests
-- troubleshooting
-
-For frontend work, the common local flow is:
+Typical local setup:
 
 ```bash
 git clone https://github.com/Sunagatov/Iced-Latte.git
@@ -73,9 +55,7 @@ npm ci
 npm run dev
 ```
 
----
-
-## ✅ Before Opening a PR
+## Before Opening a PR
 
 Run the frontend checks:
 
@@ -85,24 +65,23 @@ npm run tsc -- --noEmit
 npm test
 ```
 
-If your change touches user flows, routing, authentication, cart/favorites/session behavior, checkout, orders, or shared API handling, also consider E2E coverage:
+If your change touches user flows, routing, authentication, cart, favorites,
+session behavior, checkout, orders, or shared API handling, consider E2E
+coverage:
 
 ```bash
 npm run test:e2e
 ```
 
-Before submitting:
+Before opening the pull request:
 
-- 🎯 Keep the PR focused on one concern
-- ✅ Make sure lint, type-check, and tests pass locally
-- 🔗 Link the related issue in the PR description
-- 📝 Explain what changed and how you tested it
-- 📸 Add screenshots or short screen recordings for UI changes
-- 🚫 Do not include unrelated refactors, formatting churn, or generated noise
+- Link any related issue in the PR description.
+- Explain what changed and how you tested it.
+- Add screenshots or short screen recordings for UI changes.
+- Keep backend, frontend, and operational changes in separate pull requests
+  unless the maintainers ask otherwise.
 
----
-
-## 🌿 Branches & PR Titles
+## Branches and PR Titles
 
 Use short, descriptive branch names:
 
@@ -118,119 +97,31 @@ Good PR titles explain the change directly:
 - `Clarify Windows setup in Getting Started`
 - `Add Playwright coverage for checkout flow`
 
----
+## Issues
 
-## 📦 PR Size
+For bugs, include:
 
-Small PRs are easier to review and merge.
+- What you expected.
+- What actually happened.
+- Browser, device, and viewport if UI-related.
+- Logs, screenshots, request and response examples, or console errors if
+  available.
+- Your setup mode from the
+  [Getting Started Guide](../docs/getting-started.md).
 
-Prefer:
+Before opening a bug, search existing issues first and try the latest
+`development` branch if practical. For small obvious fixes, opening a pull
+request directly is fine.
 
-- one bug fix
-- one feature slice
-- one documentation improvement
-- one test improvement
+For larger feature requests, start with a discussion, especially if the change
+affects routing, authentication, session behavior, cart, favorites, checkout,
+orders, frontend/backend API assumptions, visual design patterns, or shared
+state management.
 
-Avoid:
+## Review
 
-- mixing refactors with behavior changes
-- formatting unrelated files
-- changing backend, frontend, and QA repositories in one PR unless the issue requires it
-- adding abstractions that are not needed for the current change
+Reviewers will check correctness, UI behavior, accessibility basics, test
+coverage, API compatibility, state management impact, and whether the pull
+request stays focused.
 
----
-
-## ✅ Definition of Done
-
-A contribution is ready for review when:
-
-- the app builds
-- `npm run lint` passes
-- `npm run tsc -- --noEmit` passes
-- `npm test` passes
-- relevant docs are updated
-- UI changes are shown with screenshots or a short recording
-- API contract assumptions are explained if the change depends on backend behavior
-- behavior is explained in the PR description
-
----
-
-## 🧩 Code Expectations
-
-- Follow the existing feature-based structure.
-- Keep feature-specific code inside the owning `src/features/*` area.
-- Put cross-feature UI, config, API clients, types, and utilities under `src/shared`.
-- Prefer small, readable components over clever abstractions.
-- Keep state ownership clear; avoid global state unless the behavior is truly cross-feature.
-- Add or update tests when behavior changes.
-- Keep public routes and API behavior backward-compatible unless the issue explicitly says otherwise.
-
-Architecture reference:
-
-- [Feature Packaging Rule](../docs/architecture/feature-packaging.md)
-
----
-
-## 🐛 Bug Reports
-
-Good bug reports include:
-
-- what you did
-- what you expected
-- what actually happened
-- browser, device, and viewport if UI-related
-- logs, screenshots, request/response examples, or console errors if available
-- your setup mode from [Getting Started](../docs/getting-started.md)
-
-Before opening a bug:
-
-- Search existing issues first
-- Try the latest `development` branch if practical
-- For small obvious fixes, opening a PR directly is fine
-
----
-
-## 💡 Feature Requests
-
-Start with a Discussion for new behavior, especially if it changes:
-
-- routing
-- authentication/session behavior
-- cart, favorites, checkout, or orders
-- frontend/backend API assumptions
-- visual design patterns
-- shared state management
-
-For larger changes, wait for agreement before implementation. Many tickets have hidden constraints.
-
----
-
-## 🔄 Pull Request Review
-
-Reviewers will usually check:
-
-- correctness
-- UI behavior
-- accessibility basics
-- test coverage
-- API compatibility
-- state management impact
-- whether the PR stays focused
-
-Expect review comments. That is normal project work, not a rejection.
-
----
-
-## 💬 Questions
-
-If you are stuck:
-
-- ask in the issue thread if your question is about a specific ticket
-- start a [Discussion](https://github.com/Sunagatov/Iced-Latte-Frontend/discussions) for design or feature questions
-- use the [Telegram community](https://t.me/zufarexplained) for general help
-
----
-
-## 🍴 Forks
-
-Forks are welcome. If you build something generally useful, consider sending it back via PR so the community benefits and your fork stays easier to sync.
+Expect review comments. They are normal project work, not a rejection.
