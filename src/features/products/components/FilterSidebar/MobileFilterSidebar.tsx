@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge'
-import CircleCloseButton from '@/shared/ui/CircleCloseButton'
 import React, { ReactNode, useEffect, useRef } from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
+import CircleCloseButton from '@/features/products/components/FilterSidebar/CircleCloseButton'
 
 interface IMobileFilterSidebar {
   id?: string

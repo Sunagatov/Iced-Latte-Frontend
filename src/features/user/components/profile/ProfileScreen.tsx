@@ -4,8 +4,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { AddressManager } from '@/features/addresses/public'
-import { useLogout } from '@/features/auth/hooks'
-import { useAuthStore, type AuthStore } from '@/features/auth/public'
+import {
+  useAuthStore,
+  useLogout,
+  type AuthStore,
+} from '@/features/auth/public'
 import { useFavouritesStore } from '@/features/favorites/public'
 import { fetchOrders } from '@/features/orders/public'
 import type { UserData } from '@/features/user/public'

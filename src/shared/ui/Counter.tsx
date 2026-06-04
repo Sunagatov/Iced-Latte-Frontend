@@ -5,7 +5,7 @@ import plusDark from '@/../public/plus_dark.svg'
 import minus from '@/../public/minus.svg'
 import minusDark from '@/../public/minus_dark.svg'
 import { useEffect, useRef } from 'react'
-import { debounce } from 'lodash'
+
 interface PropsCounter {
   theme: 'dark' | 'light'
   className?: string
@@ -18,6 +18,30 @@ interface PropsCounter {
 
 const defaultStyles =
   'flex select-none items-center justify-center rounded-[40px] px-2 text-2XL font-medium transition ease-in-out'
+
+function debounce(callback: () => void, delayMs: number): (() => void) & {
+  cancel: () => void
+} {
+  let timer: ReturnType<typeof setTimeout> | null = null
+
+  const debounced = (() => {
+    if (timer) clearTimeout(timer)
+
+    timer = setTimeout(() => {
+      timer = null
+      callback()
+    }, delayMs)
+  }) as (() => void) & { cancel: () => void }
+
+  debounced.cancel = () => {
+    if (!timer) return
+
+    clearTimeout(timer)
+    timer = null
+  }
+
+  return debounced
+}
 
 const Counter = ({
   theme,
