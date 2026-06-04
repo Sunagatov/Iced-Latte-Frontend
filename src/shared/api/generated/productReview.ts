@@ -18,6 +18,11 @@ export interface ProductReviewRequest {
      * @maximum 5
      */
   rating: number;
+  /**
+     * Cloudflare Turnstile verification token. Required when review bot protection is enabled.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
 }
 
 /**

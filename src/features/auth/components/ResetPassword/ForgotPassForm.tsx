@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { apiForgotPassword } from '@/features/auth/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { forgotPassSchema } from '@/features/auth/validation'
-import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface IForgotValues {

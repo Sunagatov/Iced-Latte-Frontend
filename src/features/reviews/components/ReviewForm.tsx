@@ -1,13 +1,16 @@
 'use client'
 import StarRating from '@/features/reviews/components/StarRating'
 import Loader from '@/shared/ui/Loader'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useProductRatingStore } from '@/features/reviews/store'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiAddProductReview } from '@/features/reviews/api'
 import { useAuthStore } from '@/features/auth/store'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
+import { reviewsTurnstileEnabled } from '@/features/reviews/config'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface ReviewFormProps {
   productId: string
@@ -24,6 +27,9 @@ const ReviewForm = ({
 }: ReviewFormProps) => {
   const [loading, setLoading] = useState(false)
   const [reviewText, setReviewText] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState('')
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const { errorMessage, handleError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
   const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
@@ -37,15 +43,30 @@ const ReviewForm = ({
 
     if (!currentRating || !trimmedText) return
 
+    if (reviewsTurnstileEnabled && !turnstileToken) {
+      setTurnstileError('Please complete verification before submitting your review.')
+
+      return
+    }
+
     try {
       setLoading(true)
-      await apiAddProductReview(productId, trimmedText, currentRating)
+      setTurnstileError('')
+      await apiAddProductReview(
+        productId,
+        trimmedText,
+        currentRating,
+        reviewsTurnstileEnabled ? turnstileToken : undefined,
+      )
       onReviewSubmitted?.()
       setRating(productId, 0)
       setReviewText('')
+      setTurnstileToken('')
       setShowForm(false)
     } catch (error) {
       handleError(error)
+      setTurnstileToken('')
+      turnstileRef.current?.reset()
     } finally {
       setLoading(false)
     }
@@ -57,6 +78,11 @@ const ReviewForm = ({
     } else {
       router.push(`${ROUTES.signin}?next=${ROUTES.product(productId)}`)
     }
+  }
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token)
+    setTurnstileError('')
   }
 
   if (!showForm) {
@@ -86,6 +112,9 @@ const ReviewForm = ({
             setShowForm(false)
             setRating(productId, 0)
             setReviewText('')
+            setTurnstileToken('')
+            setTurnstileError('')
+            turnstileRef.current?.reset()
           }}
           className="text-tertiary hover:text-primary text-xs transition"
         >
@@ -123,8 +152,14 @@ const ReviewForm = ({
         </div>
       </div>
 
-      {errorMessage && (
-        <p className="text-negative mt-2 text-xs">{errorMessage}</p>
+      {reviewsTurnstileEnabled && (
+        <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+      )}
+
+      {(errorMessage || turnstileError) && (
+        <p className="text-negative mt-2 text-xs">
+          {errorMessage || turnstileError}
+        </p>
       )}
 
       <button

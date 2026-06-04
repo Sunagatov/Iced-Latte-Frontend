@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
-import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
 import { Turnstile } from '@marsidev/react-turnstile'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 
 jest.mock('@/shared/config/features', () => ({
   FEATURES: { turnstile: true },

@@ -302,6 +302,7 @@ npm run test:e2e:report
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |
 | `NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED` | Require Turnstile on checkout UI when a site key is set | `false` |
+| `NEXT_PUBLIC_TURNSTILE_REVIEWS_ENABLED` | Require Turnstile on review submission when a site key is set | `false` |
 
 All feature flags default to `false` so the app can run locally without production credentials.
 

@@ -2,8 +2,6 @@ export type ProfileSection =
   | 'overview'
   | 'profile'
   | 'addresses'
-  | 'security'
-  | 'notifications'
   | 'reviews'
 
 export type ProfileSummary = {

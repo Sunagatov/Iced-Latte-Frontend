@@ -22,7 +22,7 @@ jest.mock('next/navigation', () => ({
   }),
 }))
 
-jest.mock('@/features/auth/components/TurnstileWidget', () => {
+jest.mock('@/shared/ui/TurnstileWidget', () => {
   const React = jest.requireActual('react')
   const MockTurnstileWidget = React.forwardRef(() => null)
 

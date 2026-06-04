@@ -27,10 +27,10 @@ describe('reviews api', () => {
     mockedApi.mockResolvedValue({
       data: { productReviewId: 'r1', text: 'nice', createdAt: '' },
     })
-    const result = await reviewsApi.apiAddProductReview('p1', 'nice', 5)
+    const result = await reviewsApi.apiAddProductReview('p1', 'nice', 5, 'turnstile-token')
 
     expect(mockedApi).toHaveBeenCalledWith({
-      data: { rating: 5, text: 'nice' },
+      data: { rating: 5, text: 'nice', turnstileToken: 'turnstile-token' },
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
       url: '/products/p1/reviews',

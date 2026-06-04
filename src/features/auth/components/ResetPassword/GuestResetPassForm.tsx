@@ -20,7 +20,7 @@ import {
 } from 'react-icons/ri'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
-import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface IChangeValues {

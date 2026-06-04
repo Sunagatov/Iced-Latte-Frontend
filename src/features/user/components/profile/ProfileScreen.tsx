@@ -11,11 +11,7 @@ import { fetchOrders } from '@/features/orders/public'
 import type { UserData } from '@/features/user/types'
 import Loader from '@/shared/ui/Loader'
 import ImageUpload from '../ImageUpload'
-import {
-  ProfileNotificationsSection,
-  ProfileReviewsSection,
-  ProfileSecuritySection,
-} from './ProfileAuxiliarySections'
+import { ProfileReviewsSection } from './ProfileAuxiliarySections'
 import ProfileSidebarNavigation, {
   ProfileNavigation,
 } from './ProfileNavigation'
@@ -203,10 +199,6 @@ export default function ProfileScreen() {
             )}
 
             {activeSection === 'addresses' && <AddressManager />}
-            {activeSection === 'security' && <ProfileSecuritySection />}
-            {activeSection === 'notifications' && (
-              <ProfileNotificationsSection />
-            )}
             {activeSection === 'reviews' && <ProfileReviewsSection />}
           </main>
         </div>

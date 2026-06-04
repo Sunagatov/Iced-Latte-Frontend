@@ -7,4 +7,7 @@ export const FEATURES = {
   checkoutTurnstile:
     !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
     process.env.NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED === 'true',
+  reviewsTurnstile:
+    !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
+    process.env.NEXT_PUBLIC_TURNSTILE_REVIEWS_ENABLED === 'true',
 }

@@ -68,10 +68,12 @@ export async function apiAddProductReview(
   productId: string,
   reviewText: string,
   currentRating: number,
+  turnstileToken?: string,
 ): Promise<SubmittedReviewInfo> {
   return addNewProductReview(productId, {
     text: reviewText,
     rating: currentRating,
+    ...(turnstileToken ? { turnstileToken } : {}),
   }) as Promise<SubmittedReviewInfo>
 }
 

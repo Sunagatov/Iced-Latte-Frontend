@@ -1,4 +1,5 @@
 'use client'
+
 import { forwardRef } from 'react'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { FEATURES } from '@/shared/config/features'

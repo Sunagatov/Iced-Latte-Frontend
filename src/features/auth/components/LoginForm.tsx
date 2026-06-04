@@ -14,7 +14,7 @@ interface IFormValues {
 }
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
-import TurnstileWidget from '@/features/auth/components/TurnstileWidget'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { FEATURES } from '@/shared/config/features'
 
