@@ -7,7 +7,7 @@ import {
   normalizeCartItemList,
 } from '@/features/cart/utils/cartUtils'
 
-export type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
+type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
 
 export type CartStoreState = {
   count: number

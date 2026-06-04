@@ -10,7 +10,7 @@ import {
   mapProductsToFavourites,
   normalizeProducts,
 } from '@/features/favorites/state/favoritesStore.utils'
-import { getProductByIds } from '@/features/products/public'
+import { getProductByIds } from '@/features/products/api'
 import { toastError } from '@/shared/utils/apiError'
 
 const FAVORITES_SYNC_BATCH_SIZE = 100

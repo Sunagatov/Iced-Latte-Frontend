@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 import CartButton from '@/features/cart/components/CartButton'
 import HeaderHeart from '@/features/favorites/components/HeaderHeart'
-import { SearchBar } from '@/features/products/public'
+import SearchBar from '@/features/products/components/search/SearchBar'
 
 export default function Header() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)

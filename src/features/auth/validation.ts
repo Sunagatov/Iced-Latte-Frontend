@@ -95,11 +95,3 @@ export const verifyEmailCodeSchema = yup.object().shape({
     .required('Confirmation code is required')
     .matches(URL_SAFE_TOKEN_REGEX, 'Invalid confirmation token format'),
 })
-
-/** @deprecated use verifyEmailCodeSchema */
-export const confirmPasswordSchema = yup.object().shape({
-  confirmPassword: yup
-    .string()
-    .required('Confirmation code is required')
-    .matches(URL_SAFE_TOKEN_REGEX, 'Invalid confirmation token format'),
-})

@@ -14,7 +14,7 @@ export type TokenPair = {
   refreshToken: string
 }
 
-export function isTokenPair(data: unknown): data is TokenPair {
+function isTokenPair(data: unknown): data is TokenPair {
   if (typeof data !== 'object' || data === null) return false
   const d = data as Record<string, unknown>
 
@@ -64,7 +64,7 @@ export function responseBodyForClient(data: unknown, path: string): unknown {
   return data
 }
 
-export async function refreshTokens(
+async function refreshTokens(
   refreshToken: string,
 ): Promise<TokenPair | null> {
   try {

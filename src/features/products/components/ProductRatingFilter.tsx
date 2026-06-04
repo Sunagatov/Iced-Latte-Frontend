@@ -2,7 +2,7 @@
 
 import FiltersGroupTitle from '@/features/products/components/FilterSidebar/FiltersGroupTitle'
 
-export const stars = [5, 4, 3, 2, 1] as const
+const stars = [5, 4, 3, 2, 1] as const
 
 export type StarsType = (typeof stars)[number]
 

@@ -1,4 +1,4 @@
-export interface OrderItem {
+interface OrderItem {
   id: string
   productId: string
   productName: string
@@ -6,7 +6,7 @@ export interface OrderItem {
   productsQuantity: number
 }
 
-export interface OrderAddress {
+interface OrderAddress {
   country?: string
   city?: string
   line?: string
@@ -72,7 +72,7 @@ export interface RefundRequest {
   reason?: string
 }
 
-export interface UnavailableItem {
+interface UnavailableItem {
   productName: string
   reason: string
 }

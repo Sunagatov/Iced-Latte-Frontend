@@ -5,8 +5,8 @@ import Hero from '@/features/home/components/Hero'
 import {
   getProductBrands,
   getProductSellers,
-  ProductCatalog,
 } from '@/features/products/public'
+import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
 
 const getBrands = cache(async () => {
   try {

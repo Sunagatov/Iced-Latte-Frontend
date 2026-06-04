@@ -1,8 +1,8 @@
 import { isAxiosError } from 'axios'
 import { notFound } from 'next/navigation'
 import ProductWithReviews from '@/features/products/components/ProductWithReviews'
-import { getProduct } from '@/features/products/public'
-import type { IProduct } from '@/features/products/public'
+import { getProduct } from '@/features/products/api'
+import type { IProduct } from '@/features/products/types'
 
 type ProductDetailsPageProps = {
   params: Promise<{

@@ -32,7 +32,7 @@ export const handleAxiosError = (error: unknown): string => {
   return 'An unknown error occurred'
 }
 
-export function extractFieldErrors(error: unknown): Array<{ field: string; message: string }> {
+function extractFieldErrors(error: unknown): Array<{ field: string; message: string }> {
   if (axios.isAxiosError(error)) {
     const data = (error as AxiosError<ErrorResponse>).response?.data
 

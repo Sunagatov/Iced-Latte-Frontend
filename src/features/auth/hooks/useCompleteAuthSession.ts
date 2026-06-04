@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuthStore } from '@/features/auth/public'
+import { useAuthStore } from '@/features/auth/store'
 import { getUserData } from '@/features/user/public'
 import { useAuthRedirect } from './useAuthRedirect'
 import { useCallback } from 'react'

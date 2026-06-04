@@ -2,9 +2,11 @@ import { useFavouritesStore } from '@/features/favorites/public'
 import type { FavStoreState } from '@/features/favorites/public'
 import * as favsApi from '@/features/favorites/favoritesApi'
 import * as productsApi from '@/features/products/api'
-import { useAuthStore } from '@/features/auth/public'
-import type { AuthStore } from '@/features/auth/public'
 import type { IProduct } from '@/features/products/types'
+import {
+  setClientAuthStatus,
+  type AuthStatus,
+} from '@/shared/auth/sessionStatus'
 
 jest.mock('@/features/favorites/favoritesApi', () => ({
   syncFavourites: jest.fn(),
@@ -16,13 +18,6 @@ jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
 
-jest.mock('@/features/auth/public', () => ({
-  useAuthStore: {
-    getState: jest.fn(),
-  },
-}))
-
-type AuthStateSnapshot = Pick<AuthStore, 'status'>
 type FavStateSnapshot = Pick<
   FavStoreState,
   'favouriteIds' | 'favourites' | 'status' | 'pendingIds' | 'isSync'
@@ -35,10 +30,6 @@ const mockedSyncFavourites = jest.mocked(favsApi.syncFavourites)
 const mockedRemoveFavourite = jest.mocked(favsApi.removeFavourite)
 const mockedFetchFavourites = jest.mocked(favsApi.fetchFavourites)
 const mockedGetProductByIds = jest.mocked(productsApi.getProductByIds)
-
-const mockedAuthStore = useAuthStore as unknown as {
-  getState: jest.MockedFunction<() => AuthStateSnapshot>
-}
 
 const initialFavState: FavStateSnapshot = {
   favouriteIds: [],
@@ -75,8 +66,8 @@ function makeProduct(id: string): IProduct {
   }
 }
 
-function setAuthStatus(status: AuthStore['status']): void {
-  mockedAuthStore.getState.mockReturnValue({ status })
+function setAuthStatus(status: AuthStatus): void {
+  setClientAuthStatus(status)
 }
 
 beforeEach(() => {

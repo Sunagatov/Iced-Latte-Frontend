@@ -82,7 +82,7 @@ export async function syncSessionStores(
   }
 }
 
-export function areSessionStoresHydrated(): boolean {
+function areSessionStoresHydrated(): boolean {
   const cartHydrated = useCartStore.persist?.hasHydrated?.() ?? true
   const favouriteHydrated = useFavouritesStore.persist?.hasHydrated?.() ?? true
 

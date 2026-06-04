@@ -1,6 +1,6 @@
 'use client'
 
-import { SearchBar } from '@/features/products/public'
+import SearchBar from '@/features/products/components/search/SearchBar'
 
 export default function Hero() {
   return (

@@ -1,7 +1,11 @@
 import { create } from 'zustand'
-import { UserData } from '@/features/user/public'
+import type { UserData } from '@/features/user/types'
+import {
+  setClientAuthStatus,
+  type AuthStatus,
+} from '@/shared/auth/sessionStatus'
 
-export type AuthStatus = 'loading' | 'anonymous' | 'authenticated'
+export type { AuthStatus }
 
 export interface AuthStore {
   status: AuthStatus
@@ -18,9 +22,21 @@ export const useAuthStore = create<AuthStore>()((set) => ({
   status: 'loading',
   userData: null,
   isLoggedIn: false,
-  setAuthenticated: (userData) => set({ status: 'authenticated', isLoggedIn: true, userData }),
-  setAnonymous: () => set({ status: 'anonymous', isLoggedIn: false, userData: null }),
-  setLoading: () => set({ status: 'loading' }),
-  reset: () => set({ status: 'anonymous', isLoggedIn: false, userData: null }),
+  setAuthenticated: (userData) => {
+    setClientAuthStatus('authenticated')
+    set({ status: 'authenticated', isLoggedIn: true, userData })
+  },
+  setAnonymous: () => {
+    setClientAuthStatus('anonymous')
+    set({ status: 'anonymous', isLoggedIn: false, userData: null })
+  },
+  setLoading: () => {
+    setClientAuthStatus('loading')
+    set({ status: 'loading' })
+  },
+  reset: () => {
+    setClientAuthStatus('anonymous')
+    set({ status: 'anonymous', isLoggedIn: false, userData: null })
+  },
   setUserData: (userData) => set({ userData }),
 }))

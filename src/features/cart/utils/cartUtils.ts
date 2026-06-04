@@ -5,13 +5,6 @@ import type {
 
 export const MAX_CART_ITEM_QUANTITY = 99
 
-export type SetFn = {
-  (partial: Partial<{ pendingProductIds: Set<string> }>): void
-  (fn: (s: { pendingProductIds: Set<string> }) => {
-    pendingProductIds: Set<string>
-  }): void
-}
-
 export function addToCart(
   id: string,
   cartList: ICartPushItem[],

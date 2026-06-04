@@ -3,11 +3,11 @@
 import {
   useCartStore,
   type CartSliceStore,
-} from '@/features/cart/public'
+} from '@/features/cart/cartStore'
 import {
   type FavStoreState,
   useFavouritesStore,
-} from '@/features/favorites/public'
+} from '@/features/favorites/state/favoritesStore'
 
 export function useFavoriteProductActions(productId: string) {
   const toggleFavourite = useFavouritesStore(

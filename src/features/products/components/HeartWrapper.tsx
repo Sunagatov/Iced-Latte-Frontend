@@ -1,5 +1,5 @@
 'use client'
-import { useFavouritesStore } from '@/features/favorites/public'
+import { useFavoriteProductActions } from '@/features/favorites/public'
 import ButtonHeart from '@/features/products/components/ButtonHeart'
 interface ButtonHeartProps {
   id: string
@@ -10,21 +10,15 @@ export default function HeartWrapper({
   id,
   className,
 }: Readonly<ButtonHeartProps>) {
-  const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite)
-  const favouriteIds: string[] = useFavouritesStore((s) => s.favouriteIds)
-  const pendingIds: Set<string> = useFavouritesStore((s) => s.pendingIds)
-
-  const isFavourited = favouriteIds.includes(id)
-  const isPending = pendingIds.has(id)
+  const { handleToggleFavourite, isFavourited, isPending } =
+    useFavoriteProductActions(id)
 
   return (
     <ButtonHeart
       active={isFavourited}
       className={className}
       disabled={isPending}
-      onClick={() => {
-        if (!isPending) void toggleFavourite(id)
-      }}
+      onClick={handleToggleFavourite}
     />
   )
 }

@@ -323,7 +323,7 @@ export async function mergeGuestCartIntoBackend(
   }
 }
 
-export async function updateBackendCartItem(
+async function updateBackendCartItem(
   set: StoreSet,
   updatedItem: ICartUpdatedItem,
 ): Promise<void> {

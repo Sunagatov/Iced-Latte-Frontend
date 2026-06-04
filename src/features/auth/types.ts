@@ -12,10 +12,6 @@ export type RegisterCredentials = {
   turnstileToken?: string
 }
 
-export interface ErrorResponse {
-  message: string
-}
-
 export interface ForgotPasswordCredentials {
   email: string
   turnstileToken?: string

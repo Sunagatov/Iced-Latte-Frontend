@@ -12,7 +12,7 @@ import {
   type StoreGet,
   type StoreSet,
 } from '@/features/cart/utils/cartStoreHelpers'
-import { getProductByIds } from '@/features/products/public'
+import { getProductByIds } from '@/features/products/api'
 
 function isAbortError(err: unknown): boolean {
   return (

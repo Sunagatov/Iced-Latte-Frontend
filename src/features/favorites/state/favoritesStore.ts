@@ -1,6 +1,9 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { type AuthStatus, useAuthStore } from '@/features/auth/public'
+import {
+  getClientAuthStatus,
+  type AuthStatus,
+} from '@/shared/auth/sessionStatus'
 import {
   hydrateFavouritesStore,
   syncFavouritesStoreWithSession,
@@ -47,16 +50,16 @@ const createFavSlice: StateCreator<FavStoreState, [], [], FavStoreState> = (
       set as FavStoreSet,
       get as FavStoreGet,
       id,
-      useAuthStore.getState().status === 'authenticated',
+      getClientAuthStatus() === 'authenticated',
     ),
-  hydrate: (signal, authStatus = useAuthStore.getState().status) =>
+  hydrate: (signal, authStatus = getClientAuthStatus()) =>
     hydrateFavouritesStore(
       set as FavStoreSet,
       get as FavStoreGet,
       authStatus,
       signal,
     ),
-  syncSession: (signal, authStatus = useAuthStore.getState().status) =>
+  syncSession: (signal, authStatus = getClientAuthStatus()) =>
     syncFavouritesStoreWithSession(
       set as FavStoreSet,
       get as FavStoreGet,

@@ -17,7 +17,7 @@ export type FavStoreSet = {
 
 export type FavStoreGet = () => FavStoreSlice
 
-export const uniqueIds = (ids: readonly string[]): string[] =>
+const uniqueIds = (ids: readonly string[]): string[] =>
   Array.from(new Set(ids))
 
 const UUID_PATTERN =

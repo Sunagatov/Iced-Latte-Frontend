@@ -1,6 +1,9 @@
 import { create, type StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { type AuthStatus, useAuthStore } from '@/features/auth/public'
+import {
+  getClientAuthStatus,
+  type AuthStatus,
+} from '@/shared/auth/sessionStatus'
 import {
   applyAuthenticatedAdd,
   applyAuthenticatedRemove,
@@ -26,8 +29,6 @@ import {
 } from '@/features/cart/utils/cartStoreHelpers'
 
 export { MAX_CART_ITEM_QUANTITY }
-export type { CartStatus } from '@/features/cart/utils/cartStoreHelpers'
-
 type CartSliceState = CartStoreState
 
 interface CartSliceActions {
@@ -62,7 +63,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
   ...initialState,
 
   add: (id) => {
-    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
+    const isLoggedIn = getClientAuthStatus() === 'authenticated'
 
     if (isLoggedIn) {
       applyAuthenticatedAdd(set as StoreSet, get as StoreGet, id)
@@ -74,7 +75,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
   },
 
   remove: (id) => {
-    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
+    const isLoggedIn = getClientAuthStatus() === 'authenticated'
 
     if (isLoggedIn) {
       applyAuthenticatedRemove(set as StoreSet, get as StoreGet, id)
@@ -86,7 +87,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
   },
 
   removeFullProduct: (id) => {
-    const isLoggedIn = useAuthStore?.getState?.()?.isLoggedIn ?? false
+    const isLoggedIn = getClientAuthStatus() === 'authenticated'
 
     if (isLoggedIn) {
       applyAuthenticatedRemoveFullProduct(set as StoreSet, get as StoreGet, id)
@@ -97,9 +98,9 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
     applyGuestRemoveFullProduct(set as StoreSet, get as StoreGet, id)
   },
 
-  hydrate: (signal, authStatus = useAuthStore.getState().status) =>
+  hydrate: (signal, authStatus = getClientAuthStatus()) =>
     hydrateCartStore(set as StoreSet, get as StoreGet, authStatus, signal),
-  syncSession: (signal, authStatus = useAuthStore.getState().status) =>
+  syncSession: (signal, authStatus = getClientAuthStatus()) =>
     syncCartStoreWithSession(
       set as StoreSet,
       get as StoreGet,
@@ -110,7 +111,7 @@ const createCartSlice: StateCreator<CartSliceStore, [], [], CartSliceStore> = (
     clearCartStoreForSession(
       set as StoreSet,
       get as StoreGet,
-      useAuthStore.getState().status,
+      getClientAuthStatus(),
     ),
 
   setTempItems: (items) =>

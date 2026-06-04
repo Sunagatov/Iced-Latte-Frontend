@@ -2,10 +2,10 @@ import {
   MAX_CART_ITEM_QUANTITY,
   useCartStore,
 } from '@/features/cart/public'
-import { useAuthStore } from '@/features/auth/public'
 import * as cartApi from '@/features/cart/cartApi'
 import * as productsApi from '@/features/products/api'
 import type { ICartItem } from '@/features/cart/cartTypes'
+import { setClientAuthStatus } from '@/shared/auth/sessionStatus'
 
 jest.mock('@/features/cart/cartApi', () => ({
   mergeCarts: jest.fn(),
@@ -15,13 +15,8 @@ jest.mock('@/features/cart/cartApi', () => ({
 jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
-jest.mock('@/features/auth/public', () => ({
-  useAuthStore: { getState: jest.fn(() => ({ token: null })) },
-}))
-
 const mockedCartApi = jest.mocked(cartApi)
 const mockedProductsApi = jest.mocked(productsApi)
-const mockedAuthStore = useAuthStore as unknown as { getState: jest.Mock }
 
 function makeProduct(id: string, price = 10) {
   return {
@@ -56,7 +51,7 @@ beforeEach(() => {
     isSync: false,
   })
   jest.clearAllMocks()
-  mockedAuthStore.getState.mockReturnValue({ token: null })
+  setClientAuthStatus('anonymous')
 })
 
 describe('cart store — guest add/remove', () => {
@@ -181,7 +176,7 @@ describe('cart store — resetCart / setTempItems', () => {
 
 describe('cart store — syncSession', () => {
   it('merges guest cart into backend when authenticated', async () => {
-    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    setClientAuthStatus('authenticated')
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 2 }],
       tempItems: [],
@@ -205,7 +200,7 @@ describe('cart store — syncSession', () => {
   })
 
   it('normalizes stale guest quantities before backend merge', async () => {
-    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    setClientAuthStatus('authenticated')
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 150 }],
       tempItems: [],
@@ -232,7 +227,7 @@ describe('cart store — syncSession', () => {
   })
 
   it('merges duplicate stale guest ids before backend merge', async () => {
-    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    setClientAuthStatus('authenticated')
     useCartStore.setState({
       itemsIds: [
         { productId: 'p1', productQuantity: 60 },
@@ -264,7 +259,7 @@ describe('cart store — syncSession', () => {
 
 describe('cart store — authenticated add', () => {
   it('updates state from response', async () => {
-    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    setClientAuthStatus('authenticated')
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 1 }],
       tempItems: [makeCartItem('p1', 1)],
@@ -289,7 +284,7 @@ describe('cart store — authenticated add', () => {
   })
 
   it('does not remove newer cart changes when an optimistic quantity update fails', async () => {
-    mockedAuthStore.getState.mockReturnValue({ isLoggedIn: true, status: 'authenticated' })
+    setClientAuthStatus('authenticated')
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 1 }],
       tempItems: [makeCartItem('p1', 1)],

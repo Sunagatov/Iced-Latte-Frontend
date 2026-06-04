@@ -1,4 +1,4 @@
-import type { IProduct } from '@/features/products/public'
+import type { IProduct } from '@/features/products/types'
 import type { ProductSummaryDto } from '@/shared/api/generated/cart'
 
 type CartProductInfo = Omit<ProductSummaryDto, 'productFileUrl'> & {

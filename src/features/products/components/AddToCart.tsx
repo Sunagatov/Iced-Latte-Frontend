@@ -1,63 +1,47 @@
 'use client'
-import { useCallback } from 'react'
 import Button from '@/shared/ui/Button'
 import Counter from '@/shared/ui/Counter'
-import {
-  MAX_CART_ITEM_QUANTITY,
-  useCartStore,
-} from '@/features/cart/public'
+import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/public'
+import { useFavoriteProductActions } from '@/features/favorites/public'
 import { IProduct } from '@/features/products/types'
 interface Props {
   product: IProduct
 }
 
 export default function AddToCartButton({ product }: Readonly<Props>) {
-  const add = useCartStore((state) => state.add)
-  const remove = useCartStore((state) => state.remove)
-  const removeFullProduct = useCartStore((state) => state.removeFullProduct)
-  const items = useCartStore((state) => state.itemsIds)
-  const pendingProductIds = useCartStore((state) => state.pendingProductIds)
-  const isPending = pendingProductIds.has(product.id)
-
-  const productQuantity = items?.find(
-    (item) => item.productId === product.id,
-  )?.productQuantity
-
-  const addProduct = useCallback(() => {
-    add(product.id)
-  }, [add, product.id])
-
-  const removeProduct = useCallback(() => {
-    if (productQuantity === 1) {
-      removeFullProduct(product.id)
-    } else {
-      remove(product.id)
-    }
-  }, [productQuantity, removeFullProduct, remove, product.id])
+  const {
+    addToCart,
+    decreaseCartQuantity,
+    isCartPending,
+    quantity,
+    removeFromCart,
+  } = useFavoriteProductActions(product.id)
 
   return (
     <>
-      {!productQuantity && (
+      {!quantity && (
         <div data-testid="add-to-cart-btn">
           <Button
             id="add-btn"
             className="h-[42px] w-full px-4 font-semibold shadow-md hover:shadow-lg hover:brightness-110 md:h-[54px] md:w-[280px]"
-            disabled={isPending}
-            onClick={addProduct}
+            disabled={isCartPending}
+            onClick={addToCart}
           >
             Add to cart
           </Button>
         </div>
       )}
-      {productQuantity && (
+      {quantity > 0 && (
         <Counter
           theme="dark"
           className="h-[42px] w-[110px] md:h-[48px] md:w-[120px]"
-          count={productQuantity}
-          disabled={isPending}
+          count={quantity}
+          disabled={isCartPending}
           maxCount={MAX_CART_ITEM_QUANTITY}
-          addProduct={addProduct}
-          removeProduct={removeProduct}
+          addProduct={addToCart}
+          removeProduct={
+            quantity === 1 ? removeFromCart : decreaseCartQuantity
+          }
         />
       )}
     </>

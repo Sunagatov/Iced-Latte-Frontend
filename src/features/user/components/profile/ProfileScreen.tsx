@@ -6,9 +6,9 @@ import { ROUTES } from '@/shared/config/routes'
 import { AddressManager } from '@/features/addresses/public'
 import {
   useAuthStore,
-  useLogout,
   type AuthStore,
 } from '@/features/auth/public'
+import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFavouritesStore } from '@/features/favorites/public'
 import { fetchOrders } from '@/features/orders/public'
 import type { UserData } from '@/features/user/public'

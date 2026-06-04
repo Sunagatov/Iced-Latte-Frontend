@@ -1,11 +1,8 @@
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import { memo } from 'react'
-import {
-  MAX_CART_ITEM_QUANTITY,
-  useCartStore,
-} from '@/features/cart/public'
-import { useFavouritesStore } from '@/features/favorites/public'
+import { MAX_CART_ITEM_QUANTITY } from '@/features/cart/public'
+import { useFavoriteProductActions } from '@/features/favorites/public'
 import { IProduct } from '@/features/products/types'
 interface ICardProps {
   product: IProduct
@@ -30,28 +27,16 @@ export default memo(function ProductCard({
     sellerName,
   } = product
 
-  const cartItems = useCartStore((state) => state.itemsIds)
-  const pendingProductIds: Set<string> = useCartStore(
-    (state) => state.pendingProductIds,
-  )
-  const addToCart = useCartStore((state) => state.add)
-  const removeFromCart = useCartStore((state) => state.remove)
-  const removeFullProduct = useCartStore((state) => state.removeFullProduct)
-
-  const productCartQuantity = cartItems?.find(
-    (cartItem) => cartItem.productId === id,
-  )?.productQuantity
-  const isCartPending = pendingProductIds.has(id)
-
-  const { toggleFavourite, pendingIds } = useFavouritesStore()
-  const favouriteIds: string[] = useFavouritesStore((s) => s.favouriteIds)
-
-  const isFavourited = favouriteIds.includes(id)
-  const isPending = pendingIds.has(id)
-
-  const handleButtonClick = () => {
-    void toggleFavourite(id)
-  }
+  const {
+    addToCart,
+    decreaseCartQuantity,
+    handleToggleFavourite,
+    isCartPending,
+    isFavourited,
+    isPending,
+    quantity,
+    removeFromCart,
+  } = useFavoriteProductActions(id)
 
   return (
     <li
@@ -87,7 +72,7 @@ export default memo(function ProductCard({
           data-active={isFavourited ? 'true' : 'false'}
           data-testid="favourite-btn"
           disabled={isPending}
-          onClick={handleButtonClick}
+          onClick={handleToggleFavourite}
         >
           <svg
             width="14"
@@ -124,25 +109,23 @@ export default memo(function ProductCard({
             currency: 'USD',
           })}
         </p>
-        {productCartQuantity ? (
+        {quantity > 0 ? (
           <Counter
             theme="light"
             className={'sm:text-M h-7 gap-1 px-1 text-[11px]'}
-            count={productCartQuantity}
+            count={quantity}
             disabled={isCartPending}
             maxCount={MAX_CART_ITEM_QUANTITY}
             removeProduct={() =>
-              productCartQuantity === 1
-                ? removeFullProduct(id)
-                : removeFromCart(id)
+              quantity === 1 ? removeFromCart() : decreaseCartQuantity()
             }
-            addProduct={() => addToCart(id)}
+            addProduct={addToCart}
           />
         ) : (
           <button
             data-testid="add-to-cart-circle-btn"
             disabled={isCartPending}
-            onClick={() => addToCart(id)}
+            onClick={addToCart}
             className="flex items-center gap-1 rounded-full border border-brand-solid/15 px-3 py-1.5 text-[11px] font-medium text-brand transition hover:bg-brand-solid hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
           >
             <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
