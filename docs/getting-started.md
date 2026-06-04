@@ -32,7 +32,7 @@ If you are unsure, choose **Option A**.
 | Tool | Required for | Version |
 |---|---|---|
 | Docker Desktop | Every option | latest |
-| Node.js | Frontend locally: Options A and C | 20+ |
+| Node.js | Frontend locally: Options A and C | 22.18+ |
 | Java JDK | Backend locally: Options C and D | 25 |
 | Maven | Backend locally: Options C and D | 3.9+ |
 | IntelliJ IDEA | Optional, useful for backend debugging | any edition |
@@ -92,6 +92,7 @@ Optional integrations are disabled by default:
 - Google OAuth sign-in
 - AI review summaries
 - email confirmation flow
+- Cloudflare Turnstile bot protection
 
 Enable them only when the backend service and credentials are configured.
 
@@ -238,13 +239,14 @@ Use this checklist after starting any option:
 |---|---|
 | `docker ps` | Required containers show status `Up` |
 | http://localhost:3000 | Frontend opens |
-| http://localhost:8083 | Backend responds |
+| http://localhost:8083/actuator/health | Backend health returns `UP` |
 | http://localhost:8083/api/docs/swagger-ui/index.html | Swagger UI opens |
 | http://localhost:9001 | MinIO console opens if infrastructure is running |
 
-Create your own account before testing authenticated flows. Use Google
-authentication when it is configured, or sign up with an email address and
-complete the email confirmation flow.
+Create your own account before testing authenticated flows. With the default
+local config, email confirmation is disabled and email sign-up authenticates you
+immediately. If you explicitly enable email or Google OAuth, follow that
+provider's confirmation/authentication flow.
 
 ---
 
@@ -288,6 +290,8 @@ npm run test:e2e:report
 | `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` | Enable Google OAuth sign-in | `false` |
 | `NEXT_PUBLIC_AI_ENABLED` | Enable AI review summaries | `false` |
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |
+| `NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED` | Require Turnstile on checkout UI when a site key is set | `false` |
 
 All feature flags default to `false` so the app can run locally without production credentials.
 
@@ -328,8 +332,8 @@ docker compose --env-file .env.example --profile backend --profile frontend up -
 | Backend port `8083` already in use | Stop the process using the port, or run Docker with `BACKEND_HOST_PORT=8084` |
 | Frontend container cannot reach local backend | Rebuild frontend with `FRONTEND_DOCKER_API_URL=http://host.docker.internal:8083/api/v1` |
 | E2E tests fail immediately | Make sure the dev server is running on `http://localhost:3000` |
-| `npm ci` fails | Make sure Node.js is version 20 or higher |
-| Login returns `401` | Create a fresh account through Google authentication or email sign-up with email confirmation, then sign in with that account |
+| `npm ci` fails | Make sure Node.js is version 22.18 or higher |
+| Login returns `401` | Create a fresh account. With default local config, email sign-up logs you in immediately; if you enabled email confirmation or Google OAuth, complete that provider flow first |
 | Windows says `export` or `source` not found | Use IntelliJ for backend startup, or run the backend command in Git Bash |
 
 Port override examples:

@@ -90,7 +90,7 @@ Iced Latte is split into three focused repositories so contributors can work on 
 
 **✅ You need these installed first:**
 
-- Node.js 20+
+- Node.js 22.18+
 - Docker Desktop
 
 **⚡ Already comfortable with the terminal? Use the short path:**
@@ -129,7 +129,7 @@ npm run test:e2e
 
 | Category | Technologies |
 |---|---|
-| 💻 **Core frontend** | Next.js 16, React 19, TypeScript 5, Node.js 20+ |
+| 💻 **Core frontend** | Next.js 16, React 19, TypeScript 5, Node.js 22.18+ |
 | 🎨 **Styling & UI** | TailwindCSS 4, React Icons, responsive layouts |
 | 🧭 **Routing & app shell** | Next App Router, route handlers, layouts, providers |
 | 📡 **API integration** | Axios, Axios Cache Interceptor, SWR |

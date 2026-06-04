@@ -1,7 +1,7 @@
 # =============================================================================
 # BUILD STAGE
 # =============================================================================
-FROM node:22.17.0-alpine3.22 AS build
+FROM node:22.18.0-alpine3.22 AS build
 
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_FRONTEND_URL
@@ -12,6 +12,7 @@ ARG NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=false
 ARG NEXT_PUBLIC_AI_ENABLED=false
 ARG NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED=false
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED=false
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
 ENV NEXT_IMAGE_REMOTE_SOURCES=$NEXT_IMAGE_REMOTE_SOURCES
@@ -20,6 +21,7 @@ ENV NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=$NEXT_PUBLIC_GOOGLE_AUTH_ENABLED
 ENV NEXT_PUBLIC_AI_ENABLED=$NEXT_PUBLIC_AI_ENABLED
 ENV NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED=$NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ENV NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED=$NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED
 
 WORKDIR /app
 
@@ -34,7 +36,7 @@ RUN npm run build
 # =============================================================================
 # RUNTIME STAGE
 # =============================================================================
-FROM node:22.17.0-alpine3.22
+FROM node:22.18.0-alpine3.22
 
 LABEL maintainer="Iced-Latte Team" \
       description="Iced-Latte Frontend Application"

@@ -125,8 +125,9 @@ Add or keep coverage when touching these areas:
 ## 🧪 Test Data Rules
 
 - Prefer test accounts created through the same public flows users use.
-- Use Google authentication when configured, or sign up with an email address
-  and complete email confirmation when a normal logged-in user is needed.
+- With the default local configuration, email sign-up authenticates immediately.
+  If email confirmation or Google authentication is explicitly enabled, complete
+  that provider flow when a normal logged-in user is needed.
 - Keep tests independent; one test should not require state created by a previous test.
 - Clean up browser state between tests.
 - Prefer page objects/helpers for repeated flows.
