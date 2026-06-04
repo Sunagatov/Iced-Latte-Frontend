@@ -2,21 +2,19 @@
 
 Thanks for your interest in contributing. Iced Latte Frontend is built in the open so engineers can practice on a real Next.js/React codebase with product flows, API integration, state management, UI work, tests, and pull requests.
 
-> **Intellectual property notice:** By submitting any contribution, you irrevocably assign all rights to the author (Zufar Sunagatov). Contributors have no ownership, copyright, or other IP claim over the Iced Latte project or any related repository. These terms have been in effect since the project's creation in 2022. See [`LICENSE`](../LICENSE) Sections 7-8 for full details.
+> **Contribution license notice:** Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Iced Latte is submitted under the Apache License 2.0, without any additional terms or conditions. By opening a pull request, you confirm that you have the right to submit the contribution and that it can be licensed as part of the project under Apache License 2.0.
 
 ---
 
 ## 📜 License & Contribution Terms
 
-Before contributing, read the [Iced Latte Personal Evaluation License 2026](../LICENSE).
+Before contributing, read the [Apache License 2.0](../LICENSE).
 
 Important points:
 
-- Contributions are accepted only under the project's license terms.
-- By opening a PR, issue patch, code suggestion, documentation change, design, test, or other contribution, you assign the contribution rights to the author.
-- Contributors do not receive ownership, copyright, trademark, commercial, publication, hosting, sublicensing, or redistribution rights.
-- Personal local evaluation is allowed.
-- Public, educational, remote-hosted, commercial, or redistributed use requires explicit written permission from the author.
+- Contributions are accepted under the Apache License 2.0.
+- By opening a PR, you confirm that you have the right to submit the contribution.
+- The Iced Latte name, logo, domain, visual identity, and other brand assets are not licensed for use in a way that suggests official endorsement, partnership, or ownership without explicit written permission.
 - Do not contribute code, text, images, assets, or designs you do not have the right to submit.
 
 If you do not agree with these terms, do not submit a contribution.
