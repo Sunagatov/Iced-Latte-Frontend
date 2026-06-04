@@ -16,7 +16,7 @@
     <a href="https://github.com/Sunagatov/Iced-Latte-Frontend/actions"><img alt="CI" src="https://github.com/Sunagatov/Iced-Latte-Frontend/actions/workflows/ci.yml/badge.svg"></a>
     <a href="https://sonarcloud.io/project/overview?id=Sunagatov_Iced-Latte-Frontend"><img alt="Quality Gate" src="https://sonarcloud.io/api/project_badges/measure?project=Sunagatov_Iced-Latte-Frontend&metric=alert_status"></a>
     <a href="https://sonarcloud.io/project/overview?id=Sunagatov_Iced-Latte-Frontend"><img alt="Coverage" src="https://sonarcloud.io/api/project_badges/measure?project=Sunagatov_Iced-Latte-Frontend&metric=coverage"></a>
-    <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-evaluation--only-lightgrey.svg?style=flat-square"></a>
+    <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square"></a>
   </p>
   <p>
     <a href="https://github.com/Sunagatov/Iced-Latte-Frontend/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/Sunagatov/Iced-Latte-Frontend?style=flat-square&logo=github"></a>
@@ -149,7 +149,7 @@ npm run test:e2e
 - 📄 [E2E Test Plan](docs/testing/e2e-test-plan.md) — Playwright coverage plan and scenarios
 - 📄 [Security Policy](SECURITY.md) — security policy and vulnerability reporting
 - 📄 [Code of Conduct](CODE_OF_CONDUCT.md) — community standards and expected behavior
-- 📄 [LICENSE](LICENSE) — personal local evaluation only; public/educational/commercial use requires permission
+- 📄 [LICENSE](LICENSE) — Apache License 2.0
 
 ---
 
@@ -210,7 +210,9 @@ Before opening a PR:
 
 ## 📄 License
 
-📜 [Iced Latte Personal Evaluation License 2026](LICENSE) — personal local evaluation only. Public, educational, remote-hosted, and commercial use require explicit written permission from the author ([zufar.sunagatov@gmail.com](mailto:zufar.sunagatov@gmail.com)).
+Iced Latte is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
+
+The Iced Latte name, logo, domain, visual identity, and other brand assets are not licensed for use in a way that suggests official endorsement, partnership, or ownership without explicit written permission.
 
 ---
 
