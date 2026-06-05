@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 
 test.describe('Guest navigation', () => {
   test('home page loads products without auth', async ({ homePage }) => {

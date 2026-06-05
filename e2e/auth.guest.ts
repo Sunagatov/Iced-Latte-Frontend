@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 import { config } from 'dotenv'
 
 config({ path: '.env.local' })

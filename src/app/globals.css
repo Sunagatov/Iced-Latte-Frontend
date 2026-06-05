@@ -100,33 +100,12 @@
   .text-inverted {
     color: #ffffff;
   }
-  .text-brand {
-    color: #1B4332;
-  }
-  .text-positive {
-    color: #16a34a;
-  }
-  .text-negative {
-    color: #dc2626;
-  }
-
   .border-primary {
     border-color: #0a0a0a14;
   }
   .border-secondary {
     border-color: #f0efed;
   }
-  .border-error {
-    border-color: #ef4444;
-  }
-  .border-focus {
-    border-color: #1B4332;
-  }
-
-  .outline-focus {
-    outline-color: #1B4332;
-  }
-
   .scrollbar-hide {
     scrollbar-width: none;
   }

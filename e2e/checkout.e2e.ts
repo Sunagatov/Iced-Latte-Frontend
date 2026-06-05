@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 import { seedCart, clearCart } from './helpers/api'
 import { PRODUCT_ID } from './helpers/constants'
 

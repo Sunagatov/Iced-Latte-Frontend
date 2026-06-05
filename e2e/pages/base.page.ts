@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from '@playwright/test'
 
 export abstract class BasePage {
-  constructor(protected readonly page: Page) {}
+  protected constructor(protected readonly page: Page) {}
 
   protected async safeClick(locator: Locator) {
     await expect(locator).toBeVisible()

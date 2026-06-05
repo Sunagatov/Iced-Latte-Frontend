@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 
 test.describe('Navigation (authenticated)', () => {
   test('header is visible on home page', async ({ page }) => {

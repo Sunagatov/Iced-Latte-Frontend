@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 
 test.describe('Catalog', () => {
   test('displays product cards', async ({ homePage }) => {

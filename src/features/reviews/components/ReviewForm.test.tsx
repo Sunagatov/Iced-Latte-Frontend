@@ -12,6 +12,7 @@ jest.mock('@/features/reviews/api', () => ({
 }))
 
 jest.mock('@/features/reviews/config', () => ({
+  // noinspection JSUnusedGlobalSymbols -- the component imports this mocked getter by name.
   get reviewsTurnstileEnabled() {
     return mockReviewsTurnstileEnabled
   },

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 
 const password = 'LocalPass123'
 

@@ -94,7 +94,7 @@ export async function apiGetProductUserReview(
 
 export async function apiGetUserReviews(): Promise<Review[]> {
   const options = { cache: false } as object
-  const firstPage = await getUserReviews({ page: 0 }, options) as IReviews
+  const firstPage = (await getUserReviews({ page: 0 }, options)) as IReviews
 
   if (!firstPage.totalPages || firstPage.totalPages <= 1) {
     return firstPage.reviewsWithRatings
@@ -104,10 +104,10 @@ export async function apiGetUserReviews(): Promise<Review[]> {
     Array.from({ length: firstPage.totalPages - 1 }, async (_, index) => {
       const page = index + 1
 
-      return getUserReviews({
+      return (await getUserReviews({
         page,
         size: firstPage.size || undefined,
-      }, options) as Promise<IReviews>
+      }, options)) as IReviews
     }),
   )
 

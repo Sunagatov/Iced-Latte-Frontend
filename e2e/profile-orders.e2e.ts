@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/index'
+import { test, expect } from './fixtures'
 
 test.describe('Profile', () => {
   test('page is accessible when logged in', async ({ profilePage }) => {

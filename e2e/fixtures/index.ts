@@ -8,6 +8,7 @@ import { ProfilePage } from '../pages/profile.page'
 import { OrdersPage } from '../pages/orders.page'
 import { CheckoutPage } from '../pages/checkout.page'
 
+// noinspection JSUnusedGlobalSymbols -- Playwright consumes fixture names by parameter injection.
 type Fixtures = {
   homePage: HomePage
   signInPage: SignInPage
