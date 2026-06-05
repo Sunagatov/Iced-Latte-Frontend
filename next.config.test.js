@@ -29,4 +29,15 @@ describe('next security headers', () => {
       '\'unsafe-eval\'',
     )
   })
+
+  it('allows Google Analytics 4 script loading and collection endpoints', async () => {
+    const csp = await contentSecurityPolicyForNodeEnv('production')
+
+    expect(csp).toContain('script-src')
+    expect(csp).toContain('https://*.googletagmanager.com')
+    expect(csp).toContain('img-src')
+    expect(csp).toContain('https://*.google-analytics.com')
+    expect(csp).toContain('connect-src')
+    expect(csp).toContain('https://*.analytics.google.com')
+  })
 })

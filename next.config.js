@@ -23,7 +23,13 @@ const scriptSrc = [
   '\'unsafe-inline\'',
   ...(process.env.NODE_ENV === 'production' ? [] : ['\'unsafe-eval\'']),
   'https://challenges.cloudflare.com',
+  'https://*.googletagmanager.com',
 ].join(' ')
+const analyticsSources = [
+  'https://*.google-analytics.com',
+  'https://*.analytics.google.com',
+  'https://*.googletagmanager.com',
+]
 
 const nextConfig = {
   output: 'standalone',
@@ -51,9 +57,13 @@ const nextConfig = {
               'default-src \'self\'',
               scriptSrc,
               'style-src \'self\' \'unsafe-inline\'',
-              ['img-src \'self\' data: blob:', ...imageSources].join(' '),
+              [
+                'img-src \'self\' data: blob:',
+                ...imageSources,
+                ...analyticsSources,
+              ].join(' '),
               'font-src \'self\'',
-              'connect-src \'self\'',
+              ['connect-src \'self\'', ...analyticsSources].join(' '),
               'frame-src https://challenges.cloudflare.com',
               'frame-ancestors \'none\'',
             ].join('; '),

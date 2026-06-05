@@ -90,11 +90,13 @@ Optional integrations are disabled by default:
 
 - Stripe checkout UI
 - Google OAuth sign-in
+- Google Analytics
 - AI review summaries
 - email confirmation flow
 - Cloudflare Turnstile bot protection
 
-Enable them only when the backend service and credentials are configured.
+Enable them only when the related service and credentials are configured. Leave
+`NEXT_PUBLIC_GOOGLE_ANALYTICS_ID` blank for local contributor runs.
 
 ---
 
@@ -298,6 +300,7 @@ npm run test:e2e:report
 | `NEXT_IMAGE_REMOTE_SOURCES` | Allowed remote image hosts | `http://localhost:9000` |
 | `NEXT_PUBLIC_STRIPE_ENABLED` | Enable Stripe checkout UI | `false` |
 | `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` | Enable Google OAuth sign-in | `false` |
+| `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID` | Enable Google Analytics when set to a GA4 measurement ID | empty |
 | `NEXT_PUBLIC_AI_ENABLED` | Enable AI review summaries | `false` |
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |

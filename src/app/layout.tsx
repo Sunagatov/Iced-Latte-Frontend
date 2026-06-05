@@ -1,11 +1,13 @@
 import './globals.css'
 import 'react-toastify/dist/ReactToastify.css'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ToastContainer } from 'react-toastify'
 import Header from '@/app/layout/Header'
 import Footer from '@/app/layout/Footer'
 import AppProviders from '@/app/providers/AppProviders'
+import { GOOGLE_ANALYTICS_MEASUREMENT_ID } from '@/shared/config/analytics'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -34,8 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Iced Latte — Marketplace',
-    description:
-      'Discover thousands of products from trusted sellers.',
+    description: 'Discover thousands of products from trusted sellers.',
   },
   metadataBase: new URL(siteUrl),
 }
@@ -56,6 +57,9 @@ export default function RootLayout({
           <Footer />
         </AppProviders>
       </body>
+      {GOOGLE_ANALYTICS_MEASUREMENT_ID && (
+        <GoogleAnalytics gaId={GOOGLE_ANALYTICS_MEASUREMENT_ID} />
+      )}
     </html>
   )
 }
