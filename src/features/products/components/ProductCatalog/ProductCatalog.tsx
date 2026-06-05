@@ -131,7 +131,7 @@ export default function ProductCatalog({
 
   const handleLoadMore = (): void => {
     setLoadMoreError(false)
-    setSize((currentSize) => currentSize + 1).then(
+    void setSize((currentSize) => currentSize + 1).then(
       undefined,
       () => setLoadMoreError(true),
     )

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import type * as React from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 
 interface ConfirmationModalProps {

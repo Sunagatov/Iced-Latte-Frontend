@@ -12,7 +12,7 @@ import {
 export async function syncFavourites(
   requestItems: SyncFavouritesRequest,
 ): Promise<FavouritesResponse> {
-  return addListOfFavoriteProducts(requestItems) as Promise<FavouritesResponse>
+  return (await addListOfFavoriteProducts(requestItems)) as FavouritesResponse
 }
 
 export async function removeFavourite(id: string): Promise<void> {

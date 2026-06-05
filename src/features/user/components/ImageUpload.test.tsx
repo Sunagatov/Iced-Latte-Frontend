@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import ImageUpload from '@/features/user/components/ImageUpload'
 import { getUserData, uploadImage } from '@/features/user/api'
 import { useAuthStore } from '@/features/auth/public'
+import type * as React from 'react'
 import type { ForwardedRef } from 'react'
 
 let mockAvatarTurnstileEnabled = false

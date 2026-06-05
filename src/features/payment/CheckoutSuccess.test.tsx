@@ -1,4 +1,5 @@
 import { render, waitFor, act } from '@testing-library/react'
+import type * as React from 'react'
 import { CheckoutSuccess } from '@/features/payment/CheckoutSuccess'
 import * as paymentApi from '@/features/payment/paymentApi'
 import { useCartStore } from '@/features/cart/public'

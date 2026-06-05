@@ -1,6 +1,7 @@
 'use client'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import type * as React from 'react'
 import { uploadImage, getUserData } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthStore } from '@/features/auth/public'

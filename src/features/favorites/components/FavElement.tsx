@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import type * as React from 'react'
 import { ROUTES } from '@/shared/config/routes'
 import type { FavElementProps } from '@/features/favorites/favoritesTypes'
 import FavoriteCartStepper from '@/features/favorites/components/FavoriteCartStepper'

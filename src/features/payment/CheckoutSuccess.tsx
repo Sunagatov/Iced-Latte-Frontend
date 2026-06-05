@@ -68,7 +68,7 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
       }
     }
 
-    poll()
+    void poll()
 
     return () => controller.abort()
   }, [orderId, retries, resetCart])

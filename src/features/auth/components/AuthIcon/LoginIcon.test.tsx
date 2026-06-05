@@ -1,4 +1,5 @@
 import { render, screen, act } from '@testing-library/react'
+import type * as React from 'react'
 import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 
 jest.mock('next/link', () => ({

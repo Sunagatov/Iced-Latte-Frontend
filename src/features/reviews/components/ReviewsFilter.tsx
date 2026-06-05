@@ -1,5 +1,6 @@
 'use client'
 
+import type * as React from 'react'
 import type { IProductReviewsStatistics } from '@/features/reviews/types'
 
 const STAR_PATH =

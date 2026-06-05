@@ -1,6 +1,7 @@
 'use client'
 
 import { useSearchParams, usePathname } from 'next/navigation'
+import type * as React from 'react'
 import { ROUTES } from '@/shared/config/routes'
 import { FEATURES } from '@/shared/config/features'
 import { getSafeNext } from '@/shared/utils/navigation'

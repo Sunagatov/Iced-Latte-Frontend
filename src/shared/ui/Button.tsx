@@ -1,4 +1,7 @@
 'use client'
+import type * as React from 'react'
+import { twMerge } from 'tailwind-merge'
+
 interface PropsBtn {
   onClick?: () => void
   className?: string
@@ -7,7 +10,6 @@ interface PropsBtn {
   children?: React.ReactNode
   id?: string
 }
-import { twMerge } from 'tailwind-merge'
 
 const defaultStyles =
   'h-12 rounded-full bg-brand-solid px-6 text-[15px] font-medium text-inverted transition-all duration-200 ease-in-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2'

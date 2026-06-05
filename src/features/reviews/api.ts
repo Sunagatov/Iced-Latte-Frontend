@@ -61,7 +61,7 @@ export async function apiGetAllReviews(url: string): Promise<IReviews> {
   const { params, productId } = getReviewParamsFromPath(url)
   const options = { cache: false } as object
 
-  return getProductReviewsAndRatings(productId, params, options) as Promise<IReviews>
+  return (await getProductReviewsAndRatings(productId, params, options)) as IReviews
 }
 
 export async function apiAddProductReview(
@@ -70,11 +70,11 @@ export async function apiAddProductReview(
   currentRating: number,
   turnstileToken?: string,
 ): Promise<SubmittedReviewInfo> {
-  return addNewProductReview(productId, {
+  return (await addNewProductReview(productId, {
     text: reviewText,
     rating: currentRating,
     ...(turnstileToken ? { turnstileToken } : {}),
-  }) as Promise<SubmittedReviewInfo>
+  })) as SubmittedReviewInfo
 }
 
 export async function apiDeleteProductReview(
@@ -89,7 +89,7 @@ export async function apiGetProductUserReview(
 ): Promise<Review> {
   const options = { cache: false } as object
 
-  return getProductReview(productId, options) as Promise<Review>
+  return (await getProductReview(productId, options)) as Review
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
@@ -118,10 +118,11 @@ export async function apiGetProductReviewsStatistics(
   productId: string,
 ): Promise<IProductReviewsStatistics> {
   const options = { cache: false } as object
-  const statistics: ProductReviewRatingStats =
-    await getRatingAndReviewStat(productId, options)
 
-  return statistics
+  return (await getRatingAndReviewStat(
+    productId,
+    options,
+  )) as ProductReviewRatingStats
 }
 
 export async function apiRateProductReview(
@@ -129,5 +130,7 @@ export async function apiRateProductReview(
   productReviewId: string,
   isLike: boolean,
 ): Promise<Review> {
-  return addProductReviewLike(productId, productReviewId, { isLike }) as Promise<Review>
+  return (await addProductReviewLike(productId, productReviewId, {
+    isLike,
+  })) as Review
 }

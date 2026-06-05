@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type * as React from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import { useAuthStore } from '@/features/auth/public'
 import { apiGetProductUserReview } from '@/features/reviews/api'

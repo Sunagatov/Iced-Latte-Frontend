@@ -1,4 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
+import type * as React from 'react'
 import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
 import * as paymentApi from '@/features/payment/paymentApi'
 import { useCartStore } from '@/features/cart/public'

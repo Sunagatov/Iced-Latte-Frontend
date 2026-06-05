@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import type * as React from 'react'
 import { ROUTES } from '@/shared/config/routes'
 import {
   RiArrowRightSLine,

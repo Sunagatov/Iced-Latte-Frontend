@@ -15,23 +15,23 @@ interface DeleteItemsPayload {
 }
 
 export async function mergeCarts(cartItemIds: ICartPushItems): Promise<ICart> {
-  return addNewItemToShoppingCart(cartItemIds) as Promise<ICart>
+  return (await addNewItemToShoppingCart(cartItemIds)) as ICart
 }
 
 export async function fetchCart(signal?: AbortSignal): Promise<ICart> {
   const options = { cache: false, signal }
 
-  return getShoppingCart(options) as Promise<ICart>
+  return (await getShoppingCart(options)) as ICart
 }
 
 export async function removeCartItem(ids: string[]): Promise<ICart> {
   const deleteItems: DeleteItemsPayload = { shoppingCartItemIds: ids }
 
-  return deleteItemsFromShoppingCart(deleteItems) as Promise<ICart>
+  return (await deleteItemsFromShoppingCart(deleteItems)) as ICart
 }
 
 export async function changeCartItemQuantity(
   item: ICartUpdatedItem,
 ): Promise<ICart> {
-  return updateProductQuantityInShoppingCartItem(item) as Promise<ICart>
+  return (await updateProductQuantityInShoppingCartItem(item)) as ICart
 }

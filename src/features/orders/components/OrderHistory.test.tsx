@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import type * as React from 'react'
 import OrderHistory from '@/features/orders/components/OrderHistory'
 import * as ordersApi from '@/features/orders/ordersApi'
 
