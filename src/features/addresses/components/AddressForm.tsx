@@ -64,6 +64,9 @@ export default function AddressForm({ editing, onClose }: Props) {
   return (
     <div
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="address-form-title"
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose()
       }}
@@ -71,7 +74,7 @@ export default function AddressForm({ editing, onClose }: Props) {
     >
       <div className="bg-primary w-full max-w-md rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
-          <h2 className="text-primary font-semibold">
+          <h2 id="address-form-title" className="text-primary font-semibold">
             {editing ? 'Edit address' : 'Add new address'}
           </h2>
           <button

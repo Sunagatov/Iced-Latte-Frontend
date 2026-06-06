@@ -17,14 +17,11 @@ const sections = [
     ],
   },
   {
-    title: '2. License & Brand Assets',
+    title: '2. Repository License',
     body: [
-      'The source code is licensed under the Apache License 2.0. See the LICENSE file for details.',
-      'The Apache License 2.0 allows use, modification, distribution, private use, and commercial use, subject to its terms.',
-    ],
-    bullets: [
-      'The Iced Latte name, logo, domain, visual identity, and other brand assets are not licensed for use in a way that suggests official endorsement, partnership, or ownership without explicit written permission.',
-      'You must preserve license notices and attribution required by the Apache License 2.0.',
+      'The repository source code and related repository material are licensed under the Apache License 2.0 in the repository LICENSE file.',
+      'That license allows open-source use, modification, distribution, private use, and commercial use subject to its terms.',
+      'The Apache License 2.0 does not grant rights to use the Iced Latte name, logo, domain, visual identity, or other brand assets in a way that suggests official endorsement, partnership, or ownership without explicit written permission.',
     ],
   },
   {
@@ -100,7 +97,15 @@ const sections = [
   {
     title: '10. Contributing',
     body: [
-      'Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Iced Latte is submitted under the Apache License 2.0, without any additional terms or conditions. By opening a pull request, you confirm that you have the right to submit the contribution and that it can be licensed as part of the project under Apache License 2.0.',
+      'By submitting a pull request, issue patch, code suggestion, documentation change, design, test, or any other contribution to the Iced Latte repositories, you agree that:',
+    ],
+    bullets: [
+      'Your contribution is your original work or you have the right to submit it.',
+      'Contributions are accepted under the project\'s Apache License 2.0 contribution terms.',
+      'Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Iced Latte is submitted under Apache License 2.0, without any additional terms or conditions.',
+      'By submitting a contribution, you confirm that you have the right to submit it and that it can be licensed as part of the project under Apache License 2.0.',
+      'You must not submit code, text, images, designs, assets, test data, or other material that you do not have the right to contribute.',
+      'If you do not agree with these contribution terms, do not submit a contribution.',
     ],
   },
   {
@@ -133,7 +138,7 @@ export default function TermsOfUsePage() {
                 Effective date: May 3, 2026
               </span>
               <span className="rounded-full border border-white/15 bg-white/8 px-4 py-2">
-                Last updated: May 4, 2026
+                Last updated: June 4, 2026
               </span>
             </div>
           </div>

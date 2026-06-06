@@ -207,15 +207,6 @@ export interface ReorderResponseDto {
 }
 
 /**
- * Admin request to update order status.
- */
-export interface AdminOrderStatusUpdateDto {
-  event: OrderEvent;
-  /** @maxLength 500 */
-  reason?: string;
-}
-
-/**
  * A single status change entry.
  */
 export interface OrderStatusHistoryDto {
@@ -237,147 +228,6 @@ export interface SuccessResponse {
      * @minLength 1
      */
   message: string;
-}
-
-export interface UploadUserAvatarRequest {
-  file: Blob;
-  /**
-     * Cloudflare Turnstile verification token. Required when avatar upload bot protection is enabled.
-     * @maxLength 2048
-     */
-  turnstileToken?: string;
-}
-
-/**
- * Payload containing the user's updated details.
- */
-export interface UpdateUserAccountRequest {
-  /**
-     * The first name of the user.
-     * @minLength 2
-     * @maxLength 64
-     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\u2019\-]+$
-     */
-  firstName: string;
-  /**
-     * The last name of the user.
-     * @minLength 2
-     * @maxLength 64
-     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\u2019\-]+$
-     */
-  lastName: string;
-  /** The birth date of the user. */
-  birthDate?: string;
-  /** The phone number of the user. */
-  phoneNumber?: string;
-  address?: AddressDto;
-}
-
-/**
- * Password must be between 8 and 128 characters, with at least one lowercase letter, one uppercase letter, and one digit.
- * @minLength 8
- * @maxLength 128
- * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
- */
-export type PasswordField = string;
-
-/**
- * Payload for changing user password.
- */
-export interface ChangeUserPasswordRequest {
-  newPassword: PasswordField;
-  oldPassword: PasswordField;
-}
-
-/**
- * A user profile in the Iced-Latte system.
- */
-export interface UserDto {
-  /** The unique identifier for the user. */
-  id?: string;
-  /**
-     * The first name of the user.
-     * @minLength 2
-     * @maxLength 64
-     */
-  firstName: string;
-  /**
-     * The last name of the user.
-     * @minLength 2
-     * @maxLength 64
-     */
-  lastName: string;
-  /** The birth date of the user. */
-  birthDate?: string;
-  /** The phone number of the user. */
-  phoneNumber?: string;
-  /** The Stripe customer token associated with the user. */
-  stripeCustomerToken?: string;
-  /** The email address of the user. */
-  email: string;
-  address?: AddressDto;
-  /** The avatar URL of the user. */
-  avatarLink?: string;
-  /** True if the user signed up via OAuth and has no password set. */
-  oauthUser?: boolean;
-}
-
-/**
- * Payload to initiate a password reset.
- */
-export interface InitiatePasswordResetRequest {
-  /** The email address of the user requesting a password reset. */
-  email: string;
-}
-
-/**
- * Payload to confirm a password reset.
- */
-export interface ConfirmPasswordResetRequest {
-  /** The password reset token. */
-  token: string;
-  newPassword: PasswordField;
-}
-
-/**
- * A saved delivery address.
- */
-export interface DeliveryAddressDto {
-  id?: string;
-  label?: string;
-  line?: string;
-  city?: string;
-  country?: string;
-  postcode?: string;
-  isDefault?: boolean;
-}
-
-export interface DeliveryAddressRequest {
-  /**
-     * @minLength 1
-     * @maxLength 64
-     */
-  label: string;
-  /**
-     * @minLength 1
-     * @maxLength 256
-     */
-  line: string;
-  /**
-     * @minLength 1
-     * @maxLength 128
-     */
-  city: string;
-  /**
-     * @minLength 1
-     * @maxLength 128
-     */
-  country: string;
-  /**
-     * @minLength 1
-     * @maxLength 16
-     */
-  postcode: string;
 }
 
 export type ErrorResponseD2fd7b5 = ErrorResponse;
@@ -405,25 +255,6 @@ export type CreateOrderHeaders = {
  * Client-generated key used to safely retry order creation requests.
  */
 'Idempotency-Key'?: string;
-};
-
-export type GetAllOrdersParams = {
-/**
- * @minimum 0
- */
-page?: number;
-/**
- * @minimum 1
- * @maximum 50
- */
-size?: number;
-status?: OrderStatus[];
-userId?: string;
-sortBy?: string;
-sortDirection?: string;
-year?: number;
-dateFrom?: string;
-dateTo?: string;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -525,34 +356,6 @@ export const getOrderHistory = (
       options);
     }
 
-/**
- * @summary List all orders (admin)
- */
-export const getAllOrders = (
-    params?: GetAllOrdersParams,
- options?: SecondParameter<typeof orvalMutator<OrderPageDto>>,) => {
-      return orvalMutator<OrderPageDto>(
-      {url: `/api/v1/admin/orders`, method: 'GET',
-        params
-    },
-      options);
-    }
-
-/**
- * @summary Update order status (admin)
- */
-export const updateOrderStatus = (
-    orderId: string,
-    adminOrderStatusUpdateDto: BodyType<AdminOrderStatusUpdateDto>,
- options?: SecondParameter<typeof orvalMutator<OrderDto>>,) => {
-      return orvalMutator<OrderDto>(
-      {url: `/api/v1/admin/orders/${orderId}/status`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: adminOrderStatusUpdateDto
-    },
-      options);
-    }
-
 export type GetOrdersResult = NonNullable<Awaited<ReturnType<typeof getOrders>>>
 export type CreateOrderResult = NonNullable<Awaited<ReturnType<typeof createOrder>>>
 export type GetOrderByIdResult = NonNullable<Awaited<ReturnType<typeof getOrderById>>>
@@ -560,5 +363,3 @@ export type CancelOrderResult = NonNullable<Awaited<ReturnType<typeof cancelOrde
 export type RequestRefundResult = NonNullable<Awaited<ReturnType<typeof requestRefund>>>
 export type ReorderResult = NonNullable<Awaited<ReturnType<typeof reorder>>>
 export type GetOrderHistoryResult = NonNullable<Awaited<ReturnType<typeof getOrderHistory>>>
-export type GetAllOrdersResult = NonNullable<Awaited<ReturnType<typeof getAllOrders>>>
-export type UpdateOrderStatusResult = NonNullable<Awaited<ReturnType<typeof updateOrderStatus>>>

@@ -15,6 +15,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   isAuthRetry?: boolean
   isRateLimitRetry?: boolean
   skipAuthRetry?: boolean
+  skipRateLimitRetry?: boolean
 }
 
 interface AuthInterceptorProps {
@@ -33,6 +34,23 @@ export function getRetryAfterDelayMs(retryAfter?: string): number {
     Number.isFinite(parsedSeconds) && parsedSeconds > 0 ? parsedSeconds : 5
 
   return Math.min(safeSeconds, 60) * 1000
+}
+
+export function isRateLimitRetrySafeRequest(
+  method?: string,
+  headers?: Record<string, unknown>,
+): boolean {
+  const normalizedMethod = method?.toUpperCase() ?? 'GET'
+
+  if (['GET', 'HEAD', 'OPTIONS'].includes(normalizedMethod)) {
+    return true
+  }
+
+  const idempotencyKey =
+    headers?.['Idempotency-Key'] ??
+    headers?.['idempotency-key']
+
+  return typeof idempotencyKey === 'string' && idempotencyKey.length > 0
 }
 
 export function isAuthRefreshExcludedRequest(url?: string): boolean {
@@ -71,8 +89,12 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
         if (
           error.response?.status === 429 &&
           !originalRequest.isRateLimitRetry &&
-          !originalRequest.skipAuthRetry &&
-          !isAuthRefreshExcludedRequest(originalRequest.url)
+          !originalRequest.skipRateLimitRetry &&
+          !isAuthRefreshExcludedRequest(originalRequest.url) &&
+          isRateLimitRetrySafeRequest(
+            originalRequest.method,
+            originalRequest.headers,
+          )
         ) {
           originalRequest.isRateLimitRetry = true
           const retryAfter = error.response.headers?.['retry-after']

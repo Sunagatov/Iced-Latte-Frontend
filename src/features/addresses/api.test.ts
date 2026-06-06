@@ -1,4 +1,4 @@
-import { getAddresses } from '@/features/addresses/api'
+import { createAddress, getAddresses } from '@/features/addresses/api'
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({
@@ -22,5 +22,45 @@ describe('addresses api', () => {
       method: 'GET',
       url: '/users/addresses',
     }))
+  })
+
+  it('normalizes optional generated address fields at the feature boundary', async () => {
+    mockedApi.mockResolvedValue({
+      data: [{ id: 'addr-1', label: 'Home' }],
+    })
+
+    await expect(getAddresses()).resolves.toEqual([
+      {
+        city: '',
+        country: '',
+        id: 'addr-1',
+        isDefault: false,
+        label: 'Home',
+        line: '',
+        postcode: '',
+      },
+    ])
+  })
+
+  it('normalizes created addresses before returning them', async () => {
+    mockedApi.mockResolvedValue({
+      data: { id: 'addr-2', city: 'London', isDefault: true },
+    })
+
+    await expect(createAddress({
+      city: 'London',
+      country: 'United Kingdom',
+      label: 'Home',
+      line: '1 Main St',
+      postcode: 'SW1A 1AA',
+    })).resolves.toEqual({
+      city: 'London',
+      country: '',
+      id: 'addr-2',
+      isDefault: true,
+      label: '',
+      line: '',
+      postcode: '',
+    })
   })
 })
