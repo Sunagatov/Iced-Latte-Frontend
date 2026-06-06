@@ -11,7 +11,6 @@ export interface Review {
   isCurrentUserComment?: boolean
   likesCount: number
   dislikesCount: number
-  aiSummary?: string | null
 }
 
 export interface IProductReviewsStatistics {

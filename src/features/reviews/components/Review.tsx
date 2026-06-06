@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { Review as ReviewType } from '@/features/reviews/types'
 import { formatReviewDate } from '@/features/reviews/components/ReviewsList/formatReviewDate'
-import { FEATURES } from '@/shared/config/features'
 import { twMerge } from 'tailwind-merge'
 
 const STAR_PATH =
@@ -124,13 +123,6 @@ const Review: React.FC<Readonly<IReview>> = ({
           'No written review'
         )}
       </p>
-
-      {FEATURES.ai && review.aiSummary && review.aiSummary !== 'Summary unavailable.' && (
-        <p className="mt-3 rounded-lg bg-[#F0F7F4] px-3 py-2 text-xs text-black/50">
-          <span className="font-semibold text-brand">AI summary: </span>
-          {review.aiSummary}
-        </p>
-      )}
 
       <div className="mt-3 flex items-center justify-between">
         {isUserReview && allowDelete && deleteReview && (
