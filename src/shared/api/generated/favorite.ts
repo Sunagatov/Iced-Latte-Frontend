@@ -33,6 +33,16 @@ export interface ProductSummaryDto {
   price: number;
   /** URL of the product's primary image or file. */
   productFileUrl?: string;
+  /** Average rating of the product. */
+  averageRating?: number;
+  /** Number of reviews for the product. */
+  reviewsCount?: number;
+  /** Brand of the product. */
+  brandName?: string;
+  /** Seller of the product. */
+  sellerName?: string;
+  /** Weight of the product in grams. */
+  weight?: number;
 }
 
 /**

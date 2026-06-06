@@ -45,6 +45,28 @@ export default function CartElement({
                   {productInfo.name}
                 </p>
               </Link>
+              {(productInfo.brandName || productInfo.sellerName) && (
+                <p className="mt-1 text-xs text-black/35">
+                  {[productInfo.brandName, productInfo.sellerName]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              )}
+              {(productInfo.averageRating != null ||
+                productInfo.reviewsCount != null ||
+                productInfo.weight != null) && (
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-black/35">
+                  {productInfo.averageRating != null && (
+                    <span>{productInfo.averageRating.toFixed(1)}</span>
+                  )}
+                  {productInfo.reviewsCount != null && (
+                    <span>({productInfo.reviewsCount})</span>
+                  )}
+                  {productInfo.weight != null && (
+                    <span>{productInfo.weight} g.</span>
+                  )}
+                </p>
+              )}
               {productInfo.description && (
                 <p className="mt-2 line-clamp-2 text-sm leading-snug text-black/40">
                   {productInfo.description}

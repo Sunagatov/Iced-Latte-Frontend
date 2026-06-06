@@ -32,6 +32,11 @@ describe('CartElement', () => {
             description: 'Warm pumpkin spice coffee with a smooth latte finish.',
             price: 5.25,
             productFileUrl: null,
+            averageRating: 4.5,
+            reviewsCount: 12,
+            brandName: 'Folgers',
+            sellerName: 'Iced Latte Shop',
+            weight: 250,
           },
           productQuantity: 1,
         }}
@@ -44,5 +49,9 @@ describe('CartElement', () => {
     expect(
       screen.getByText('Warm pumpkin spice coffee with a smooth latte finish.'),
     ).toBeInTheDocument()
+    expect(screen.getByText('Folgers · Iced Latte Shop')).toBeInTheDocument()
+    expect(screen.getByText('4.5')).toBeInTheDocument()
+    expect(screen.getByText('(12)')).toBeInTheDocument()
+    expect(screen.getByText('250 g.')).toBeInTheDocument()
   })
 })
