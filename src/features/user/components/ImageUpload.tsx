@@ -10,6 +10,7 @@ import { RiCameraLine } from 'react-icons/ri'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import { avatarTurnstileEnabled } from '@/features/user/config'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { DEFAULT_AVATAR_LINK } from '@/features/user/constants'
 
 const AVATAR_IMAGE_ROUTE = '/api/user/avatar'
 
@@ -47,12 +48,16 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
   }
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (loading) return
+
     const file = e.target.files?.[0]
 
     if (!file) return
 
     if (avatarTurnstileEnabled && !turnstileToken) {
-      setTurnstileError('Please complete verification before uploading your profile photo.')
+      setTurnstileError(
+        'Please complete verification before uploading your profile photo.',
+      )
 
       return
     }
@@ -69,7 +74,10 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
     try {
       setLoading(true)
       setTurnstileError('')
-      await uploadImage(file, avatarTurnstileEnabled ? turnstileToken : undefined)
+      await uploadImage(
+        file,
+        avatarTurnstileEnabled ? turnstileToken : undefined,
+      )
       const updated = await getUserData()
 
       setUserData(updated)
@@ -92,19 +100,21 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
     setTurnstileError('')
   }
 
-  const hasStoredAvatar =
-    Boolean(userData?.avatarLink && userData.avatarLink !== 'default file')
-  const src = preview ?? (hasStoredAvatar ? `${AVATAR_IMAGE_ROUTE}?v=${avatarRevision}` : undefined)
+  const hasStoredAvatar = Boolean(
+    userData?.avatarLink && userData.avatarLink !== DEFAULT_AVATAR_LINK,
+  )
+  const src =
+    preview ??
+    (hasStoredAvatar ? `${AVATAR_IMAGE_ROUTE}?v=${avatarRevision}` : undefined)
 
   return (
     <div>
-      <label
-        className="group relative block h-24 w-24 cursor-pointer"
-      >
+      <label className="group relative block h-24 w-24 cursor-pointer">
         <input
           className="sr-only"
           type="file"
           accept="image/*"
+          disabled={loading}
           onChange={handleInputChange}
           key={inputKey}
           aria-label="Upload profile photo"
@@ -119,12 +129,19 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
           />
         ) : null}
         <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition group-hover:opacity-100">
-          {loading ? <Loader /> : <RiCameraLine className="h-6 w-6 text-white" />}
+          {loading ? (
+            <Loader />
+          ) : (
+            <RiCameraLine className="h-6 w-6 text-white" />
+          )}
         </div>
       </label>
       {avatarTurnstileEnabled && (
         <div className="w-72">
-          <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+          <TurnstileWidget
+            ref={turnstileRef}
+            onVerify={handleTurnstileVerify}
+          />
         </div>
       )}
       {(errorMessage || turnstileError) && (

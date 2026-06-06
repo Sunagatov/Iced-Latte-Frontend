@@ -4,13 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { AddressManager } from '@/features/addresses/public'
-import {
-  useAuthStore,
-  type AuthStore,
-} from '@/features/auth/public'
-import { useLogout } from '@/features/auth/hooks/useLogout'
+import { useLogout } from '@/features/auth/logout'
+import { useAuthStore, type AuthStore } from '@/features/auth/public'
 import { useFavouritesStore } from '@/features/favorites/public'
-import { fetchOrders } from '@/features/orders/public'
 import type { UserData } from '@/features/user/public'
 import Loader from '@/shared/ui/Loader'
 import ImageUpload from '../ImageUpload'
@@ -20,14 +16,15 @@ import ProfileSidebarNavigation, {
 } from './ProfileNavigation'
 import ProfileOverviewSection from './ProfileOverviewSection'
 import ProfilePersonalDetailsSection from './ProfilePersonalDetailsSection'
-import type { ProfileSection, ProfileSummary } from './profileTypes'
+import type { ProfileSection } from './profileTypes'
+import { buildProfileSummary } from './profileSummary'
+import { useProfileOrderCount } from './useProfileOrderCount'
 
 export default function ProfileScreen() {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<ProfileSection>('overview')
   const [isEditing, setIsEditing] = useState(false)
   const [hasAvatarPreview, setHasAvatarPreview] = useState(false)
-  const [orderCount, setOrderCount] = useState<number | null>(null)
 
   const setUserData = useAuthStore(
     (state: AuthStore): AuthStore['setUserData'] => state.setUserData,
@@ -40,40 +37,14 @@ export default function ProfileScreen() {
   )
   const favCount = useFavouritesStore((state) => state.favouriteIds.length)
   const logoutState = useLogout()
+  const isAuthenticated = status === 'authenticated'
+  const orderCount = useProfileOrderCount(isAuthenticated)
 
   useEffect(() => {
     if (status === 'anonymous') {
       router.replace(ROUTES.signin)
     }
   }, [router, status])
-
-  useEffect(() => {
-    if (status !== 'authenticated') {
-      return
-    }
-
-    const controller = new AbortController()
-    let active = true
-
-    const loadOrderCount = async (): Promise<void> => {
-      try {
-        const response = await fetchOrders({}, controller.signal)
-
-        if (active && !controller.signal.aborted) {
-          setOrderCount(response.totalElements ?? 0)
-        }
-      } catch {
-        // non-critical
-      }
-    }
-
-    void loadOrderCount()
-
-    return () => {
-      active = false
-      controller.abort()
-    }
-  }, [status])
 
   if (status === 'loading') {
     return (
@@ -87,22 +58,7 @@ export default function ProfileScreen() {
     return null
   }
 
-  const firstName = userData?.firstName ?? null
-  const lastName = userData?.lastName ?? null
-  const summary: ProfileSummary = {
-    avatarLink: userData?.avatarLink ?? null,
-    birthDate: userData?.birthDate ?? null,
-    city: userData?.address?.city ?? null,
-    email: userData?.email ?? null,
-    firstName,
-    fullName: firstName && lastName ? `${firstName} ${lastName}` : 'Your Account',
-    hasCustomAvatar: Boolean(
-      userData?.avatarLink && userData.avatarLink !== 'default file',
-    ),
-    initials: `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase() || '?',
-    lastName,
-    phoneNumber: userData?.phoneNumber ?? null,
-  }
+  const summary = buildProfileSummary(userData)
 
   const handleSectionChange = (section: typeof activeSection): void => {
     setActiveSection(section)
@@ -121,7 +77,7 @@ export default function ProfileScreen() {
 
   return (
     <div className="min-h-screen bg-[#F8F7F4]">
-      <div className="bg-gradient-to-r from-brand-solid to-brand-solid-hover">
+      <div className="from-brand-solid to-brand-solid-hover bg-gradient-to-r">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 shrink-0">
@@ -130,7 +86,7 @@ export default function ProfileScreen() {
               </div>
 
               {!summary.hasCustomAvatar && !hasAvatarPreview && (
-                <div className="pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full bg-brand-solid-hover text-xl font-bold text-white ring-4 ring-white/30">
+                <div className="bg-brand-solid-hover pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full text-xl font-bold text-white ring-4 ring-white/30">
                   {summary.initials}
                 </div>
               )}
@@ -144,7 +100,15 @@ export default function ProfileScreen() {
 
                 {summary.email && (
                   <span className="flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-medium text-white">
-                    <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                     Member
                   </span>
                 )}
@@ -167,7 +131,15 @@ export default function ProfileScreen() {
                 <Loader />
               ) : (
                 <>
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
                   Log out
                 </>
               )}

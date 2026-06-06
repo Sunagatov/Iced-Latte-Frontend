@@ -1,3 +1,4 @@
+import axios from 'axios'
 import type { AuthStatus } from '@/features/auth/public'
 import { useAuthStore } from '@/features/auth/public'
 import { useCartStore } from '@/features/cart/public'
@@ -17,8 +18,10 @@ export async function bootstrapClientSession(): Promise<void> {
   } catch {
     try {
       await refreshAuthenticatedSession({ skipAuthRetry: true })
-    } catch {
-      useAuthStore.getState().setAnonymous()
+    } catch (error) {
+      if (isAuthFailure(error)) {
+        useAuthStore.getState().setAnonymous()
+      }
     }
   }
 }
@@ -28,11 +31,16 @@ export async function refreshAuthenticatedSession(options?: {
 }): Promise<UserData> {
   await refreshToken(options ? (options as object) : undefined)
 
-  const userData = await getUserData()
+  const userData = await getUserData(options)
 
   useAuthStore.getState().setAuthenticated(userData)
 
   return userData
+}
+
+function isAuthFailure(error: unknown): boolean {
+  return axios.isAxiosError(error) &&
+    [401, 403].includes(error.response?.status ?? 0)
 }
 
 export async function clearClientSession(): Promise<void> {

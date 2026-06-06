@@ -6,7 +6,10 @@ import type { Resolver } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { editUserProfile } from '@/features/user/api'
+import {
+  editUserProfile,
+  type UpdateUserProfileInput,
+} from '@/features/user/api'
 import countries from '@/shared/config/countries'
 import type { UserData } from '@/features/user/types'
 import { validationSchema } from '@/features/user/validation'
@@ -23,14 +26,34 @@ interface FormProfileProps {
 type FormValues = yup.InferType<typeof validationSchema>
 
 const nameFields = [
-  { id: 'firstName', label: 'First name', name: 'firstName', placeholder: 'Enter first name' },
-  { id: 'lastName', label: 'Last name', name: 'lastName', placeholder: 'Enter last name' },
+  {
+    id: 'firstName',
+    label: 'First name',
+    name: 'firstName',
+    placeholder: 'Enter first name',
+  },
+  {
+    id: 'lastName',
+    label: 'Last name',
+    name: 'lastName',
+    placeholder: 'Enter last name',
+  },
 ] as const
 
 const addressFields = [
   { id: 'city', label: 'City', name: 'address.city', placeholder: 'City' },
-  { id: 'address', label: 'Address', name: 'address.line', placeholder: 'Address' },
-  { id: 'postcode', label: 'Postcode', name: 'address.postcode', placeholder: 'Zip code' },
+  {
+    id: 'address',
+    label: 'Address',
+    name: 'address.line',
+    placeholder: 'Address',
+  },
+  {
+    id: 'postcode',
+    label: 'Postcode',
+    name: 'address.postcode',
+    placeholder: 'Zip code',
+  },
 ] as const
 
 const saveButtonClass =
@@ -51,11 +74,12 @@ const FormProfile = ({
     defaultValues: initialUserData ?? undefined,
     mode: 'onChange',
   })
-  const { errorMessage, handleError } = useFormErrorHandler<FormValues>(setError)
+  const { errorMessage, handleError } =
+    useFormErrorHandler<FormValues>(setError)
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const saved = await editUserProfile(data as UserData)
+      const saved = await editUserProfile(data as UpdateUserProfileInput)
 
       updateUserData(saved)
       onSuccessEdit()

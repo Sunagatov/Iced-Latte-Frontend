@@ -1,7 +1,8 @@
-import { UserData } from './types'
+import type { UserData } from './types'
 import {
   editUserProfile as editGeneratedUserProfile,
   getUserProfile,
+  type UpdateUserAccountRequest,
   uploadUserAvatar,
 } from '@/shared/api/generated/user'
 
@@ -16,19 +17,26 @@ type UserRequestConfig = object & {
   skipAuthRetry?: boolean
 }
 
+export type UpdateUserProfileInput = Omit<
+  UpdateUserAccountRequest,
+  'address'
+> & {
+  address?: UserData['address'] | null
+}
+
 export const getUserData = async (
   config?: UserRequestConfig,
 ): Promise<UserData> => {
-  const data = await getUserProfile({
+  const data = (await getUserProfile({
     cache: false,
     ...config,
-  } as object) as UserData
+  } as object)) as UserData
 
   return normalizeUserData(data)
 }
 
 export const editUserProfile = async (
-  updatedUserData: Partial<UserData>,
+  updatedUserData: UpdateUserProfileInput,
 ): Promise<UserData> => {
   const address = updatedUserData.address
   const isEmptyAddress =
@@ -46,7 +54,10 @@ export const editUserProfile = async (
   return getUserData()
 }
 
-export async function uploadImage(file: File, turnstileToken?: string): Promise<void> {
+export async function uploadImage(
+  file: File,
+  turnstileToken?: string,
+): Promise<void> {
   await uploadUserAvatar({
     file,
     ...(turnstileToken ? { turnstileToken } : {}),

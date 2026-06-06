@@ -45,7 +45,8 @@ export const validationSchema = yup.object().shape({
       .when(['city', 'line', 'postcode'], {
         is: (city: string, line: string, postcode: string) =>
           !!(city || line || postcode),
-        then: (schema) => schema.required('Country is required when filling in an address'),
+        then: (schema) =>
+          schema.required('Country is required when filling in an address'),
         otherwise: (schema) => schema.nullable(),
       }),
     city: yup
@@ -55,7 +56,7 @@ export const validationSchema = yup.object().shape({
     line: yup
       .string()
       .nullable()
-      .max(256, 'Address must be at most 256 characters'),
+      .max(128, 'Address must be at most 128 characters'),
     postcode: yup
       .string()
       .nullable()

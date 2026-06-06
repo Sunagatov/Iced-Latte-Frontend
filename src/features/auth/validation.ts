@@ -5,6 +5,10 @@ const URL_SAFE_TOKEN_REGEX = /^[A-Za-z0-9_-]{43}$/
 const PASSWORD_HINT =
   'Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit'
 
+export function isUrlSafeToken(value: string | null | undefined): value is string {
+  return typeof value === 'string' && URL_SAFE_TOKEN_REGEX.test(value)
+}
+
 export const loginSchema = yup.object().shape({
   email: yup
     .string()

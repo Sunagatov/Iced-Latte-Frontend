@@ -169,7 +169,9 @@ describe('AuthInterceptor runtime behavior', () => {
       data: 'retried',
     })
 
-    expect(mockedRefreshAuthenticatedSession).toHaveBeenCalledTimes(1)
+    expect(mockedRefreshAuthenticatedSession).toHaveBeenCalledWith({
+      skipAuthRetry: true,
+    })
     expect(mockedApi.request).toHaveBeenCalledWith(
       expect.objectContaining({
         isAuthRetry: true,

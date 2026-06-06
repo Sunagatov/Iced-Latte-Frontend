@@ -129,7 +129,9 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
 
             // Reuse an in-flight refresh instead of starting a new one
             if (!refreshPromise) {
-              refreshPromise = refreshAuthenticatedSession().finally(() => {
+              refreshPromise = refreshAuthenticatedSession({
+                skipAuthRetry: true,
+              }).finally(() => {
                 refreshPromise = null
               })
             }

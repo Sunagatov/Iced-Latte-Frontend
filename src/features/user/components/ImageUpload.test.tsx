@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import ImageUpload from '@/features/user/components/ImageUpload'
 import { getUserData, uploadImage } from '@/features/user/api'
 import { useAuthStore } from '@/features/auth/public'
@@ -55,9 +55,7 @@ jest.mock('next/image', () => ({
     fill?: boolean
     unoptimized?: boolean
   }) => {
-    return (
-      <img {...props} alt={props.alt ?? ''} />
-    )
+    return <img {...props} alt={props.alt ?? ''} />
   },
 }))
 
@@ -109,6 +107,42 @@ describe('ImageUpload', () => {
 
     await waitFor(() => {
       expect(mockedUploadImage).toHaveBeenCalledWith(file, undefined)
+    })
+  })
+
+  it('does not start another upload while one is already in progress', async () => {
+    let resolveUpload: () => void
+
+    mockedUploadImage.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveUpload = resolve
+        }),
+    )
+
+    render(<ImageUpload />)
+    const input = screen.getByLabelText('Upload profile photo')
+
+    fireEvent.change(input, {
+      target: { files: [avatarFile()] },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Upload profile photo')).toBeDisabled()
+    })
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [avatarFile()] },
+    })
+
+    expect(mockedUploadImage).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      resolveUpload!()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Upload profile photo')).not.toBeDisabled()
     })
   })
 
@@ -171,7 +205,9 @@ describe('ImageUpload', () => {
         'Please complete verification before uploading your profile photo.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Verify challenge' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Verify challenge' }),
+    ).toBeInTheDocument()
   })
 
   it('uploads avatar with Turnstile token after verification', async () => {

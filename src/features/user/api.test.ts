@@ -10,6 +10,11 @@ const mockedApi = jest.mocked(api)
 describe('user api', () => {
   beforeEach(() => jest.clearAllMocks())
 
+  const completeProfileUpdate = {
+    firstName: 'Jane',
+    lastName: 'Doe',
+  }
+
   it('getUserData calls GET /users with cache disabled', async () => {
     mockedApi.mockResolvedValue({
       data: { firstName: 'John' },
@@ -17,11 +22,13 @@ describe('user api', () => {
 
     const result = await userApi.getUserData()
 
-    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-      cache: false,
-      method: 'GET',
-      url: '/users',
-    }))
+    expect(mockedApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cache: false,
+        method: 'GET',
+        url: '/users',
+      }),
+    )
     expect(result.firstName).toBe('John')
   })
 
@@ -48,21 +55,28 @@ describe('user api', () => {
       data: { firstName: 'Jane' },
     })
 
-    const result = await userApi.editUserProfile({ firstName: 'Jane' })
+    const result = await userApi.editUserProfile(completeProfileUpdate)
 
-    expect(mockedApi).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      data: {
-        firstName: 'Jane',
-        address: null,
-      },
-      method: 'PUT',
-      url: '/users',
-    }))
-    expect(mockedApi).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      cache: false,
-      method: 'GET',
-      url: '/users',
-    }))
+    expect(mockedApi).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        data: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+          address: null,
+        },
+        method: 'PUT',
+        url: '/users',
+      }),
+    )
+    expect(mockedApi).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        cache: false,
+        method: 'GET',
+        url: '/users',
+      }),
+    )
     expect(result.firstName).toBe('Jane')
   })
 
@@ -76,6 +90,7 @@ describe('user api', () => {
 
     await userApi.editUserProfile({
       firstName: 'Jane',
+      lastName: 'Doe',
       address: {
         country: 'UK',
         city: 'London',
@@ -84,19 +99,22 @@ describe('user api', () => {
       },
     })
 
-    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-      data: {
-        firstName: 'Jane',
-        address: {
-          country: 'UK',
-          city: 'London',
-          line: '221B Baker Street',
-          postcode: 'NW1',
+    expect(mockedApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+          address: {
+            country: 'UK',
+            city: 'London',
+            line: '221B Baker Street',
+            postcode: 'NW1',
+          },
         },
-      },
-      method: 'PUT',
-      url: '/users',
-    }))
+        method: 'PUT',
+        url: '/users',
+      }),
+    )
   })
 
   it('editUserProfile normalizes nullable backend address in the response', async () => {
@@ -112,7 +130,7 @@ describe('user api', () => {
       },
     })
 
-    const result = await userApi.editUserProfile({ firstName: 'Jane' })
+    const result = await userApi.editUserProfile(completeProfileUpdate)
 
     expect(result.address).toEqual({})
   })
@@ -134,7 +152,7 @@ describe('user api', () => {
       },
     })
 
-    const result = await userApi.editUserProfile({ firstName: 'Jane' })
+    const result = await userApi.editUserProfile(completeProfileUpdate)
 
     expect(result.avatarLink).toBe('https://cdn.example.com/avatar.jpg')
   })
@@ -146,11 +164,13 @@ describe('user api', () => {
 
     await userApi.uploadImage(file, 'turnstile-token')
 
-    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.any(FormData),
-      method: 'POST',
-      url: '/users/avatar',
-    }))
+    expect(mockedApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.any(FormData),
+        method: 'POST',
+        url: '/users/avatar',
+      }),
+    )
 
     const request = mockedApi.mock.calls[0][0] as unknown as { data: FormData }
     const formData = request.data
@@ -158,5 +178,4 @@ describe('user api', () => {
     expect(formData.get('file')).toBe(file)
     expect(formData.get('turnstileToken')).toBe('turnstile-token')
   })
-
 })

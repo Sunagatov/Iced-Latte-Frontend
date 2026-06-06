@@ -12,7 +12,10 @@ import {
 } from 'react-icons/ri'
 import { apiGuestResetPassword } from '@/features/auth/api'
 import { ROUTES } from '@/shared/config/routes'
-import { changePassSchema } from '@/features/auth/validation'
+import {
+  changePassSchema,
+  isUrlSafeToken,
+} from '@/features/auth/validation'
 import type { GuestResetPasswordCredentials } from '@/features/auth/types'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
@@ -51,12 +54,14 @@ export default function GuestResetPassForm() {
   })
   const router = useRouter()
   const searchParams = useSearchParams()
+  const tokenFromUrl = searchParams.get('token')
+  const hasValidUrlToken = isUrlSafeToken(tokenFromUrl)
 
   useEffect(() => {
-    const token = searchParams.get('token')
-
-    if (token) setValue('code', token)
-  }, [searchParams, setValue])
+    if (isUrlSafeToken(tokenFromUrl)) {
+      setValue('code', tokenFromUrl)
+    }
+  }, [setValue, tokenFromUrl])
 
   const onSubmit = async (values: IChangeValues) => {
     const { code, password } = values
@@ -135,7 +140,7 @@ export default function GuestResetPassForm() {
                   </div>
                 )}
 
-                {!searchParams.get('token') && (
+                {!hasValidUrlToken && (
                   <FormInput
                     id="code"
                     register={register}
