@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/features/cart/public'
 import { getCheckoutStatus } from '@/features/payment/public'
+import { ROUTES } from '@/shared/config/routes'
 
 const MAX_RETRIES = 5
 const POLL_INTERVAL_MS = 2000
@@ -103,7 +104,7 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
           This was a test payment — no real money was charged.
         </p>
         <Link
-          href="/orders"
+          href={ROUTES.orders}
           className="mt-4 rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
         >
           View your orders
@@ -121,7 +122,7 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
           We couldn&apos;t confirm your payment status. Please check your orders.
         </p>
         <Link
-          href="/orders"
+          href={ROUTES.orders}
           className="mt-4 rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
         >
           View your orders
@@ -139,7 +140,7 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
           again.
         </p>
         <Link
-          href="/orders"
+          href={ROUTES.orders}
           className="mt-4 rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
         >
           View your orders
@@ -157,7 +158,7 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
         Your payment is still being processed. Check back in a moment.
       </p>
       <Link
-        href="/orders"
+        href={ROUTES.orders}
         className="mt-4 rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
       >
         View your orders

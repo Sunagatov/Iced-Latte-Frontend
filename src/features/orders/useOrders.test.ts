@@ -65,4 +65,49 @@ describe('useOrders', () => {
       expect(result.current.loading).toBe(false)
     })
   })
+
+  it('resets to the first page before fetching a changed filter', async () => {
+    mockedOrdersApi.fetchOrders.mockResolvedValue({
+      ...emptyPage,
+      totalPages: 4,
+      totalElements: 40,
+    })
+
+    const { result, rerender } = renderHook(
+      ({ filter }: { filter: OrderFilter }) => useOrders(filter),
+      { initialProps: { filter: '' } },
+    )
+
+    await waitFor(() => {
+      expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 0, status: undefined }),
+        expect.anything(),
+      )
+    })
+
+    act(() => {
+      result.current.goToPage(2)
+    })
+
+    await waitFor(() => {
+      expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 2, status: undefined }),
+        expect.anything(),
+      )
+    })
+
+    rerender({ filter: 'PAID' })
+
+    await waitFor(() => {
+      expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 0, status: 'PAID' }),
+        expect.anything(),
+      )
+    })
+
+    expect(mockedOrdersApi.fetchOrders).not.toHaveBeenCalledWith(
+      expect.objectContaining({ page: 2, status: 'PAID' }),
+      expect.anything(),
+    )
+  })
 })

@@ -6,6 +6,7 @@ import { RiArrowLeftSLine, RiArrowRightSLine, RiTimeLine } from 'react-icons/ri'
 import Loader from '@/shared/ui/Loader'
 import OrderCard from '@/features/orders/components/OrderCard'
 import { useOrders, type OrderFilter } from '@/features/orders/useOrders'
+import { ROUTES } from '@/shared/config/routes'
 
 const FILTERS: { label: string; value: OrderFilter }[] = [
   { label: 'All', value: '' },
@@ -45,6 +46,7 @@ export default function OrderHistory() {
         <div className="flex gap-2 overflow-x-auto pb-1">
           {FILTERS.map((option) => (
             <button
+              type="button"
               key={option.value}
               onClick={() => setFilter(option.value)}
               data-testid={`order-filter-${option.label.toLowerCase().replace(/\s+/g, '-')}`}
@@ -60,6 +62,7 @@ export default function OrderHistory() {
           ))}
         </div>
         <select
+          aria-label="Filter orders by year"
           value={year ?? ''}
           onChange={(e) => setYear(e.target.value ? Number(e.target.value) : undefined)}
           className="bg-primary text-secondary focus:border-brand rounded-full border border-black/10 px-3 py-1.5 text-sm font-medium outline-none"
@@ -81,6 +84,7 @@ export default function OrderHistory() {
             Could not load orders. Please try again.
           </p>
           <button
+            type="button"
             onClick={retry}
             className="bg-brand hover:bg-brand-solid-hover rounded-lg px-5 py-2 text-sm font-medium text-white"
           >
@@ -99,7 +103,7 @@ export default function OrderHistory() {
             </p>
           </div>
           <Link
-            href="/"
+            href={ROUTES.home}
             className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-[48px] px-6 py-2.5 text-sm font-semibold transition"
           >
             Start shopping
@@ -116,6 +120,8 @@ export default function OrderHistory() {
           {totalPages > 1 && (
             <div className="mt-6 flex items-center justify-center gap-2">
               <button
+                type="button"
+                aria-label="Previous orders page"
                 onClick={() => goToPage(page - 1)}
                 disabled={page === 0}
                 className="rounded-lg p-2 transition disabled:opacity-30 hover:bg-secondary"
@@ -126,6 +132,8 @@ export default function OrderHistory() {
                 Page {page + 1} of {totalPages}
               </span>
               <button
+                type="button"
+                aria-label="Next orders page"
                 onClick={() => goToPage(page + 1)}
                 disabled={page >= totalPages - 1}
                 className="rounded-lg p-2 transition disabled:opacity-30 hover:bg-secondary"

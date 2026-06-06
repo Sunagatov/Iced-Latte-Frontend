@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchOrders } from '@/features/orders/ordersApi'
 import type {
   OrderPageDto,
@@ -26,12 +26,22 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
+  const activeQueryRef = useRef({ filter, year })
 
   useEffect(() => {
-    setPage(0)
-  }, [filter, year])
+    const queryChanged =
+      activeQueryRef.current.filter !== filter || activeQueryRef.current.year !== year
 
-  useEffect(() => {
+    if (queryChanged) {
+      activeQueryRef.current = { filter, year }
+
+      if (page !== 0) {
+        setPage(0)
+
+        return
+      }
+    }
+
     const controller = new AbortController()
     let active = true
 

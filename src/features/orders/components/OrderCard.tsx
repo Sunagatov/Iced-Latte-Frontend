@@ -52,6 +52,8 @@ export default function OrderCard({ order, onStatusChange }: Readonly<OrderCardP
     <>
       <div className="bg-primary overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
         <button
+          type="button"
+          aria-expanded={expanded}
           onClick={handleToggle}
           className="hover:bg-secondary flex w-full items-center justify-between px-5 py-4 text-left transition"
         >
@@ -223,6 +225,7 @@ function ActionButton({
 
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
       className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium ring-1 transition disabled:opacity-50 ${colors[variant]}`}
