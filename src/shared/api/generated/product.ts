@@ -15,6 +15,8 @@ export interface ProductSummaryDto {
   id: string;
   /** Name of the product. */
   name: string;
+  /** Short product description for product list, cart, and favorite views. */
+  description?: string;
   /** Price of the product. */
   price: number;
   /** URL of the product's primary image or file. */

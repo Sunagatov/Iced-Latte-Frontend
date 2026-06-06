@@ -34,25 +34,5 @@ export async function GET(request: NextRequest) {
 
   backendUrl.searchParams.set('redirectUrl', callbackUrl.toString())
 
-  const response = await fetch(backendUrl.toString(), { redirect: 'manual' })
-  const location = response.headers.get('location')
-
-  if (location) {
-    try {
-      const locationUrl = new URL(location)
-
-      if (
-        locationUrl.protocol !== 'https:' ||
-        !locationUrl.hostname.endsWith('.google.com')
-      ) {
-        return new NextResponse(null, { status: 502 })
-      }
-
-      return NextResponse.redirect(locationUrl.toString())
-    } catch {
-      return new NextResponse(null, { status: 502 })
-    }
-  }
-
-  return new NextResponse(null, { status: response.status })
+  return NextResponse.redirect(backendUrl.toString())
 }

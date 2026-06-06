@@ -45,6 +45,11 @@ export default function CartElement({
                   {productInfo.name}
                 </p>
               </Link>
+              {productInfo.description && (
+                <p className="mt-2 line-clamp-2 text-sm leading-snug text-black/40">
+                  {productInfo.description}
+                </p>
+              )}
             </div>
             <div
               className={`flex shrink-0 items-baseline gap-0.5 transition-all duration-300 ${pulse ? 'scale-110' : 'scale-100'}`}

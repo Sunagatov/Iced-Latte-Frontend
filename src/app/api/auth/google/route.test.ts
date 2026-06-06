@@ -35,77 +35,45 @@ describe('google auth route', () => {
   })
 
   it('allows safe next values with query strings', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 302,
-      headers: new Headers({
-        location: 'https://accounts.google.com/o/oauth2/auth?foo=bar',
-      }),
-    })
-
     const res = await getRoute()(makeRequest('/checkout?coupon=SAVE10'))
+    const location = new URL(res.headers.get('location')!)
 
     expect(res.status).toBe(307)
+    expect(location.toString()).toContain('/auth/oauth/google')
+    expect(location.searchParams.get('redirectUrl')).toBe(
+      'https://frontend.example/auth/google/callback?next=%2Fcheckout%3Fcoupon%3DSAVE10',
+    )
   })
 
-  it('redirects to google when backend returns google location', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 302,
-      headers: new Headers({
-        location: 'https://accounts.google.com/o/oauth2/auth?foo=bar',
-      }),
-    })
-
+  it('redirects the browser to backend oauth initiation', async () => {
     const res = await getRoute()(makeRequest('/orders'))
+    const location = new URL(res.headers.get('location')!)
 
     expect(res.status).toBe(307)
-    expect(res.headers.get('location')).toContain('google.com')
-  })
-
-  it('returns backend status when location is not present', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 500,
-      headers: new Headers({}),
-    })
-
-    const res = await getRoute()(makeRequest('/orders'))
-
-    expect(res.status).toBe(500)
-  })
-
-  it('returns 502 when backend location is not google', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 302,
-      headers: new Headers({ location: 'https://evil.com/auth' }),
-    })
-
-    const res = await getRoute()(makeRequest('/orders'))
-
-    expect(res.status).toBe(502)
+    expect(location.toString()).toContain('/auth/oauth/google')
+    expect(location.searchParams.get('redirectUrl')).toBe(
+      'https://frontend.example/auth/google/callback?next=%2Forders',
+    )
   })
 
   it('handles missing next', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 302,
-      headers: new Headers({ location: 'https://accounts.google.com/auth' }),
-    })
-
     const res = await getRoute()(makeRequest())
+    const location = new URL(res.headers.get('location')!)
 
     expect(res.status).toBe(307)
+    expect(location.searchParams.get('redirectUrl')).toBe(
+      'https://frontend.example/auth/google/callback',
+    )
   })
 
   it('falls back to the request origin when frontend URL is not configured', async () => {
     const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
 
     delete process.env.NEXT_PUBLIC_FRONTEND_URL
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 302,
-      headers: new Headers({ location: 'https://accounts.google.com/auth' }),
-    })
 
     const res = await getRoute()(makeRequest('/orders'))
-    const requestedUrl = new URL(jest.mocked(global.fetch).mock.calls[0][0] as string)
-    const redirectUrl = requestedUrl.searchParams.get('redirectUrl')
+    const location = new URL(res.headers.get('location')!)
+    const redirectUrl = location.searchParams.get('redirectUrl')
 
     process.env.NEXT_PUBLIC_FRONTEND_URL = originalFrontendUrl
 
