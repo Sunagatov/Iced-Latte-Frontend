@@ -7,6 +7,10 @@ process.env.NEXT_PUBLIC_FRONTEND_URL = 'http://localhost'
 import { NextRequest } from 'next/server'
 
 const originalEnv = process.env
+const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+const WEBP_BYTES = new Uint8Array([
+  0x52, 0x49, 0x46, 0x46, 0x24, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+])
 
 function makeJwt(expOffsetSeconds = 3600): string {
   const payload = Buffer.from(
@@ -44,7 +48,7 @@ describe('avatar image route', () => {
     global.fetch = jest
       .fn()
       .mockResolvedValueOnce(new Response('https://storage.example.com/avatar.png'))
-      .mockResolvedValueOnce(new Response(new Uint8Array([1, 2, 3]), {
+      .mockResolvedValueOnce(new Response(PNG_BYTES, {
         headers: { 'content-type': 'image/png' },
       }))
 
@@ -54,7 +58,7 @@ describe('avatar image route', () => {
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toBe('image/png')
     expect(response.headers.get('cache-control')).toBe('no-store')
-    expect(await response.arrayBuffer()).toEqual(new Uint8Array([1, 2, 3]).buffer)
+    expect(await response.arrayBuffer()).toEqual(PNG_BYTES.buffer)
     expect(global.fetch).toHaveBeenNthCalledWith(
       1,
       'http://backend/users/avatar',
@@ -70,6 +74,22 @@ describe('avatar image route', () => {
       'https://storage.example.com/avatar.png',
       expect.objectContaining({ method: 'GET' }),
     )
+  })
+
+  it('streams valid avatar bytes when storage uses a generic content type', async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce(new Response('https://storage.example.com/user-avatar'))
+      .mockResolvedValueOnce(new Response(WEBP_BYTES, {
+        headers: { 'content-type': 'application/octet-stream' },
+      }))
+
+    const { GET } = await import('@/app/api/user/avatar/route')
+    const response = await GET(makeRequest())
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toBe('image/webp')
+    expect(await response.arrayBuffer()).toEqual(WEBP_BYTES.buffer)
   })
 
   it('returns the backend status when the user has no avatar', async () => {
@@ -111,7 +131,7 @@ describe('avatar image route', () => {
     global.fetch = jest
       .fn()
       .mockResolvedValueOnce(new Response('http://localhost:9000/avatar.png'))
-      .mockResolvedValueOnce(new Response(new Uint8Array([1]), {
+      .mockResolvedValueOnce(new Response(PNG_BYTES, {
         headers: { 'content-type': 'image/png' },
       }))
 
