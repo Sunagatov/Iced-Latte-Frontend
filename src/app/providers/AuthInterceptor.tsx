@@ -1,18 +1,19 @@
 'use client'
 
-import { useEffect, type ReactNode } from 'react'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { useAuthStore } from '@/features/auth/public'
-import { api } from '@/shared/api/client'
+import { useRouter } from 'next/navigation'
+import { useEffect, type ReactNode } from 'react'
 import {
   clearClientSession,
   refreshAuthenticatedSession,
 } from '@/features/session/public'
-import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/features/auth/public'
+import { api } from '@/shared/api/client'
 import { ROUTES } from '@/shared/config/routes'
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
-  isRetry?: boolean
+  isAuthRetry?: boolean
+  isRateLimitRetry?: boolean
   skipAuthRetry?: boolean
 }
 
@@ -25,6 +26,14 @@ const apiClient = api
 // Single-flight mutex: only one refresh can be in-flight at a time.
 // Concurrent 401s await the same promise instead of each triggering a new refresh.
 let refreshPromise: ReturnType<typeof refreshAuthenticatedSession> | null = null
+
+export function getRetryAfterDelayMs(retryAfter?: string): number {
+  const parsedSeconds = retryAfter ? Number(retryAfter) : 5
+  const safeSeconds =
+    Number.isFinite(parsedSeconds) && parsedSeconds > 0 ? parsedSeconds : 5
+
+  return Math.min(safeSeconds, 60) * 1000
+}
 
 export function isAuthRefreshExcludedRequest(url?: string): boolean {
   if (!url) return false
@@ -61,14 +70,13 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
         // 429 Too Many Requests — retry once after Retry-After delay
         if (
           error.response?.status === 429 &&
-          !originalRequest.isRetry &&
+          !originalRequest.isRateLimitRetry &&
           !originalRequest.skipAuthRetry &&
           !isAuthRefreshExcludedRequest(originalRequest.url)
         ) {
-          originalRequest.isRetry = true
+          originalRequest.isRateLimitRetry = true
           const retryAfter = error.response.headers?.['retry-after']
-          const delaySec = retryAfter ? Math.min(Number(retryAfter), 60) : 5
-          const delayMs = (Number.isFinite(delaySec) ? delaySec : 5) * 1000
+          const delayMs = getRetryAfterDelayMs(retryAfter)
 
           await new Promise((resolve) => setTimeout(resolve, delayMs))
 
@@ -78,7 +86,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
         const authStatus = useAuthStore.getState().status
         const shouldRetry =
           error.response?.status === 401 &&
-          !originalRequest.isRetry &&
+          !originalRequest.isAuthRetry &&
           !originalRequest.skipAuthRetry &&
           !isAuthRefreshExcludedRequest(originalRequest.url) &&
           // Skip refresh when we know the visitor is anonymous
@@ -86,7 +94,7 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
 
         if (shouldRetry) {
           try {
-            originalRequest.isRetry = true
+            originalRequest.isAuthRetry = true
 
             // Reuse an in-flight refresh instead of starting a new one
             if (!refreshPromise) {

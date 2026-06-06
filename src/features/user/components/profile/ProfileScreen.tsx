@@ -52,17 +52,27 @@ export default function ProfileScreen() {
       return
     }
 
+    const controller = new AbortController()
+    let active = true
+
     const loadOrderCount = async (): Promise<void> => {
       try {
-        const response = await fetchOrders()
+        const response = await fetchOrders({}, controller.signal)
 
-        setOrderCount(response.totalElements ?? 0)
+        if (active && !controller.signal.aborted) {
+          setOrderCount(response.totalElements ?? 0)
+        }
       } catch {
         // non-critical
       }
     }
 
     void loadOrderCount()
+
+    return () => {
+      active = false
+      controller.abort()
+    }
   }, [status])
 
   if (status === 'loading') {
@@ -148,6 +158,7 @@ export default function ProfileScreen() {
             </div>
 
             <button
+              type="button"
               className="hidden shrink-0 items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20 sm:flex"
               id="logout-btn"
               onClick={logoutState.logout}

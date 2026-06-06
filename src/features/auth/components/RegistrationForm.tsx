@@ -1,26 +1,29 @@
 'use client'
+
+import { useRef, useState } from 'react'
+import type { SubmitHandler } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
+import { yupResolver } from '@hookform/resolvers/yup'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
+import { apiRegisterUser } from '@/features/auth/api'
+import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
+import { FEATURES } from '@/shared/config/features'
+import { ROUTES } from '@/shared/config/routes'
+import { registrationSchema } from '@/features/auth/validation'
+import { useFormErrorHandler } from '@/shared/utils/apiError'
 import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
 import Loader from '@/shared/ui/Loader'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { apiRegisterUser } from '@/features/auth/api'
-import { useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { registrationSchema } from '@/features/auth/validation'
-import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
+
 interface IFormValues {
   firstName: string
   lastName: string
   email: string
   password: string
 }
-import { useFormErrorHandler } from '@/shared/utils/apiError'
-import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
-import TurnstileWidget from '@/shared/ui/TurnstileWidget'
-import type { TurnstileInstance } from '@marsidev/react-turnstile'
-import { ROUTES } from '@/shared/config/routes'
-import { FEATURES } from '@/shared/config/features'
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)

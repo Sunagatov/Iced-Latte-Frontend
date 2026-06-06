@@ -1,7 +1,7 @@
-import { Metadata } from 'next'
-import { EXTERNAL_LINKS } from '@/shared/config/links'
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import React from 'react'
+import { EXTERNAL_LINKS } from '@/shared/config/links'
+import { ROUTES } from '@/shared/config/routes'
 
 export const metadata: Metadata = {
   title: 'Terms of Use',
@@ -256,7 +256,7 @@ export default function TermsOfUsePage() {
                 </p>
                 <p className="mt-4">
                   <Link
-                    href="/"
+                    href={ROUTES.home}
                     className="font-medium text-brand underline decoration-brand/30 underline-offset-4 transition hover:decoration-brand"
                   >
                     Return to the marketplace

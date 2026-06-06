@@ -1,28 +1,28 @@
 'use client'
 
-import Loader from '@/shared/ui/Loader'
-import Button from '@/shared/ui/Button'
-import FormInput from '@/shared/ui/FormInput'
 import { useEffect, useRef, useState } from 'react'
 import type * as React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ROUTES } from '@/shared/config/routes'
-import { FEATURES } from '@/shared/config/features'
-import { changePassSchema } from '@/features/auth/validation'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useErrorHandler } from '@/shared/utils/apiError'
-import { apiGuestResetPassword } from '@/features/auth/api'
-import { useForm } from 'react-hook-form'
-import { GuestResetPasswordCredentials } from '@/features/auth/types'
-import {
-  RiLockPasswordLine,
-  RiCheckboxCircleLine,
-  RiArrowLeftLine,
-} from 'react-icons/ri'
-import { getPasswordStrength } from '@/features/auth/passwordStrength'
-import PasswordStrengthBar from './PasswordStrengthBar'
-import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { useForm } from 'react-hook-form'
+import {
+  RiArrowLeftLine,
+  RiCheckboxCircleLine,
+  RiLockPasswordLine,
+} from 'react-icons/ri'
+import { apiGuestResetPassword } from '@/features/auth/api'
+import { FEATURES } from '@/shared/config/features'
+import { ROUTES } from '@/shared/config/routes'
+import { changePassSchema } from '@/features/auth/validation'
+import type { GuestResetPasswordCredentials } from '@/features/auth/types'
+import { getPasswordStrength } from '@/features/auth/passwordStrength'
+import { useErrorHandler } from '@/shared/utils/apiError'
+import Button from '@/shared/ui/Button'
+import FormInput from '@/shared/ui/FormInput'
+import Loader from '@/shared/ui/Loader'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
+import PasswordStrengthBar from './PasswordStrengthBar'
 
 interface IChangeValues {
   code: string
@@ -195,6 +195,7 @@ export default function GuestResetPassForm() {
               </form>
 
               <button
+                type="button"
                 onClick={() => router.back()}
                 className="text-secondary hover:text-primary mt-4 flex w-full items-center justify-center gap-1.5 text-sm transition-colors"
               >

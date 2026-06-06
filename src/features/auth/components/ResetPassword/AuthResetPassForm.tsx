@@ -1,26 +1,26 @@
 'use client'
 
+import { useState } from 'react'
+import type * as React from 'react'
+import { useRouter } from 'next/navigation'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
+import {
+  RiArrowLeftLine,
+  RiCheckboxCircleLine,
+  RiLockPasswordLine,
+} from 'react-icons/ri'
+import { apiAuthChangePassword } from '@/features/auth/api'
+import { clearClientSession } from '@/features/session/public'
+import { ROUTES } from '@/shared/config/routes'
+import { authChangePassSchema } from '@/features/auth/validation'
+import type { AuthChangePasswordCredentials } from '@/features/auth/types'
+import { getPasswordStrength } from '@/features/auth/passwordStrength'
+import { useErrorHandler } from '@/shared/utils/apiError'
 import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
 import Loader from '@/shared/ui/Loader'
-import { useState } from 'react'
-import type * as React from 'react'
-import { useForm } from 'react-hook-form'
-import { useRouter } from 'next/navigation'
-import { ROUTES } from '@/shared/config/routes'
-import { useErrorHandler } from '@/shared/utils/apiError'
-import { AuthChangePasswordCredentials } from '@/features/auth/types'
-import { apiAuthChangePassword } from '@/features/auth/api'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { authChangePassSchema } from '@/features/auth/validation'
-import {
-  RiLockPasswordLine,
-  RiCheckboxCircleLine,
-  RiArrowLeftLine,
-} from 'react-icons/ri'
-import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import PasswordStrengthBar from './PasswordStrengthBar'
-import { clearClientSession } from '@/features/session/public'
 
 interface IChangeAuthValues {
   oldPassword: string
@@ -159,6 +159,7 @@ export default function AuthResetPassForm({
               </form>
 
               <button
+                type="button"
                 onClick={() => router.back()}
                 className="text-secondary hover:text-primary mt-4 flex w-full items-center justify-center gap-1.5 text-sm transition-colors"
               >
