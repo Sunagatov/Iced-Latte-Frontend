@@ -2,6 +2,7 @@
  * @jest-environment node
  */
 import { NextRequest } from 'next/server'
+import { GET, POST } from './route'
 
 const FRONTEND_ORIGIN = 'https://frontend.example'
 const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
@@ -25,28 +26,8 @@ describe('google callback route', () => {
     restoreEnv('NEXT_PUBLIC_FRONTEND_URL', originalFrontendUrl)
   })
 
-  function getRoute() {
-    let handlers: {
-      GET: (req: NextRequest) => Promise<Response>
-      POST: (req: NextRequest) => Promise<Response>
-    }
-
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      handlers = require('@/app/api/auth/google/callback/route')
-    })
-
-    return handlers!
-  }
-
   it('rejects POST token handoffs', async () => {
-    const request = new NextRequest('http://localhost/api/auth/google/callback', {
-      method: 'POST',
-      body: JSON.stringify({ token: 'jwt-token', refreshToken: 'refresh-token' }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-
-    const response = await getRoute().POST(request)
+    const response = await POST()
 
     expect(response.status).toBe(410)
     expect(response.headers.getSetCookie()).toEqual([])
@@ -57,7 +38,7 @@ describe('google callback route', () => {
       'http://localhost/api/auth/google/callback?token=jwt-token&refreshToken=refresh-token',
     )
 
-    const response = await getRoute().GET(request)
+    const response = await GET(request)
     const setCookie = response.headers.getSetCookie()
 
     expect(response.status).toBe(302)
@@ -70,7 +51,7 @@ describe('google callback route', () => {
   it('redirects to signin when legacy GET callback is missing tokens', async () => {
     const request = new NextRequest('http://localhost/api/auth/google/callback')
 
-    const response = await getRoute().GET(request)
+    const response = await GET(request)
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
@@ -83,7 +64,7 @@ describe('google callback route', () => {
       'http://localhost/api/auth/google/callback?next=%2Fcheckout%3Fcoupon%3DSAVE10',
     )
 
-    const response = await getRoute().GET(request)
+    const response = await GET(request)
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
@@ -96,7 +77,7 @@ describe('google callback route', () => {
 
     const request = new NextRequest('http://localhost/api/auth/google/callback')
 
-    const response = await getRoute().GET(request)
+    const response = await GET(request)
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
@@ -109,7 +90,7 @@ describe('google callback route', () => {
 
     const request = new NextRequest('http://localhost/api/auth/google/callback')
 
-    const response = await getRoute().GET(request)
+    const response = await GET(request)
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
