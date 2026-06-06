@@ -18,6 +18,8 @@ export default function Header() {
 
   useEffect(() => {
     if (!isHome) {
+      setHeroVisible(false)
+
       return
     }
 
@@ -36,6 +38,10 @@ export default function Header() {
 
     return () => observer.disconnect()
   }, [isHome])
+
+  useEffect(() => {
+    setMobileSearchOpen(false)
+  }, [pathname])
 
   const showSearch = isHome && !heroVisible
 
