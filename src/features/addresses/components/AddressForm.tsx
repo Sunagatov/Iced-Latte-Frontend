@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import type * as React from 'react'
 import { useForm } from 'react-hook-form'
-import { DeliveryAddress, AddressFormData } from '../types'
+import type { DeliveryAddress, AddressFormData } from '../types'
 import { useAddressStore } from '../store'
 import countries from '@/shared/config/countries'
 import { RiCloseLine } from 'react-icons/ri'
@@ -49,12 +49,16 @@ export default function AddressForm({ editing, onClose }: Props) {
   }, [editing, reset])
 
   const onSubmit = async (data: AddressFormData) => {
-    if (editing) {
-      await update(editing.id, data)
-    } else {
-      await add(data)
+    try {
+      if (editing) {
+        await update(editing.id, data)
+      } else {
+        await add(data)
+      }
+      onClose()
+    } catch {
+      // Store owns user-facing error state and toast reporting.
     }
-    onClose()
   }
 
   return (
@@ -71,8 +75,10 @@ export default function AddressForm({ editing, onClose }: Props) {
             {editing ? 'Edit address' : 'Add new address'}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             className="text-secondary hover:bg-secondary rounded-lg p-1.5"
+            aria-label="Close address form"
           >
             <RiCloseLine className="h-5 w-5" />
           </button>
@@ -82,16 +88,22 @@ export default function AddressForm({ editing, onClose }: Props) {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-3 p-5"
         >
-          <Field label="Label (e.g. Home, Work)" error={errors.label?.message}>
+          <Field
+            id="address-label"
+            label="Label (e.g. Home, Work)"
+            error={errors.label?.message}
+          >
             <input
+              id="address-label"
               {...register('label', { required: 'Label is required' })}
               placeholder="Home"
               className={inputCls}
             />
           </Field>
 
-          <Field label="Address line" error={errors.line?.message}>
+          <Field id="address-line" label="Address line" error={errors.line?.message}>
             <input
+              id="address-line"
               {...register('line', { required: 'Address is required' })}
               placeholder="123 Main St, Apt 4B"
               className={inputCls}
@@ -99,8 +111,14 @@ export default function AddressForm({ editing, onClose }: Props) {
           </Field>
 
           <div className="flex gap-3">
-            <Field label="City" error={errors.city?.message} className="flex-1">
+            <Field
+              id="address-city"
+              label="City"
+              error={errors.city?.message}
+              className="flex-1"
+            >
               <input
+                id="address-city"
                 {...register('city', { required: 'City is required' })}
                 placeholder="London"
                 className={inputCls}
@@ -108,10 +126,12 @@ export default function AddressForm({ editing, onClose }: Props) {
             </Field>
             <Field
               className="flex-1"
+              id="address-postcode"
               error={errors.postcode?.message}
               label="Postcode"
             >
               <input
+                id="address-postcode"
                 {...register('postcode', { required: 'Postcode is required' })}
                 placeholder="SW1A 1AA"
                 className={inputCls}
@@ -119,8 +139,9 @@ export default function AddressForm({ editing, onClose }: Props) {
             </Field>
           </div>
 
-          <Field label="Country" error={errors.country?.message}>
+          <Field id="address-country" label="Country" error={errors.country?.message}>
             <select
+              id="address-country"
               {...register('country', { required: 'Country is required' })}
               className={inputCls}
             >
@@ -165,11 +186,13 @@ const inputCls =
   'w-full rounded-xl border border-black/10 bg-secondary px-3 py-2.5 text-sm text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20'
 
 function Field({
+  id,
   label,
   error,
   children,
   className,
 }: {
+  id: string
   label: string
   error?: string
   children: React.ReactNode
@@ -177,7 +200,9 @@ function Field({
 }) {
   return (
     <div className={`flex flex-col gap-1 ${className ?? ''}`}>
-      <label className="text-secondary text-xs font-medium">{label}</label>
+      <label htmlFor={id} className="text-secondary text-xs font-medium">
+        {label}
+      </label>
       {children}
       {error && <p className="text-negative text-xs">{error}</p>}
     </div>

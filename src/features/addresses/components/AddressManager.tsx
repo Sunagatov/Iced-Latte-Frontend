@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAddressStore } from '../store'
-import { DeliveryAddress } from '../types'
+import type { DeliveryAddress } from '../types'
 import AddressCard from './AddressCard'
 import AddressForm from './AddressForm'
 import { RiMapPinLine, RiAddLine } from 'react-icons/ri'
@@ -44,6 +44,7 @@ export default function AddressManager() {
         </div>
         <button
           onClick={openAdd}
+          type="button"
           className="bg-brand hover:bg-brand-solid-hover flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition"
         >
           <RiAddLine className="h-4 w-4" /> Add address
@@ -60,24 +61,26 @@ export default function AddressManager() {
           <button
             className="bg-brand hover:bg-brand-solid-hover rounded-xl px-5 py-2 text-sm font-semibold text-white transition"
             onClick={() => void fetch()}
+            type="button"
           >
             Try again
           </button>
         </div>
       ) : addresses.length === 0 ? (
-        <div
+        <button
           onClick={openAdd}
-          className="bg-primary hover:border-brand hover:bg-brand-second flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-black/10 p-10 text-center transition"
+          type="button"
+          className="bg-primary hover:border-brand hover:bg-brand-second flex w-full cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-black/10 p-10 text-center transition"
         >
           <RiMapPinLine className="text-disabled h-10 w-10" />
           <p className="text-primary font-medium">No saved addresses yet</p>
           <p className="text-secondary text-sm">
             Add your first delivery address for faster checkout
           </p>
-          <button className="bg-brand hover:bg-brand-solid-hover mt-1 rounded-xl px-5 py-2 text-sm font-semibold text-white transition">
+          <span className="bg-brand hover:bg-brand-solid-hover mt-1 rounded-xl px-5 py-2 text-sm font-semibold text-white transition">
             + Add address
-          </button>
-        </div>
+          </span>
+        </button>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {addresses.map((a) => (
@@ -85,6 +88,7 @@ export default function AddressManager() {
           ))}
           <button
             onClick={openAdd}
+            type="button"
             className="hover:border-brand hover:bg-brand-second flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-black/10 p-6 text-center transition"
           >
             <RiAddLine className="text-disabled h-6 w-6" />

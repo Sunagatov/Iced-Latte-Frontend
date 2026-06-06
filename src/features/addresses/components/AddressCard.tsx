@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { DeliveryAddress } from '../types'
+import type { DeliveryAddress } from '../types'
 import { useAddressStore } from '../store'
 import {
   RiMapPinLine,
@@ -18,13 +18,27 @@ interface Props {
 export default function AddressCard({ address, onEdit }: Props) {
   const { remove, setDefault } = useAddressStore()
   const [deleting, setDeleting] = useState(false)
+  const [settingDefault, setSettingDefault] = useState(false)
 
   const handleDelete = async () => {
     setDeleting(true)
     try {
       await remove(address.id)
+    } catch {
+      // Store owns user-facing error state and toast reporting.
     } finally {
       setDeleting(false)
+    }
+  }
+
+  const handleSetDefault = async () => {
+    setSettingDefault(true)
+    try {
+      await setDefault(address.id)
+    } catch {
+      // Store owns user-facing error state and toast reporting.
+    } finally {
+      setSettingDefault(false)
     }
   }
 
@@ -59,14 +73,17 @@ export default function AddressCard({ address, onEdit }: Props) {
       <div className="mt-3 flex items-center gap-2">
         {!address.isDefault && (
           <button
-            onClick={() => setDefault(address.id)}
-            className="text-secondary hover:border-brand hover:text-brand rounded-lg border border-black/10 px-3 py-1.5 text-xs font-medium transition"
+            onClick={handleSetDefault}
+            disabled={settingDefault}
+            type="button"
+            className="text-secondary hover:border-brand hover:text-brand rounded-lg border border-black/10 px-3 py-1.5 text-xs font-medium transition disabled:opacity-50"
           >
-            Set as default
+            {settingDefault ? '…' : 'Set as default'}
           </button>
         )}
         <button
           onClick={() => onEdit(address)}
+          type="button"
           className="text-secondary hover:border-brand hover:text-brand flex items-center gap-1 rounded-lg border border-black/10 px-3 py-1.5 text-xs font-medium transition"
         >
           <RiEditLine className="h-3.5 w-3.5" /> Edit
@@ -74,6 +91,7 @@ export default function AddressCard({ address, onEdit }: Props) {
         <button
           onClick={handleDelete}
           disabled={deleting}
+          type="button"
           className="text-negative hover:border-negative ml-auto flex items-center gap-1 rounded-lg border border-black/10 px-3 py-1.5 text-xs font-medium transition hover:bg-red-50 disabled:opacity-50"
         >
           <RiDeleteBinLine className="h-3.5 w-3.5" />{' '}

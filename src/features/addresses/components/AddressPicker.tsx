@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react'
 import { useAddressStore } from '../store'
-import { DeliveryAddress } from '../types'
+import type { DeliveryAddress } from '../types'
 import { RiMapPinLine, RiCheckLine, RiAddLine } from 'react-icons/ri'
 
 interface Props {

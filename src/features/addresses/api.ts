@@ -1,4 +1,4 @@
-import { DeliveryAddress, AddressFormData } from './types'
+import type { DeliveryAddress, AddressFormData } from './types'
 import {
   addDeliveryAddress,
   deleteDeliveryAddress,

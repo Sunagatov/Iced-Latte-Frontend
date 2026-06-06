@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { DeliveryAddress, AddressFormData } from './types'
+import type { DeliveryAddress, AddressFormData } from './types'
 import * as api from './api'
 import { getUserMessage } from '@/shared/utils/errorMessages'
 import { toastError } from '@/shared/utils/apiError'
@@ -44,6 +44,7 @@ export const useAddressStore = create<AddressStore>()(
 
         set({ error: msg })
         toastError(err)
+        throw err
       }
     },
 
@@ -60,6 +61,7 @@ export const useAddressStore = create<AddressStore>()(
 
         set({ error: msg })
         toastError(err)
+        throw err
       }
     },
 
@@ -75,6 +77,7 @@ export const useAddressStore = create<AddressStore>()(
 
         set({ error: msg })
         toastError(err)
+        throw err
       }
     },
 
@@ -93,6 +96,7 @@ export const useAddressStore = create<AddressStore>()(
 
         set({ error: msg })
         toastError(err)
+        throw err
       }
     },
   }),
