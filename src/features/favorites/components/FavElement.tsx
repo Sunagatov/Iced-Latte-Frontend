@@ -140,7 +140,7 @@ export default function FavElement({
               <span className="text-black/30">
                 ({product.reviewsCount ?? 0})
               </span>
-              {product.weight && (
+              {product.weight != null && (
                 <span className="text-black/30">· {product.weight} g.</span>
               )}
             </div>
