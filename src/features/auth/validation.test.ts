@@ -1,5 +1,6 @@
 import {
   changePassSchema,
+  registrationSchema,
   verifyEmailCodeSchema,
 } from '@/features/auth/validation'
 
@@ -36,5 +37,16 @@ describe('auth validation schemas', () => {
     await expect(
       verifyEmailCodeSchema.validate({ verificationCode: '123456789' }),
     ).rejects.toThrow('Invalid confirmation token format')
+  })
+
+  it('accepts typographic apostrophes in registration names', async () => {
+    await expect(
+      registrationSchema.validate({
+        firstName: 'Anne',
+        lastName: 'O’Connor',
+        email: 'anne@example.com',
+        password: 'Password1',
+      }),
+    ).resolves.toMatchObject({ lastName: 'O’Connor' })
   })
 })
