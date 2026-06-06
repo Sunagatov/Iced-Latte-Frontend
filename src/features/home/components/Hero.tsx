@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import SearchBar from '@/features/products/components/search/SearchBar'
 
 export default function Hero() {
@@ -20,7 +21,7 @@ export default function Hero() {
         <div className="w-full max-w-xl">
           <SearchBar heroMode />
         </div>
-        <a
+        <Link
           href="/#catalog"
           className="mt-1 inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-2.5 text-sm font-medium text-white/80 transition hover:border-white/40 hover:text-white"
         >
@@ -28,7 +29,7 @@ export default function Hero() {
           <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path d="M19 9l-7 7-7-7" />
           </svg>
-        </a>
+        </Link>
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_#2D6A4F33,_transparent_70%)]" />
       <div className="absolute inset-0 animate-[hero-glow_6s_ease-in-out_infinite] bg-[radial-gradient(ellipse_at_top_right,_#2D6A4F,_transparent_60%)]" />
