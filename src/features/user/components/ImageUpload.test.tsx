@@ -49,8 +49,12 @@ jest.mock('next/image', () => ({
   __esModule: true,
   default: ({
     fill: _fill,
+    unoptimized: _unoptimized,
     ...props
-  }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => {
+  }: React.ImgHTMLAttributes<HTMLImageElement> & {
+    fill?: boolean
+    unoptimized?: boolean
+  }) => {
     return (
       <img {...props} alt={props.alt ?? ''} />
     )
@@ -106,6 +110,49 @@ describe('ImageUpload', () => {
     await waitFor(() => {
       expect(mockedUploadImage).toHaveBeenCalledWith(file, undefined)
     })
+  })
+
+  it('renders stored avatars through the same-origin avatar image route', () => {
+    useAuthStore.setState({
+      userData: {
+        id: 'u1',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        email: 'ada@example.com',
+        avatarLink: 'https://storage.example.com/signed-avatar.png',
+      } as never,
+    })
+
+    render(<ImageUpload />)
+
+    expect(screen.getByAltText('Profile photo')).toHaveAttribute(
+      'src',
+      '/api/user/avatar?v=0',
+    )
+  })
+
+  it('reports preview state while uploading and clears it after refreshing user data', async () => {
+    const onPreviewChange = jest.fn()
+
+    render(<ImageUpload onPreviewChange={onPreviewChange} />)
+    const file = avatarFile()
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [file] },
+    })
+
+    await waitFor(() => {
+      expect(mockedUploadImage).toHaveBeenCalledWith(file, undefined)
+    })
+    await waitFor(() => {
+      expect(screen.getByAltText('Profile photo')).toHaveAttribute(
+        'src',
+        '/api/user/avatar?v=1',
+      )
+    })
+    expect(onPreviewChange).toHaveBeenCalledWith(true)
+    expect(onPreviewChange).toHaveBeenCalledWith(false)
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:avatar')
   })
 
   it('shows an inline error when avatar protection is enabled and token is missing', async () => {

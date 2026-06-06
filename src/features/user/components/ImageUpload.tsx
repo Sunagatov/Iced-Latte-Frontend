@@ -11,9 +11,16 @@ import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import { avatarTurnstileEnabled } from '@/features/user/config'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
-const ImageUpload = () => {
+const AVATAR_IMAGE_ROUTE = '/api/user/avatar'
+
+type ImageUploadProps = {
+  onPreviewChange?: (hasPreview: boolean) => void
+}
+
+const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
+  const [avatarRevision, setAvatarRevision] = useState(0)
   const [inputKey, setInputKey] = useState(0)
   const [turnstileToken, setTurnstileToken] = useState('')
   const [turnstileError, setTurnstileError] = useState('')
@@ -26,8 +33,18 @@ const ImageUpload = () => {
   useEffect(() => {
     return () => {
       if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
+      onPreviewChange?.(false)
     }
-  }, [])
+  }, [onPreviewChange])
+
+  const clearPreview = () => {
+    if (prevPreviewRef.current) {
+      URL.revokeObjectURL(prevPreviewRef.current)
+      prevPreviewRef.current = null
+    }
+    setPreview(null)
+    onPreviewChange?.(false)
+  }
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -47,6 +64,7 @@ const ImageUpload = () => {
 
     prevPreviewRef.current = objectUrl
     setPreview(objectUrl)
+    onPreviewChange?.(true)
 
     try {
       setLoading(true)
@@ -55,11 +73,13 @@ const ImageUpload = () => {
       const updated = await getUserData()
 
       setUserData(updated)
+      clearPreview()
+      setAvatarRevision((current) => current + 1)
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } catch (error) {
       handleError(error)
-      setPreview(null)
+      clearPreview()
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } finally {
@@ -72,14 +92,9 @@ const ImageUpload = () => {
     setTurnstileError('')
   }
 
-  const src =
-    preview ??
-    (userData?.avatarLink && userData.avatarLink !== 'default file'
-      ? userData.avatarLink
-      : undefined)
-
-  const hasAvatar =
-    src && userData?.avatarLink && userData.avatarLink !== 'default file'
+  const hasStoredAvatar =
+    Boolean(userData?.avatarLink && userData.avatarLink !== 'default file')
+  const src = preview ?? (hasStoredAvatar ? `${AVATAR_IMAGE_ROUTE}?v=${avatarRevision}` : undefined)
 
   return (
     <div>
@@ -94,11 +109,12 @@ const ImageUpload = () => {
           key={inputKey}
           aria-label="Upload profile photo"
         />
-        {hasAvatar || preview ? (
+        {src ? (
           <Image
             src={src!}
             alt="Profile photo"
             fill
+            unoptimized
             className="rounded-full object-cover"
           />
         ) : null}
