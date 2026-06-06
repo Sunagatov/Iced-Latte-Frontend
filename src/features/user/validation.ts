@@ -7,7 +7,7 @@ const nameRules = (field: string) =>
     .min(2, `${field} must be at least 2 characters`)
     .max(64, `${field} must be at most 64 characters`)
     .matches(
-      /^[a-zA-ZÀ-ÖØ-öø-ÿ\s''-]+$/,
+      /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’-]+$/,
       `${field} can only contain letters, spaces, hyphens, and apostrophes`,
     )
 
