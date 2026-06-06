@@ -66,7 +66,15 @@ export async function syncCartStoreWithSession(
   }
 
   if (!get().isSync && get().itemsIds.length > 0) {
-    await mergeGuestCartIntoBackend(set, normalizeCartItems(get().itemsIds))
+    const guestItems = normalizeCartItems(get().itemsIds)
+
+    if (guestItems.length > 0) {
+      await mergeGuestCartIntoBackend(set, guestItems)
+
+      return
+    }
+
+    await loadAuthenticatedCart(set, get, signal)
 
     return
   }
@@ -137,13 +145,22 @@ async function loadGuestCart(set: StoreSet, get: StoreGet): Promise<void> {
     }
 
     const productList = await getProductByIds(ids)
-    const cartItems: ICartItem[] = productList.map((item) => ({
-      id: item.id,
-      productInfo: { ...item },
-      productQuantity: itemsIds.find(
-        (cartItem) => cartItem.productId === item.id,
-      )!.productQuantity,
-    }))
+    const quantityByProductId = new Map(
+      itemsIds.map((item) => [item.productId, item.productQuantity]),
+    )
+    const cartItems: ICartItem[] = productList.flatMap((item) => {
+      const productQuantity = quantityByProductId.get(item.id)
+
+      if (!productQuantity) {
+        return []
+      }
+
+      return [{
+        id: item.id,
+        productInfo: { ...item },
+        productQuantity,
+      }]
+    })
 
     setCartItems(set, cartItems, { lastError: null, status: 'ready' })
   } catch (err) {

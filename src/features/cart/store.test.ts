@@ -8,6 +8,7 @@ import type { ICartItem } from '@/features/cart/cartTypes'
 import { setClientAuthStatus } from '@/shared/auth/sessionStatus'
 
 jest.mock('@/features/cart/cartApi', () => ({
+  fetchCart: jest.fn(),
   mergeCarts: jest.fn(),
   removeCartItem: jest.fn(),
   changeCartItemQuantity: jest.fn(),
@@ -255,6 +256,35 @@ describe('cart store — syncSession', () => {
       items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
     })
   })
+
+  it('loads the authenticated cart instead of merging an empty normalized guest cart', async () => {
+    setClientAuthStatus('authenticated')
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: -1 }],
+      tempItems: [],
+      count: -1,
+      totalPrice: 0,
+      isSync: false,
+    })
+    mockedCartApi.fetchCart.mockResolvedValue({
+      id: 'c1',
+      userId: 'u1',
+      createdAt: '',
+      closedAt: null,
+      itemsQuantity: 1,
+      itemsTotalPrice: 10,
+      productsQuantity: 1,
+      items: [makeCartItem('p2', 1)],
+    })
+
+    await useCartStore.getState().syncSession()
+
+    expect(mockedCartApi.mergeCarts).not.toHaveBeenCalled()
+    expect(mockedCartApi.fetchCart).toHaveBeenCalledTimes(1)
+    expect(useCartStore.getState().itemsIds).toEqual([
+      { productId: 'p2', productQuantity: 1 },
+    ])
+  })
 })
 
 describe('cart store — authenticated add', () => {
@@ -366,5 +396,22 @@ describe('cart store — hydrate', () => {
     mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p1', 15)])
     await useCartStore.getState().hydrate()
     expect(useCartStore.getState().totalPrice).toBe(30)
+  })
+
+  it('drops unexpected product API rows during guest hydration', async () => {
+    useCartStore.setState({
+      itemsIds: [{ productId: 'p1', productQuantity: 2 }],
+      tempItems: [],
+      count: 2,
+      totalPrice: 0,
+      isSync: false,
+    })
+    mockedProductsApi.getProductByIds.mockResolvedValue([makeProduct('p2', 15)])
+
+    await useCartStore.getState().hydrate()
+
+    expect(useCartStore.getState().itemsIds).toHaveLength(0)
+    expect(useCartStore.getState().tempItems).toHaveLength(0)
+    expect(useCartStore.getState().status).toBe('ready')
   })
 })

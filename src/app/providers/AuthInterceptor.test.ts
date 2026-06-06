@@ -97,11 +97,18 @@ describe('AuthInterceptor URL guards', () => {
   })
 
   it('clamps retry-after delays to a safe browser wait', () => {
-    expect(getRetryAfterDelayMs(undefined)).toBe(5000)
-    expect(getRetryAfterDelayMs('2')).toBe(2000)
-    expect(getRetryAfterDelayMs('120')).toBe(60000)
-    expect(getRetryAfterDelayMs('-1')).toBe(5000)
-    expect(getRetryAfterDelayMs('not-a-number')).toBe(5000)
+    jest.useFakeTimers().setSystemTime(new Date('2026-06-06T12:00:00.000Z'))
+
+    try {
+      expect(getRetryAfterDelayMs(undefined)).toBe(5000)
+      expect(getRetryAfterDelayMs('2')).toBe(2000)
+      expect(getRetryAfterDelayMs('Sat, 06 Jun 2026 12:00:03 GMT')).toBe(3000)
+      expect(getRetryAfterDelayMs('120')).toBe(60000)
+      expect(getRetryAfterDelayMs('-1')).toBe(5000)
+      expect(getRetryAfterDelayMs('not-a-number')).toBe(5000)
+    } finally {
+      jest.useRealTimers()
+    }
   })
 
   it('only retries rate-limited requests when they are safe or explicitly idempotent', () => {

@@ -1,15 +1,14 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
-import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 import { apiRegisterUser } from '@/features/auth/api'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
-import { FEATURES } from '@/shared/config/features'
+import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
 import { ROUTES } from '@/shared/config/routes'
 import { registrationSchema } from '@/features/auth/validation'
 import { useFormErrorHandler } from '@/shared/utils/apiError'
@@ -27,9 +26,9 @@ interface IFormValues {
 
 export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
-  const [turnstileToken, setTurnstileToken] = useState('')
-  const [turnstileError, setTurnstileError] = useState('')
-  const turnstileRef = useRef<TurnstileInstance>(null)
+  const turnstile = useTurnstileVerification(
+    'Please complete verification before creating your account.',
+  )
   const { completeAuthSession } = useCompleteAuthSession()
   const router = useRouter()
 
@@ -54,15 +53,14 @@ export default function RegistrationForm() {
   const { errorMessage, handleError } = useFormErrorHandler<IFormValues>(setError)
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
-    if (FEATURES.turnstile && !turnstileToken) {
-      setTurnstileError('Please complete verification before creating your account.')
-
-      return
-    }
+    if (!turnstile.requireVerified()) return
 
     try {
       setLoading(true)
-      const authenticated = await apiRegisterUser({ ...formData, turnstileToken })
+      const authenticated = await apiRegisterUser({
+        ...formData,
+        turnstileToken: turnstile.token,
+      })
 
       if (authenticated) {
         await completeAuthSession()
@@ -71,9 +69,7 @@ export default function RegistrationForm() {
       }
     } catch (error) {
       handleError(error)
-      setTurnstileToken('')
-      setTurnstileError('')
-      turnstileRef.current?.reset()
+      turnstile.resetChallenge()
     } finally {
       setLoading(false)
     }
@@ -81,9 +77,9 @@ export default function RegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {(errorMessage || turnstileError) && (
+      {(errorMessage || turnstile.error) && (
         <div className="text-negative mt-4">
-          {errorMessage || turnstileError}
+          {errorMessage || turnstile.error}
         </div>
       )}
       <FormInput
@@ -137,11 +133,8 @@ export default function RegistrationForm() {
         }
       />
       <TurnstileWidget
-        ref={turnstileRef}
-        onVerify={(token) => {
-          setTurnstileToken(token)
-          setTurnstileError('')
-        }}
+        ref={turnstile.ref}
+        onVerify={turnstile.handleVerify}
       />
       <Button
         id="register-btn"

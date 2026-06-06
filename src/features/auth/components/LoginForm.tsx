@@ -1,15 +1,14 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { loginSchema } from '@/features/auth/validation'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 import { apiLoginUser } from '@/features/auth/api'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
-import { FEATURES } from '@/shared/config/features'
+import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
@@ -23,9 +22,9 @@ interface IFormValues {
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
-  const [turnstileToken, setTurnstileToken] = useState('')
-  const [turnstileError, setTurnstileError] = useState('')
-  const turnstileRef = useRef<TurnstileInstance>(null)
+  const turnstile = useTurnstileVerification(
+    'Please complete verification before signing in.',
+  )
   const { completeAuthSession } = useCompleteAuthSession()
   const {
     register,
@@ -40,23 +39,17 @@ export default function LoginForm() {
   const { errorMessage, handleError } = useFormErrorHandler<IFormValues>(setError)
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
-    if (FEATURES.turnstile && !turnstileToken) {
-      setTurnstileError('Please complete verification before signing in.')
-
-      return
-    }
+    if (!turnstile.requireVerified()) return
 
     try {
       setLoading(true)
-      await apiLoginUser({ ...formData, turnstileToken })
+      await apiLoginUser({ ...formData, turnstileToken: turnstile.token })
 
       await completeAuthSession()
       reset()
     } catch (error) {
       handleError(error)
-      setTurnstileToken('')
-      setTurnstileError('')
-      turnstileRef.current?.reset()
+      turnstile.resetChallenge()
     } finally {
       setLoading(false)
     }
@@ -66,9 +59,9 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
-      {(errorMessage || turnstileError) && (
+      {(errorMessage || turnstile.error) && (
         <div className="text-negative mt-4">
-          {errorMessage || turnstileError}
+          {errorMessage || turnstile.error}
         </div>
       )}
       <FormInput
@@ -104,11 +97,8 @@ export default function LoginForm() {
         }
       />
       <TurnstileWidget
-        ref={turnstileRef}
-        onVerify={(token) => {
-          setTurnstileToken(token)
-          setTurnstileError('')
-        }}
+        ref={turnstile.ref}
+        onVerify={turnstile.handleVerify}
       />
       <Button
         id="login-btn"

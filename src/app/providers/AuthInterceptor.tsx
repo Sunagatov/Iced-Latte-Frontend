@@ -29,9 +29,18 @@ const apiClient = api
 let refreshPromise: ReturnType<typeof refreshAuthenticatedSession> | null = null
 
 export function getRetryAfterDelayMs(retryAfter?: string): number {
-  const parsedSeconds = retryAfter ? Number(retryAfter) : 5
+  const parsedSeconds = retryAfter ? Number(retryAfter) : Number.NaN
+  const parsedDate = retryAfter ? Date.parse(retryAfter) : Number.NaN
+  const secondsUntilDate = Number.isFinite(parsedDate)
+    ? Math.ceil((parsedDate - Date.now()) / 1000)
+    : Number.NaN
+  const retryAfterSeconds = Number.isFinite(parsedSeconds)
+    ? parsedSeconds
+    : secondsUntilDate
   const safeSeconds =
-    Number.isFinite(parsedSeconds) && parsedSeconds > 0 ? parsedSeconds : 5
+    Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      ? retryAfterSeconds
+      : 5
 
   return Math.min(safeSeconds, 60) * 1000
 }

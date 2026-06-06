@@ -5,7 +5,7 @@ import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { FEATURES } from '@/shared/config/features'
@@ -13,8 +13,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { apiForgotPassword } from '@/features/auth/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { forgotPassSchema } from '@/features/auth/validation'
+import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
-import type { TurnstileInstance } from '@marsidev/react-turnstile'
 
 interface IForgotValues {
   email: string
@@ -23,9 +23,9 @@ interface IForgotValues {
 export default function ForgotPassForm() {
   const [loading, setLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
-  const [turnstileToken, setTurnstileToken] = useState('')
-  const [turnstileError, setTurnstileError] = useState('')
-  const turnstileRef = useRef<TurnstileInstance>(null)
+  const turnstile = useTurnstileVerification(
+    'Please complete verification before requesting a reset.',
+  )
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
 
@@ -64,22 +64,16 @@ export default function ForgotPassForm() {
   const onSubmit = async (data: IForgotValues): Promise<void> => {
     const { email } = data
 
-    if (FEATURES.turnstile && !turnstileToken) {
-      setTurnstileError('Please complete verification before requesting a reset.')
-
-      return
-    }
+    if (!turnstile.requireVerified()) return
 
     try {
       setLoading(true)
-      await apiForgotPassword({ email, turnstileToken })
+      await apiForgotPassword({ email, turnstileToken: turnstile.token })
       setEmailSent(true)
       reset()
     } catch (error) {
       handleError(error)
-      setTurnstileToken('')
-      setTurnstileError('')
-      turnstileRef.current?.reset()
+      turnstile.resetChallenge()
     } finally {
       setLoading(false)
     }
@@ -184,9 +178,9 @@ export default function ForgotPassForm() {
         </p>
 
         <form className="mt-8" noValidate onSubmit={handleSubmit(onSubmit)}>
-          {(errorMessage || turnstileError) && (
+          {(errorMessage || turnstile.error) && (
             <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-              {errorMessage || turnstileError}
+              {errorMessage || turnstile.error}
             </div>
           )}
           <FormInput
@@ -199,11 +193,8 @@ export default function ForgotPassForm() {
             error={errors.email}
           />
           <TurnstileWidget
-            ref={turnstileRef}
-            onVerify={(token) => {
-              setTurnstileToken(token)
-              setTurnstileError('')
-            }}
+            ref={turnstile.ref}
+            onVerify={turnstile.handleVerify}
           />
           <Button
             id="send-reset-btn"

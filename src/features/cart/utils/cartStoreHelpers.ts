@@ -2,6 +2,7 @@ import type {
   ICartItem,
   ICartPushItem,
 } from '@/features/cart/cartTypes'
+import { getUserMessage } from '@/shared/utils/errorMessages'
 import {
   createItemsIdsFromCart,
   normalizeCartItemList,
@@ -58,8 +59,6 @@ export function setCartItems(
     ...overrides,
   })
 }
-
-import { getUserMessage } from '@/shared/utils/errorMessages'
 
 export function setCartError(
   set: StoreSet,

@@ -1,17 +1,20 @@
 'use client'
-import FormInput from '@/shared/ui/FormInput'
-import Button from '@/shared/ui/Button'
-import Loader from '@/shared/ui/Loader'
+
 import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import type { SubmitHandler } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { verifyEmailCode } from '@/features/auth/api'
 import { verifyEmailCodeSchema } from '@/features/auth/validation'
+import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
+import { useErrorHandler } from '@/shared/utils/apiError'
+import Button from '@/shared/ui/Button'
+import FormInput from '@/shared/ui/FormInput'
+import Loader from '@/shared/ui/Loader'
+
 interface IFormValues {
   verificationCode: string
 }
-import { useErrorHandler } from '@/shared/utils/apiError'
-import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 
 const VerifyEmailCodeForm = () => {
   const [loading, setLoading] = useState(false)
