@@ -23,7 +23,9 @@ const mockedPaymentApi = jest.mocked(paymentApi)
 const mockedRedirectToHostedCheckout = jest.mocked(redirectToHostedCheckout)
 
 function mockSubmitEvent() {
-  return { preventDefault: jest.fn() } as unknown as React.SyntheticEvent<HTMLFormElement>
+  return {
+    preventDefault: jest.fn(),
+  } as unknown as React.SyntheticEvent<HTMLFormElement>
 }
 
 describe('useCheckoutForm', () => {
@@ -47,7 +49,13 @@ describe('useCheckoutForm', () => {
       isLoggedIn: true,
     })
     useCartStore.setState({
-      tempItems: [{ id: 'ci1', productInfo: { id: 'p1', name: 'Coffee', price: 10 }, productQuantity: 1 }] as never,
+      tempItems: [
+        {
+          id: 'ci1',
+          productInfo: { id: 'p1', name: 'Coffee', price: 10 },
+          productQuantity: 1,
+        },
+      ] as never,
       count: 1,
       totalPrice: 10,
     })
@@ -68,7 +76,10 @@ describe('useCheckoutForm', () => {
 
     expect(mockedPaymentApi.createCheckout).toHaveBeenCalledTimes(1)
     expect(mockedPaymentApi.createCheckout).toHaveBeenCalledWith(
-      expect.objectContaining({ recipientName: 'Test', recipientSurname: 'User' }),
+      expect.objectContaining({
+        recipientName: 'Test',
+        recipientSurname: 'User',
+      }),
       expect.any(String),
     )
     expect(mockedRedirectToHostedCheckout).toHaveBeenCalledWith(
@@ -203,7 +214,9 @@ describe('useCheckoutForm', () => {
     })
 
     expect(mockedPaymentApi.createCheckout).not.toHaveBeenCalled()
-    expect(result.current.error).toBe('Please complete all required checkout fields.')
+    expect(result.current.error).toBe(
+      'Please complete all required checkout fields.',
+    )
   })
 
   it('sends Idempotency-Key in UUID format', async () => {
@@ -221,7 +234,40 @@ describe('useCheckoutForm', () => {
 
     const idempotencyKey = mockedPaymentApi.createCheckout.mock.calls[0][1]
 
-    expect(idempotencyKey).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+    expect(idempotencyKey).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    )
+  })
+
+  it('ignores duplicate submissions while checkout creation is in flight', async () => {
+    let resolveCheckout!: (value: {
+      orderId: string
+      stripeSessionId: string
+      checkoutUrl: string
+    }) => void
+
+    mockedPaymentApi.createCheckout.mockReturnValue(
+      new Promise((resolve) => {
+        resolveCheckout = resolve
+      }),
+    )
+
+    const { result } = renderHook(() => useCheckoutForm())
+
+    await act(async () => {
+      void result.current.handleSubmit(mockSubmitEvent())
+      await result.current.handleSubmit(mockSubmitEvent())
+    })
+
+    expect(mockedPaymentApi.createCheckout).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      resolveCheckout({
+        orderId: 'o1',
+        stripeSessionId: 'cs_test',
+        checkoutUrl: 'https://checkout.stripe.com/test',
+      })
+    })
   })
 
   it('does not reset cart on submit (cart cleared only after payment confirmation)', async () => {
@@ -239,5 +285,4 @@ describe('useCheckoutForm', () => {
 
     expect(useCartStore.getState().count).toBe(1)
   })
-
 })

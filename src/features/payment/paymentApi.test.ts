@@ -1,4 +1,7 @@
-import { createCheckout, getCheckoutStatus } from '@/features/payment/paymentApi'
+import {
+  createCheckout,
+  getCheckoutStatus,
+} from '@/features/payment/paymentApi'
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({
@@ -17,7 +20,11 @@ describe('paymentApi', () => {
         recipientSurname: 'Doe',
         turnstileToken: 'turnstile-token',
       }
-      const response = { orderId: 'o1', stripeSessionId: 'cs_test', checkoutUrl: 'https://checkout.stripe.com/test' }
+      const response = {
+        orderId: 'o1',
+        stripeSessionId: 'cs_test',
+        checkoutUrl: 'https://checkout.stripe.com/test',
+      }
 
       mockedApi.mockResolvedValue({ data: response })
 
@@ -38,20 +45,45 @@ describe('paymentApi', () => {
 
   describe('getCheckoutStatus', () => {
     it('sends GET /payment/checkout/{orderId}/status with no cache', async () => {
-      const status = { orderId: 'o1', orderStatus: 'PAID', paymentStatus: 'PAID' }
+      const status = {
+        orderId: 'o1',
+        orderStatus: 'PAID',
+        paymentStatus: 'PAID',
+      }
       const signal = new AbortController().signal
 
       mockedApi.mockResolvedValue({ data: status })
 
       const result = await getCheckoutStatus('o1', signal)
 
-      expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-        cache: false,
-        method: 'GET',
-        signal,
-        url: '/payment/checkout/o1/status',
-      }))
+      expect(mockedApi).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cache: false,
+          method: 'GET',
+          signal,
+          url: '/payment/checkout/o1/status',
+        }),
+      )
       expect(result).toEqual(status)
+    })
+
+    it('encodes order id before building the checkout status path', async () => {
+      const status = {
+        orderId: 'order/with?reserved=value',
+        orderStatus: 'PAID',
+        paymentStatus: 'PAID',
+      }
+
+      mockedApi.mockResolvedValue({ data: status })
+
+      await getCheckoutStatus('order/with?reserved=value')
+
+      expect(mockedApi).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'GET',
+          url: '/payment/checkout/order%2Fwith%3Freserved%3Dvalue/status',
+        }),
+      )
     })
   })
 })

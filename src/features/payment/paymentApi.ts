@@ -52,5 +52,5 @@ export async function getCheckoutStatus(
 ): Promise<CheckoutStatus> {
   const options = { cache: false, signal }
 
-  return getGeneratedCheckoutStatus(orderId, options)
+  return getGeneratedCheckoutStatus(encodeURIComponent(orderId), options)
 }

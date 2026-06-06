@@ -82,11 +82,7 @@ function hasRequiredCheckoutFields(
   }
 
   return Boolean(
-    hasRecipient &&
-      form.country &&
-      form.city &&
-      form.line &&
-      form.postcode,
+    hasRecipient && form.country && form.city && form.line && form.postcode,
   )
 }
 
@@ -100,6 +96,7 @@ export function useCheckoutForm() {
   const [error, setError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
+  const checkoutInFlightRef = useRef(false)
 
   useEffect(() => {
     if (!userData) {
@@ -125,6 +122,11 @@ export function useCheckoutForm() {
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (checkoutInFlightRef.current) {
+      return
+    }
+
     setError('')
 
     if (!hostedCheckoutEnabled) {
@@ -145,6 +147,7 @@ export function useCheckoutForm() {
       return
     }
 
+    checkoutInFlightRef.current = true
     setLoading(true)
 
     try {
@@ -178,6 +181,7 @@ export function useCheckoutForm() {
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } finally {
+      checkoutInFlightRef.current = false
       setLoading(false)
     }
   }
