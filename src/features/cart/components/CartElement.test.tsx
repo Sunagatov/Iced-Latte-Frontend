@@ -49,9 +49,10 @@ describe('CartElement', () => {
     expect(
       screen.getByText('Warm pumpkin spice coffee with a smooth latte finish.'),
     ).toBeInTheDocument()
-    expect(screen.getByText('Folgers · Iced Latte Shop')).toBeInTheDocument()
+    expect(screen.getByText('Folgers')).toBeInTheDocument()
+    expect(screen.getByText('Sold by Iced Latte Shop')).toBeInTheDocument()
     expect(screen.getByText('4.5')).toBeInTheDocument()
     expect(screen.getByText('(12)')).toBeInTheDocument()
-    expect(screen.getByText('250 g.')).toBeInTheDocument()
+    expect(screen.getByText('250 g')).toBeInTheDocument()
   })
 })

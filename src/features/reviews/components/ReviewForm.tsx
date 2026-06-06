@@ -7,7 +7,7 @@ import { useErrorHandler } from '@/shared/utils/apiError'
 import { apiAddProductReview } from '@/features/reviews/api'
 import { useAuthStore } from '@/features/auth/public'
 import { useRouter } from 'next/navigation'
-import { ROUTES } from '@/shared/config/routes'
+import { getProductReviewSignInUrl } from '@/features/reviews/navigation'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import { reviewsTurnstileEnabled } from '@/features/reviews/config'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
@@ -76,7 +76,7 @@ const ReviewForm = ({
     if (isLoggedIn) {
       setShowForm(true)
     } else {
-      router.push(`${ROUTES.signin}?next=${ROUTES.product(productId)}`)
+      router.push(getProductReviewSignInUrl(productId))
     }
   }
 

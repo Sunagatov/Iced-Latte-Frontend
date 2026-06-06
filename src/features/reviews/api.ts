@@ -100,18 +100,16 @@ export async function apiGetUserReviews(): Promise<Review[]> {
     return firstPage.reviewsWithRatings
   }
 
-  const remainingPages = await Promise.all(
-    Array.from({ length: firstPage.totalPages - 1 }, async (_, index) => {
-      const page = index + 1
+  const pages = [firstPage]
 
-      return (await getUserReviews({
-        page,
-        size: firstPage.size || undefined,
-      }, options)) as IReviews
-    }),
-  )
+  for (let page = 1; page < firstPage.totalPages; page += 1) {
+    pages.push((await getUserReviews({
+      page,
+      size: firstPage.size || undefined,
+    }, options)) as IReviews)
+  }
 
-  return [firstPage, ...remainingPages].flatMap((page) => page.reviewsWithRatings)
+  return pages.flatMap((page) => page.reviewsWithRatings)
 }
 
 export async function apiGetProductReviewsStatistics(

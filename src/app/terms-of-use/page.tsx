@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import TermsOfUsePage from '@/features/auth/routes/TermsOfUsePage'
+import TermsOfUsePage from '@/features/legal/routes/TermsOfUsePage'
 
 export const metadata: Metadata = {
   title: 'Terms of Use',

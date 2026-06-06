@@ -12,7 +12,7 @@ import Loader from '@/shared/ui/Loader'
 import Review from '@/features/reviews/components/Review'
 import { useAuthStore } from '@/features/auth/public'
 import { useRouter } from 'next/navigation'
-import { ROUTES } from '@/shared/config/routes'
+import { getProductReviewSignInUrl } from '@/features/reviews/navigation'
 
 interface IReviewsList {
   productId: string
@@ -61,7 +61,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
     setIsPending(true)
     try {
       if (!isLoggedIn) {
-        router.push(ROUTES.signin)
+        router.push(getProductReviewSignInUrl(productId))
 
         return
       }

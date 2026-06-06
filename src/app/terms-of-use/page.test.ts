@@ -4,7 +4,7 @@ import {
   TERMS_EFFECTIVE_DATE,
   TERMS_LAST_UPDATED,
   termsSections,
-} from '@/features/auth/routes/TermsOfUsePage'
+} from '@/features/legal/routes/TermsOfUsePage'
 
 const backendTermsPath = path.resolve(
   process.cwd(),
