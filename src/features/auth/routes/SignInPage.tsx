@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { FEATURES } from '@/shared/config/features'
 import { ROUTES } from '@/shared/config/routes'
 import RestrictRoute from '@/features/auth/RestrictRoute'
@@ -37,7 +38,9 @@ export default function SignInPage() {
             </p>
 
             <div className="mt-8">
-              <SocialAuthButtons mode="signin" />
+              <Suspense fallback={null}>
+                <SocialAuthButtons mode="signin" />
+              </Suspense>
             </div>
 
             {FEATURES.googleAuth && (

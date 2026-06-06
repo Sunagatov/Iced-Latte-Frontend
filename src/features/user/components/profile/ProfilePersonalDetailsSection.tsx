@@ -51,6 +51,7 @@ export default function ProfilePersonalDetailsSection({
             className="rounded-lg bg-brand-solid px-4 py-1.5 text-sm font-medium text-white transition hover:bg-brand-solid-hover"
             id="edit-btn"
             onClick={onStartEditing}
+            type="button"
           >
             Edit
           </button>
@@ -66,6 +67,7 @@ export default function ProfilePersonalDetailsSection({
             <button
               className="rounded-lg px-3 py-1.5 text-sm text-black/40 hover:bg-black/[0.03]"
               onClick={onCancel}
+              type="button"
             >
               Cancel
             </button>

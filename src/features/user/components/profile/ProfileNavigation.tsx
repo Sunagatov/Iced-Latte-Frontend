@@ -59,6 +59,7 @@ export function ProfileNavigation({
             }`}
             key={item.id}
             onClick={() => onSelectSection(item.id)}
+            type="button"
           >
             {item.icon}
             {item.label}
@@ -87,6 +88,7 @@ export default function ProfileSidebarNavigation({
             }`}
             key={item.id}
             onClick={() => onSelectSection(item.id)}
+            type="button"
           >
             {item.icon}
             {item.label}
@@ -97,6 +99,7 @@ export default function ProfileSidebarNavigation({
           <button
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
             onClick={onLogout}
+            type="button"
           >
             {isLoggingOut ? (
               <Loader />

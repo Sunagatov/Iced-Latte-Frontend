@@ -167,6 +167,7 @@ export default function ProfileOverviewSection({
           <button
             className="text-sm font-medium text-brand hover:underline"
             onClick={onOpenProfileEditor}
+            type="button"
           >
             Edit
           </button>
