@@ -3,8 +3,18 @@
  */
 import { NextRequest } from 'next/server'
 
-process.env.NEXT_PUBLIC_API_URL = 'http://backend'
-process.env.NEXT_PUBLIC_FRONTEND_URL = 'https://frontend.example'
+const originalApiUrl = process.env.NEXT_PUBLIC_API_URL
+const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
+
+function restoreEnv(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name]
+
+    return
+  }
+
+  process.env[name] = value
+}
 
 function makeRequest(next?: string): NextRequest {
   const url = next
@@ -15,7 +25,15 @@ function makeRequest(next?: string): NextRequest {
 }
 
 describe('google auth route', () => {
-  afterEach(() => jest.restoreAllMocks())
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_API_URL = 'http://backend'
+    process.env.NEXT_PUBLIC_FRONTEND_URL = 'https://frontend.example'
+  })
+
+  afterAll(() => {
+    restoreEnv('NEXT_PUBLIC_API_URL', originalApiUrl)
+    restoreEnv('NEXT_PUBLIC_FRONTEND_URL', originalFrontendUrl)
+  })
 
   function getRoute() {
     let GET: (req: NextRequest) => Promise<Response>
@@ -67,17 +85,41 @@ describe('google auth route', () => {
   })
 
   it('falls back to the request origin when frontend URL is not configured', async () => {
-    const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
-
     delete process.env.NEXT_PUBLIC_FRONTEND_URL
 
     const res = await getRoute()(makeRequest('/orders'))
     const location = new URL(res.headers.get('location')!)
     const redirectUrl = location.searchParams.get('redirectUrl')
 
-    process.env.NEXT_PUBLIC_FRONTEND_URL = originalFrontendUrl
-
     expect(res.status).toBe(307)
     expect(redirectUrl).toBe('http://localhost/auth/google/callback?next=%2Forders')
+  })
+
+  it('builds the backend OAuth URL when the API URL has a trailing slash', async () => {
+    process.env.NEXT_PUBLIC_API_URL = 'http://backend/api/v1/'
+
+    const res = await getRoute()(makeRequest('/orders'))
+    const location = new URL(res.headers.get('location')!)
+
+    expect(res.status).toBe(307)
+    expect(location.toString()).toContain('http://backend/api/v1/auth/oauth/google')
+  })
+
+  it('returns 500 when backend API URL is not configured', async () => {
+    delete process.env.NEXT_PUBLIC_API_URL
+
+    const res = await getRoute()(makeRequest('/orders'))
+
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: 'Google OAuth is not configured' })
+  })
+
+  it('returns 500 when backend API URL is invalid', async () => {
+    process.env.NEXT_PUBLIC_API_URL = 'not a url'
+
+    const res = await getRoute()(makeRequest('/orders'))
+
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: 'Google OAuth is not configured' })
   })
 })

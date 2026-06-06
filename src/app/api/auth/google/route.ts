@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSafeNext } from '@/shared/utils/navigation'
-
-function getFrontendOrigin(request: NextRequest): string {
-  const configuredFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
-
-  if (!configuredFrontendUrl) return request.nextUrl.origin
-
-  try {
-    return new URL(configuredFrontendUrl).origin
-  } catch {
-    return request.nextUrl.origin
-  }
-}
+import { getBackendOAuthUrl, getFrontendOrigin } from './oauthUrls'
 
 export async function GET(request: NextRequest) {
   const requestedNext = request.nextUrl.searchParams.get('next')
@@ -21,7 +10,14 @@ export async function GET(request: NextRequest) {
     return new NextResponse(null, { status: 400 })
   }
 
-  const backendUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}/auth/oauth/google`)
+  const backendUrl = getBackendOAuthUrl('/auth/oauth/google')
+
+  if (!backendUrl) {
+    return NextResponse.json(
+      { error: 'Google OAuth is not configured' },
+      { status: 500 },
+    )
+  }
 
   const callbackUrl = new URL(
     '/auth/google/callback',

@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSafeNext } from '@/shared/utils/navigation'
 import { ROUTES } from '@/shared/config/routes'
-
-const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL ?? ''
+import { getFrontendOrigin } from '../oauthUrls'
 
 function buildErrorRedirect(request: NextRequest) {
-  const base = FRONTEND_URL
-    ? new URL(`${ROUTES.signin}?error=auth_failed`, FRONTEND_URL)
-    : new URL(`${ROUTES.signin}?error=auth_failed`, request.url)
+  const base = new URL(ROUTES.signin, getFrontendOrigin(request))
   const next = getSafeNext(request.nextUrl.searchParams.get('next'))
+
+  base.searchParams.set('error', 'auth_failed')
 
   if (next) {
     base.searchParams.set('next', next)

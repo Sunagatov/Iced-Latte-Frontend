@@ -4,10 +4,27 @@
 import { NextRequest } from 'next/server'
 
 const FRONTEND_ORIGIN = 'https://frontend.example'
+const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
 
-process.env.NEXT_PUBLIC_FRONTEND_URL = FRONTEND_ORIGIN
+function restoreEnv(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name]
+
+    return
+  }
+
+  process.env[name] = value
+}
 
 describe('google callback route', () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_FRONTEND_URL = FRONTEND_ORIGIN
+  })
+
+  afterAll(() => {
+    restoreEnv('NEXT_PUBLIC_FRONTEND_URL', originalFrontendUrl)
+  })
+
   function getRoute() {
     let handlers: {
       GET: (req: NextRequest) => Promise<Response>
@@ -71,6 +88,32 @@ describe('google callback route', () => {
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(
       `${FRONTEND_ORIGIN}/signin?error=auth_failed&next=%2Fcheckout%3Fcoupon%3DSAVE10`,
+    )
+  })
+
+  it('falls back to the request origin when frontend URL is not configured', async () => {
+    delete process.env.NEXT_PUBLIC_FRONTEND_URL
+
+    const request = new NextRequest('http://localhost/api/auth/google/callback')
+
+    const response = await getRoute().GET(request)
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe(
+      'http://localhost/signin?error=auth_failed',
+    )
+  })
+
+  it('falls back to the request origin when frontend URL is invalid', async () => {
+    process.env.NEXT_PUBLIC_FRONTEND_URL = 'not a url'
+
+    const request = new NextRequest('http://localhost/api/auth/google/callback')
+
+    const response = await getRoute().GET(request)
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe(
+      'http://localhost/signin?error=auth_failed',
     )
   })
 })

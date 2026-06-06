@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/public'
 import { getUserData } from '@/features/user/public'
@@ -8,6 +8,7 @@ import { getSafeNext } from '@/shared/utils/navigation'
 import { ROUTES } from '@/shared/config/routes'
 
 const OAUTH_HANDOFF_CODE_RE = /^[A-Za-z0-9_-]{43}$/
+const GOOGLE_AUTH_FAILED_ERROR = 'google_auth_failed'
 
 function getOAuthCodeFromHash() {
   const hash = window.location.hash.startsWith('#')
@@ -18,17 +19,42 @@ function getOAuthCodeFromHash() {
   return params.get('oauthCode')
 }
 
+function buildSignInUrl(next: string): string {
+  const params = new URLSearchParams({ error: GOOGLE_AUTH_FAILED_ERROR })
+
+  if (next !== ROUTES.home) {
+    params.set('next', next)
+  }
+
+  return `${ROUTES.signin}?${params.toString()}`
+}
+
+async function exchangeOAuthCode(oauthCode: string) {
+  const response = await fetch(
+    `/api/proxy/auth/oauth/token?code=${encodeURIComponent(oauthCode)}`,
+    {
+      method: 'POST',
+      credentials: 'same-origin',
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to establish session')
+  }
+
+  return getUserData()
+}
+
 function GoogleCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated)
+  const hasStartedExchange = useRef(false)
 
   useEffect(() => {
     const error = searchParams.get('error')
     const next = getSafeNext(searchParams.get('next')) ?? ROUTES.home
-    const signInUrl = `/signin?error=google_auth_failed${
-      next !== ROUTES.home ? `&next=${encodeURIComponent(next)}` : ''
-    }`
+    const signInUrl = buildSignInUrl(next)
 
     if (error) {
       router.replace(signInUrl)
@@ -44,20 +70,16 @@ function GoogleCallbackInner() {
       return
     }
 
+    if (hasStartedExchange.current) {
+      return
+    }
+
+    hasStartedExchange.current = true
+
     // useSessionBootstrap is suppressed on this page via the pathname check.
     // Exchange the backend's one-time OAuth handoff code for HttpOnly cookies
     // via the same-origin proxy, then fetch the current user from the session.
-    fetch(`/api/proxy/auth/oauth/token?code=${encodeURIComponent(oauthCode)}`, {
-      method: 'POST',
-      credentials: 'same-origin',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to establish session')
-        }
-
-        return getUserData()
-      })
+    exchangeOAuthCode(oauthCode)
       .then((userData) => {
         setAuthenticated(userData)
         router.replace(next)
