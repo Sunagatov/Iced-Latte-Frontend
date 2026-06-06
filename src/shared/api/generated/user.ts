@@ -54,14 +54,14 @@ export interface UpdateUserAccountRequest {
      * The first name of the user.
      * @minLength 2
      * @maxLength 64
-     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]+$
+     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\u2019\-]+$
      */
   firstName: string;
   /**
      * The last name of the user.
      * @minLength 2
      * @maxLength 64
-     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]+$
+     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\u2019\-]+$
      */
   lastName: string;
   /** The birth date of the user. */

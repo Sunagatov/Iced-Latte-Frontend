@@ -51,8 +51,6 @@ export interface ProductReviewDto {
   likesCount: number;
   /** Number of dislikes the review has received. */
   dislikesCount: number;
-  /** AI-generated summary of this review. Null if not yet generated. */
-  aiSummary?: string;
 }
 
 export interface ProductReviewsAndRatingsWithPagination {
