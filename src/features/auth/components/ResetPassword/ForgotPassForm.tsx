@@ -6,7 +6,7 @@ import FormInput from '@/shared/ui/FormInput'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { FEATURES } from '@/shared/config/features'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -28,8 +28,6 @@ export default function ForgotPassForm() {
   const turnstileRef = useRef<TurnstileInstance>(null)
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const prefilledEmail = searchParams.get('email') ?? ''
 
   const {
     handleSubmit,
@@ -38,7 +36,7 @@ export default function ForgotPassForm() {
     formState: { errors },
   } = useForm<IForgotValues>({
     resolver: yupResolver(forgotPassSchema),
-    defaultValues: { email: prefilledEmail },
+    defaultValues: { email: '' },
   })
 
   if (!FEATURES.emailConfirmation) {
