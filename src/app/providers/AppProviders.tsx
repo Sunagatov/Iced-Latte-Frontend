@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 import AuthInterceptor from '@/app/providers/AuthInterceptor'
 import { useSessionBootstrap } from '@/features/session/useSessionBootstrap'
+import { SupportChatWidget } from '@/features/support-chat/public'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -14,6 +15,7 @@ const AppProviders = ({ children }: Readonly<AppProvidersProps>) => {
   return (
     <AuthInterceptor>
       {children}
+      <SupportChatWidget />
     </AuthInterceptor>
   )
 }

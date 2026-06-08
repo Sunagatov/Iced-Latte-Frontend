@@ -35,6 +35,14 @@ const ERROR_MESSAGES: Record<string, string> = {
 
   // Payment
   'payment-session-failed': 'We couldn\'t process your payment. Please try again.',
+
+  // Support chat
+  'support-chat-disabled': 'Support chat is temporarily unavailable. Please try again later.',
+  'support-chat-email-verification-required': 'Please verify your email address before using support chat.',
+  'support-chat-conversation-not-found': 'Support chat is temporarily unavailable. Please try again later.',
+  'support-chat-invalid-message': 'Please check your message and try again.',
+  'support-chat-duplicate-message': 'You already sent that message.',
+  'support-chat-rate-limited': 'You are sending messages too quickly. Please wait a moment and try again.',
 }
 
 const GENERIC_ERROR_MESSAGE = 'Something went wrong. Please try again.'

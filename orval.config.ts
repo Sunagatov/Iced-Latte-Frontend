@@ -116,5 +116,6 @@ export default defineConfig({
   product: makeApi('product', 'product'),
   productReview: makeApi('product-review', 'productReview'),
   security: makeApi('security', 'security'),
+  supportChat: makeApi('support-chat', 'supportChat'),
   user: makeApi('user', 'user'),
 })

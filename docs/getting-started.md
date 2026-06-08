@@ -320,8 +320,11 @@ npm run test:e2e:report
 | `SENTRY_ORG` | Sentry organization slug for source map upload | empty |
 | `SENTRY_PROJECT` | Sentry project slug for source map upload | empty |
 | `NEXT_PUBLIC_AI_ENABLED` | Enable AI review summaries | `false` |
+| `NEXT_PUBLIC_SUPPORT_CHAT_ENABLED` | Enable the authenticated support chat widget | `false` |
+| `NEXT_PUBLIC_SUPPORT_CHAT_WS_URL` | Optional support chat STOMP endpoint override; production target must receive the frontend HttpOnly auth cookie | empty |
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |
+| `NEXT_PUBLIC_TURNSTILE_SUPPORT_CHAT_ENABLED` | Require Turnstile in support chat when a site key is set | `false` |
 | `NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED` | Require Turnstile on checkout UI when a site key is set | `false` |
 | `NEXT_PUBLIC_TURNSTILE_REVIEWS_ENABLED` | Require Turnstile on review submission when a site key is set | `false` |
 | `NEXT_PUBLIC_TURNSTILE_AVATAR_ENABLED` | Require Turnstile before avatar uploads when a site key is set | `false` |
