@@ -301,6 +301,11 @@ npm run test:e2e:report
 | `NEXT_PUBLIC_STRIPE_ENABLED` | Enable Stripe checkout UI | `false` |
 | `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` | Enable Google OAuth sign-in | `false` |
 | `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID` | Enable Google Analytics when set to a GA4 measurement ID | empty |
+| `NEXT_PUBLIC_OBSERVABILITY_ENABLED` | Send browser errors and Web Vitals to the local observability endpoint | `false` |
+| `NEXT_PUBLIC_WEB_VITALS_SAMPLE_RATE` | Sample rate for browser Web Vitals reports from `0` to `1` | `1` |
+| `OBSERVABILITY_OTEL_ENABLED` | Register Next.js server OpenTelemetry instrumentation with `@vercel/otel` | `false` |
+| `OBSERVABILITY_LOG_EVENTS` | Log accepted browser observability events and request errors on the server | `false` |
+| `OTEL_SERVICE_NAME` | OpenTelemetry service name for this frontend | `iced-latte-frontend` |
 | `NEXT_PUBLIC_AI_ENABLED` | Enable AI review summaries | `false` |
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |

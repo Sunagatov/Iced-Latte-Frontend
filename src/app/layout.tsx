@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify'
 import Header from '@/app/layout/Header'
 import Footer from '@/app/layout/Footer'
 import AppProviders from '@/app/providers/AppProviders'
+import WebVitalsReporter from '@/app/providers/WebVitalsReporter'
 import { GOOGLE_ANALYTICS_MEASUREMENT_ID } from '@/shared/config/analytics'
 import React from 'react'
 
@@ -50,6 +51,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={inter.className + ' flex min-h-screen flex-col bg-[#F8F7F4]'}
       >
+        <WebVitalsReporter />
         <ToastContainer />
         <AppProviders>
           <Header />

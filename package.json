@@ -27,6 +27,7 @@
     "@tailwindcss/postcss": "^4.2.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vercel/otel": "2.1.2",
     "autoprefixer": "^10",
     "axios": "1.16.1",
     "axios-cache-interceptor": "^1.11.4",
