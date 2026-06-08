@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useAuthStore } from '@/features/auth/public'
 import {
@@ -18,9 +19,21 @@ import {
   supportChatTurnstileEnabled,
 } from '@/features/support-chat/config'
 import { subscribeToSupportChatMessages } from '@/features/support-chat/realtime'
+import { ROUTES } from '@/shared/config/routes'
 import { getUserMessage } from '@/shared/utils/errorMessages'
 
 type SupportChatLoadState = 'idle' | 'loading' | 'ready' | 'unavailable'
+
+const SUPPORT_CHAT_EXCLUDED_PATH_PREFIXES = [
+  ROUTES.signin,
+  ROUTES.signup,
+  ROUTES.confirmRegistration,
+  ROUTES.resetpass,
+  ROUTES.forgotpass,
+  '/auth',
+  '/checkout/success',
+  '/checkout/cancel',
+]
 
 function mergeMessages(
   current: SupportChatMessageDto[],
@@ -43,6 +56,7 @@ function needsFirstMessageTurnstile(messages: SupportChatMessageDto[]): boolean 
 
 export function useSupportChat() {
   const status = useAuthStore((state) => state.status)
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [loadState, setLoadState] = useState<SupportChatLoadState>('idle')
   const [availability, setAvailability] = useState<SupportChatStatusDto | null>(
@@ -66,7 +80,10 @@ export function useSupportChat() {
     reconnectingTimerRef.current = null
   }, [])
 
-  const visible = supportChatEnabled && status === 'authenticated'
+  const visible =
+    supportChatEnabled &&
+    status === 'authenticated' &&
+    !isSupportChatExcludedPath(pathname)
   const canUseChat = Boolean(
     availability?.enabled && availability.eligible && conversation,
   )
@@ -221,6 +238,14 @@ export function useSupportChat() {
       )
 
       setMessages((current) => mergeMessages(current, [message]))
+      if (message.deliveryStatus === 'FAILED') {
+        setError('Could not send. Try again.')
+        setTurnstileToken('')
+        turnstileRef.current?.reset()
+
+        return
+      }
+
       setDraft('')
       setTurnstileToken('')
       turnstileRef.current?.reset()
@@ -255,7 +280,18 @@ export function useSupportChat() {
     showTurnstile,
     turnstileRef,
     unavailableMessage,
+    verificationRequired:
+      availability?.reason === 'EMAIL_VERIFICATION_REQUIRED',
+    verificationHref: ROUTES.confirmRegistration,
     visible,
     handleTurnstileVerify,
   }
+}
+
+function isSupportChatExcludedPath(pathname: string | null): boolean {
+  if (!pathname) return false
+
+  return SUPPORT_CHAT_EXCLUDED_PATH_PREFIXES.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  )
 }

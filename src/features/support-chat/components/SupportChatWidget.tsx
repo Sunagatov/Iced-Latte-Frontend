@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent } from 'react'
+import Link from 'next/link'
 import { RiChat3Line, RiCloseLine, RiSendPlane2Line } from 'react-icons/ri'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import { SUPPORT_CHAT_MESSAGE_MAX_LENGTH } from '@/features/support-chat/config'
@@ -11,6 +12,13 @@ function formatMessageTime(value: string): string {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value))
+}
+
+function customerDeliveryLabel(deliveryStatus: string): string {
+  if (deliveryStatus === 'FAILED') return 'Could not send'
+  if (deliveryStatus === 'PENDING') return 'Sending'
+
+  return 'Sent'
 }
 
 export default function SupportChatWidget() {
@@ -31,6 +39,8 @@ export default function SupportChatWidget() {
     showTurnstile,
     turnstileRef,
     unavailableMessage,
+    verificationHref,
+    verificationRequired,
     visible,
   } = useSupportChat()
 
@@ -77,9 +87,17 @@ export default function SupportChatWidget() {
               )}
 
               {unavailableMessage && (
-                <p className="py-6 text-center text-sm text-slate-600">
-                  {unavailableMessage}
-                </p>
+                <div className="py-6 text-center text-sm text-slate-600">
+                  <p>{unavailableMessage}</p>
+                  {verificationRequired && (
+                    <Link
+                      href={verificationHref}
+                      className="mt-2 inline-flex text-sm font-medium text-brand hover:text-brand-solid-hover"
+                    >
+                      Open email verification
+                    </Link>
+                  )}
+                </div>
               )}
 
               {loadState === 'ready' && messages.length === 0 && (
@@ -113,6 +131,8 @@ export default function SupportChatWidget() {
                             }`}
                           >
                             {formatMessageTime(message.createdAt)}
+                            {mine &&
+                              ` - ${customerDeliveryLabel(message.deliveryStatus)}`}
                           </time>
                         </div>
                       </li>

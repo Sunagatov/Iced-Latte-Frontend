@@ -13,6 +13,7 @@ import type { SupportChatMessageDto } from '@/features/support-chat/api'
 
 let mockSupportChatEnabled = true
 let mockSupportChatTurnstileEnabled = false
+let mockPathname = '/'
 
 jest.mock('@/features/support-chat/config', () => ({
   SUPPORT_CHAT_HISTORY_PAGE_SIZE: 30,
@@ -34,6 +35,10 @@ jest.mock('@/features/support-chat/api', () => ({
 
 jest.mock('@/features/support-chat/realtime', () => ({
   subscribeToSupportChatMessages: jest.fn(),
+}))
+
+jest.mock('next/navigation', () => ({
+  usePathname: () => mockPathname,
 }))
 
 jest.mock('@/shared/ui/TurnstileWidget', () => {
@@ -106,6 +111,7 @@ describe('SupportChatWidget', () => {
     jest.clearAllMocks()
     mockSupportChatEnabled = true
     mockSupportChatTurnstileEnabled = false
+    mockPathname = '/'
     useAuthStore.setState({
       status: 'anonymous',
       isLoggedIn: false,
@@ -152,6 +158,27 @@ describe('SupportChatWidget', () => {
       ),
     ).toBeInTheDocument()
     expect(mockedGetSupportChatConversation).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole('link', { name: 'Open email verification' }),
+    ).toHaveAttribute('href', '/confirm_registration')
+  })
+
+  it('is hidden on transient auth and payment callback pages', () => {
+    authenticate()
+    mockPathname = '/auth/google/callback'
+
+    const { rerender } = render(<SupportChatWidget />)
+
+    expect(
+      screen.queryByRole('button', { name: 'Open support chat' }),
+    ).not.toBeInTheDocument()
+
+    mockPathname = '/checkout/success'
+    rerender(<SupportChatWidget />)
+
+    expect(
+      screen.queryByRole('button', { name: 'Open support chat' }),
+    ).not.toBeInTheDocument()
   })
 
   it('sends a customer message through REST', async () => {
@@ -183,6 +210,33 @@ describe('SupportChatWidget', () => {
       )
     })
     expect(await screen.findByText('Hello support')).toBeInTheDocument()
+    expect(await screen.findByText(/Sent/)).toBeInTheDocument()
+  })
+
+  it('keeps the draft and shows a generic error when owner-side delivery fails', async () => {
+    authenticate()
+    mockReadyChat()
+    mockedCreateSupportChatMessage.mockResolvedValue({
+      id: 'message-1',
+      conversationId: 'conversation-1',
+      clientMessageId: 'client-1',
+      senderType: 'CUSTOMER',
+      body: 'Hello support',
+      deliveryStatus: 'FAILED',
+      createdAt: '2026-06-08T10:01:00Z',
+    })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const input = await screen.findByLabelText('Message')
+
+    fireEvent.change(input, { target: { value: 'Hello support' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    expect(await screen.findByText('Could not send. Try again.')).toBeInTheDocument()
+    expect(screen.getAllByText(/Could not send/)).toHaveLength(2)
+    expect(input).toHaveValue('Hello support')
   })
 
   it('renders live owner replies from the support-chat subscription', async () => {

@@ -25,6 +25,15 @@ describe('getUserMessage', () => {
         }),
       ),
     ).toBe('Your session expired. Please sign in again.')
+
+    expect(
+      getUserMessage(
+        makeAxiosError(503, {
+          type: 'https://iced-latte.local/problems/support-chat-temporarily-unavailable',
+          detail: 'Telegram sendMessage failed',
+        }),
+      ),
+    ).toBe('Support is temporarily unavailable. Try again later.')
   })
 
   it('does not expose unknown backend details directly to users', () => {

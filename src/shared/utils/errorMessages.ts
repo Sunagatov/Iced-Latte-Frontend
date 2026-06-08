@@ -43,6 +43,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   'support-chat-invalid-message': 'Please check your message and try again.',
   'support-chat-duplicate-message': 'You already sent that message.',
   'support-chat-rate-limited': 'You are sending messages too quickly. Please wait a moment and try again.',
+  'support-chat-turnstile-failed': 'Verification failed. Please retry the challenge and send again.',
+  'support-chat-temporarily-unavailable': 'Support is temporarily unavailable. Try again later.',
 }
 
 const GENERIC_ERROR_MESSAGE = 'Something went wrong. Please try again.'
