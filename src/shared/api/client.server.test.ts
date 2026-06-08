@@ -1,21 +1,26 @@
+/**
+ * @jest-environment node
+ */
 import axios, { type AxiosRequestConfig } from 'axios'
 import { api } from '@/shared/api/client'
 
-describe('api client', () => {
+describe('api client on the server', () => {
   beforeEach(() => {
-    delete process.env.INTERNAL_API_URL
-    process.env.NEXT_PUBLIC_API_URL = 'http://backend/api/v1'
+    process.env.INTERNAL_API_URL = 'http://iced-latte-backend:8083/api/v1'
+    process.env.NEXT_PUBLIC_API_URL = 'https://api.iced-latte.uk/api/v1'
   })
 
-  it('serializes array query params as repeated keys for Spring request params', async () => {
+  afterEach(() => {
+    delete process.env.INTERNAL_API_URL
+    delete process.env.NEXT_PUBLIC_API_URL
+  })
+
+  it('uses internal API URL when configured', async () => {
     let capturedConfig: AxiosRequestConfig | undefined
 
     await api({
-      url: '/orders',
+      url: '/products',
       method: 'GET',
-      params: {
-        status: ['PAID', 'DELIVERED'],
-      },
       adapter: async (config) => {
         capturedConfig = config
 
@@ -31,7 +36,7 @@ describe('api client', () => {
 
     expect(capturedConfig).toBeDefined()
     expect(axios.getUri(capturedConfig)).toBe(
-      '/api/proxy/orders?status=PAID&status=DELIVERED',
+      'http://iced-latte-backend:8083/api/v1/products',
     )
   })
 })

@@ -16,7 +16,8 @@ instance.interceptors.request.use((config) => {
     typeof FormData !== 'undefined' && config.data instanceof FormData
 
   if (typeof window === 'undefined') {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL
+    const baseUrl =
+      process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
 
     config.url = `${baseUrl}/${path}`
   } else {

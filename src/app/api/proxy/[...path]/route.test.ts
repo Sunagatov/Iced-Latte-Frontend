@@ -63,7 +63,10 @@ function mockFetch(
 }
 
 describe('proxy route', () => {
-  afterEach(() => jest.restoreAllMocks())
+  afterEach(() => {
+    delete process.env.INTERNAL_API_URL
+    jest.restoreAllMocks()
+  })
 
   it('OPTIONS returns 200', async () => {
     const res = await OPTIONS(
@@ -85,6 +88,21 @@ describe('proxy route', () => {
 
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({ products: [] })
+  })
+
+  it('uses internal API URL when configured', async () => {
+    process.env.INTERNAL_API_URL = 'http://iced-latte-backend:8083/api/v1'
+    mockFetch(200, { products: [] })
+
+    const res = await GET(makeRequest('GET', 'products'), {
+      params: Promise.resolve({ path: ['products'] }),
+    })
+
+    expect(res.status).toBe(200)
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://iced-latte-backend:8083/api/v1/products',
+      expect.objectContaining({ method: 'GET' }),
+    )
   })
 
   it('returns 400 for invalid path characters', async () => {

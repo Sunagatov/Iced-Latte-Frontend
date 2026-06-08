@@ -3,9 +3,9 @@ import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
 import { isTokenExpired } from '@/shared/auth/token'
 import { secureCookieSuffix } from '@/shared/config/runtime'
 import {
-  API_BASE_URL,
   AUTH_COOKIE_OPTIONS,
   AUTH_TOKEN_RESPONSE_PATHS,
+  getApiBaseUrl,
 } from './proxyConstants'
 import { fetchWithTimeout } from './proxyRequest'
 
@@ -67,8 +67,12 @@ export function responseBodyForClient(data: unknown, path: string): unknown {
 async function refreshTokens(
   refreshToken: string,
 ): Promise<TokenPair | null> {
+  const apiBaseUrl = getApiBaseUrl()
+
+  if (!apiBaseUrl) return null
+
   try {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/auth/refresh`, {
+    const response = await fetchWithTimeout(`${apiBaseUrl}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${refreshToken}`,

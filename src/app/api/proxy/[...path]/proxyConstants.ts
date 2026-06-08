@@ -1,6 +1,9 @@
 import { isHttpsFrontend } from '@/shared/config/runtime'
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+export function getApiBaseUrl(): string | undefined {
+  return process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
+}
+
 export const FETCH_TIMEOUT_MS = 30000
 export const MAX_PROXY_BODY_BYTES = 5 * 1024 * 1024
 export const REQUEST_BODY_TOO_LARGE = Symbol('REQUEST_BODY_TOO_LARGE')

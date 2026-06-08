@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
-import { API_BASE_URL, type ProxyMethod } from './proxyConstants'
+import { getApiBaseUrl, type ProxyMethod } from './proxyConstants'
 import {
   fetchWithTimeout,
   forwardHeaders,
@@ -25,8 +25,14 @@ async function handleProxy(
 
   if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
 
+  const apiBaseUrl = getApiBaseUrl()
+
+  if (!apiBaseUrl) {
+    return createCorsResponse({ error: 'API unavailable' }, 503)
+  }
+
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${sanitizeQueryString(url.searchParams)}`
+  const apiUrl = `${apiBaseUrl}/${safePath}${sanitizeQueryString(url.searchParams)}`
   const body = await readProxyBody(request, method)
 
   if (body instanceof NextResponse) return body

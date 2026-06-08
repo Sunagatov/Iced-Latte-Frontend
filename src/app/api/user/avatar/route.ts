@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { API_BASE_URL } from '@/app/api/proxy/[...path]/proxyConstants'
+import { getApiBaseUrl } from '@/app/api/proxy/[...path]/proxyConstants'
 import {
   fetchWithTimeout,
   forwardHeaders,
@@ -127,7 +127,9 @@ function parseAvatarUrl(rawAvatarUrl: string): URL | null {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  if (!API_BASE_URL) {
+  const apiBaseUrl = getApiBaseUrl()
+
+  if (!apiBaseUrl) {
     return emptyResponse(503)
   }
 
@@ -141,7 +143,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   let avatarLinkResponse: Response
 
   try {
-    avatarLinkResponse = await fetchWithTimeout(`${API_BASE_URL}/users/avatar`, {
+    avatarLinkResponse = await fetchWithTimeout(`${apiBaseUrl}/users/avatar`, {
       method: 'GET',
       headers,
     })
