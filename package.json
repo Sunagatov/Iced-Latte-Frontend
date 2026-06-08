@@ -24,6 +24,7 @@
   "dependencies": {
     "@marsidev/react-turnstile": "1.5.2",
     "@next/third-parties": "^16.2.6",
+    "@sentry/nextjs": "10.56.0",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

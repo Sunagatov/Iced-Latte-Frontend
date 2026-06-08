@@ -306,6 +306,19 @@ npm run test:e2e:report
 | `OBSERVABILITY_OTEL_ENABLED` | Register Next.js server OpenTelemetry instrumentation with `@vercel/otel` | `false` |
 | `OBSERVABILITY_LOG_EVENTS` | Log accepted browser observability events and request errors on the server | `false` |
 | `OTEL_SERVICE_NAME` | OpenTelemetry service name for this frontend | `iced-latte-frontend` |
+| `NEXT_PUBLIC_SENTRY_ENABLED` | Enable Sentry browser error tracking and tracing | `false` |
+| `NEXT_PUBLIC_SENTRY_DSN` | Public Sentry browser DSN | empty |
+| `NEXT_PUBLIC_SENTRY_ENVIRONMENT` | Sentry environment name for browser events | `local` |
+| `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` | Sentry browser trace sample rate from `0` to `1` | `1` |
+| `NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE` | Sentry replay sample rate for normal sessions from `0` to `1` | `0` |
+| `NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE` | Sentry replay sample rate after browser errors from `0` to `1` | `1` |
+| `SENTRY_ENABLED` | Enable Sentry server-side capture for Next.js runtime errors | `false` |
+| `SENTRY_DSN` | Server-side Sentry DSN for Next.js runtime errors | empty |
+| `SENTRY_ENVIRONMENT` | Sentry environment name for server events | `local` |
+| `SENTRY_RELEASE` | Release name shown in Sentry issues and source maps | empty |
+| `SENTRY_TRACES_SAMPLE_RATE` | Sentry server trace sample rate from `0` to `1` | `0.1` |
+| `SENTRY_ORG` | Sentry organization slug for source map upload | empty |
+| `SENTRY_PROJECT` | Sentry project slug for source map upload | empty |
 | `NEXT_PUBLIC_AI_ENABLED` | Enable AI review summaries | `false` |
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |

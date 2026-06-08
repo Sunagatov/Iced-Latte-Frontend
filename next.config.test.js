@@ -6,8 +6,8 @@ describe('next security headers', () => {
     process.env = originalEnv
   })
 
-  async function contentSecurityPolicyForNodeEnv(nodeEnv) {
-    process.env = { ...originalEnv, NODE_ENV: nodeEnv }
+  async function contentSecurityPolicyForNodeEnv(nodeEnv, env = {}) {
+    process.env = { ...originalEnv, NODE_ENV: nodeEnv, ...env }
     jest.resetModules()
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -39,5 +39,22 @@ describe('next security headers', () => {
     expect(csp).toContain('https://*.google-analytics.com')
     expect(csp).toContain('connect-src')
     expect(csp).toContain('https://*.analytics.google.com')
+  })
+
+  it('allows Sentry ingest when a browser DSN is configured', async () => {
+    const csp = await contentSecurityPolicyForNodeEnv('production', {
+      NEXT_PUBLIC_SENTRY_DSN: 'https://public@example.ingest.sentry.io/1',
+    })
+
+    expect(csp).toContain('connect-src')
+    expect(csp).toContain('https://example.ingest.sentry.io')
+  })
+
+  it('ignores malformed Sentry DSNs when building CSP', async () => {
+    await expect(
+      contentSecurityPolicyForNodeEnv('production', {
+        NEXT_PUBLIC_SENTRY_DSN: 'not a url',
+      }),
+    ).resolves.toContain('connect-src')
   })
 })

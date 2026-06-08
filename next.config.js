@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { withSentryConfig } = require('@sentry/nextjs')
+
 function parseRemoteImageSource(source) {
   const parsed = new URL(source)
 
@@ -30,6 +33,19 @@ const analyticsSources = [
   'https://*.analytics.google.com',
   'https://*.googletagmanager.com',
 ]
+const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN
+
+function sentryConnectSourceFor(dsn) {
+  if (!dsn) return undefined
+
+  try {
+    return new URL(dsn).origin
+  } catch {
+    return undefined
+  }
+}
+
+const sentryConnectSource = sentryConnectSourceFor(sentryDsn)
 
 const nextConfig = {
   output: 'standalone',
@@ -63,7 +79,11 @@ const nextConfig = {
                 ...analyticsSources,
               ].join(' '),
               'font-src \'self\'',
-              ['connect-src \'self\'', ...analyticsSources].join(' '),
+              [
+                'connect-src \'self\'',
+                ...analyticsSources,
+                ...(sentryConnectSource ? [sentryConnectSource] : []),
+              ].join(' '),
               'frame-src https://challenges.cloudflare.com',
               'frame-ancestors \'none\'',
             ].join('; '),
@@ -74,4 +94,10 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+})
