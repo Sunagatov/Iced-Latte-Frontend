@@ -1,4 +1,5 @@
 const STRIPE_CHECKOUT_ORIGIN = 'https://checkout.stripe.com'
+const STRIPE_CHECKOUT_PATH_PREFIX = '/c/'
 
 export function isHostedCheckoutUrl(url: string): boolean {
   try {
@@ -6,6 +7,7 @@ export function isHostedCheckoutUrl(url: string): boolean {
 
     return (
       parsed.origin === STRIPE_CHECKOUT_ORIGIN &&
+      parsed.pathname.startsWith(STRIPE_CHECKOUT_PATH_PREFIX) &&
       parsed.username === '' &&
       parsed.password === ''
     )

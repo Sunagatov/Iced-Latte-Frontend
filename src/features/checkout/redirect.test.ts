@@ -10,8 +10,26 @@ describe('checkout redirect', () => {
     )
   })
 
+  it('accepts Stripe hosted checkout URLs with query or fragment data', () => {
+    expect(
+      isHostedCheckoutUrl(
+        'https://checkout.stripe.com/c/pay/cs_test?client_reference_id=o1#fidkdWxOYHwn',
+      ),
+    ).toBe(true)
+  })
+
   it('rejects non-Stripe checkout URLs', () => {
     expect(isHostedCheckoutUrl('https://evil.example/pay')).toBe(false)
+  })
+
+  it('rejects Stripe checkout domain URLs outside the hosted checkout path', () => {
+    expect(isHostedCheckoutUrl('https://checkout.stripe.com/login')).toBe(false)
+  })
+
+  it('rejects Stripe-looking subdomains on another origin', () => {
+    expect(isHostedCheckoutUrl('https://checkout.stripe.com.evil.example/c/pay')).toBe(
+      false,
+    )
   })
 
   it('rejects credentialed Stripe URLs', () => {
