@@ -27,10 +27,11 @@ export async function getSupportChatConversation(): Promise<SupportChatConversat
 
 export async function getSupportChatHistory(
   conversationId: string,
+  page = 0,
 ): Promise<SupportChatMessagePageDto> {
   return getSupportChatMessages(
     conversationId,
-    { page: 0, size: SUPPORT_CHAT_HISTORY_PAGE_SIZE },
+    { page, size: SUPPORT_CHAT_HISTORY_PAGE_SIZE },
     { cache: false } as object,
   )
 }

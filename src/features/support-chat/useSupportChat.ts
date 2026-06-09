@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import axios, { type AxiosError } from 'axios'
 import { useAuthStore } from '@/features/auth/public'
 import {
   createSupportChatMessage,
@@ -21,6 +22,7 @@ import {
 import { subscribeToSupportChatMessages } from '@/features/support-chat/realtime'
 import { ROUTES } from '@/shared/config/routes'
 import { getUserMessage } from '@/shared/utils/errorMessages'
+import type { ErrorResponse } from '@/shared/types/ErrorResponse'
 
 type SupportChatLoadState = 'idle' | 'loading' | 'ready' | 'unavailable'
 
@@ -54,6 +56,31 @@ function needsFirstMessageTurnstile(messages: SupportChatMessageDto[]): boolean 
   return !messages.some((message) => message.senderType === 'CUSTOMER')
 }
 
+function problemSlug(error: unknown): string | undefined {
+  if (!axios.isAxiosError(error) || !error.response) return undefined
+
+  const data = (error as AxiosError<ErrorResponse>).response?.data
+  const type = data?.type
+
+  if (!type) return undefined
+
+  try {
+    const pathname = new URL(type).pathname
+
+    return pathname.split('/').filter(Boolean).at(-1)
+  } catch {
+    return type.split('/').filter(Boolean).at(-1)
+  }
+}
+
+function requiresTurnstileRetry(error: unknown): boolean {
+  return [
+    'support-chat-turnstile-failed',
+    'support-chat-duplicate-message',
+    'support-chat-rate-limited',
+  ].includes(problemSlug(error) ?? '')
+}
+
 export function useSupportChat() {
   const status = useAuthStore((state) => state.status)
   const pathname = usePathname()
@@ -70,6 +97,7 @@ export function useSupportChat() {
   const [sending, setSending] = useState(false)
   const [liveReconnecting, setLiveReconnecting] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileRetryRequired, setTurnstileRetryRequired] = useState(false)
   const turnstileRef = useRef<TurnstileInstance>(null)
   const reconnectingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -88,7 +116,8 @@ export function useSupportChat() {
     availability?.enabled && availability.eligible && conversation,
   )
   const showTurnstile =
-    supportChatTurnstileEnabled && needsFirstMessageTurnstile(messages)
+    supportChatTurnstileEnabled &&
+    (needsFirstMessageTurnstile(messages) || turnstileRetryRequired)
   const trimmedDraft = draft.trim()
   const sendDisabled =
     sending ||
@@ -125,8 +154,22 @@ export function useSupportChat() {
     setSending(false)
     setLiveReconnecting(false)
     setTurnstileToken('')
+    setTurnstileRetryRequired(false)
     turnstileRef.current?.reset()
   }, [clearReconnectTimer, visible])
+
+  const loadAllHistory = useCallback(async (conversationId: string) => {
+    const firstPage = await getSupportChatHistory(conversationId, 0)
+    let nextMessages = firstPage.messages
+
+    for (let page = 1; page < firstPage.totalPages; page += 1) {
+      const historyPage = await getSupportChatHistory(conversationId, page)
+
+      nextMessages = [...nextMessages, ...historyPage.messages]
+    }
+
+    return nextMessages
+  }, [])
 
   useEffect(() => {
     if (!visible || !open) {
@@ -153,12 +196,12 @@ export function useSupportChat() {
         }
 
         const nextConversation = await getSupportChatConversation()
-        const history = await getSupportChatHistory(nextConversation.id)
+        const historyMessages = await loadAllHistory(nextConversation.id)
 
         if (cancelled) return
 
         setConversation(nextConversation)
-        setMessages((current) => mergeMessages(current, history.messages))
+        setMessages((current) => mergeMessages(current, historyMessages))
         setLoadState('ready')
       } catch (loadError) {
         if (cancelled) return
@@ -173,7 +216,7 @@ export function useSupportChat() {
     return () => {
       cancelled = true
     }
-  }, [open, visible])
+  }, [loadAllHistory, open, visible])
 
   useEffect(() => {
     if (!open || !canUseChat || !conversation) {
@@ -182,9 +225,9 @@ export function useSupportChat() {
 
     const refreshHistory = async () => {
       try {
-        const history = await getSupportChatHistory(conversation.id)
+        const historyMessages = await loadAllHistory(conversation.id)
 
-        setMessages((current) => mergeMessages(current, history.messages))
+        setMessages((current) => mergeMessages(current, historyMessages))
       } catch {
         // Live reconnect recovery is best-effort; the next open/page refresh also reloads history.
       }
@@ -216,7 +259,7 @@ export function useSupportChat() {
       setLiveReconnecting(false)
       subscription.disconnect()
     }
-  }, [canUseChat, clearReconnectTimer, conversation, open])
+  }, [canUseChat, clearReconnectTimer, conversation, loadAllHistory, open])
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token)
@@ -248,9 +291,13 @@ export function useSupportChat() {
 
       setDraft('')
       setTurnstileToken('')
+      setTurnstileRetryRequired(false)
       turnstileRef.current?.reset()
     } catch (sendError) {
       setError(getUserMessage(sendError))
+      if (requiresTurnstileRetry(sendError)) {
+        setTurnstileRetryRequired(true)
+      }
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } finally {

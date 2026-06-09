@@ -109,6 +109,11 @@ function mockReadyChat() {
 describe('SupportChatWidget', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockedGetSupportChatAvailability.mockReset()
+    mockedGetSupportChatConversation.mockReset()
+    mockedGetSupportChatHistory.mockReset()
+    mockedCreateSupportChatMessage.mockReset()
+    mockedSubscribeToSupportChatMessages.mockReset()
     mockSupportChatEnabled = true
     mockSupportChatTurnstileEnabled = false
     mockPathname = '/'
@@ -211,6 +216,81 @@ describe('SupportChatWidget', () => {
     })
     expect(await screen.findByText('Hello support')).toBeInTheDocument()
     expect(await screen.findByText(/Sent/)).toBeInTheDocument()
+  })
+
+  it('shows a Turnstile challenge after the backend requires re-verification', async () => {
+    authenticate()
+    mockSupportChatTurnstileEnabled = true
+    mockedGetSupportChatAvailability.mockResolvedValue({
+      enabled: true,
+      eligible: true,
+    })
+    mockedGetSupportChatConversation.mockResolvedValue({
+      id: 'conversation-1',
+      createdAt: '2026-06-08T10:00:00Z',
+      updatedAt: '2026-06-08T10:00:00Z',
+    })
+    mockedGetSupportChatHistory.mockResolvedValue({
+      messages: [
+        {
+          id: 'message-1',
+          conversationId: 'conversation-1',
+          senderType: 'CUSTOMER',
+          body: 'Previous message',
+          deliveryStatus: 'SENT',
+          createdAt: '2026-06-08T10:01:00Z',
+        },
+      ],
+      page: 0,
+      size: 30,
+      totalElements: 1,
+      totalPages: 1,
+    })
+    mockedCreateSupportChatMessage
+      .mockRejectedValueOnce({
+        isAxiosError: true,
+        response: {
+          data: {
+            type: 'https://iced-latte.local/problems/support-chat-turnstile-failed',
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        id: 'message-2',
+        conversationId: 'conversation-1',
+        clientMessageId: 'client-2',
+        senderType: 'CUSTOMER',
+        body: 'Retry with verification',
+        deliveryStatus: 'SENT',
+        createdAt: '2026-06-08T10:02:00Z',
+      })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const input = await screen.findByLabelText('Message')
+
+    expect(screen.queryByText('Verify challenge')).not.toBeInTheDocument()
+
+    fireEvent.change(input, { target: { value: 'Retry with verification' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    expect(await screen.findByText('Verify challenge')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Verification failed. Please retry the challenge and send again.'),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Verify challenge'))
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    await waitFor(() => {
+      expect(mockedCreateSupportChatMessage).toHaveBeenLastCalledWith(
+        'conversation-1',
+        'Retry with verification',
+        'turnstile-token',
+      )
+    })
+    expect(await screen.findByText('Retry with verification')).toBeInTheDocument()
   })
 
   it('keeps the draft and shows a generic error when owner-side delivery fails', async () => {
@@ -330,6 +410,60 @@ describe('SupportChatWidget', () => {
     })
 
     expect(await screen.findByText('Recovered owner reply')).toBeInTheDocument()
+  })
+
+  it('loads every support chat history page before subscribing', async () => {
+    authenticate()
+    mockedGetSupportChatAvailability.mockResolvedValue({
+      enabled: true,
+      eligible: true,
+    })
+    mockedGetSupportChatConversation.mockResolvedValue({
+      id: 'conversation-1',
+      createdAt: '2026-06-08T10:00:00Z',
+      updatedAt: '2026-06-08T10:00:00Z',
+    })
+    mockedGetSupportChatHistory
+      .mockResolvedValueOnce({
+        messages: [
+          {
+            id: 'message-1',
+            conversationId: 'conversation-1',
+            senderType: 'CUSTOMER',
+            body: 'First page message',
+            deliveryStatus: 'SENT',
+            createdAt: '2026-06-08T10:01:00Z',
+          },
+        ],
+        page: 0,
+        size: 30,
+        totalElements: 2,
+        totalPages: 2,
+      })
+      .mockResolvedValueOnce({
+        messages: [
+          {
+            id: 'message-2',
+            conversationId: 'conversation-1',
+            senderType: 'OWNER',
+            body: 'Second page message',
+            deliveryStatus: 'SENT',
+            createdAt: '2026-06-08T10:02:00Z',
+          },
+        ],
+        page: 1,
+        size: 30,
+        totalElements: 2,
+        totalPages: 2,
+      })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    expect(await screen.findByText('First page message')).toBeInTheDocument()
+    expect(await screen.findByText('Second page message')).toBeInTheDocument()
+    expect(mockedGetSupportChatHistory).toHaveBeenNthCalledWith(1, 'conversation-1', 0)
+    expect(mockedGetSupportChatHistory).toHaveBeenNthCalledWith(2, 'conversation-1', 1)
   })
 
   it('clears loaded chat state when the user becomes anonymous', async () => {
