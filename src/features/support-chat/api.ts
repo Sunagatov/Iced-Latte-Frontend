@@ -39,12 +39,13 @@ export async function createSupportChatMessage(
   conversationId: string,
   body: string,
   turnstileToken?: string,
+  clientMessageId = crypto.randomUUID(),
 ): Promise<SupportChatMessageDto> {
   return sendSupportChatMessage(
     conversationId,
     {
       body,
-      clientMessageId: crypto.randomUUID(),
+      clientMessageId,
       ...(turnstileToken ? { turnstileToken } : {}),
     },
     { cache: false } as object,

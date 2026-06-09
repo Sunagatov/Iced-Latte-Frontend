@@ -212,6 +212,7 @@ describe('SupportChatWidget', () => {
         'conversation-1',
         'Hello support',
         undefined,
+        expect.any(String),
       )
     })
     expect(await screen.findByText('Hello support')).toBeInTheDocument()
@@ -279,6 +280,7 @@ describe('SupportChatWidget', () => {
     expect(
       await screen.findByText('Verification failed. Please retry the challenge and send again.'),
     ).toBeInTheDocument()
+    const firstClientMessageId = mockedCreateSupportChatMessage.mock.calls[0]?.[3]
 
     fireEvent.click(screen.getByText('Verify challenge'))
     fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
@@ -288,6 +290,7 @@ describe('SupportChatWidget', () => {
         'conversation-1',
         'Retry with verification',
         'turnstile-token',
+        firstClientMessageId,
       )
     })
     expect(await screen.findByText('Retry with verification')).toBeInTheDocument()

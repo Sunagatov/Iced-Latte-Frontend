@@ -99,6 +99,7 @@ export function useSupportChat() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [turnstileRetryRequired, setTurnstileRetryRequired] = useState(false)
   const turnstileRef = useRef<TurnstileInstance>(null)
+  const clientMessageIdRef = useRef<string | null>(null)
   const reconnectingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const clearReconnectTimer = useCallback(() => {
@@ -155,6 +156,7 @@ export function useSupportChat() {
     setLiveReconnecting(false)
     setTurnstileToken('')
     setTurnstileRetryRequired(false)
+    clientMessageIdRef.current = null
     turnstileRef.current?.reset()
   }, [clearReconnectTimer, visible])
 
@@ -267,17 +269,24 @@ export function useSupportChat() {
     if (token) setError('')
   }, [])
 
+  const handleDraftChange = useCallback((value: string) => {
+    clientMessageIdRef.current = null
+    setDraft(value)
+  }, [])
+
   const send = useCallback(async () => {
     if (!conversation || sendDisabled) return
 
     setSending(true)
     setError('')
+    clientMessageIdRef.current ??= crypto.randomUUID()
 
     try {
       const message = await createSupportChatMessage(
         conversation.id,
         trimmedDraft,
         showTurnstile ? turnstileToken : undefined,
+        clientMessageIdRef.current,
       )
 
       setMessages((current) => mergeMessages(current, [message]))
@@ -292,6 +301,7 @@ export function useSupportChat() {
       setDraft('')
       setTurnstileToken('')
       setTurnstileRetryRequired(false)
+      clientMessageIdRef.current = null
       turnstileRef.current?.reset()
     } catch (sendError) {
       setError(getUserMessage(sendError))
@@ -322,7 +332,7 @@ export function useSupportChat() {
     send,
     sendDisabled,
     sending,
-    setDraft,
+    setDraft: handleDraftChange,
     setOpen,
     showTurnstile,
     turnstileRef,
