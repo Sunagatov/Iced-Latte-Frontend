@@ -322,6 +322,53 @@ describe('SupportChatWidget', () => {
     expect(input).toHaveValue('Hello support')
   })
 
+  it('uses a fresh client message ID when retrying after owner delivery is unavailable', async () => {
+    authenticate()
+    mockReadyChat()
+    mockedCreateSupportChatMessage
+      .mockRejectedValueOnce({
+        isAxiosError: true,
+        response: {
+          data: {
+            type: 'https://iced-latte.local/problems/support-chat-temporarily-unavailable',
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        id: 'message-2',
+        conversationId: 'conversation-1',
+        clientMessageId: 'client-2',
+        senderType: 'CUSTOMER',
+        body: 'Please help',
+        deliveryStatus: 'SENT',
+        createdAt: '2026-06-08T10:02:00Z',
+      })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const input = await screen.findByLabelText('Message')
+
+    fireEvent.change(input, { target: { value: 'Please help' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    expect(
+      await screen.findByText('Support is temporarily unavailable. Try again later.'),
+    ).toBeInTheDocument()
+    expect(input).toHaveValue('Please help')
+    const failedClientMessageId = mockedCreateSupportChatMessage.mock.calls[0]?.[3]
+
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    await waitFor(() => {
+      expect(mockedCreateSupportChatMessage).toHaveBeenCalledTimes(2)
+    })
+    expect(mockedCreateSupportChatMessage.mock.calls[1]?.[3]).not.toBe(
+      failedClientMessageId,
+    )
+    expect(await screen.findByText('Please help')).toBeInTheDocument()
+  })
+
   it('renders live owner replies from the support-chat subscription', async () => {
     authenticate()
     mockReadyChat()

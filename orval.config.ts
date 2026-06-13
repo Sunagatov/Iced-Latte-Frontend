@@ -16,6 +16,9 @@ const frontendExcludedPathsBySpec: Record<string, string[]> = {
   payment: [
     '/api/v1/payment/stripe/webhook',
   ],
+  supportChat: [
+    '/api/v1/support-chat/telegram/webhook',
+  ],
 }
 
 const frontendExcludedSchemasBySpec: Record<string, (string | RegExp)[]> = {
@@ -63,6 +66,12 @@ const frontendExcludedSchemasBySpec: Record<string, (string | RegExp)[]> = {
     'ConfirmPasswordResetRequest',
     'DeliveryAddressDto',
     'DeliveryAddressRequest',
+  ],
+  supportChat: [
+    'TelegramWebhookChat',
+    'TelegramWebhookMessage',
+    'TelegramWebhookUpdate',
+    'TelegramWebhookUser',
   ],
 }
 

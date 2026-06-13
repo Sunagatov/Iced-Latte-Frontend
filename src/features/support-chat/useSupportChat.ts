@@ -81,6 +81,10 @@ function requiresTurnstileRetry(error: unknown): boolean {
   ].includes(problemSlug(error) ?? '')
 }
 
+function shouldStartNewClientMessage(error: unknown): boolean {
+  return problemSlug(error) === 'support-chat-temporarily-unavailable'
+}
+
 export function useSupportChat() {
   const status = useAuthStore((state) => state.status)
   const pathname = usePathname()
@@ -293,6 +297,7 @@ export function useSupportChat() {
       if (message.deliveryStatus === 'FAILED') {
         setError('Could not send. Try again.')
         setTurnstileToken('')
+        clientMessageIdRef.current = null
         turnstileRef.current?.reset()
 
         return
@@ -307,6 +312,9 @@ export function useSupportChat() {
       setError(getUserMessage(sendError))
       if (requiresTurnstileRetry(sendError)) {
         setTurnstileRetryRequired(true)
+      }
+      if (shouldStartNewClientMessage(sendError)) {
+        clientMessageIdRef.current = null
       }
       setTurnstileToken('')
       turnstileRef.current?.reset()
