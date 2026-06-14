@@ -1,4 +1,4 @@
-import { Client } from '@stomp/stompjs'
+import { Client, type IMessage } from '@stomp/stompjs'
 import {
   subscribeToSupportChatMessages,
   supportChatMessagesDestination,
@@ -8,9 +8,25 @@ type ClientConfig = ConstructorParameters<typeof Client>[0]
 
 const unsubscribe = jest.fn()
 const deactivate = jest.fn()
-const subscribe = jest.fn(() => ({ unsubscribe }))
+const subscribe = jest.fn(
+  (_destination: string, _callback: (message: IMessage) => void) => ({
+    unsubscribe,
+  }),
+)
 const activate = jest.fn()
 const createdClients: ClientConfig[] = []
+
+function messageFrame(body: unknown): IMessage {
+  return {
+    ack: jest.fn(),
+    binaryBody: new Uint8Array(),
+    body: JSON.stringify(body),
+    command: 'MESSAGE',
+    headers: {},
+    isBinaryBody: false,
+    nack: jest.fn(),
+  }
+}
 
 jest.mock('@stomp/stompjs', () => ({
   Client: jest.fn().mockImplementation((config: ClientConfig) => {
@@ -55,6 +71,31 @@ describe('support chat realtime contract', () => {
       '/topic/support-chat/conversations/conversation-1/messages',
       expect.any(Function),
     )
+  })
+
+  it('ignores live messages for a different conversation', () => {
+    const onMessage = jest.fn()
+
+    subscribeToSupportChatMessages({
+      conversationId: 'conversation-1',
+      onMessage,
+    })
+
+    createdClients[0]?.onConnect?.({} as never)
+    const onFrame = subscribe.mock.calls[0]?.[1]
+
+    onFrame?.(
+      messageFrame({
+        id: 'message-1',
+        conversationId: 'conversation-2',
+        senderType: 'OWNER',
+        body: 'Wrong conversation',
+        deliveryStatus: 'SENT',
+        createdAt: '2026-06-08T10:02:00Z',
+      }),
+    )
+
+    expect(onMessage).not.toHaveBeenCalled()
   })
 
   it('does not emit reconnect state after intentional disconnect', () => {

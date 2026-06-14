@@ -73,7 +73,9 @@ export function subscribeToSupportChatMessages({
         (frame) => {
           const message = parseSupportChatMessage(frame)
 
-          if (message) onMessage(message)
+          if (message?.conversationId === conversationId) {
+            onMessage(message)
+          }
         },
       )
     },
