@@ -261,9 +261,13 @@ export function useSupportChat() {
       return
     }
 
+    let active = true
+
     const refreshHistory = async () => {
       try {
         const historyMessages = await loadAllHistory(conversation.id)
+
+        if (!active) return
 
         setMessages((current) => mergeMessages(current, historyMessages))
       } catch {
@@ -274,9 +278,13 @@ export function useSupportChat() {
     const subscription = subscribeToSupportChatMessages({
       conversationId: conversation.id,
       onMessage: (message) => {
+        if (!active) return
+
         setMessages((current) => mergeMessages(current, [message]))
       },
       onConnectionStateChange: (connected) => {
+        if (!active) return
+
         clearReconnectTimer()
 
         if (connected) {
@@ -287,12 +295,15 @@ export function useSupportChat() {
         }
 
         reconnectingTimerRef.current = setTimeout(() => {
+          if (!active) return
+
           setLiveReconnecting(true)
         }, 1200)
       },
     })
 
     return () => {
+      active = false
       clearReconnectTimer()
       setLiveReconnecting(false)
       subscription.disconnect()

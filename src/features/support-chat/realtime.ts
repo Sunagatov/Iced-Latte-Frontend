@@ -1,11 +1,22 @@
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs'
-import type { SupportChatMessageDto } from '@/features/support-chat/api'
+import {
+  SupportChatMessageDtoDeliveryStatus,
+  SupportChatMessageDtoSenderType,
+  type SupportChatMessageDto,
+} from '@/features/support-chat/api'
 
 export const SUPPORT_CHAT_WS_PATH = '/ws'
 
 export function supportChatMessagesDestination(conversationId: string): string {
   return `/topic/support-chat/conversations/${conversationId}/messages`
 }
+
+const SUPPORT_CHAT_SENDER_TYPES = new Set<string>(
+  Object.values(SupportChatMessageDtoSenderType),
+)
+const SUPPORT_CHAT_DELIVERY_STATUSES = new Set<string>(
+  Object.values(SupportChatMessageDtoDeliveryStatus),
+)
 
 function supportChatWebSocketUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL?.trim()
@@ -28,9 +39,9 @@ function parseSupportChatMessage(frame: IMessage): SupportChatMessageDto | null 
     if (
       typeof data.id !== 'string' ||
       typeof data.conversationId !== 'string' ||
-      typeof data.senderType !== 'string' ||
+      !SUPPORT_CHAT_SENDER_TYPES.has(data.senderType ?? '') ||
       typeof data.body !== 'string' ||
-      typeof data.deliveryStatus !== 'string' ||
+      !SUPPORT_CHAT_DELIVERY_STATUSES.has(data.deliveryStatus ?? '') ||
       typeof data.createdAt !== 'string'
     ) {
       return null

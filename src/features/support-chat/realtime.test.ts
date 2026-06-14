@@ -98,6 +98,41 @@ describe('support chat realtime contract', () => {
     expect(onMessage).not.toHaveBeenCalled()
   })
 
+  it('ignores live messages with unsupported contract enum values', () => {
+    const onMessage = jest.fn()
+
+    subscribeToSupportChatMessages({
+      conversationId: 'conversation-1',
+      onMessage,
+    })
+
+    createdClients[0]?.onConnect?.({} as never)
+    const onFrame = subscribe.mock.calls[0]?.[1]
+
+    onFrame?.(
+      messageFrame({
+        id: 'message-1',
+        conversationId: 'conversation-1',
+        senderType: 'TELEGRAM',
+        body: 'Invalid sender',
+        deliveryStatus: 'SENT',
+        createdAt: '2026-06-08T10:02:00Z',
+      }),
+    )
+    onFrame?.(
+      messageFrame({
+        id: 'message-2',
+        conversationId: 'conversation-1',
+        senderType: 'OWNER',
+        body: 'Invalid delivery',
+        deliveryStatus: 'TELEGRAM_FAILED',
+        createdAt: '2026-06-08T10:03:00Z',
+      }),
+    )
+
+    expect(onMessage).not.toHaveBeenCalled()
+  })
+
   it('does not emit reconnect state after intentional disconnect', () => {
     const onConnectionStateChange = jest.fn()
 
