@@ -41,14 +41,51 @@ jest.mock('@stomp/stompjs', () => ({
 }))
 
 describe('support chat realtime contract', () => {
+  const originalSupportChatWsUrl =
+    process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL
+
   beforeEach(() => {
     jest.clearAllMocks()
     createdClients.length = 0
+    delete process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL
+  })
+
+  afterAll(() => {
+    if (originalSupportChatWsUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL
+
+      return
+    }
+
+    process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL = originalSupportChatWsUrl
   })
 
   it('builds the backend support-chat STOMP destination', () => {
     expect(supportChatMessagesDestination('conversation-1')).toBe(
       '/topic/support-chat/conversations/conversation-1/messages',
+    )
+  })
+
+  it('defaults the WebSocket broker URL to the same-origin support-chat route', () => {
+    subscribeToSupportChatMessages({
+      conversationId: 'conversation-1',
+      onMessage: jest.fn(),
+    })
+
+    expect(createdClients[0]?.brokerURL).toBe('ws://localhost/api/v1/ws')
+  })
+
+  it('prefers the explicit support-chat WebSocket override when configured', () => {
+    process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL =
+      'wss://iced-latte.uk/api/v1/ws'
+
+    subscribeToSupportChatMessages({
+      conversationId: 'conversation-1',
+      onMessage: jest.fn(),
+    })
+
+    expect(createdClients[0]?.brokerURL).toBe(
+      'wss://iced-latte.uk/api/v1/ws',
     )
   })
 

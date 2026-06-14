@@ -94,6 +94,8 @@ function shouldStartNewClientMessage(error: unknown): boolean {
   return problemSlug(error) === 'support-chat-temporarily-unavailable'
 }
 
+const SUPPORT_CHAT_HISTORY_REFRESH_INTERVAL_MS = 5000
+
 export function useSupportChat() {
   const status = useAuthStore((state) => state.status)
   const userEmail = useAuthStore((state) => state.userData?.email)
@@ -319,6 +321,35 @@ export function useSupportChat() {
       subscription.disconnect()
     }
   }, [canUseChat, clearReconnectTimer, conversation, loadAllHistory, open])
+
+  useEffect(() => {
+    if (!open || !canUseChat || !conversation) {
+      return
+    }
+
+    let active = true
+
+    const refreshHistory = async () => {
+      try {
+        const historyMessages = await loadAllHistory(conversation.id)
+
+        if (!active) return
+
+        setMessages((current) => mergeMessages(current, historyMessages))
+      } catch {
+        // The live subscription remains the primary path; polling is a fallback.
+      }
+    }
+
+    const intervalId = setInterval(() => {
+      void refreshHistory()
+    }, SUPPORT_CHAT_HISTORY_REFRESH_INTERVAL_MS)
+
+    return () => {
+      active = false
+      clearInterval(intervalId)
+    }
+  }, [canUseChat, conversation, loadAllHistory, open])
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token)

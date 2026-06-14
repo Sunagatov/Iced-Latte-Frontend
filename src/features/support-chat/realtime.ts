@@ -5,7 +5,7 @@ import {
   type SupportChatMessageDto,
 } from '@/features/support-chat/api'
 
-export const SUPPORT_CHAT_WS_PATH = '/ws'
+export const SUPPORT_CHAT_WS_PATH = '/api/v1/ws'
 
 export function supportChatMessagesDestination(conversationId: string): string {
   return `/topic/support-chat/conversations/${conversationId}/messages`
@@ -23,11 +23,10 @@ function supportChatWebSocketUrl(): string {
 
   if (configured) return configured
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '/api/v1'
-  const url = new URL(apiUrl, window.location.origin)
+  const url = new URL(window.location.origin)
 
   url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  url.pathname = `${url.pathname.replace(/\/$/, '')}${SUPPORT_CHAT_WS_PATH}`
+  url.pathname = SUPPORT_CHAT_WS_PATH
 
   return url.toString()
 }
