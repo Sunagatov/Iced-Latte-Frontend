@@ -9,6 +9,7 @@ import {
   type SupportChatStatusDto,
 } from '@/shared/api/generated/supportChat'
 import { SUPPORT_CHAT_HISTORY_PAGE_SIZE } from '@/features/support-chat/config'
+import type { CacheRequestConfig } from 'axios-cache-interceptor'
 
 export type {
   SupportChatConversationDto,
@@ -17,12 +18,14 @@ export type {
   SupportChatStatusDto,
 } from '@/shared/api/generated/supportChat'
 
+const noCacheRequestConfig: CacheRequestConfig = { cache: false }
+
 export async function getSupportChatAvailability(): Promise<SupportChatStatusDto> {
-  return getSupportChatStatus({ cache: false } as object)
+  return getSupportChatStatus(noCacheRequestConfig)
 }
 
 export async function getSupportChatConversation(): Promise<SupportChatConversationDto> {
-  return getCurrentSupportChatConversation({ cache: false } as object)
+  return getCurrentSupportChatConversation(noCacheRequestConfig)
 }
 
 export async function getSupportChatHistory(
@@ -32,7 +35,7 @@ export async function getSupportChatHistory(
   return getSupportChatMessages(
     conversationId,
     { page, size: SUPPORT_CHAT_HISTORY_PAGE_SIZE },
-    { cache: false } as object,
+    noCacheRequestConfig,
   )
 }
 export async function createSupportChatMessage(
@@ -48,6 +51,6 @@ export async function createSupportChatMessage(
       clientMessageId,
       ...(turnstileToken ? { turnstileToken } : {}),
     },
-    { cache: false } as object,
+    noCacheRequestConfig,
   )
 }
