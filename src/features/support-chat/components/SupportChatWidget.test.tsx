@@ -119,6 +119,16 @@ function mockReadyChat() {
   })
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void
+
+  const promise = new Promise<T>((nextResolve) => {
+    resolve = nextResolve
+  })
+
+  return { promise, resolve }
+}
+
 describe('SupportChatWidget', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -230,6 +240,48 @@ describe('SupportChatWidget', () => {
     })
     expect(await screen.findByText('Hello support')).toBeInTheDocument()
     expect(await screen.findByText(/Sent/)).toBeInTheDocument()
+  })
+
+  it('ignores completed sends after the chat session is reset', async () => {
+    authenticate()
+    mockReadyChat()
+    const pendingSend = deferred<SupportChatMessageDto>()
+
+    mockedCreateSupportChatMessage.mockReturnValue(pendingSend.promise)
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const input = await screen.findByLabelText('Message')
+
+    fireEvent.change(input, { target: { value: 'Hello support' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    await waitFor(() => {
+      expect(mockedCreateSupportChatMessage).toHaveBeenCalledTimes(1)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hide support chat' }))
+
+    await act(async () => {
+      pendingSend.resolve({
+        id: 'message-1',
+        conversationId: 'conversation-1',
+        clientMessageId: 'client-1',
+        senderType: 'CUSTOMER',
+        body: 'Hello support',
+        deliveryStatus: 'SENT',
+        createdAt: '2026-06-08T10:01:00Z',
+      })
+      await pendingSend.promise
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const reopenedInput = await screen.findByLabelText('Message')
+
+    expect(reopenedInput).toHaveValue('Hello support')
+    expect(screen.queryByText(/Sent/)).not.toBeInTheDocument()
   })
 
   it('shows a Turnstile challenge after the backend requires re-verification', async () => {

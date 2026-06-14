@@ -113,6 +113,7 @@ export function useSupportChat() {
   const turnstileRef = useRef<TurnstileInstance>(null)
   const clientMessageIdRef = useRef<string | null>(null)
   const reconnectingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const chatSessionVersionRef = useRef(0)
 
   const clearReconnectTimer = useCallback(() => {
     if (!reconnectingTimerRef.current) return
@@ -121,8 +122,14 @@ export function useSupportChat() {
     reconnectingTimerRef.current = null
   }, [])
 
+  const isCurrentChatSession = useCallback(
+    (version: number) => chatSessionVersionRef.current === version,
+    [],
+  )
+
   const resetChatState = useCallback(
     ({ clearDraft, close }: { clearDraft: boolean; close: boolean }) => {
+      chatSessionVersionRef.current += 1
       clearReconnectTimer()
       if (close) setOpen(false)
       setLoadState('idle')
@@ -324,6 +331,8 @@ export function useSupportChat() {
   const send = useCallback(async () => {
     if (!conversation || sendDisabled) return
 
+    const chatSessionVersion = chatSessionVersionRef.current
+
     setSending(true)
     setError('')
     clientMessageIdRef.current ??= crypto.randomUUID()
@@ -335,6 +344,8 @@ export function useSupportChat() {
         showTurnstile ? turnstileToken : undefined,
         clientMessageIdRef.current,
       )
+
+      if (!isCurrentChatSession(chatSessionVersion)) return
 
       setMessages((current) => mergeMessages(current, [message]))
       if (
@@ -354,6 +365,8 @@ export function useSupportChat() {
       clientMessageIdRef.current = null
       turnstileRef.current?.reset()
     } catch (sendError) {
+      if (!isCurrentChatSession(chatSessionVersion)) return
+
       setError(getUserMessage(sendError))
       if (requiresTurnstileRetry(sendError)) {
         setTurnstileRetryRequired(true)
@@ -364,10 +377,13 @@ export function useSupportChat() {
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } finally {
-      setSending(false)
+      if (isCurrentChatSession(chatSessionVersion)) {
+        setSending(false)
+      }
     }
   }, [
     conversation,
+    isCurrentChatSession,
     sendDisabled,
     showTurnstile,
     trimmedDraft,
