@@ -15,6 +15,7 @@ export type SupportChatStatusDtoReason = typeof SupportChatStatusDtoReason[keyof
 
 export const SupportChatStatusDtoReason = {
   EMAIL_VERIFICATION_REQUIRED: 'EMAIL_VERIFICATION_REQUIRED',
+  ACCESS_RESTRICTED: 'ACCESS_RESTRICTED',
 } as const;
 
 export interface SupportChatStatusDto {
