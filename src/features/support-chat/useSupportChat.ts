@@ -164,6 +164,23 @@ export function useSupportChat() {
     turnstileRef.current?.reset()
   }, [clearReconnectTimer, visible])
 
+  useEffect(() => {
+    if (!visible || open) return
+
+    clearReconnectTimer()
+    setLoadState('idle')
+    setAvailability(null)
+    setConversation(null)
+    setMessages([])
+    setError('')
+    setSending(false)
+    setLiveReconnecting(false)
+    setTurnstileToken('')
+    setTurnstileRetryRequired(false)
+    clientMessageIdRef.current = null
+    turnstileRef.current?.reset()
+  }, [clearReconnectTimer, open, visible])
+
   const loadAllHistory = useCallback(async (conversationId: string) => {
     const firstPage = await getSupportChatHistory(conversationId, 0)
     let nextMessages = firstPage.messages
@@ -187,6 +204,9 @@ export function useSupportChat() {
     async function load() {
       setLoadState('loading')
       setError('')
+      setAvailability(null)
+      setConversation(null)
+      setMessages([])
 
       try {
         const nextAvailability = await getSupportChatAvailability()
@@ -196,6 +216,8 @@ export function useSupportChat() {
         setAvailability(nextAvailability)
 
         if (!nextAvailability.enabled || !nextAvailability.eligible) {
+          setConversation(null)
+          setMessages([])
           setLoadState('unavailable')
 
           return
@@ -212,6 +234,9 @@ export function useSupportChat() {
       } catch (loadError) {
         if (cancelled) return
 
+        setAvailability(null)
+        setConversation(null)
+        setMessages([])
         setLoadState('unavailable')
         setError(getUserMessage(loadError))
       }

@@ -560,4 +560,59 @@ describe('SupportChatWidget', () => {
       screen.queryByRole('button', { name: 'Open support chat' }),
     ).not.toBeInTheDocument()
   })
+
+  it('does not reuse a stale eligible conversation after reopening', async () => {
+    authenticate()
+    mockedGetSupportChatAvailability
+      .mockResolvedValueOnce({
+        enabled: true,
+        eligible: true,
+      })
+      .mockResolvedValueOnce({
+        enabled: true,
+        eligible: false,
+        reason: 'EMAIL_VERIFICATION_REQUIRED',
+      })
+    mockedGetSupportChatConversation.mockResolvedValue({
+      id: 'conversation-1',
+      createdAt: '2026-06-08T10:00:00Z',
+      updatedAt: '2026-06-08T10:00:00Z',
+    })
+    mockedGetSupportChatHistory.mockResolvedValue({
+      messages: [
+        {
+          id: 'message-1',
+          conversationId: 'conversation-1',
+          senderType: 'CUSTOMER',
+          body: 'Loaded before close',
+          deliveryStatus: 'SENT',
+          createdAt: '2026-06-08T10:01:00Z',
+        },
+      ],
+      page: 0,
+      size: 30,
+      totalElements: 1,
+      totalPages: 1,
+    })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    expect(await screen.findByText('Loaded before close')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(mockedSubscribeToSupportChatMessages).toHaveBeenCalledTimes(1)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hide support chat' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    expect(
+      await screen.findByText(
+        'Please verify your email address before using support chat.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Loaded before close')).not.toBeInTheDocument()
+    expect(mockedGetSupportChatConversation).toHaveBeenCalledTimes(1)
+    expect(mockedSubscribeToSupportChatMessages).toHaveBeenCalledTimes(1)
+  })
 })
