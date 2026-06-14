@@ -27,6 +27,19 @@ jest.mock('@/features/support-chat/config', () => ({
 }))
 
 jest.mock('@/features/support-chat/api', () => ({
+  SupportChatMessageDtoDeliveryStatus: {
+    FAILED: 'FAILED',
+    PENDING: 'PENDING',
+    SENT: 'SENT',
+  },
+  SupportChatMessageDtoSenderType: {
+    CUSTOMER: 'CUSTOMER',
+    OWNER: 'OWNER',
+    SYSTEM: 'SYSTEM',
+  },
+  SupportChatStatusDtoReason: {
+    EMAIL_VERIFICATION_REQUIRED: 'EMAIL_VERIFICATION_REQUIRED',
+  },
   createSupportChatMessage: jest.fn(),
   getSupportChatAvailability: jest.fn(),
   getSupportChatConversation: jest.fn(),

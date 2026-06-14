@@ -6,6 +6,11 @@ import { RiChat3Line, RiCloseLine, RiSendPlane2Line } from 'react-icons/ri'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import { SUPPORT_CHAT_MESSAGE_MAX_LENGTH } from '@/features/support-chat/config'
 import { useSupportChat } from '@/features/support-chat/useSupportChat'
+import {
+  SupportChatMessageDtoDeliveryStatus,
+  SupportChatMessageDtoSenderType,
+  type SupportChatMessageDto,
+} from '@/features/support-chat/api'
 
 function formatMessageTime(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
@@ -14,9 +19,15 @@ function formatMessageTime(value: string): string {
   }).format(new Date(value))
 }
 
-function customerDeliveryLabel(deliveryStatus: string): string {
-  if (deliveryStatus === 'FAILED') return 'Could not send'
-  if (deliveryStatus === 'PENDING') return 'Sending'
+function customerDeliveryLabel(
+  deliveryStatus: SupportChatMessageDto['deliveryStatus'],
+): string {
+  if (deliveryStatus === SupportChatMessageDtoDeliveryStatus.FAILED) {
+    return 'Could not send'
+  }
+  if (deliveryStatus === SupportChatMessageDtoDeliveryStatus.PENDING) {
+    return 'Sending'
+  }
 
   return 'Sent'
 }
@@ -109,7 +120,9 @@ export default function SupportChatWidget() {
               {messages.length > 0 && (
                 <ol className="space-y-3">
                   {messages.map((message) => {
-                    const mine = message.senderType === 'CUSTOMER'
+                    const mine =
+                      message.senderType ===
+                      SupportChatMessageDtoSenderType.CUSTOMER
 
                     return (
                       <li

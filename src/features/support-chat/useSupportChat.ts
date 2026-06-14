@@ -10,6 +10,9 @@ import {
   getSupportChatAvailability,
   getSupportChatConversation,
   getSupportChatHistory,
+  SupportChatMessageDtoDeliveryStatus,
+  SupportChatMessageDtoSenderType,
+  SupportChatStatusDtoReason,
   type SupportChatConversationDto,
   type SupportChatMessageDto,
   type SupportChatStatusDto,
@@ -37,6 +40,12 @@ const SUPPORT_CHAT_EXCLUDED_PATH_PREFIXES = [
   '/checkout/cancel',
 ]
 
+const SUPPORT_CHAT_TURNSTILE_RETRY_PROBLEM_SLUGS = new Set([
+  'support-chat-turnstile-failed',
+  'support-chat-duplicate-message',
+  'support-chat-rate-limited',
+])
+
 function mergeMessages(
   current: SupportChatMessageDto[],
   incoming: SupportChatMessageDto[],
@@ -53,7 +62,10 @@ function mergeMessages(
 }
 
 function needsFirstMessageTurnstile(messages: SupportChatMessageDto[]): boolean {
-  return !messages.some((message) => message.senderType === 'CUSTOMER')
+  return !messages.some(
+    (message) =>
+      message.senderType === SupportChatMessageDtoSenderType.CUSTOMER,
+  )
 }
 
 function problemSlug(error: unknown): string | undefined {
@@ -74,11 +86,7 @@ function problemSlug(error: unknown): string | undefined {
 }
 
 function requiresTurnstileRetry(error: unknown): boolean {
-  return [
-    'support-chat-turnstile-failed',
-    'support-chat-duplicate-message',
-    'support-chat-rate-limited',
-  ].includes(problemSlug(error) ?? '')
+  return SUPPORT_CHAT_TURNSTILE_RETRY_PROBLEM_SLUGS.has(problemSlug(error) ?? '')
 }
 
 function shouldStartNewClientMessage(error: unknown): boolean {
@@ -113,6 +121,26 @@ export function useSupportChat() {
     reconnectingTimerRef.current = null
   }, [])
 
+  const resetChatState = useCallback(
+    ({ clearDraft, close }: { clearDraft: boolean; close: boolean }) => {
+      clearReconnectTimer()
+      if (close) setOpen(false)
+      setLoadState('idle')
+      setAvailability(null)
+      setConversation(null)
+      setMessages([])
+      if (clearDraft) setDraft('')
+      setError('')
+      setSending(false)
+      setLiveReconnecting(false)
+      setTurnstileToken('')
+      setTurnstileRetryRequired(false)
+      clientMessageIdRef.current = null
+      turnstileRef.current?.reset()
+    },
+    [clearReconnectTimer],
+  )
+
   const visible =
     supportChatEnabled &&
     status === 'authenticated' &&
@@ -138,7 +166,10 @@ export function useSupportChat() {
       return 'Support chat is temporarily unavailable. Please try again later.'
     }
 
-    if (availability.reason === 'EMAIL_VERIFICATION_REQUIRED') {
+    if (
+      availability.reason ===
+      SupportChatStatusDtoReason.EMAIL_VERIFICATION_REQUIRED
+    ) {
       return 'Please verify your email address before using support chat.'
     }
 
@@ -148,38 +179,14 @@ export function useSupportChat() {
   useEffect(() => {
     if (visible) return
 
-    clearReconnectTimer()
-    setOpen(false)
-    setLoadState('idle')
-    setAvailability(null)
-    setConversation(null)
-    setMessages([])
-    setDraft('')
-    setError('')
-    setSending(false)
-    setLiveReconnecting(false)
-    setTurnstileToken('')
-    setTurnstileRetryRequired(false)
-    clientMessageIdRef.current = null
-    turnstileRef.current?.reset()
-  }, [clearReconnectTimer, visible])
+    resetChatState({ clearDraft: true, close: true })
+  }, [resetChatState, visible])
 
   useEffect(() => {
     if (!visible || open) return
 
-    clearReconnectTimer()
-    setLoadState('idle')
-    setAvailability(null)
-    setConversation(null)
-    setMessages([])
-    setError('')
-    setSending(false)
-    setLiveReconnecting(false)
-    setTurnstileToken('')
-    setTurnstileRetryRequired(false)
-    clientMessageIdRef.current = null
-    turnstileRef.current?.reset()
-  }, [clearReconnectTimer, open, visible])
+    resetChatState({ clearDraft: false, close: false })
+  }, [open, resetChatState, visible])
 
   const loadAllHistory = useCallback(async (conversationId: string) => {
     const firstPage = await getSupportChatHistory(conversationId, 0)
@@ -319,7 +326,9 @@ export function useSupportChat() {
       )
 
       setMessages((current) => mergeMessages(current, [message]))
-      if (message.deliveryStatus === 'FAILED') {
+      if (
+        message.deliveryStatus === SupportChatMessageDtoDeliveryStatus.FAILED
+      ) {
         setError('Could not send. Try again.')
         setTurnstileToken('')
         clientMessageIdRef.current = null
@@ -371,7 +380,8 @@ export function useSupportChat() {
     turnstileRef,
     unavailableMessage,
     verificationRequired:
-      availability?.reason === 'EMAIL_VERIFICATION_REQUIRED',
+      availability?.reason ===
+      SupportChatStatusDtoReason.EMAIL_VERIFICATION_REQUIRED,
     verificationHref: ROUTES.confirmRegistration,
     visible,
     handleTurnstileVerify,

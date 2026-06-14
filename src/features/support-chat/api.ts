@@ -18,6 +18,12 @@ export type {
   SupportChatStatusDto,
 } from '@/shared/api/generated/supportChat'
 
+export {
+  SupportChatMessageDtoDeliveryStatus,
+  SupportChatMessageDtoSenderType,
+  SupportChatStatusDtoReason,
+} from '@/shared/api/generated/supportChat'
+
 const noCacheRequestConfig: CacheRequestConfig = { cache: false }
 
 export async function getSupportChatAvailability(): Promise<SupportChatStatusDto> {
@@ -38,6 +44,7 @@ export async function getSupportChatHistory(
     noCacheRequestConfig,
   )
 }
+
 export async function createSupportChatMessage(
   conversationId: string,
   body: string,
