@@ -54,4 +54,37 @@ describe('support chat config', () => {
 
     expect(supportChatTurnstileEnabled).toBe(false)
   })
+
+  it('allows every authenticated user when support chat allowlist is empty', async () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_SUPPORT_CHAT_ALLOWED_EMAILS: '',
+    }
+
+    const { isSupportChatAllowedEmail, supportChatAllowedEmails } = await import(
+      '@/features/support-chat/config'
+    )
+
+    expect(supportChatAllowedEmails).toEqual([])
+    expect(isSupportChatAllowedEmail('olivia@example.com')).toBe(true)
+  })
+
+  it('matches support chat allowlisted emails case-insensitively', async () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_SUPPORT_CHAT_ALLOWED_EMAILS:
+        ' olivia@example.com, SUPPORT@example.com ',
+    }
+
+    const { isSupportChatAllowedEmail, supportChatAllowedEmails } = await import(
+      '@/features/support-chat/config'
+    )
+
+    expect(supportChatAllowedEmails).toEqual([
+      'olivia@example.com',
+      'support@example.com',
+    ])
+    expect(isSupportChatAllowedEmail('SUPPORT@example.com')).toBe(true)
+    expect(isSupportChatAllowedEmail('guest@example.com')).toBe(false)
+  })
 })

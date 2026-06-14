@@ -19,6 +19,7 @@ import {
 } from '@/features/support-chat/api'
 import {
   SUPPORT_CHAT_MESSAGE_MAX_LENGTH,
+  isSupportChatAllowedEmail,
   supportChatEnabled,
   supportChatTurnstileEnabled,
 } from '@/features/support-chat/config'
@@ -95,6 +96,7 @@ function shouldStartNewClientMessage(error: unknown): boolean {
 
 export function useSupportChat() {
   const status = useAuthStore((state) => state.status)
+  const userEmail = useAuthStore((state) => state.userData?.email)
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [loadState, setLoadState] = useState<SupportChatLoadState>('idle')
@@ -151,6 +153,7 @@ export function useSupportChat() {
   const visible =
     supportChatEnabled &&
     status === 'authenticated' &&
+    isSupportChatAllowedEmail(userEmail) &&
     !isSupportChatExcludedPath(pathname)
   const canUseChat = Boolean(
     availability?.enabled && availability.eligible && conversation,

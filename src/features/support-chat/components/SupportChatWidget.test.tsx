@@ -13,6 +13,7 @@ import type { SupportChatMessageDto } from '@/features/support-chat/api'
 
 let mockSupportChatEnabled = true
 let mockSupportChatTurnstileEnabled = false
+let mockAllowedEmails: string[] = []
 let mockPathname = '/'
 
 jest.mock('@/features/support-chat/config', () => ({
@@ -24,6 +25,10 @@ jest.mock('@/features/support-chat/config', () => ({
   get supportChatTurnstileEnabled() {
     return mockSupportChatTurnstileEnabled
   },
+  isSupportChatAllowedEmail: (email?: string | null) =>
+    mockAllowedEmails.length === 0
+      ? true
+      : mockAllowedEmails.includes((email ?? '').trim().toLowerCase()),
 }))
 
 jest.mock('@/features/support-chat/api', () => ({
@@ -139,6 +144,7 @@ describe('SupportChatWidget', () => {
     mockedSubscribeToSupportChatMessages.mockReset()
     mockSupportChatEnabled = true
     mockSupportChatTurnstileEnabled = false
+    mockAllowedEmails = []
     mockPathname = '/'
     useAuthStore.setState({
       status: 'anonymous',
@@ -162,6 +168,17 @@ describe('SupportChatWidget', () => {
   })
 
   it('is hidden for guests', () => {
+    render(<SupportChatWidget />)
+
+    expect(
+      screen.queryByRole('button', { name: 'Open support chat' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('is hidden for authenticated users outside the support chat allowlist', () => {
+    mockAllowedEmails = ['support@example.com']
+    authenticate()
+
     render(<SupportChatWidget />)
 
     expect(
