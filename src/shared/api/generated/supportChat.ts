@@ -33,6 +33,10 @@ export interface SupportChatConversationDto {
   lastMessageAt?: string | null;
 }
 
+export interface SupportChatWebSocketTicketDto {
+  token: string;
+}
+
 export interface CreateSupportChatMessageRequest {
   clientMessageId: string;
   /**
@@ -164,6 +168,18 @@ export const getCurrentSupportChatConversation = (
     }
 
 /**
+ * @summary Create a short-lived support chat WebSocket ticket
+ */
+export const createSupportChatWebSocketTicket = (
+
+ options?: SecondParameter<typeof orvalMutator<SupportChatWebSocketTicketDto>>,) => {
+      return orvalMutator<SupportChatWebSocketTicketDto>(
+      {url: `/api/v1/support-chat/websocket-ticket`, method: 'POST'
+    },
+      options);
+    }
+
+/**
  * @summary Get visible support chat message history
  */
 export const getSupportChatMessages = (
@@ -194,5 +210,6 @@ export const sendSupportChatMessage = (
 
 export type GetSupportChatStatusResult = NonNullable<Awaited<ReturnType<typeof getSupportChatStatus>>>
 export type GetCurrentSupportChatConversationResult = NonNullable<Awaited<ReturnType<typeof getCurrentSupportChatConversation>>>
+export type CreateSupportChatWebSocketTicketResult = NonNullable<Awaited<ReturnType<typeof createSupportChatWebSocketTicket>>>
 export type GetSupportChatMessagesResult = NonNullable<Awaited<ReturnType<typeof getSupportChatMessages>>>
 export type SendSupportChatMessageResult = NonNullable<Awaited<ReturnType<typeof sendSupportChatMessage>>>

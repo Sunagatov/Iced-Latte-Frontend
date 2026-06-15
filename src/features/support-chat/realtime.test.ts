@@ -1,4 +1,5 @@
 import { Client, type IMessage } from '@stomp/stompjs'
+import { getSupportChatWebSocketTicket } from '@/features/support-chat/api'
 import {
   subscribeToSupportChatMessages,
   supportChatMessagesDestination,
@@ -15,6 +16,20 @@ const subscribe = jest.fn(
 )
 const activate = jest.fn()
 const createdClients: ClientConfig[] = []
+const liveClients: Array<{ connectHeaders?: Record<string, string> }> = []
+
+jest.mock('@/features/support-chat/api', () => {
+  const actual = jest.requireActual('@/features/support-chat/api')
+
+  return {
+    ...actual,
+    getSupportChatWebSocketTicket: jest.fn(),
+  }
+})
+
+const mockedGetSupportChatWebSocketTicket = jest.mocked(
+  getSupportChatWebSocketTicket,
+)
 
 function messageFrame(body: unknown): IMessage {
   return {
@@ -32,11 +47,16 @@ jest.mock('@stomp/stompjs', () => ({
   Client: jest.fn().mockImplementation((config: ClientConfig) => {
     createdClients.push(config)
 
-    return {
+    const client = {
       activate,
+      connectHeaders: undefined,
       deactivate,
       subscribe,
     }
+
+    liveClients.push(client)
+
+    return client
   }),
 }))
 
@@ -47,6 +67,8 @@ describe('support chat realtime contract', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     createdClients.length = 0
+    liveClients.length = 0
+    mockedGetSupportChatWebSocketTicket.mockResolvedValue({ token: 'ws-ticket' })
     delete process.env.NEXT_PUBLIC_SUPPORT_CHAT_WS_URL
   })
 
@@ -108,6 +130,20 @@ describe('support chat realtime contract', () => {
       '/topic/support-chat/conversations/conversation-1/messages',
       expect.any(Function),
     )
+  })
+
+  it('fetches a fresh websocket ticket before STOMP connect', async () => {
+    subscribeToSupportChatMessages({
+      conversationId: 'conversation-1',
+      onMessage: jest.fn(),
+    })
+
+    await createdClients[0]?.beforeConnect?.({} as never)
+
+    expect(mockedGetSupportChatWebSocketTicket).toHaveBeenCalledTimes(1)
+    expect(liveClients[0]?.connectHeaders).toEqual({
+      Authorization: 'Bearer ws-ticket',
+    })
   })
 
   it('ignores live messages for a different conversation', () => {

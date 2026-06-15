@@ -1,4 +1,5 @@
 import {
+  createSupportChatWebSocketTicket,
   getCurrentSupportChatConversation,
   getSupportChatMessages,
   getSupportChatStatus,
@@ -7,6 +8,7 @@ import {
   type SupportChatMessageDto,
   type SupportChatMessagePageDto,
   type SupportChatStatusDto,
+  type SupportChatWebSocketTicketDto,
 } from '@/shared/api/generated/supportChat'
 import { SUPPORT_CHAT_HISTORY_PAGE_SIZE } from '@/features/support-chat/config'
 import type { CacheRequestConfig } from 'axios-cache-interceptor'
@@ -16,6 +18,7 @@ export type {
   SupportChatMessageDto,
   SupportChatMessagePageDto,
   SupportChatStatusDto,
+  SupportChatWebSocketTicketDto,
 } from '@/shared/api/generated/supportChat'
 
 export {
@@ -32,6 +35,10 @@ export async function getSupportChatAvailability(): Promise<SupportChatStatusDto
 
 export async function getSupportChatConversation(): Promise<SupportChatConversationDto> {
   return getCurrentSupportChatConversation(noCacheRequestConfig)
+}
+
+export async function getSupportChatWebSocketTicket(): Promise<SupportChatWebSocketTicketDto> {
+  return createSupportChatWebSocketTicket(noCacheRequestConfig)
 }
 
 export async function getSupportChatHistory(

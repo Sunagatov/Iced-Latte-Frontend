@@ -1,5 +1,6 @@
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs'
 import {
+  getSupportChatWebSocketTicket,
   SupportChatMessageDtoDeliveryStatus,
   SupportChatMessageDtoSenderType,
   type SupportChatMessageDto,
@@ -74,6 +75,13 @@ export function subscribeToSupportChatMessages({
     reconnectDelay: 5000,
     heartbeatIncoming: 10000,
     heartbeatOutgoing: 10000,
+    beforeConnect: async () => {
+      const { token } = await getSupportChatWebSocketTicket()
+
+      client.connectHeaders = {
+        Authorization: `Bearer ${token}`,
+      }
+    },
     onConnect: () => {
       if (closedByClient) return
 
