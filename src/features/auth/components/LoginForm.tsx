@@ -69,6 +69,7 @@ export default function LoginForm() {
         register={register}
         name="email"
         type="text"
+        autoComplete="email"
         label="Enter your email address"
         placeholder="Enter your email address"
         error={errors.email}
@@ -78,6 +79,7 @@ export default function LoginForm() {
         register={register}
         type={showPassword ? 'text' : 'password'}
         name="password"
+        autoComplete="current-password"
         label="Password"
         placeholder="Password"
         error={errors.password}
@@ -96,10 +98,12 @@ export default function LoginForm() {
           </button>
         }
       />
-      <TurnstileWidget
-        ref={turnstile.ref}
-        onVerify={turnstile.handleVerify}
-      />
+      {turnstile.shouldRender && (
+        <TurnstileWidget
+          ref={turnstile.ref}
+          onVerify={turnstile.handleVerify}
+        />
+      )}
       <Button
         id="login-btn"
         type="submit"

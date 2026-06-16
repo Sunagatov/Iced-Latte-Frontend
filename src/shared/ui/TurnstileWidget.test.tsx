@@ -22,6 +22,14 @@ describe('TurnstileWidget', () => {
 
     const props = jest.mocked(Turnstile).mock.calls[0][0]
 
+    expect(props.options).toEqual(expect.objectContaining({
+      appearance: 'interaction-only',
+      feedbackEnabled: false,
+      refreshExpired: 'auto',
+      size: 'flexible',
+      theme: 'light',
+    }))
+
     props.onSuccess?.('verified-token')
     props.onExpire?.('expired-token')
     props.onError?.('network-error')

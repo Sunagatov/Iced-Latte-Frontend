@@ -8,16 +8,19 @@ jest.mock('@/shared/config/features', () => ({
 }))
 
 describe('useTurnstileVerification', () => {
-  it('blocks submission until a challenge token exists', () => {
+  it('renders the challenge only after verification is required', () => {
     const { result } = renderHook(() =>
       useTurnstileVerification('Complete verification first.'),
     )
+
+    expect(result.current.shouldRender).toBe(false)
 
     act(() => {
       expect(result.current.requireVerified()).toBe(false)
     })
 
     expect(result.current.error).toBe('Complete verification first.')
+    expect(result.current.shouldRender).toBe(true)
 
     act(() => {
       result.current.handleVerify('turnstile-token')
@@ -37,11 +40,13 @@ describe('useTurnstileVerification', () => {
     )
 
     act(() => {
+      result.current.requireVerified()
       result.current.handleVerify('turnstile-token')
       result.current.resetChallenge()
     })
 
     expect(result.current.error).toBe('')
     expect(result.current.token).toBe('')
+    expect(result.current.shouldRender).toBe(true)
   })
 })

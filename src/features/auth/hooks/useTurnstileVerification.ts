@@ -7,6 +7,7 @@ import { FEATURES } from '@/shared/config/features'
 export function useTurnstileVerification(requiredMessage: string) {
   const [token, setToken] = useState('')
   const [error, setError] = useState('')
+  const [shouldRender, setShouldRender] = useState(false)
   const ref = useRef<TurnstileInstance>(null)
 
   const handleVerify = useCallback((verifiedToken: string) => {
@@ -19,6 +20,7 @@ export function useTurnstileVerification(requiredMessage: string) {
       return true
     }
 
+    setShouldRender(true)
     setError(requiredMessage)
 
     return false
@@ -36,6 +38,7 @@ export function useTurnstileVerification(requiredMessage: string) {
     ref,
     requireVerified,
     resetChallenge,
+    shouldRender,
     token,
   }
 }

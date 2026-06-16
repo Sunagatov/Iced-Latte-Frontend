@@ -1,4 +1,6 @@
 import * as reviewsApi from '@/features/reviews/api'
+import axios from 'axios'
+import type { AxiosRequestHeaders } from 'axios'
 import { api } from '@/shared/api/client'
 
 jest.mock('@/shared/api/client', () => ({
@@ -53,7 +55,31 @@ describe('reviews api', () => {
     })
     const result = await reviewsApi.apiGetProductUserReview('p1')
 
+    if (result === null) {
+      throw new Error('Expected a review for product p1')
+    }
+
     expect(result.productReviewId).toBe('r1')
+  })
+
+  it('apiGetProductUserReview returns null when user has no review yet', async () => {
+    mockedApi.mockRejectedValue(
+      new axios.AxiosError(
+        'Not Found',
+        'ERR_BAD_REQUEST',
+        undefined,
+        undefined,
+        {
+          data: undefined,
+          status: 404,
+          statusText: 'Not Found',
+          headers: {},
+          config: { headers: {} as AxiosRequestHeaders },
+        },
+      ),
+    )
+
+    await expect(reviewsApi.apiGetProductUserReview('p1')).resolves.toBeNull()
   })
 
   it('apiGetUserReviews returns array', async () => {

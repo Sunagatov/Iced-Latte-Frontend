@@ -189,13 +189,16 @@ export default function ForgotPassForm() {
             name="email"
             label="Email address"
             type="email"
+            autoComplete="email"
             placeholder="Enter your email address"
             error={errors.email}
           />
-          <TurnstileWidget
-            ref={turnstile.ref}
-            onVerify={turnstile.handleVerify}
-          />
+          {turnstile.shouldRender && (
+            <TurnstileWidget
+              ref={turnstile.ref}
+              onVerify={turnstile.handleVerify}
+            />
+          )}
           <Button
             id="send-reset-btn"
             type="submit"

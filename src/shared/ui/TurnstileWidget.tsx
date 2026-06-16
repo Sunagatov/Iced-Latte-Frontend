@@ -24,7 +24,13 @@ const TurnstileWidget = forwardRef<TurnstileInstance, Props>(
           onError={clearToken}
           onTimeout={clearToken}
           onUnsupported={clearToken}
-          options={{ refreshExpired: 'auto', theme: 'light', size: 'flexible' }}
+          options={{
+            appearance: 'interaction-only',
+            feedbackEnabled: false,
+            refreshExpired: 'auto',
+            size: 'flexible',
+            theme: 'light',
+          }}
         />
       </div>
     )

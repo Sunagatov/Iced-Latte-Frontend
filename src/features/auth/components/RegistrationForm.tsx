@@ -105,6 +105,7 @@ export default function RegistrationForm() {
         register={register}
         name="email"
         type="text"
+        autoComplete="email"
         label="Email address"
         placeholder="Email address"
         error={errors.email}
@@ -114,6 +115,7 @@ export default function RegistrationForm() {
         register={register}
         name="password"
         type={showPassword ? 'text' : 'password'}
+        autoComplete="new-password"
         label="Password"
         placeholder="Password"
         error={errors.password}
@@ -132,10 +134,12 @@ export default function RegistrationForm() {
           </button>
         }
       />
-      <TurnstileWidget
-        ref={turnstile.ref}
-        onVerify={turnstile.handleVerify}
-      />
+      {turnstile.shouldRender && (
+        <TurnstileWidget
+          ref={turnstile.ref}
+          onVerify={turnstile.handleVerify}
+        />
+      )}
       <Button
         id="register-btn"
         disabled={loading}

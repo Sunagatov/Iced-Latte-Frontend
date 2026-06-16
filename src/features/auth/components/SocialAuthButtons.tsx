@@ -6,6 +6,7 @@ import type * as React from 'react'
 import { FEATURES } from '@/shared/config/features'
 import { ROUTES } from '@/shared/config/routes'
 import { getSafeNext } from '@/shared/utils/navigation'
+import { redirectToAuthProvider } from '@/features/auth/redirect'
 
 function SocialButton({
   icon,
@@ -154,13 +155,10 @@ export default function SocialAuthButtons({
           pending={pendingProvider === button.key}
           onClick={() => {
             setPendingProvider(button.key)
-            window.location.assign(buildAuthUrl(button.key))
+            redirectToAuthProvider(buildAuthUrl(button.key))
           }}
         />
       ))}
-      <p className="px-1 text-xs leading-5 text-slate-500">
-        We use a secure redirect and only complete sign-in after the provider confirms your account.
-      </p>
     </div>
   )
 }

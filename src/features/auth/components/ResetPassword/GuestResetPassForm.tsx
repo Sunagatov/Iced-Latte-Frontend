@@ -159,6 +159,7 @@ export default function GuestResetPassForm() {
                     name="password"
                     label="New password"
                     type="password"
+                    autoComplete="new-password"
                     placeholder="Minimum 8 characters, one letter, one digit"
                     error={errors.password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -174,14 +175,17 @@ export default function GuestResetPassForm() {
                   name="confirmPassword"
                   label="Confirm new password"
                   type="password"
+                  autoComplete="new-password"
                   placeholder="Repeat your new password"
                   error={errors.confirmPassword}
                 />
 
-                <TurnstileWidget
-                  ref={turnstile.ref}
-                  onVerify={turnstile.handleVerify}
-                />
+                {turnstile.shouldRender && (
+                  <TurnstileWidget
+                    ref={turnstile.ref}
+                    onVerify={turnstile.handleVerify}
+                  />
+                )}
 
                 <Button
                   id="reset-btn"

@@ -52,6 +52,15 @@ describe('ForgotPassForm', () => {
     expect(screen.getByLabelText('Email address')).toHaveValue('')
   })
 
+  it('marks the email field with email autocomplete', () => {
+    render(<ForgotPassForm />)
+
+    expect(screen.getByLabelText('Email address')).toHaveAttribute(
+      'autocomplete',
+      'email',
+    )
+  })
+
   it('submits the entered email', async () => {
     render(<ForgotPassForm />)
 

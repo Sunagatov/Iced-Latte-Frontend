@@ -1,4 +1,5 @@
 import { Review, IProductReviewsStatistics } from './types'
+import axios from 'axios'
 import {
   addNewProductReview,
   addProductReviewLike,
@@ -86,10 +87,18 @@ export async function apiDeleteProductReview(
 
 export async function apiGetProductUserReview(
   productId: string,
-): Promise<Review> {
+): Promise<Review | null> {
   const options = { cache: false } as object
 
-  return (await getProductReview(productId, options)) as Review
+  try {
+    return (await getProductReview(productId, options)) as Review
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null
+    }
+
+    throw error
+  }
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {

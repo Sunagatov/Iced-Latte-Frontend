@@ -128,6 +128,7 @@ export default function AuthResetPassForm({
                   name="oldPassword"
                   label="Current password"
                   type="password"
+                  autoComplete="current-password"
                   placeholder="Enter your current password"
                   error={errors.oldPassword}
                 />
@@ -139,6 +140,7 @@ export default function AuthResetPassForm({
                     name="newPassword"
                     label="New password"
                     type="password"
+                    autoComplete="new-password"
                     placeholder="Enter your new password"
                     error={errors.newPassword}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
