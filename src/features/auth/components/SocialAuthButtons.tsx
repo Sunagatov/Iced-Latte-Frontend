@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useSearchParams, usePathname } from 'next/navigation'
 import type * as React from 'react'
 import { FEATURES } from '@/shared/config/features'
@@ -9,20 +10,60 @@ import { getSafeNext } from '@/shared/utils/navigation'
 function SocialButton({
   icon,
   label,
+  hint,
   onClick,
+  pending = false,
 }: {
   icon: React.ReactNode
   label: string
+  hint: string
   onClick?: () => void
+  pending?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white text-sm font-medium text-[#1A202C] transition hover:bg-[#F7F8FA] active:scale-[0.98]"
+      disabled={pending}
+      aria-busy={pending}
+      className="group flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-slate-200/90 bg-white px-4 py-3 text-left text-sm text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow-[0_10px_30px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-solid focus-visible:ring-offset-2 active:scale-[0.99] disabled:cursor-wait disabled:opacity-75 disabled:hover:border-slate-200/90 disabled:hover:bg-white disabled:hover:shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
     >
-      {icon}
-      {label}
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-800 transition group-hover:bg-white">
+          {icon}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold text-slate-900">
+            {pending ? `Connecting to ${label.replace(/^(Continue with |Sign up with )/, '')}` : label}
+          </span>
+          <span className="mt-0.5 block truncate text-xs text-slate-500">
+            {pending ? 'Opening secure sign-in…' : hint}
+          </span>
+        </span>
+      </span>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400">
+        {pending ? (
+          <span
+            aria-hidden="true"
+            className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-brand-solid"
+          />
+        ) : (
+          <svg
+            aria-hidden="true"
+            className="h-4 w-4 transition group-hover:translate-x-0.5"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M7 5l5 5-5 5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </span>
     </button>
   )
 }
@@ -59,6 +100,7 @@ export default function SocialAuthButtons({
 }: {
   mode: 'signin' | 'signup'
 }) {
+  const [pendingProvider, setPendingProvider] = useState<'google' | 'github' | null>(null)
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const hasSocialAuth = FEATURES.googleAuth || FEATURES.githubAuth
@@ -82,6 +124,7 @@ export default function SocialAuthButtons({
         icon: GoogleIcon,
         label:
           mode === 'signin' ? 'Continue with Google' : 'Sign up with Google',
+        hint: 'Use your verified Google account for faster checkout',
       }
       : null,
     FEATURES.githubAuth
@@ -90,12 +133,14 @@ export default function SocialAuthButtons({
         icon: GitHubIcon,
         label:
           mode === 'signin' ? 'Continue with GitHub' : 'Sign up with GitHub',
+        hint: 'Best if your GitHub email is your primary sign-in address',
       }
       : null,
   ].filter(Boolean) as Array<{
     key: 'google' | 'github'
     icon: React.ReactNode
     label: string
+    hint: string
   }>
 
   return (
@@ -105,11 +150,17 @@ export default function SocialAuthButtons({
           key={button.key}
           icon={button.icon}
           label={button.label}
+          hint={button.hint}
+          pending={pendingProvider === button.key}
           onClick={() => {
+            setPendingProvider(button.key)
             window.location.assign(buildAuthUrl(button.key))
           }}
         />
       ))}
+      <p className="px-1 text-xs leading-5 text-slate-500">
+        We use a secure redirect and only complete sign-in after the provider confirms your account.
+      </p>
     </div>
   )
 }
