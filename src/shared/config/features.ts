@@ -1,5 +1,6 @@
 export const FEATURES = {
   googleAuth: process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === 'true',
+  githubAuth: process.env.NEXT_PUBLIC_GITHUB_AUTH_ENABLED === 'true',
   stripe: process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true',
   ai: process.env.NEXT_PUBLIC_AI_ENABLED === 'true',
   supportChat: process.env.NEXT_PUBLIC_SUPPORT_CHAT_ENABLED === 'true',

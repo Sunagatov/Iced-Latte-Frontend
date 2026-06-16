@@ -210,7 +210,7 @@ describe('SupportChatWidget', () => {
 
   it('is hidden on transient auth and payment callback pages', () => {
     authenticate()
-    mockPathname = '/auth/google/callback'
+    mockPathname = '/auth/github/callback'
 
     const { rerender } = render(<SupportChatWidget />)
 

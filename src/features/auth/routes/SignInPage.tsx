@@ -7,6 +7,8 @@ import LoginForm from '@/features/auth/components/LoginForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
 
 export default function SignInPage() {
+  const hasSocialAuth = FEATURES.googleAuth || FEATURES.githubAuth
+
   return (
     <RestrictRoute>
       <div className="flex min-h-[calc(100vh-112px)]">
@@ -43,7 +45,7 @@ export default function SignInPage() {
               </Suspense>
             </div>
 
-            {FEATURES.googleAuth && (
+            {hasSocialAuth && (
               <div className="my-6 flex items-center gap-3">
                 <div className="h-px flex-1 bg-[#E2E8F0]" />
                 <span className="text-xs text-[#94A3B8]">

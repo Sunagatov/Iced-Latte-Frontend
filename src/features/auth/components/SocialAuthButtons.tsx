@@ -2,8 +2,8 @@
 
 import { useSearchParams, usePathname } from 'next/navigation'
 import type * as React from 'react'
-import { ROUTES } from '@/shared/config/routes'
 import { FEATURES } from '@/shared/config/features'
+import { ROUTES } from '@/shared/config/routes'
 import { getSafeNext } from '@/shared/utils/navigation'
 
 function SocialButton({
@@ -48,6 +48,12 @@ const GoogleIcon = (
   </svg>
 )
 
+const GitHubIcon = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.38-1.33-1.75-1.33-1.75-1.09-.75.08-.74.08-.74 1.2.09 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.31-5.47-1.34-5.47-5.96 0-1.32.47-2.4 1.24-3.25-.12-.31-.54-1.55.12-3.23 0 0 1.01-.32 3.3 1.24a11.35 11.35 0 0 1 6 0c2.28-1.56 3.29-1.24 3.29-1.24.66 1.68.24 2.92.12 3.23.77.85 1.24 1.93 1.24 3.25 0 4.63-2.81 5.65-5.49 5.95.43.37.82 1.1.82 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.21.7.83.58A12 12 0 0 0 24 12.5C24 5.87 18.63.5 12 .5Z" />
+  </svg>
+)
+
 export default function SocialAuthButtons({
   mode,
 }: {
@@ -55,27 +61,55 @@ export default function SocialAuthButtons({
 }) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
-  const googleLabel =
-    mode === 'signin' ? 'Continue with Google' : 'Sign up with Google'
+  const hasSocialAuth = FEATURES.googleAuth || FEATURES.githubAuth
 
-  if (!FEATURES.googleAuth) return null
+  if (!hasSocialAuth) return null
 
-  const handleGoogleAuth = () => {
+  const buildAuthUrl = (provider: 'google' | 'github') => {
     const requestedNext = searchParams.get('next')
     const fallbackNext = pathname !== ROUTES.signin && pathname !== ROUTES.signup ? pathname : null
     const next = getSafeNext(requestedNext) ?? getSafeNext(fallbackNext)
-    const url = next ? `/api/auth/google?next=${encodeURIComponent(next)}` : '/api/auth/google'
 
-    window.location.assign(url)
+    return next
+      ? `/api/auth/${provider}?next=${encodeURIComponent(next)}`
+      : `/api/auth/${provider}`
   }
+
+  const buttons = [
+    FEATURES.googleAuth
+      ? {
+        key: 'google',
+        icon: GoogleIcon,
+        label:
+          mode === 'signin' ? 'Continue with Google' : 'Sign up with Google',
+      }
+      : null,
+    FEATURES.githubAuth
+      ? {
+        key: 'github',
+        icon: GitHubIcon,
+        label:
+          mode === 'signin' ? 'Continue with GitHub' : 'Sign up with GitHub',
+      }
+      : null,
+  ].filter(Boolean) as Array<{
+    key: 'google' | 'github'
+    icon: React.ReactNode
+    label: string
+  }>
 
   return (
     <div className="flex flex-col gap-3">
-      <SocialButton
-        icon={GoogleIcon}
-        label={googleLabel}
-        onClick={handleGoogleAuth}
-      />
+      {buttons.map((button) => (
+        <SocialButton
+          key={button.key}
+          icon={button.icon}
+          label={button.label}
+          onClick={() => {
+            window.location.assign(buildAuthUrl(button.key))
+          }}
+        />
+      ))}
     </div>
   )
 }

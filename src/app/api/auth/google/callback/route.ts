@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSafeNext } from '@/shared/utils/navigation'
 import { ROUTES } from '@/shared/config/routes'
-import { getFrontendOrigin } from '../oauthUrls'
+import { getFrontendOrigin } from '../../oauthUrls'
 
 function buildErrorRedirect(request: NextRequest) {
   const base = new URL(ROUTES.signin, getFrontendOrigin(request))

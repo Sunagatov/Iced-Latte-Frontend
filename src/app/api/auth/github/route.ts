@@ -10,17 +10,17 @@ export async function GET(request: NextRequest) {
     return new NextResponse(null, { status: 400 })
   }
 
-  const backendUrl = getBackendOAuthUrl('/auth/oauth/google')
+  const backendUrl = getBackendOAuthUrl('/auth/oauth/github')
 
   if (!backendUrl) {
     return NextResponse.json(
-      { error: 'Google OAuth is not configured' },
+      { error: 'GitHub OAuth is not configured' },
       { status: 500 },
     )
   }
 
   const callbackUrl = new URL(
-    '/auth/google/callback',
+    '/auth/github/callback',
     getFrontendOrigin(request),
   )
 

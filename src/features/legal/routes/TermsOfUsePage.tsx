@@ -23,7 +23,7 @@ export const termsSections = [
   {
     title: '3. User Accounts',
     bullets: [
-      'You may create an account using an email address or Google OAuth.',
+      'You may create an account using an email address, Google OAuth, or GitHub OAuth.',
       'You are responsible for keeping your credentials secure.',
       'You must provide accurate information during registration.',
       'We reserve the right to suspend or delete accounts that violate these terms.',

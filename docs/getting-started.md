@@ -300,6 +300,7 @@ npm run test:e2e:report
 | `NEXT_IMAGE_REMOTE_SOURCES` | Allowed remote image hosts | `http://localhost:9000` |
 | `NEXT_PUBLIC_STRIPE_ENABLED` | Enable Stripe checkout UI | `false` |
 | `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` | Enable Google OAuth sign-in | `false` |
+| `NEXT_PUBLIC_GITHUB_AUTH_ENABLED` | Enable GitHub OAuth sign-in | `false` |
 | `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID` | Enable Google Analytics when set to a GA4 measurement ID | empty |
 | `NEXT_PUBLIC_OBSERVABILITY_ENABLED` | Send browser errors and Web Vitals to the local observability endpoint | `false` |
 | `NEXT_PUBLIC_WEB_VITALS_SAMPLE_RATE` | Sample rate for browser Web Vitals reports from `0` to `1` | `1` |

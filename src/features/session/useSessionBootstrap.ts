@@ -9,10 +9,15 @@ import {
   syncSessionStores,
 } from '@/features/session/session'
 
+const OAUTH_CALLBACK_PATHS = new Set([
+  '/auth/google/callback',
+  '/auth/github/callback',
+])
+
 export function useSessionBootstrap(): void {
   const status = useAuthStore((s) => s.status)
   const pathname = usePathname()
-  const shouldSkipBootstrap = pathname === '/auth/google/callback'
+  const shouldSkipBootstrap = OAUTH_CALLBACK_PATHS.has(pathname)
 
   useEffect(() => {
     if (shouldSkipBootstrap) return

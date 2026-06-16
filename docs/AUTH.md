@@ -162,18 +162,18 @@ Important rule: frontend code should not manually read refresh tokens.
 
 ---
 
-## 🌐 Google OAuth Flow
+## 🌐 OAuth Flow
 
 ```text
-User clicks "Sign in with Google"
+User clicks "Sign in with Google" or "Sign in with GitHub"
   ↓
 Backend OAuth endpoint
   ↓
-Google
+OAuth provider
   ↓
 Backend callback
   ↓
-/auth/google/callback#oauthCode=...
+/auth/{provider}/callback#oauthCode=...
   ↓
 Frontend exchanges the one-time code through /api/proxy/auth/oauth/token
   ↓
@@ -186,11 +186,11 @@ Main files:
 
 | File | Responsibility |
 |---|---|
-| `src/app/api/auth/google/route.ts` | starts OAuth and constrains provider redirects |
-| `src/app/auth/google/callback/page.tsx` | reads the one-time `oauthCode` from the URL hash and exchanges it |
+| `src/app/api/auth/google/route.ts` and `src/app/api/auth/github/route.ts` | start OAuth and constrain provider redirects |
+| `src/app/auth/google/callback/page.tsx` and `src/app/auth/github/callback/page.tsx` | read the one-time `oauthCode` from the URL hash and exchange it |
 | `src/app/api/proxy/[...path]/route.ts` | persists token responses from `auth/oauth/token` as HttpOnly cookies |
 
-Important rule: the browser callback handles a one-time OAuth handoff code, not raw access or refresh tokens. Raw OAuth tokens must not be accepted from `/api/auth/google/callback`, `window.location.search`, or `window.location.hash`.
+Important rule: the browser callback handles a one-time OAuth handoff code, not raw access or refresh tokens. Raw OAuth tokens must not be accepted from the legacy `/api/auth/google/callback` route, from any future provider callback route, or from `window.location.search` or `window.location.hash`.
 
 The handoff code is read from:
 
