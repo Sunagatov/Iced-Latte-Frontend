@@ -2,7 +2,6 @@
 
 import { forwardRef } from 'react'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { FEATURES } from '@/shared/config/features'
 
 interface Props {
   onVerify: (token: string) => void
@@ -10,8 +9,6 @@ interface Props {
 
 const TurnstileWidget = forwardRef<TurnstileInstance, Props>(
   ({ onVerify }, ref) => {
-    if (!FEATURES.turnstile) return null
-
     const clearToken = () => onVerify('')
 
     return (
@@ -25,7 +22,7 @@ const TurnstileWidget = forwardRef<TurnstileInstance, Props>(
           onTimeout={clearToken}
           onUnsupported={clearToken}
           options={{
-            appearance: 'interaction-only',
+            appearance: 'always',
             feedbackEnabled: false,
             refreshExpired: 'auto',
             size: 'flexible',

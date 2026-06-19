@@ -1,5 +1,7 @@
 import type { DeliveryAddress } from '@/features/addresses/public'
 
+export type CheckoutAddressMode = 'loading' | 'saved' | 'new'
+
 export interface CheckoutFormValues {
   recipientName: string
   recipientSurname: string

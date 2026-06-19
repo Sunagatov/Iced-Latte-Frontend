@@ -1,4 +1,6 @@
 import type { NextRequest } from 'next/server'
+import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
+import { isTokenExpired } from '@/shared/auth/token'
 import { NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 import { getApiBaseUrl, type ProxyMethod } from './proxyConstants'
@@ -9,7 +11,7 @@ import {
   sanitizePath,
   sanitizeQueryString,
 } from './proxyRequest'
-import { refreshAuthHeaderIfNeeded } from './proxyAuth'
+import { refreshAuthHeaderIfNeeded, rotateRefreshToken } from './proxyAuth'
 import { createProxyResponse } from './proxyResponse'
 
 type RouteContext = {
@@ -29,6 +31,25 @@ async function handleProxy(
 
   if (!apiBaseUrl) {
     return createCorsResponse({ error: 'API unavailable' }, 503)
+  }
+
+  if (safePath === 'auth/refresh') {
+    const refreshToken = request.cookies.get(COOKIE_NAMES.refresh)?.value
+
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      const refreshedTokens = await rotateRefreshToken(refreshToken)
+
+      if (refreshedTokens) {
+        return createProxyResponse(
+          new Response(JSON.stringify(refreshedTokens), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+          safePath,
+          null,
+        )
+      }
+    }
   }
 
   const url = new URL(request.url)

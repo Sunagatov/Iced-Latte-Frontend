@@ -326,6 +326,7 @@ npm run test:e2e:report
 | `NEXT_PUBLIC_SUPPORT_CHAT_WS_URL` | Optional support chat STOMP endpoint override; when unset the widget uses the same-origin `/api/v1/ws` route, and any override must still receive the frontend HttpOnly auth cookie | empty |
 | `NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED` | Enable email confirmation flow | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Enable Cloudflare Turnstile widget when set | empty |
+| `NEXT_PUBLIC_TURNSTILE_AUTH_ENABLED` | Require Turnstile on sign-in, sign-up, and password reset flows when a site key is set | `false` |
 | `NEXT_PUBLIC_TURNSTILE_SUPPORT_CHAT_ENABLED` | Require Turnstile in support chat when a site key is set | `false` |
 | `NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED` | Require Turnstile on checkout UI when a site key is set | `false` |
 | `NEXT_PUBLIC_TURNSTILE_REVIEWS_ENABLED` | Require Turnstile on review submission when a site key is set | `false` |

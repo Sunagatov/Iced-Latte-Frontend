@@ -27,7 +27,6 @@ const ReviewForm = ({
 }: ReviewFormProps) => {
   const [loading, setLoading] = useState(false)
   const [reviewText, setReviewText] = useState('')
-  const [shouldRenderTurnstile, setShouldRenderTurnstile] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
   const [turnstileError, setTurnstileError] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
@@ -45,8 +44,9 @@ const ReviewForm = ({
     if (!currentRating || !trimmedText) return
 
     if (reviewsTurnstileEnabled && !turnstileToken) {
-      setShouldRenderTurnstile(true)
-      setTurnstileError('Please complete verification before submitting your review.')
+      setTurnstileError(
+        'Please complete verification before submitting your review.',
+      )
 
       return
     }
@@ -63,7 +63,6 @@ const ReviewForm = ({
       onReviewSubmitted?.()
       setRating(productId, 0)
       setReviewText('')
-      setShouldRenderTurnstile(false)
       setTurnstileToken('')
       setShowForm(false)
     } catch (error) {
@@ -115,7 +114,6 @@ const ReviewForm = ({
             setShowForm(false)
             setRating(productId, 0)
             setReviewText('')
-            setShouldRenderTurnstile(false)
             setTurnstileToken('')
             setTurnstileError('')
             turnstileRef.current?.reset()
@@ -156,7 +154,7 @@ const ReviewForm = ({
         </div>
       </div>
 
-      {reviewsTurnstileEnabled && shouldRenderTurnstile && (
+      {reviewsTurnstileEnabled && (
         <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
       )}
 

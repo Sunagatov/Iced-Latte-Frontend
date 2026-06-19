@@ -29,8 +29,13 @@ export function useReviewsSectionController({
   refreshStatistics,
 }: UseReviewsSectionControllerParams) {
   const { errorMessage, handleError } = useErrorHandler()
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
+  const authStatus = useAuthStore((state) => state.status)
+  const userData = useAuthStore((state) => state.userData)
+  const isLoggedIn = authStatus === 'authenticated'
   const [userReview, setUserReview] = useState<Review | null>(null)
+  const [isUserReviewLoading, setIsUserReviewLoading] = useState(
+    authStatus !== 'anonymous',
+  )
   const [showForm, setShowForm] = useState(false)
   const [selectedFilterRating, setSelectedFilterRating] = useState<number[]>([])
   const [showFilterDropdown, setShowFilterDropdown] = useState(false)
@@ -43,24 +48,44 @@ export function useReviewsSectionController({
     setShowFilterDropdown(false),
   )
 
-  const refreshUserReview = useCallback(() => {
-    apiGetProductUserReview(productId).then(
-      (review) => {
-        setUserReview(checkIfUserReviewExists(review) ? review : null)
-      },
-      () => setUserReview(null),
-    )
+  const refreshUserReview = useCallback(async () => {
+    setIsUserReviewLoading(true)
+
+    try {
+      const review = await apiGetProductUserReview(productId)
+      const nextUserReview = checkIfUserReviewExists(review) ? review : null
+
+      setUserReview(nextUserReview)
+
+      if (nextUserReview) {
+        setShowForm(false)
+      }
+    } catch {
+      setUserReview(null)
+    } finally {
+      setIsUserReviewLoading(false)
+    }
   }, [productId])
 
   useEffect(() => {
+    if (authStatus === 'loading') {
+      setIsUserReviewLoading(true)
+      setUserReview(null)
+      setShowForm(false)
+
+      return
+    }
+
     if (!isLoggedIn) {
       setUserReview(null)
+      setShowForm(false)
+      setIsUserReviewLoading(false)
 
       return
     }
 
     void refreshUserReview()
-  }, [isLoggedIn, refreshUserReview])
+  }, [authStatus, isLoggedIn, refreshUserReview])
 
   const reviewsState = useReviews({
     productId,
@@ -68,6 +93,39 @@ export function useReviewsSectionController({
     sortOption: selectedSortOption,
     ratingFilter: selectedFilterRating,
   })
+
+  const fallbackUserReview = useMemo(() => {
+    if (userReview || !isLoggedIn || !userData) {
+      return null
+    }
+
+    const normalizedFirstName = userData.firstName.trim().toLowerCase()
+    const normalizedLastName = userData.lastName.trim().toLowerCase()
+    const matchingReviews = reviewsState.data.filter((review) => (
+      review.userName?.trim().toLowerCase() === normalizedFirstName
+      && review.userLastname?.trim().toLowerCase() === normalizedLastName
+    ))
+
+    return matchingReviews.length === 1 ? matchingReviews[0] : null
+  }, [isLoggedIn, reviewsState.data, userData, userReview])
+
+  const resolvedUserReview = userReview ?? fallbackUserReview
+
+  useEffect(() => {
+    if (resolvedUserReview) {
+      setShowForm(false)
+    }
+  }, [resolvedUserReview])
+
+  const visibleReviewData = useMemo(() => {
+    if (!resolvedUserReview) {
+      return reviewsState.data
+    }
+
+    return reviewsState.data.filter(
+      (review) => review.productReviewId !== resolvedUserReview.productReviewId,
+    )
+  }, [resolvedUserReview, reviewsState.data])
 
   const toggleRatingFilter = useCallback((value: number) => {
     setSelectedFilterRating((previous) => {
@@ -104,14 +162,14 @@ export function useReviewsSectionController({
     const reviewsCount = reviewsStatistics?.reviewsCount ?? 0
 
     return {
-      hasAnyReviews: reviewsState.data.length > 0 || !!userReview,
+      hasAnyReviews: visibleReviewData.length > 0 || !!resolvedUserReview,
       hasStatistics: Boolean(reviewsStatistics && reviewsCount > 0),
       reviewsCount,
     }
   }, [
-    reviewsState.data.length,
+    visibleReviewData.length,
     reviewsStatistics,
-    userReview,
+    resolvedUserReview,
   ])
 
   return {
@@ -121,16 +179,20 @@ export function useReviewsSectionController({
     handleReviewDeleted,
     handleReviewSubmitted,
     handleShowMoreReviews,
-    reviewsState,
+    reviewsState: {
+      ...reviewsState,
+      data: visibleReviewData,
+    },
     reviewsSummary,
     selectedFilterRating,
     selectedSortOption,
+    isUserReviewLoading,
     setSelectedSortOption,
     setShowFilterDropdown,
     setShowForm,
     showFilterDropdown,
     showForm,
     toggleRatingFilter,
-    userReview,
+    userReview: resolvedUserReview,
   }
 }

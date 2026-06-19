@@ -79,6 +79,30 @@ export function isAuthRefreshExcludedRequest(url?: string): boolean {
   }
 }
 
+function normalizeRequestPath(url?: string): string | null {
+  if (!url) return null
+
+  try {
+    return /^[a-z][a-z\d+\-.]*:\/\//i.test(url)
+      ? new URL(url).pathname
+      : url.split('?')[0].split('#')[0]
+  } catch {
+    return null
+  }
+}
+
+export function isBootstrapRefreshEligibleRequest(url?: string): boolean {
+  const pathname = normalizeRequestPath(url)
+
+  if (!pathname) return false
+
+  const normalizedPath = pathname
+    .replace(/^\/api\/proxy/, '')
+    .replace(/^\/api\/v1/, '')
+
+  return normalizedPath === '/users' || normalizedPath.startsWith('/users/')
+}
+
 const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
   const router = useRouter()
 
@@ -120,8 +144,9 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
           !originalRequest.isAuthRetry &&
           !originalRequest.skipAuthRetry &&
           !isAuthRefreshExcludedRequest(originalRequest.url) &&
-          // Skip refresh when we know the visitor is anonymous
-          authStatus !== 'anonymous'
+          (authStatus === 'authenticated' ||
+            (authStatus === 'loading' &&
+              isBootstrapRefreshEligibleRequest(originalRequest.url)))
 
         if (shouldRetry) {
           try {

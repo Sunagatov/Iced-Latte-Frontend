@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import { EXTERNAL_LINKS } from '@/shared/config/links'
+import { getCopyrightLabel } from '@/shared/config/copyright'
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear()
-  const copyrightYears = currentYear === 2024 ? '2024' : `2024-${currentYear}`
+  const copyrightLabel = getCopyrightLabel()
 
   return (
     <footer className="bg-brand-solid text-white">
@@ -161,7 +161,7 @@ export default function Footer() {
           suppressHydrationWarning
         >
           <span className="text-xs text-white/30">
-            © {copyrightYears} Iced Latte · Apache-2.0
+            {copyrightLabel}
           </span>
           <span className="text-xs text-white/20">
             Built with{' '}

@@ -91,4 +91,33 @@ describe('FavouritesPage', () => {
       useFavouritesStore as unknown as { persist: typeof mockPersist }
     ).persist = mockPersist
   })
+
+  it('does not crash when persist API is unavailable during prerender', () => {
+    ;(
+      useFavouritesStore as unknown as { persist?: typeof mockPersist }
+    ).persist = undefined
+
+    jest
+      .spyOn(useFavouritesStore.getState(), 'hydrate')
+      .mockResolvedValue(undefined)
+
+    expect(() => render(<FavouritesPage />)).not.toThrow()
+    expect(screen.getByText('FavouritesEmpty')).toBeInTheDocument()
+
+    ;(
+      useFavouritesStore as unknown as { persist: typeof mockPersist }
+    ).persist = mockPersist
+  })
+
+  it('keeps showing the loader while auth bootstrap is still loading', () => {
+    useAuthStore.setState({ status: 'loading', userData: null })
+    jest
+      .spyOn(useFavouritesStore.getState(), 'hydrate')
+      .mockResolvedValue(undefined)
+
+    render(<FavouritesPage />)
+
+    expect(screen.getByText('Loading')).toBeInTheDocument()
+    expect(screen.queryByText('FavouritesEmpty')).not.toBeInTheDocument()
+  })
 })

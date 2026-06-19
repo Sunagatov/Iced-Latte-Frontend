@@ -2,12 +2,13 @@
 
 import { useCallback, useRef, useState } from 'react'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
-import { FEATURES } from '@/shared/config/features'
 
-export function useTurnstileVerification(requiredMessage: string) {
+export function useTurnstileVerification(
+  requiredMessage: string,
+  enabled: boolean,
+) {
   const [token, setToken] = useState('')
   const [error, setError] = useState('')
-  const [shouldRender, setShouldRender] = useState(false)
   const ref = useRef<TurnstileInstance>(null)
 
   const handleVerify = useCallback((verifiedToken: string) => {
@@ -16,15 +17,14 @@ export function useTurnstileVerification(requiredMessage: string) {
   }, [])
 
   const requireVerified = useCallback(() => {
-    if (!FEATURES.turnstile || token) {
+    if (!enabled || token) {
       return true
     }
 
-    setShouldRender(true)
     setError(requiredMessage)
 
     return false
-  }, [requiredMessage, token])
+  }, [enabled, requiredMessage, token])
 
   const resetChallenge = useCallback(() => {
     setToken('')
@@ -38,7 +38,7 @@ export function useTurnstileVerification(requiredMessage: string) {
     ref,
     requireVerified,
     resetChallenge,
-    shouldRender,
+    shouldRender: enabled,
     token,
   }
 }

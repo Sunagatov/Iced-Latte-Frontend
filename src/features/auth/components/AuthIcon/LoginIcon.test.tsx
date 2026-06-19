@@ -16,6 +16,7 @@ const mockUseAuthStore = jest.fn()
 
 jest.mock('@/features/auth/public', () => ({
   useAuthStore: (selector: (s: {
+    status: 'loading' | 'anonymous' | 'authenticated'
     isLoggedIn: boolean
     userData: { firstName: string; lastName: string } | null
   }) => unknown) =>
@@ -25,10 +26,11 @@ jest.mock('@/features/auth/public', () => ({
 beforeEach(() => {
   mockUseAuthStore.mockImplementation(
     (selector: (s: {
+      status: 'loading' | 'anonymous' | 'authenticated'
       isLoggedIn: boolean
       userData: { firstName: string; lastName: string } | null
     }) => unknown) =>
-      selector({ isLoggedIn: false, userData: null }),
+      selector({ status: 'anonymous', isLoggedIn: false, userData: null }),
   )
 })
 
@@ -53,10 +55,12 @@ describe('LoginIcon', () => {
   it('shows user initials when authenticated', async () => {
     mockUseAuthStore.mockImplementation(
       (selector: (s: {
+        status: 'loading' | 'anonymous' | 'authenticated'
         isLoggedIn: boolean
         userData: { firstName: string; lastName: string } | null
       }) => unknown) =>
         selector({
+          status: 'authenticated',
           isLoggedIn: true,
           userData: { firstName: 'Jane', lastName: 'Latte' },
         }),
@@ -66,5 +70,27 @@ describe('LoginIcon', () => {
     })
     expect(screen.getByText('JL')).toBeInTheDocument()
     expect(screen.getByRole('link')).toHaveAttribute('href', '/profile')
+  })
+
+  it('keeps the placeholder while auth bootstrap is still loading', async () => {
+    mockUseAuthStore.mockImplementation(
+      (selector: (s: {
+        status: 'loading' | 'anonymous' | 'authenticated'
+        isLoggedIn: boolean
+        userData: { firstName: string; lastName: string } | null
+      }) => unknown) =>
+        selector({
+          status: 'loading',
+          isLoggedIn: false,
+          userData: null,
+        }),
+    )
+
+    const { container } = render(<LoginIcon />)
+
+    await act(async () => {})
+
+    expect(screen.queryByText('Log in')).not.toBeInTheDocument()
+    expect(container.querySelector('a')).toBeNull()
   })
 })

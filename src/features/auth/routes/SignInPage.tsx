@@ -5,9 +5,11 @@ import { ROUTES } from '@/shared/config/routes'
 import RestrictRoute from '@/features/auth/RestrictRoute'
 import LoginForm from '@/features/auth/components/LoginForm'
 import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
+import { getCopyrightLabel } from '@/shared/config/copyright'
 
 export default function SignInPage() {
   const hasSocialAuth = FEATURES.googleAuth || FEATURES.githubAuth
+  const copyrightLabel = getCopyrightLabel()
 
   return (
     <RestrictRoute>
@@ -25,7 +27,7 @@ export default function SignInPage() {
               </p>
             </div>
             <p className="text-xs text-white/30">
-              © 2026 Iced Latte. Open-source community.
+              {copyrightLabel}
             </p>
           </div>
         </div>

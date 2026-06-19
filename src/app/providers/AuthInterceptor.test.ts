@@ -148,7 +148,7 @@ describe('AuthInterceptor runtime behavior', () => {
     >)
     mockedClearClientSession.mockResolvedValue(undefined)
     mockedUseAuthStore.getState.mockReturnValue({
-      status: 'loading',
+      status: 'authenticated',
     } as ReturnType<typeof useAuthStore.getState>)
   })
 
@@ -208,6 +208,59 @@ describe('AuthInterceptor runtime behavior', () => {
     )
 
     await expect(rejectResponse(makeAxiosError(401))).rejects.toMatchObject({
+      response: { status: 401 },
+    })
+
+    expect(mockedRefreshAuthenticatedSession).not.toHaveBeenCalled()
+    expect(mockedApi.request).not.toHaveBeenCalled()
+  })
+
+  it('refreshes bootstrap user requests while auth state is still loading', async () => {
+    mockedUseAuthStore.getState.mockReturnValue({
+      status: 'loading',
+    } as ReturnType<typeof useAuthStore.getState>)
+
+    render(createElement(AuthInterceptor, null, createElement('div')))
+
+    await waitFor(() =>
+      expect(mockedApi.interceptors.response.use).toHaveBeenCalledTimes(1),
+    )
+
+    const originalRequest = {
+      headers: {},
+      method: 'GET',
+      url: '/users',
+    } as InternalAxiosRequestConfig
+
+    await expect(rejectResponse(makeAxiosError(401, originalRequest))).resolves.toEqual({
+      data: 'retried',
+    })
+
+    expect(mockedRefreshAuthenticatedSession).toHaveBeenCalledWith({
+      skipAuthRetry: true,
+    })
+    expect(mockedApi.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isAuthRetry: true,
+        url: '/users',
+      }),
+    )
+  })
+
+  it('does not refresh public requests while auth state is still loading', async () => {
+    mockedUseAuthStore.getState.mockReturnValue({
+      status: 'loading',
+    } as ReturnType<typeof useAuthStore.getState>)
+
+    render(createElement(AuthInterceptor, null, createElement('div')))
+
+    await waitFor(() =>
+      expect(mockedApi.interceptors.response.use).toHaveBeenCalledTimes(1),
+    )
+
+    await expect(
+      rejectResponse(makeAxiosError(401, { url: '/products', method: 'GET' })),
+    ).rejects.toMatchObject({
       response: { status: 401 },
     })
 

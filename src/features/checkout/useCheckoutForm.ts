@@ -8,6 +8,7 @@ import {
   type SyntheticEvent,
 } from 'react'
 import { useAuthStore } from '@/features/auth/public'
+import { useAddressStore } from '@/features/addresses/store'
 import { useCartStore } from '@/features/cart/public'
 import {
   checkoutTurnstileEnabled,
@@ -18,6 +19,7 @@ import {
 import { createCheckout } from '@/features/payment/public'
 import type { DeliveryAddress } from '@/features/addresses/public'
 import type {
+  CheckoutAddressMode,
   CheckoutAddressSelection,
   CheckoutFormValues,
 } from '@/features/checkout/checkoutTypes'
@@ -87,10 +89,13 @@ function hasRequiredCheckoutFields(
 }
 
 export function useCheckoutForm() {
-  const { userData } = useAuthStore()
+  const { status, userData } = useAuthStore()
+  const hasSavedAddresses = useAddressStore((state) => state.addresses.length > 0)
   const { tempItems } = useCartStore()
   const [selectedAddress, setSelectedAddress] =
     useState<DeliveryAddress | null>(null)
+  const [addressMode, setAddressMode] =
+    useState<CheckoutAddressMode>('loading')
   const [form, setForm] = useState<CheckoutFormValues>(getInitialFormValues)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -195,6 +200,9 @@ export function useCheckoutForm() {
   }
 
   return {
+    addressMode,
+    canEditManualAddress:
+      addressMode === 'new' || (status !== 'loading' && !hasSavedAddresses),
     error,
     checkoutTurnstileEnabled,
     form,
@@ -202,6 +210,7 @@ export function useCheckoutForm() {
     hostedCheckoutEnabled,
     loading,
     selectedAddress,
+    setAddressMode,
     setSelectedAddress,
     handleTurnstileVerify,
     turnstileRef,

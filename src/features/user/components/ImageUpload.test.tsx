@@ -195,6 +195,10 @@ describe('ImageUpload', () => {
     render(<ImageUpload />)
     const file = avatarFile()
 
+    expect(
+      screen.getByRole('button', { name: 'Verify challenge' }),
+    ).toBeInTheDocument()
+
     fireEvent.change(screen.getByLabelText('Upload profile photo'), {
       target: { files: [file] },
     })

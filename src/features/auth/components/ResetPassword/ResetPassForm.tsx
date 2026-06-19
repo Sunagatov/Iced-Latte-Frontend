@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import AuthResetPassForm from './AuthResetPassForm'
 import GuestResetPassForm from './GuestResetPassForm'
 import { useAuthStore } from '@/features/auth/public'
+import Loader from '@/shared/ui/Loader'
 
 export default function ResetPassForm() {
   const router = useRouter()
@@ -20,11 +21,19 @@ export default function ResetPassForm() {
   }, [status, userData?.oauthUser, router, passwordChanged])
 
   if (status === 'loading') {
-    return null
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader />
+      </div>
+    )
   }
 
   if (!passwordChanged && status === 'authenticated' && userData?.oauthUser) {
-    return null
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader />
+      </div>
+    )
   }
 
   if (passwordChanged) {

@@ -36,6 +36,7 @@ const ReviewsSection = ({
     reviewsSummary,
     selectedFilterRating,
     selectedSortOption,
+    isUserReviewLoading,
     setSelectedSortOption,
     setShowFilterDropdown,
     setShowForm,
@@ -105,7 +106,7 @@ const ReviewsSection = ({
         </div>
       )}
 
-      {!userReview && (
+      {!userReview && !isUserReviewLoading && (
         <ReviewForm
           productId={productId}
           showForm={showForm}

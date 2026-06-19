@@ -301,7 +301,104 @@ describe('SupportChatWidget', () => {
     expect(screen.queryByText(/Sent/)).not.toBeInTheDocument()
   })
 
-  it('shows a Turnstile challenge after the backend requires re-verification', async () => {
+  it('does not require Turnstile again after a prior customer message', async () => {
+    authenticate()
+    mockSupportChatTurnstileEnabled = true
+    mockedGetSupportChatAvailability.mockResolvedValue({
+      enabled: true,
+      eligible: true,
+    })
+    mockedGetSupportChatConversation.mockResolvedValue({
+      id: 'conversation-1',
+      createdAt: '2026-06-08T10:00:00Z',
+      updatedAt: '2026-06-08T10:00:00Z',
+    })
+    mockedGetSupportChatHistory.mockResolvedValue({
+      messages: [
+        {
+          id: 'message-1',
+          conversationId: 'conversation-1',
+          senderType: 'CUSTOMER',
+          body: 'Previous message',
+          deliveryStatus: 'SENT',
+          createdAt: '2026-06-08T10:01:00Z',
+        },
+      ],
+      page: 0,
+      size: 30,
+      totalElements: 1,
+      totalPages: 1,
+    })
+    mockedCreateSupportChatMessage.mockResolvedValue({
+      id: 'message-2',
+      conversationId: 'conversation-1',
+      clientMessageId: 'client-2',
+      senderType: 'CUSTOMER',
+      body: 'Retry with verification',
+      deliveryStatus: 'SENT',
+      createdAt: '2026-06-08T10:02:00Z',
+    })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const input = await screen.findByLabelText('Message')
+
+    expect(screen.queryByText('Verify challenge')).not.toBeInTheDocument()
+
+    fireEvent.change(input, { target: { value: 'Retry with verification' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    await waitFor(() => {
+      expect(mockedCreateSupportChatMessage).toHaveBeenLastCalledWith(
+        'conversation-1',
+        'Retry with verification',
+        undefined,
+        expect.any(String),
+      )
+    })
+    expect(await screen.findByText('Retry with verification')).toBeInTheDocument()
+  })
+
+  it('keeps protected message send disabled until Turnstile is completed', async () => {
+    authenticate()
+    mockSupportChatTurnstileEnabled = true
+    mockReadyChat()
+    mockedCreateSupportChatMessage.mockResolvedValue({
+      id: 'message-1',
+      conversationId: 'conversation-1',
+      clientMessageId: 'client-1',
+      senderType: 'CUSTOMER',
+      body: 'Hello support',
+      deliveryStatus: 'SENT',
+      createdAt: '2026-06-08T10:01:00Z',
+    })
+
+    render(<SupportChatWidget />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open support chat' }))
+
+    const input = await screen.findByLabelText('Message')
+
+    expect(screen.getByText('Verify challenge')).toBeInTheDocument()
+
+    fireEvent.change(input, { target: { value: 'Hello support' } })
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled()
+    expect(mockedCreateSupportChatMessage).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByText('Verify challenge'))
+    fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
+
+    await waitFor(() => {
+      expect(mockedCreateSupportChatMessage).toHaveBeenCalledWith(
+        'conversation-1',
+        'Hello support',
+        'turnstile-token',
+        expect.any(String),
+      )
+    })
+  })
+
+  it('requires re-verification after a backend Turnstile failure', async () => {
     authenticate()
     mockSupportChatTurnstileEnabled = true
     mockedGetSupportChatAvailability.mockResolvedValue({
@@ -353,15 +450,18 @@ describe('SupportChatWidget', () => {
 
     const input = await screen.findByLabelText('Message')
 
-    expect(screen.queryByText('Verify challenge')).not.toBeInTheDocument()
-
     fireEvent.change(input, { target: { value: 'Retry with verification' } })
+    expect(screen.queryByText('Verify challenge')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Send message' }))
 
-    expect(await screen.findByText('Verify challenge')).toBeInTheDocument()
     expect(
-      await screen.findByText('Verification failed. Please retry the challenge and send again.'),
+      await screen.findByText(
+        'Verification failed. Please retry the challenge and send again.',
+      ),
     ).toBeInTheDocument()
+    expect(screen.getByText('Verify challenge')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled()
+
     const firstClientMessageId = mockedCreateSupportChatMessage.mock.calls[0]?.[3]
 
     fireEvent.click(screen.getByText('Verify challenge'))
@@ -375,7 +475,6 @@ describe('SupportChatWidget', () => {
         firstClientMessageId,
       )
     })
-    expect(await screen.findByText('Retry with verification')).toBeInTheDocument()
   })
 
   it('keeps the draft and shows a generic error when owner-side delivery fails', async () => {

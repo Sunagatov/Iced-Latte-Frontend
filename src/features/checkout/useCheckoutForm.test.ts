@@ -34,6 +34,7 @@ describe('useCheckoutForm', () => {
     mockCheckoutTurnstileEnabled = false
 
     useAuthStore.setState({
+      status: 'authenticated',
       userData: {
         id: 'u1',
         firstName: 'Test',
@@ -154,6 +155,7 @@ describe('useCheckoutForm', () => {
     })
 
     useAuthStore.setState({
+      status: 'authenticated',
       userData: {
         id: 'u1',
         firstName: ' Test ',
@@ -192,6 +194,7 @@ describe('useCheckoutForm', () => {
 
   it('does not submit whitespace-only required checkout fields', async () => {
     useAuthStore.setState({
+      status: 'authenticated',
       userData: {
         id: 'u1',
         firstName: ' ',

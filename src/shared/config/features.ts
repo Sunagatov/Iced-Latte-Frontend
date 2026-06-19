@@ -6,6 +6,9 @@ export const FEATURES = {
   supportChat: process.env.NEXT_PUBLIC_SUPPORT_CHAT_ENABLED === 'true',
   emailConfirmation: process.env.NEXT_PUBLIC_EMAIL_CONFIRMATION_ENABLED === 'true',
   turnstile: !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+  authTurnstile:
+    !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
+    process.env.NEXT_PUBLIC_TURNSTILE_AUTH_ENABLED === 'true',
   supportChatTurnstile:
     !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
     process.env.NEXT_PUBLIC_TURNSTILE_SUPPORT_CHAT_ENABLED === 'true',

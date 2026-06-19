@@ -2,9 +2,12 @@ export default function FavouritesSkeleton() {
   return (
     <div className="mx-auto w-full max-w-[1100px] animate-pulse px-4 pt-10 pb-16">
       <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-baseline gap-3">
-          <div className="h-9 w-40 rounded-lg bg-black/[0.06]" />
-          <div className="h-4 w-16 rounded bg-black/[0.06]" />
+        <div className="flex min-w-0 flex-col gap-2">
+          <p className="text-sm font-medium text-black/35">Loading favourites...</p>
+          <div className="flex items-baseline gap-3">
+            <div className="h-9 w-40 rounded-lg bg-black/[0.06]" />
+            <div className="h-4 w-16 rounded bg-black/[0.06]" />
+          </div>
         </div>
         <div className="h-10 w-20 rounded-xl bg-black/[0.06]" />
       </div>

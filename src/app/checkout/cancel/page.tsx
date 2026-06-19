@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import { requireRecoverableSession } from '@/shared/auth/guards'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CheckoutCancelPage() {
   await requireRecoverableSession(ROUTES.checkout)
 

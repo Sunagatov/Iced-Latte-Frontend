@@ -14,9 +14,15 @@ import {
 } from '@/app/api/proxy/[...path]/route'
 import { NextRequest } from 'next/server'
 
-function makeJwt(expOffsetSeconds = 3600): string {
+function makeJwt(
+  expOffsetSeconds = 3600,
+  extraClaims: Record<string, unknown> = {},
+): string {
   const payload = Buffer.from(
-    JSON.stringify({ exp: Math.floor(Date.now() / 1000) + expOffsetSeconds }),
+    JSON.stringify({
+      exp: Math.floor(Date.now() / 1000) + expOffsetSeconds,
+      ...extraClaims,
+    }),
   ).toString('base64url')
 
   return `header.${payload}.signature`
@@ -274,6 +280,224 @@ describe('proxy route', () => {
       setCookie.some((value) => value.includes('refreshToken=new-refresh')),
     ).toBe(true)
     expect(await res.json()).toEqual({ authenticated: true })
+  })
+
+  it('deduplicates concurrent auth refresh rotations for the same refresh cookie', async () => {
+    let resolveRefresh: ((value: ResponseLike) => void) | null = null
+    let refreshCalls = 0
+
+    type ResponseLike = {
+      ok: boolean
+      status: number
+      headers: { get: (name: string) => string | null }
+      json: () => Promise<unknown>
+      text: () => Promise<string>
+    }
+
+    ;(global as { fetch: unknown }).fetch = jest.fn((url: string) => {
+      if (url.endsWith('/auth/refresh')) {
+        refreshCalls += 1
+
+        return new Promise((resolve) => {
+          resolveRefresh = resolve
+        })
+      }
+
+      throw new Error(`Unexpected fetch URL: ${url}`)
+    })
+
+    const refreshCookie = makeJwt(3600, { testCase: 'concurrent-refresh' })
+    const requestHeaders = {
+      cookie: `refreshToken=${refreshCookie}`,
+    }
+
+    const firstResponsePromise = POST(
+      makeRequest('POST', 'auth/refresh', undefined, requestHeaders),
+      {
+        params: Promise.resolve({ path: ['auth', 'refresh'] }),
+      },
+    )
+    const secondResponsePromise = POST(
+      makeRequest('POST', 'auth/refresh', undefined, requestHeaders),
+      {
+        params: Promise.resolve({ path: ['auth', 'refresh'] }),
+      },
+    )
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(refreshCalls).toBe(1)
+
+    resolveRefresh?.({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (name: string) =>
+          name.toLowerCase() === 'content-type' ? 'application/json' : null,
+      },
+      json: () =>
+        Promise.resolve({ token: 'new-access', refreshToken: 'new-refresh' }),
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({ token: 'new-access', refreshToken: 'new-refresh' }),
+        ),
+    })
+
+    const [firstResponse, secondResponse] = await Promise.all([
+      firstResponsePromise,
+      secondResponsePromise,
+    ])
+
+    expect(firstResponse.status).toBe(200)
+    expect(secondResponse.status).toBe(200)
+    expect(await firstResponse.json()).toEqual({ authenticated: true })
+    expect(await secondResponse.json()).toEqual({ authenticated: true })
+  })
+
+  it('reuses the just-rotated token pair when a stale refresh cookie arrives right after a successful refresh', async () => {
+    let refreshCalls = 0
+
+    ;(global as { fetch: unknown }).fetch = jest.fn((url: string) => {
+      if (!url.endsWith('/auth/refresh')) {
+        throw new Error(`Unexpected fetch URL: ${url}`)
+      }
+
+      refreshCalls += 1
+
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        headers: {
+          get: (name: string) =>
+            name.toLowerCase() === 'content-type' ? 'application/json' : null,
+        },
+        json: () =>
+          Promise.resolve({ token: 'new-access', refreshToken: 'new-refresh' }),
+        text: () =>
+          Promise.resolve(
+            JSON.stringify({ token: 'new-access', refreshToken: 'new-refresh' }),
+          ),
+      })
+    })
+
+    const refreshCookie = makeJwt(3600, { testCase: 'stale-refresh-reuse' })
+    const requestHeaders = {
+      cookie: `refreshToken=${refreshCookie}`,
+    }
+
+    const firstResponse = await POST(
+      makeRequest('POST', 'auth/refresh', undefined, requestHeaders),
+      {
+        params: Promise.resolve({ path: ['auth', 'refresh'] }),
+      },
+    )
+    const secondResponse = await POST(
+      makeRequest('POST', 'auth/refresh', undefined, requestHeaders),
+      {
+        params: Promise.resolve({ path: ['auth', 'refresh'] }),
+      },
+    )
+
+    expect(refreshCalls).toBe(1)
+    expect(firstResponse.status).toBe(200)
+    expect(secondResponse.status).toBe(200)
+    expect(await firstResponse.json()).toEqual({ authenticated: true })
+    expect(await secondResponse.json()).toEqual({ authenticated: true })
+  })
+
+  it('deduplicates silent refresh when concurrent proxy requests share the same expired access cookie', async () => {
+    let resolveRefresh: ((value: ResponseLike) => void) | null = null
+    let refreshCalls = 0
+    const userCalls: Array<Record<string, string> | undefined> = []
+
+    type ResponseLike = {
+      ok: boolean
+      status: number
+      headers: { get: (name: string) => string | null }
+      json: () => Promise<unknown>
+      text: () => Promise<string>
+    }
+
+    ;(global as { fetch: unknown }).fetch = jest.fn(
+      (url: string, options?: RequestInit) => {
+        if (url.endsWith('/auth/refresh')) {
+          refreshCalls += 1
+
+          return new Promise((resolve) => {
+            resolveRefresh = resolve
+          })
+        }
+
+        if (url.endsWith('/users')) {
+          userCalls.push(options?.headers as Record<string, string> | undefined)
+
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            headers: {
+              get: (name: string) =>
+                name.toLowerCase() === 'content-type'
+                  ? 'application/json'
+                  : null,
+            },
+            text: () => Promise.resolve(JSON.stringify({ email: 'alice@example.com' })),
+          })
+        }
+
+        throw new Error(`Unexpected fetch URL: ${url}`)
+      },
+    )
+
+    const refreshCookie = makeJwt(3600, { testCase: 'silent-refresh-dedupe' })
+    const requestHeaders = {
+      cookie: `token=${makeJwt(-100, { testCase: 'expired-access' })}; refreshToken=${refreshCookie}`,
+    }
+
+    const firstResponsePromise = GET(
+      makeRequest('GET', 'users', undefined, requestHeaders),
+      {
+        params: Promise.resolve({ path: ['users'] }),
+      },
+    )
+    const secondResponsePromise = GET(
+      makeRequest('GET', 'users', undefined, requestHeaders),
+      {
+        params: Promise.resolve({ path: ['users'] }),
+      },
+    )
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(refreshCalls).toBe(1)
+
+    resolveRefresh?.({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (name: string) =>
+          name.toLowerCase() === 'content-type' ? 'application/json' : null,
+      },
+      json: () =>
+        Promise.resolve({ token: 'new-access', refreshToken: 'new-refresh' }),
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({ token: 'new-access', refreshToken: 'new-refresh' }),
+        ),
+    })
+
+    const [firstResponse, secondResponse] = await Promise.all([
+      firstResponsePromise,
+      secondResponsePromise,
+    ])
+
+    expect(firstResponse.status).toBe(200)
+    expect(secondResponse.status).toBe(200)
+    expect(refreshCalls).toBe(1)
+    expect(userCalls).toHaveLength(2)
+    expect(userCalls).toEqual([
+      expect.objectContaining({ Authorization: 'Bearer new-access' }),
+      expect.objectContaining({ Authorization: 'Bearer new-access' }),
+    ])
   })
 
   it('oauth token handoff persists auth cookies and does not expose tokens to client', async () => {

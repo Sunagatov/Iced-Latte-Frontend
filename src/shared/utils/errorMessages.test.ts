@@ -34,6 +34,17 @@ describe('getUserMessage', () => {
         }),
       ),
     ).toBe('Support is temporarily unavailable. Try again later.')
+
+    expect(
+      getUserMessage(
+        makeAxiosError(409, {
+          type: 'https://iced-latte.local/problems/review-conflict',
+          detail: 'raw backend detail',
+        }),
+      ),
+    ).toBe(
+      'You already reviewed this product. Delete your existing review before submitting a new one.',
+    )
   })
 
   it('does not expose unknown backend details directly to users', () => {

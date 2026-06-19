@@ -1,35 +1,100 @@
 'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
+import { useAuthStore, type AuthStore } from '@/features/auth/public'
+import type { CheckoutAddressMode } from '@/features/checkout/checkoutTypes'
 import { useAddressStore } from '../store'
 import type { DeliveryAddress } from '../types'
 import { RiMapPinLine, RiCheckLine, RiAddLine } from 'react-icons/ri'
 
 interface Props {
+  mode: CheckoutAddressMode
+  onModeChange: (mode: CheckoutAddressMode) => void
   onSelect: (address: DeliveryAddress | null) => void
   selected: DeliveryAddress | null
 }
 
-export default function AddressPicker({ onSelect, selected }: Props) {
-  const { addresses, fetch } = useAddressStore()
-  const [mode, setMode] = useState<'saved' | 'new'>('saved')
+export default function AddressPicker({
+  mode,
+  onModeChange,
+  onSelect,
+  selected,
+}: Props) {
+  const { addresses, fetch, loading } = useAddressStore()
+  const [initialFetchComplete, setInitialFetchComplete] = useState(false)
+  const authStatus = useAuthStore(
+    (state: AuthStore): AuthStore['status'] => state.status,
+  )
   const defaultAddress = addresses.find((address) => address.isDefault) ?? addresses[0] ?? null
 
   useEffect(() => {
-    void fetch()
-  }, [fetch])
+    if (authStatus !== 'authenticated') {
+      setInitialFetchComplete(false)
+
+      return
+    }
+
+    let cancelled = false
+
+    setInitialFetchComplete(false)
+
+    void fetch().finally(() => {
+      if (!cancelled) {
+        setInitialFetchComplete(true)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [authStatus, fetch])
 
   useEffect(() => {
+    if (
+      authStatus === 'loading' ||
+      (authStatus === 'authenticated' && !initialFetchComplete) ||
+      (loading && addresses.length === 0)
+    ) {
+      onModeChange('loading')
+
+      return
+    }
+
     if (addresses.length === 0) {
-      setMode('new')
+      onModeChange('new')
       onSelect(null)
 
       return
     }
-    if (mode === 'saved' && !selected) {
+
+    if (mode === 'loading') {
+      onModeChange('saved')
+    }
+
+    if ((mode === 'saved' || mode === 'loading') && !selected) {
       onSelect(defaultAddress)
     }
-  }, [addresses, defaultAddress, mode, onSelect, selected])
+  }, [
+    addresses,
+    authStatus,
+    defaultAddress,
+    initialFetchComplete,
+    loading,
+    mode,
+    onModeChange,
+    onSelect,
+    selected,
+  ])
+
+  if (
+    authStatus === 'loading' ||
+    (authStatus === 'authenticated' && !initialFetchComplete) ||
+    (loading && addresses.length === 0)
+  ) {
+    return (
+      <p className="text-secondary mb-2 text-sm">Loading saved addresses...</p>
+    )
+  }
 
   if (addresses.length === 0) return null
 
@@ -40,7 +105,7 @@ export default function AddressPicker({ onSelect, selected }: Props) {
         <ModeBtn
           active={mode === 'saved'}
           onClick={() => {
-            setMode('saved')
+            onModeChange('saved')
             onSelect(defaultAddress)
           }}
         >
@@ -49,7 +114,7 @@ export default function AddressPicker({ onSelect, selected }: Props) {
         <ModeBtn
           active={mode === 'new'}
           onClick={() => {
-            setMode('new')
+            onModeChange('new')
             onSelect(null)
           }}
         >

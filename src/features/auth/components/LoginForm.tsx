@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { loginSchema } from '@/features/auth/validation'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 import { apiLoginUser } from '@/features/auth/api'
+import { authTurnstileEnabled } from '@/features/auth/config'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
 import { useFormErrorHandler } from '@/shared/utils/apiError'
@@ -24,6 +25,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const turnstile = useTurnstileVerification(
     'Please complete verification before signing in.',
+    authTurnstileEnabled,
   )
   const { completeAuthSession } = useCompleteAuthSession()
   const {

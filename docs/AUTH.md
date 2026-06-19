@@ -142,7 +142,7 @@ Main files:
 Refresh is handled automatically by the auth interceptor.
 
 ```text
-Any API call returns 401
+Authenticated API call returns 401
   ↓
 POST /auth/refresh
   ↓
@@ -151,6 +151,10 @@ Proxy/backend use the refresh token from the HttpOnly cookie
 Success: fetch current user + retry original request
 Failure: clear local session and redirect to /signin
 ```
+
+During initial bootstrap, the same retry path is also allowed for `/users` requests
+while auth state is still `loading`, so a valid refresh cookie can recover the
+session before the app settles to `authenticated` or `anonymous`.
 
 Main file:
 

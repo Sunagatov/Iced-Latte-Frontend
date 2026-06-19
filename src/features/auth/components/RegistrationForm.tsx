@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 import { apiRegisterUser } from '@/features/auth/api'
+import { authTurnstileEnabled } from '@/features/auth/config'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
 import { ROUTES } from '@/shared/config/routes'
@@ -28,6 +29,7 @@ export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const turnstile = useTurnstileVerification(
     'Please complete verification before creating your account.',
+    authTurnstileEnabled,
   )
   const { completeAuthSession } = useCompleteAuthSession()
   const router = useRouter()

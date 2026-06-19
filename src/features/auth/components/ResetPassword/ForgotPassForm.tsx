@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
+import { authTurnstileEnabled } from '@/features/auth/config'
 import { FEATURES } from '@/shared/config/features'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { apiForgotPassword } from '@/features/auth/api'
@@ -25,6 +26,7 @@ export default function ForgotPassForm() {
   const [emailSent, setEmailSent] = useState(false)
   const turnstile = useTurnstileVerification(
     'Please complete verification before requesting a reset.',
+    authTurnstileEnabled,
   )
   const { errorMessage, handleError } = useErrorHandler()
   const router = useRouter()

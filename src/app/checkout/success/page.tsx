@@ -3,6 +3,8 @@ import { ROUTES } from '@/shared/config/routes'
 import { requireRecoverableSession } from '@/shared/auth/guards'
 import { CheckoutSuccess } from '@/features/payment/CheckoutSuccess'
 
+export const dynamic = 'force-dynamic'
+
 type SearchParamValue = string | string[] | undefined
 
 interface Props {

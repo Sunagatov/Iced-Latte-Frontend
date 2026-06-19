@@ -16,6 +16,7 @@ import {
   changePassSchema,
   isUrlSafeToken,
 } from '@/features/auth/validation'
+import { authTurnstileEnabled } from '@/features/auth/config'
 import type { GuestResetPasswordCredentials } from '@/features/auth/types'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
 import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
@@ -38,6 +39,7 @@ export default function GuestResetPassForm() {
   const [resetSuccessful, setResetSuccessful] = useState(false)
   const turnstile = useTurnstileVerification(
     'Please complete verification before resetting your password.',
+    authTurnstileEnabled,
   )
   const { errorMessage, handleError } = useErrorHandler()
 

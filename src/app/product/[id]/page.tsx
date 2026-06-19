@@ -1,5 +1,7 @@
+import type { Metadata } from 'next'
 import { isAxiosError } from 'axios'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 import ProductWithReviews from '@/features/products/components/ProductWithReviews'
 import { getProduct } from '@/features/products/api'
 import type { IProduct } from '@/features/products/types'
@@ -10,7 +12,7 @@ type ProductDetailsPageProps = {
   }>
 }
 
-async function getProductById(id: string): Promise<IProduct> {
+const getProductById = cache(async (id: string): Promise<IProduct> => {
   try {
     return await getProduct(id)
   } catch (err) {
@@ -19,6 +21,18 @@ async function getProductById(id: string): Promise<IProduct> {
     }
 
     throw err
+  }
+})
+
+export async function generateMetadata({
+  params,
+}: Readonly<ProductDetailsPageProps>): Promise<Metadata> {
+  const { id } = await params
+  const product = await getProductById(id)
+
+  return {
+    title: product.name,
+    description: product.description,
   }
 }
 

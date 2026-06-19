@@ -23,7 +23,7 @@ describe('TurnstileWidget', () => {
     const props = jest.mocked(Turnstile).mock.calls[0][0]
 
     expect(props.options).toEqual(expect.objectContaining({
-      appearance: 'interaction-only',
+      appearance: 'always',
       feedbackEnabled: false,
       refreshExpired: 'auto',
       size: 'flexible',

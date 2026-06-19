@@ -15,6 +15,7 @@ import ProfileSidebarNavigation, {
 } from './ProfileNavigation'
 import ProfileOverviewSection from './ProfileOverviewSection'
 import ProfilePersonalDetailsSection from './ProfilePersonalDetailsSection'
+import ProfileScreenSkeleton from './ProfileScreenSkeleton'
 import type { ProfileSection } from './profileTypes'
 import { buildProfileSummary } from './profileSummary'
 import { useProfileOrderCount } from './useProfileOrderCount'
@@ -46,11 +47,7 @@ export default function ProfileScreen() {
   }, [router, status])
 
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader />
-      </div>
-    )
+    return <ProfileScreenSkeleton />
   }
 
   if (status !== 'authenticated') {

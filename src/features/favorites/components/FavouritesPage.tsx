@@ -19,6 +19,7 @@ interface PersistApi {
 }
 
 export default function FavouritesPage() {
+  const favPersist = (useFavouritesStore as unknown as PersistApi).persist
   const favourites: FavoriteProduct[] = useFavouritesStore(
     (s: FavStoreState): FavoriteProduct[] => s.favourites,
   )
@@ -27,20 +28,19 @@ export default function FavouritesPage() {
     (s) => s.hydrate,
   )
   const authStatus: AuthStatus = useAuthStore((s) => s.status)
-  const [hydrated, setHydrated] = useState(false)
+  const hasPersistHydrated = () => favPersist?.hasHydrated?.() ?? true
+  const [hydrated, setHydrated] = useState(hasPersistHydrated)
 
   // Only fav store is persisted; auth state resolves during app session bootstrap.
   useEffect(() => {
-    const favPersist = (useFavouritesStore as unknown as PersistApi).persist
-
-    if (favPersist.hasHydrated()) {
+    if (hasPersistHydrated()) {
       setHydrated(true)
 
       return
     }
 
-    return favPersist.onFinishHydration(() => setHydrated(true))
-  }, [])
+    return favPersist?.onFinishHydration(() => setHydrated(true))
+  }, [favPersist])
 
   // Guest-only fetch — app session bootstrap owns authenticated sync.
   useEffect(() => {
@@ -50,7 +50,12 @@ export default function FavouritesPage() {
     void hydrate()
   }, [hydrate, authStatus, hydrated])
 
-  if (!hydrated || status === 'idle' || status === 'syncing')
+  if (
+    authStatus === 'loading' ||
+    !hydrated ||
+    status === 'idle' ||
+    status === 'syncing'
+  )
     return <FavouritesSkeleton />
 
   if (status === 'error') {

@@ -97,12 +97,12 @@ describe('ReviewForm', () => {
     expect(screen.queryByRole('button', { name: 'Verify challenge' })).not.toBeInTheDocument()
   })
 
-  it('blocks submission until Turnstile is completed when review protection is enabled', async () => {
+  it('shows Turnstile immediately and blocks submission until it is completed', async () => {
     mockReviewsTurnstileEnabled = true
 
     renderReviewForm()
 
-    expect(screen.queryByRole('button', { name: 'Verify challenge' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Verify challenge' })).toBeInTheDocument()
 
     fireEvent.change(screen.getByPlaceholderText(/what did you like/i), {
       target: { value: 'Nice coffee' },
@@ -110,7 +110,6 @@ describe('ReviewForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Submit review' }))
 
     expect(mockedApiAddProductReview).not.toHaveBeenCalled()
-    expect(screen.getByRole('button', { name: 'Verify challenge' })).toBeInTheDocument()
     expect(screen.getByText('Please complete verification before submitting your review.'))
       .toBeInTheDocument()
   })
@@ -128,7 +127,6 @@ describe('ReviewForm', () => {
     fireEvent.change(screen.getByPlaceholderText(/what did you like/i), {
       target: { value: 'Nice coffee' },
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Submit review' }))
     fireEvent.click(screen.getByRole('button', { name: 'Verify challenge' }))
     fireEvent.click(screen.getByRole('button', { name: 'Submit review' }))
 

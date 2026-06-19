@@ -11,6 +11,8 @@ import Loader from '@/shared/ui/Loader'
 
 export default function CheckoutForm() {
   const {
+    addressMode,
+    canEditManualAddress,
     checkoutTurnstileEnabled,
     error,
     form,
@@ -19,6 +21,7 @@ export default function CheckoutForm() {
     hostedCheckoutEnabled,
     loading,
     selectedAddress,
+    setAddressMode,
     setSelectedAddress,
     turnstileRef,
     updateField,
@@ -63,11 +66,13 @@ export default function CheckoutForm() {
         </p>
 
         <AddressPicker
+          mode={addressMode}
+          onModeChange={setAddressMode}
           selected={selectedAddress}
           onSelect={setSelectedAddress}
         />
 
-        {!selectedAddress && (
+        {canEditManualAddress && !selectedAddress && (
           <>
             <Field
               id="addressLine"

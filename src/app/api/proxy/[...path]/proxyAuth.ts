@@ -14,6 +14,13 @@ export type TokenPair = {
   refreshToken: string
 }
 
+const inFlightRefreshes = new Map<string, Promise<TokenPair | null>>()
+const recentRefreshes = new Map<
+  string,
+  { expiresAt: number; tokens: TokenPair }
+>()
+const RECENT_REFRESH_TTL_MS = 5000
+
 function isTokenPair(data: unknown): data is TokenPair {
   if (typeof data !== 'object' || data === null) return false
   const d = data as Record<string, unknown>
@@ -90,6 +97,45 @@ async function refreshTokens(
   }
 }
 
+export function rotateRefreshToken(
+  refreshToken: string,
+): Promise<TokenPair | null> {
+  const recentRefresh = recentRefreshes.get(refreshToken)
+
+  if (recentRefresh) {
+    if (recentRefresh.expiresAt > Date.now()) {
+      return Promise.resolve(recentRefresh.tokens)
+    }
+
+    recentRefreshes.delete(refreshToken)
+  }
+
+  const existingRefresh = inFlightRefreshes.get(refreshToken)
+
+  if (existingRefresh) {
+    return existingRefresh
+  }
+
+  const refreshPromise = refreshTokens(refreshToken)
+    .then((tokens) => {
+      if (tokens) {
+        recentRefreshes.set(refreshToken, {
+          expiresAt: Date.now() + RECENT_REFRESH_TTL_MS,
+          tokens,
+        })
+      }
+
+      return tokens
+    })
+    .finally(() => {
+      inFlightRefreshes.delete(refreshToken)
+    })
+
+  inFlightRefreshes.set(refreshToken, refreshPromise)
+
+  return refreshPromise
+}
+
 export async function refreshAuthHeaderIfNeeded(
   request: NextRequest,
   safePath: string,
@@ -105,7 +151,7 @@ export async function refreshAuthHeaderIfNeeded(
     return null
   }
 
-  const refreshedTokens = await refreshTokens(refreshToken)
+  const refreshedTokens = await rotateRefreshToken(refreshToken)
 
   if (refreshedTokens) {
     headers['Authorization'] = `Bearer ${refreshedTokens.token}`

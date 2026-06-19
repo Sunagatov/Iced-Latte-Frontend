@@ -7,6 +7,7 @@ import { useAuthStore } from '@/features/auth/public'
 import { ROUTES } from '@/shared/config/routes'
 
 export default function LoginIcon() {
+  const status = useAuthStore((state: AuthStore) => state.status)
   const isLoggedIn = useAuthStore((state: AuthStore) => state.isLoggedIn)
   const userData = useAuthStore((state: AuthStore) => state.userData)
 
@@ -16,7 +17,7 @@ export default function LoginIcon() {
     setMounted(true)
   }, [])
 
-  if (!mounted) {
+  if (!mounted || status === 'loading') {
     return <div className="h-9 w-[92px]" />
   }
 

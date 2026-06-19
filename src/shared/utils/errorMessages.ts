@@ -26,6 +26,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 
   // Products & Reviews
   'product-not-found': 'This product is no longer available.',
+  'review-conflict': 'You already reviewed this product. Delete your existing review before submitting a new one.',
   'review-moderation-failed': 'Your review could not be published — it may contain inappropriate content.',
 
   // Validation & Generic

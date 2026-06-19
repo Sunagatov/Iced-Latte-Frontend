@@ -38,6 +38,11 @@ jest.mock('@/features/auth/components/ResetPassword/GuestResetPassForm', () => (
   default: () => <div>guest reset form</div>,
 }))
 
+jest.mock('@/shared/ui/Loader', () => ({
+  __esModule: true,
+  default: () => <div>loader</div>,
+}))
+
 describe('ResetPassForm', () => {
   beforeEach(() => {
     mockReplace.mockClear()
@@ -62,5 +67,16 @@ describe('ResetPassForm', () => {
     expect(mockReplace).not.toHaveBeenCalledWith(
       expect.stringContaining('oauth@example.com'),
     )
+  })
+
+  it('shows a loader while auth state is still resolving', () => {
+    mockAuthState = {
+      status: 'loading',
+      userData: null,
+    }
+
+    const { getByText } = render(<ResetPassForm />)
+
+    expect(getByText('loader')).toBeInTheDocument()
   })
 })
