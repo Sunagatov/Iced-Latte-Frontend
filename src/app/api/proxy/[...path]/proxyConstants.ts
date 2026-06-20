@@ -1,6 +1,11 @@
 import { isHttpsFrontend } from '@/shared/config/runtime'
+import { getAllowedFrontendOrigins } from '@/shared/config/frontendOrigins'
 
 export function getApiBaseUrl(): string | undefined {
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.INTERNAL_API_URL
+  }
+
   return process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
 }
 

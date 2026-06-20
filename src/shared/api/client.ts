@@ -10,16 +10,34 @@ const instance = axios.create({
   },
 })
 
+function getServerApiBaseUrl(): string {
+  if (process.env.NODE_ENV === 'production') {
+    const internalApiUrl = process.env.INTERNAL_API_URL
+
+    if (!internalApiUrl) {
+      throw new Error('INTERNAL_API_URL is required in production server-side runtime')
+    }
+
+    return internalApiUrl
+  }
+
+  const baseUrl =
+    process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
+
+  if (!baseUrl) {
+    throw new Error('API base URL is not configured')
+  }
+
+  return baseUrl
+}
+
 instance.interceptors.request.use((config) => {
   const path = config.url!.replace(/^\//, '')
   const isFormData =
     typeof FormData !== 'undefined' && config.data instanceof FormData
 
   if (typeof window === 'undefined') {
-    const baseUrl =
-      process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
-
-    config.url = `${baseUrl}/${path}`
+    config.url = `${getServerApiBaseUrl()}/${path}`
   } else {
     config.url = `/api/proxy/${path}`
     config.headers['X-Session-ID'] = getSessionId()

@@ -22,11 +22,16 @@ export async function createProxyResponse(
   response: Response,
   safePath: string,
   refreshedTokens: TokenPair | null,
+  requestOrigin?: string,
 ): Promise<NextResponse> {
   const data = await parseProxyResponse(response)
 
   if (!response.ok) {
-    const errorResponse = createCorsResponse(data, response.status)
+    const errorResponse = createCorsResponse(
+      data,
+      response.status,
+      requestOrigin,
+    )
     const retryAfter = response.headers.get('Retry-After')
 
     if (retryAfter) errorResponse.headers.set('Retry-After', retryAfter)
@@ -37,6 +42,7 @@ export async function createProxyResponse(
   const nextResponse = createCorsResponse(
     responseBodyForClient(data, safePath),
     response.status,
+    requestOrigin,
   )
 
   setAuthCookies(nextResponse, data, safePath)

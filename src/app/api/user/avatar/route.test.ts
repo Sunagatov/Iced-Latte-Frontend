@@ -117,7 +117,11 @@ describe('avatar image route', () => {
   })
 
   it('rejects non-HTTPS avatar URLs', async () => {
-    process.env = { ...process.env, NODE_ENV: 'production' }
+    process.env = {
+      ...process.env,
+      NODE_ENV: 'production',
+      INTERNAL_API_URL: 'http://iced-latte-backend:8083/api/v1',
+    }
     global.fetch = jest.fn().mockResolvedValueOnce(new Response('http://storage.example.com/avatar.png'))
 
     const { GET } = await import('@/app/api/user/avatar/route')
@@ -148,6 +152,7 @@ describe('avatar image route', () => {
 
   it('returns service unavailable when the backend URL is not configured', async () => {
     delete process.env.NEXT_PUBLIC_API_URL
+    delete process.env.INTERNAL_API_URL
     global.fetch = jest.fn()
 
     const { GET } = await import('@/app/api/user/avatar/route')

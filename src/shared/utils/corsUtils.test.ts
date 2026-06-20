@@ -11,6 +11,8 @@ import {
 import { NextRequest } from 'next/server'
 
 describe('corsUtils', () => {
+  const env = process.env as Record<string, string | undefined>
+
   it('createCorsResponse returns 200 with data by default', async () => {
     const res = createCorsResponse({ ok: true })
 
@@ -58,5 +60,28 @@ describe('corsUtils', () => {
     )
 
     expect(res.status).toBe(403)
+  })
+
+  it('allows the production alternate hostname and echoes the request origin', () => {
+    const originalNodeEnv = process.env.NODE_ENV
+    const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
+
+    env.NODE_ENV = 'production'
+    process.env.NEXT_PUBLIC_FRONTEND_URL = 'https://iced-latte.uk'
+
+    const res = handleOptions(
+      new NextRequest('https://www.iced-latte.uk/', {
+        method: 'OPTIONS',
+        headers: { origin: 'https://www.iced-latte.uk' },
+      }),
+    )
+
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe(
+      'https://www.iced-latte.uk',
+    )
+
+    env.NODE_ENV = originalNodeEnv
+    process.env.NEXT_PUBLIC_FRONTEND_URL = originalFrontendUrl
   })
 })

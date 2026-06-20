@@ -41,6 +41,9 @@ function makeRequest(
     body: body ? JSON.stringify(body) : undefined,
     headers: {
       ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(method !== 'GET' && method !== 'HEAD'
+        ? { origin: process.env.NEXT_PUBLIC_FRONTEND_URL ?? 'http://localhost' }
+        : {}),
       ...(headers ?? {}),
     },
   })
@@ -69,8 +72,16 @@ function mockFetch(
 }
 
 describe('proxy route', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+  const originalPublicApiUrl = process.env.NEXT_PUBLIC_API_URL
+  const originalFrontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL
+  const env = process.env as Record<string, string | undefined>
+
   afterEach(() => {
     delete process.env.INTERNAL_API_URL
+    env.NODE_ENV = originalNodeEnv
+    process.env.NEXT_PUBLIC_API_URL = originalPublicApiUrl
+    process.env.NEXT_PUBLIC_FRONTEND_URL = originalFrontendUrl
     jest.restoreAllMocks()
   })
 
@@ -109,6 +120,20 @@ describe('proxy route', () => {
       'http://iced-latte-backend:8083/api/v1/products',
       expect.objectContaining({ method: 'GET' }),
     )
+  })
+
+  it('fails closed in production when INTERNAL_API_URL is missing', async () => {
+    env.NODE_ENV = 'production'
+    process.env.NEXT_PUBLIC_API_URL = 'https://api.iced-latte.uk/api/v1'
+    global.fetch = jest.fn()
+
+    const res = await GET(makeRequest('GET', 'products'), {
+      params: Promise.resolve({ path: ['products'] }),
+    })
+
+    expect(res.status).toBe(503)
+    expect(await res.json()).toEqual({ error: 'API unavailable' })
+    expect(global.fetch).not.toHaveBeenCalled()
   })
 
   it('returns 400 for invalid path characters', async () => {
@@ -164,6 +189,40 @@ describe('proxy route', () => {
 
     const res = await POST(
       makeRequest('POST', 'telemetry', { event: 'view' }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(200)
+    expect(global.fetch).toHaveBeenCalled()
+  })
+
+  it('rejects mutating requests from disallowed origins', async () => {
+    global.fetch = jest.fn()
+
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }, {
+        origin: 'https://evil.example',
+      }),
+      {
+        params: Promise.resolve({ path: ['telemetry'] }),
+      },
+    )
+
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Invalid request origin' })
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('accepts referer fallback for mutating requests', async () => {
+    mockFetch(200, { ok: true })
+
+    const res = await POST(
+      makeRequest('POST', 'telemetry', { event: 'view' }, {
+        origin: '',
+        referer: 'http://localhost/account',
+      }),
       {
         params: Promise.resolve({ path: ['telemetry'] }),
       },
@@ -328,7 +387,8 @@ describe('proxy route', () => {
 
     expect(refreshCalls).toBe(1)
 
-    resolveRefresh?.({
+    expect(resolveRefresh).not.toBeNull()
+    resolveRefresh!({
       ok: true,
       status: 200,
       headers: {
@@ -470,7 +530,8 @@ describe('proxy route', () => {
 
     expect(refreshCalls).toBe(1)
 
-    resolveRefresh?.({
+    expect(resolveRefresh).not.toBeNull()
+    resolveRefresh!({
       ok: true,
       status: 200,
       headers: {

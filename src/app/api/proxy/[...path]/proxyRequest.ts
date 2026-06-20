@@ -143,13 +143,18 @@ async function readBody(
 export async function readProxyBody(
   request: NextRequest,
   method: ProxyMethod,
+  requestOrigin?: string,
 ): Promise<BodyInit | undefined | NextResponse> {
   if (method === 'GET') return undefined
 
   const body = await readBody(request)
 
   if (body === REQUEST_BODY_TOO_LARGE) {
-    return createCorsResponse({ error: 'Request body too large' }, 413)
+    return createCorsResponse(
+      { error: 'Request body too large' },
+      413,
+      requestOrigin,
+    )
   }
 
   return body

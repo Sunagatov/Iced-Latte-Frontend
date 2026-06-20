@@ -84,7 +84,11 @@ function mockController(overrides: Partial<ReturnType<typeof useReviewsSectionCo
       reviewsCount: 0,
     },
     selectedFilterRating: [],
-    selectedSortOption: { label: 'Newest', value: { sortAttribute: 'createdAt', sortDirection: 'desc' } },
+    selectedSortOption: {
+      isDefault: true,
+      label: 'Newest',
+      value: { sortAttribute: 'createdAt', sortDirection: 'desc' },
+    },
     isUserReviewLoading: false,
     setSelectedSortOption: jest.fn(),
     setShowFilterDropdown: jest.fn(),
