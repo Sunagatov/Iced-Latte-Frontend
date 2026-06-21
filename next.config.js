@@ -47,6 +47,17 @@ function sentryConnectSourceFor(dsn) {
 
 const sentryConnectSource = sentryConnectSourceFor(sentryDsn)
 
+function canonicalFrontendOrigin() {
+  const configuredOrigin =
+    process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://iced-latte.uk'
+
+  try {
+    return new URL(configuredOrigin)
+  } catch {
+    return new URL('https://iced-latte.uk')
+  }
+}
+
 const nextConfig = {
   output: 'standalone',
   compress: true,
@@ -54,6 +65,23 @@ const nextConfig = {
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production',
     remotePatterns: imageSources.map(parseRemoteImageSource),
+  },
+  async redirects() {
+    const canonicalOrigin = canonicalFrontendOrigin()
+    const canonicalHost = canonicalOrigin.hostname
+
+    if (canonicalHost.startsWith('www.')) {
+      return []
+    }
+
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: `www.${canonicalHost}` }],
+        destination: `${canonicalOrigin.origin}/:path*`,
+        permanent: true,
+      },
+    ]
   },
   async headers() {
     return [

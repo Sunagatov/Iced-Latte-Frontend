@@ -18,6 +18,16 @@ describe('next security headers', () => {
     return headers.find((header) => header.key === 'Content-Security-Policy').value
   }
 
+  async function redirectsFor(env = {}) {
+    process.env = { ...originalEnv, ...env }
+    jest.resetModules()
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const config = require('./next.config')
+
+    return config.redirects()
+  }
+
   it('omits unsafe-eval from production CSP', async () => {
     await expect(contentSecurityPolicyForNodeEnv('production')).resolves.not.toContain(
       '\'unsafe-eval\'',
@@ -56,5 +66,28 @@ describe('next security headers', () => {
         NEXT_PUBLIC_SENTRY_DSN: 'not a url',
       }),
     ).resolves.toContain('connect-src')
+  })
+
+  it('redirects the www host to the canonical apex host', async () => {
+    const redirects = await redirectsFor({
+      NEXT_PUBLIC_FRONTEND_URL: 'https://iced-latte.uk',
+    })
+
+    expect(redirects).toEqual([
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.iced-latte.uk' }],
+        destination: 'https://iced-latte.uk/:path*',
+        permanent: true,
+      },
+    ])
+  })
+
+  it('skips canonical host redirects when the configured hostname already uses www', async () => {
+    await expect(
+      redirectsFor({
+        NEXT_PUBLIC_FRONTEND_URL: 'https://www.iced-latte.uk',
+      }),
+    ).resolves.toEqual([])
   })
 })
