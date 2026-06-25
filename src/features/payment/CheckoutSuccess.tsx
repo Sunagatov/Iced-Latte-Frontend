@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/features/cart/public'
 import { getCheckoutStatus } from '@/features/payment/public'
+import {
+  buildGoogleAnalyticsItems,
+  trackGoogleAnalyticsEvent,
+} from '@/shared/analytics/googleAnalytics'
 import { ROUTES } from '@/shared/config/routes'
 
 const MAX_RETRIES = 5
@@ -18,11 +22,21 @@ const FAILED_PAYMENT_STATUSES = new Set([
 
 export function CheckoutSuccess({ orderId }: { orderId: string }) {
   const { resetCart } = useCartStore()
+  const cartItems = useCartStore((state) => state.tempItems)
+  const totalPrice = useCartStore((state) => state.totalPrice)
+  const cartStatus = useCartStore((state) => state.status)
   const [status, setStatus] = useState<
     'loading' | 'paid' | 'pending' | 'failed' | 'error'
   >('loading')
   const [retries, setRetries] = useState(0)
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const purchaseTrackedOrderIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    setStatus('loading')
+    setRetries(0)
+    purchaseTrackedOrderIdRef.current = null
+  }, [orderId])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -38,7 +52,6 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
 
         if (result.orderStatus === 'PAID') {
           setStatus('paid')
-          resetCart()
 
           return
         }
@@ -72,7 +85,26 @@ export function CheckoutSuccess({ orderId }: { orderId: string }) {
     void poll()
 
     return () => controller.abort()
-  }, [orderId, retries, resetCart])
+  }, [orderId, retries])
+
+  useEffect(() => {
+    if (status !== 'paid' || purchaseTrackedOrderIdRef.current === orderId) {
+      return
+    }
+
+    if (cartStatus !== 'ready' || cartItems.length === 0) {
+      return
+    }
+
+    purchaseTrackedOrderIdRef.current = orderId
+    trackGoogleAnalyticsEvent('purchase', {
+      currency: 'USD',
+      transaction_id: orderId,
+      value: totalPrice,
+      items: buildGoogleAnalyticsItems(cartItems),
+    })
+    resetCart()
+  }, [cartItems, cartStatus, orderId, resetCart, status, totalPrice])
 
   useEffect(() => {
     return () => {

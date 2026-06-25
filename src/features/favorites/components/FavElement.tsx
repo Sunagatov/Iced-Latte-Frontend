@@ -28,7 +28,11 @@ export default function FavElement({
     isPending,
     quantity,
     removeFromCart,
-  } = useFavoriteProductActions(product.id)
+  } = useFavoriteProductActions(product.id, {
+    brandName: product.brandName,
+    name: product.name,
+    price: product.price,
+  })
 
   const handleGridHeartClick = (
     event: React.MouseEvent<HTMLButtonElement>,

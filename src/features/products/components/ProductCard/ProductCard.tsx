@@ -36,7 +36,11 @@ export default memo(function ProductCard({
     isPending,
     quantity,
     removeFromCart,
-  } = useFavoriteProductActions(id)
+  } = useFavoriteProductActions(id, {
+    brandName,
+    name,
+    price,
+  })
 
   return (
     <li

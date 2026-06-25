@@ -15,7 +15,11 @@ export default function AddToCartButton({ product }: Readonly<Props>) {
     isCartPending,
     quantity,
     removeFromCart,
-  } = useFavoriteProductActions(product.id)
+  } = useFavoriteProductActions(product.id, {
+    brandName: product.brandName,
+    name: product.name,
+    price: product.price,
+  })
 
   return (
     <>

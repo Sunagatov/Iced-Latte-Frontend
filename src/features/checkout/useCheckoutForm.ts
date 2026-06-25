@@ -11,6 +11,10 @@ import { useAuthStore } from '@/features/auth/public'
 import { useAddressStore } from '@/features/addresses/store'
 import { useCartStore } from '@/features/cart/public'
 import {
+  buildGoogleAnalyticsItems,
+  trackGoogleAnalyticsEvent,
+} from '@/shared/analytics/googleAnalytics'
+import {
   checkoutTurnstileEnabled,
   getCheckoutErrorMessage,
   getCheckoutUnavailableMessage,
@@ -164,6 +168,15 @@ export function useCheckoutForm() {
 
         return
       }
+
+      trackGoogleAnalyticsEvent('begin_checkout', {
+        currency: 'USD',
+        value: tempItems.reduce(
+          (sum, item) => sum + item.productInfo.price * item.productQuantity,
+          0,
+        ),
+        items: buildGoogleAnalyticsItems(tempItems),
+      })
 
       const checkout = await createCheckout(
         {

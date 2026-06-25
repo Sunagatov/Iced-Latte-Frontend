@@ -155,7 +155,13 @@ const ProductOverview: React.FC<IProductOverview> = ({
         {/* CTA */}
         <div className="flex items-center gap-3">
           <AddToCartButton product={product} />
-          <HeartWrapper id={product.id} className="ml-1" />
+          <HeartWrapper
+            id={product.id}
+            brandName={product.brandName}
+            name={product.name}
+            price={product.price}
+            className="ml-1"
+          />
         </div>
 
         {/* Description */}

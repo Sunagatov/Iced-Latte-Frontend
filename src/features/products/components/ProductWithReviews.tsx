@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   apiGetProductReviewsStatistics,
   type IProductReviewsStatistics,
@@ -8,6 +8,10 @@ import {
 import { IProduct } from '@/features/products/types'
 import dynamic from 'next/dynamic'
 import ProductOverview from '@/features/products/components/ProductOverview'
+import {
+  buildGoogleAnalyticsItem,
+  trackGoogleAnalyticsEvent,
+} from '@/shared/analytics/googleAnalytics'
 import { useToastErrorHandler } from '@/shared/utils/apiError'
 
 const ReviewsSection = dynamic(
@@ -24,6 +28,7 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
   const [reviewsStatistics, setReviewsStatistics] =
     useState<IProductReviewsStatistics | null>(null)
   const { handleError } = useToastErrorHandler()
+  const viewTrackedProductIdRef = useRef<string | null>(null)
 
   const refreshStatistics = useCallback(async () => {
     try {
@@ -40,6 +45,27 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
     setReviewsStatistics(null)
     void refreshStatistics()
   }, [refreshStatistics])
+
+  useEffect(() => {
+    if (viewTrackedProductIdRef.current === product.id) {
+      return
+    }
+
+    viewTrackedProductIdRef.current = product.id
+    trackGoogleAnalyticsEvent('view_item', {
+      currency: 'USD',
+      value: product.price,
+      items: [
+        buildGoogleAnalyticsItem({
+          brandName: product.brandName,
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+        }),
+      ],
+    })
+  }, [product.brandName, product.id, product.name, product.price])
 
   return (
     <section

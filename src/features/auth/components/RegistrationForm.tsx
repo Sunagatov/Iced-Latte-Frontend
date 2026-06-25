@@ -10,6 +10,7 @@ import { apiRegisterUser } from '@/features/auth/api'
 import { authTurnstileEnabled } from '@/features/auth/config'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
+import { trackGoogleAnalyticsEvent } from '@/shared/analytics/googleAnalytics'
 import { ROUTES } from '@/shared/config/routes'
 import { registrationSchema } from '@/features/auth/validation'
 import { useFormErrorHandler } from '@/shared/utils/apiError'
@@ -66,6 +67,7 @@ export default function RegistrationForm() {
 
       if (authenticated) {
         await completeAuthSession()
+        trackGoogleAnalyticsEvent('sign_up', { method: 'email' })
       } else {
         router.push(ROUTES.confirmRegistration)
       }

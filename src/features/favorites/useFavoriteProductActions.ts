@@ -1,15 +1,57 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+
 import {
   useCartStore,
   type CartSliceStore,
+  MAX_CART_ITEM_QUANTITY,
 } from '@/features/cart/public'
+import {
+  buildGoogleAnalyticsItem,
+  trackGoogleAnalyticsEvent,
+} from '@/shared/analytics/googleAnalytics'
 import {
   type FavStoreState,
   useFavouritesStore,
 } from '@/features/favorites/state/favoritesStore'
+import { getClientAuthStatus } from '@/shared/auth/sessionStatus'
 
-export function useFavoriteProductActions(productId: string) {
+type ProductAnalyticsInfo = {
+  brandName?: string | null
+  name?: string
+  price?: number
+}
+
+function buildAnalyticsItemList(
+  productId: string,
+  product?: ProductAnalyticsInfo,
+  quantity = 1,
+) {
+  if (product?.name && product.price != null) {
+    return [
+      buildGoogleAnalyticsItem({
+        brandName: product.brandName,
+        id: productId,
+        name: product.name,
+        price: product.price,
+        quantity,
+      }),
+    ]
+  }
+
+  return [{ item_id: productId, quantity }]
+}
+
+type PendingCartAnalyticsAction = {
+  baselineQuantity: number
+  type: 'add' | 'remove' | 'remove_full'
+}
+
+export function useFavoriteProductActions(
+  productId: string,
+  product?: ProductAnalyticsInfo,
+) {
   const toggleFavourite = useFavouritesStore(
     (state: FavStoreState): FavStoreState['toggleFavourite'] =>
       state.toggleFavourite,
@@ -43,21 +85,139 @@ export function useFavoriteProductActions(productId: string) {
   const isFavourited = favouriteIds.includes(productId)
   const isPending = pendingIds.has(productId)
   const isCartPending = pendingProductIds.has(productId)
+  const authStatus = getClientAuthStatus()
+  const pendingCartAnalyticsRef = useRef<PendingCartAnalyticsAction | null>(
+    null,
+  )
 
-  const handleToggleFavourite = (): void => {
-    if (!isPending) {
-      void toggleFavourite(productId)
+  useEffect(() => {
+    if (authStatus !== 'authenticated') {
+      pendingCartAnalyticsRef.current = null
+      return
+    }
+
+    if (isCartPending) {
+      return
+    }
+
+    const pendingAction = pendingCartAnalyticsRef.current
+
+    if (!pendingAction) {
+      return
+    }
+
+    pendingCartAnalyticsRef.current = null
+
+    if (pendingAction.type === 'add') {
+      const delta = quantity - pendingAction.baselineQuantity
+
+      if (delta > 0) {
+        trackGoogleAnalyticsEvent('add_to_cart', {
+          currency: 'USD',
+          items: buildAnalyticsItemList(productId, product, delta),
+        })
+      }
+
+      return
+    }
+
+    const delta = pendingAction.baselineQuantity - quantity
+
+    if (delta <= 0) {
+      return
+    }
+
+    trackGoogleAnalyticsEvent('remove_from_cart', {
+      currency: 'USD',
+      items: buildAnalyticsItemList(productId, product, delta),
+    })
+  }, [authStatus, isCartPending, product, productId, quantity])
+
+  const handleToggleFavourite = async (): Promise<void> => {
+    if (isPending) {
+      return
+    }
+
+    const shouldTrackAsAdd = !isFavourited
+
+    try {
+      await toggleFavourite(productId)
+      trackGoogleAnalyticsEvent(
+        shouldTrackAsAdd ? 'add_to_wishlist' : 'remove_from_wishlist',
+        {
+          items: buildAnalyticsItemList(productId, product),
+        },
+      )
+    } catch {
+      return
     }
   }
 
   return {
-    addToCart: () => add(productId),
-    decreaseCartQuantity: () => remove(productId),
+    addToCart: () => {
+      if (isCartPending || quantity >= MAX_CART_ITEM_QUANTITY) {
+        return
+      }
+
+      add(productId)
+
+      if (authStatus === 'authenticated') {
+        pendingCartAnalyticsRef.current = {
+          baselineQuantity: quantity,
+          type: 'add',
+        }
+        return
+      }
+
+      trackGoogleAnalyticsEvent('add_to_cart', {
+        currency: 'USD',
+        items: buildAnalyticsItemList(productId, product),
+      })
+    },
+    decreaseCartQuantity: () => {
+      if (isCartPending || quantity <= 0) {
+        return
+      }
+
+      remove(productId)
+
+      if (authStatus === 'authenticated') {
+        pendingCartAnalyticsRef.current = {
+          baselineQuantity: quantity,
+          type: 'remove',
+        }
+        return
+      }
+
+      trackGoogleAnalyticsEvent('remove_from_cart', {
+        currency: 'USD',
+        items: buildAnalyticsItemList(productId, product),
+      })
+    },
     handleToggleFavourite,
     isCartPending,
     isFavourited,
     isPending,
     quantity,
-    removeFromCart: () => removeFullProduct(productId),
+    removeFromCart: () => {
+      if (isCartPending || quantity <= 0) {
+        return
+      }
+
+      removeFullProduct(productId)
+
+      if (authStatus === 'authenticated') {
+        pendingCartAnalyticsRef.current = {
+          baselineQuantity: quantity,
+          type: 'remove_full',
+        }
+        return
+      }
+
+      trackGoogleAnalyticsEvent('remove_from_cart', {
+        currency: 'USD',
+        items: buildAnalyticsItemList(productId, product, quantity),
+      })
+    },
   }
 }

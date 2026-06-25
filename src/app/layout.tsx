@@ -57,11 +57,11 @@ export default function RootLayout({
           <Header />
           <main className={'min-w-[360px] grow'}>{children}</main>
           <Footer />
+          {GOOGLE_ANALYTICS_MEASUREMENT_ID && (
+            <GoogleAnalytics gaId={GOOGLE_ANALYTICS_MEASUREMENT_ID} />
+          )}
         </AppProviders>
       </body>
-      {GOOGLE_ANALYTICS_MEASUREMENT_ID && (
-        <GoogleAnalytics gaId={GOOGLE_ANALYTICS_MEASUREMENT_ID} />
-      )}
     </html>
   )
 }

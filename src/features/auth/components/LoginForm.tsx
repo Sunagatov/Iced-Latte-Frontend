@@ -10,6 +10,7 @@ import { apiLoginUser } from '@/features/auth/api'
 import { authTurnstileEnabled } from '@/features/auth/config'
 import { useCompleteAuthSession } from '@/features/auth/hooks/useCompleteAuthSession'
 import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
+import { trackGoogleAnalyticsEvent } from '@/shared/analytics/googleAnalytics'
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import Button from '@/shared/ui/Button'
 import FormInput from '@/shared/ui/FormInput'
@@ -48,6 +49,7 @@ export default function LoginForm() {
       await apiLoginUser({ ...formData, turnstileToken: turnstile.token })
 
       await completeAuthSession()
+      trackGoogleAnalyticsEvent('login', { method: 'password' })
       reset()
     } catch (error) {
       handleError(error)
