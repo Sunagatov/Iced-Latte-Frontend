@@ -1,6 +1,11 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import ImageUpload from '@/features/user/components/ImageUpload'
-import { getUserData, uploadImage } from '@/features/user/api'
+import {
+  getUserData,
+  isAvatarUploadAbortError,
+  removeUserAvatar,
+  uploadImage,
+} from '@/features/user/api'
 import { useAuthStore } from '@/features/auth/public'
 import type * as React from 'react'
 import type { ForwardedRef } from 'react'
@@ -10,6 +15,8 @@ const mockTurnstileReset = jest.fn()
 
 jest.mock('@/features/user/api', () => ({
   getUserData: jest.fn(),
+  isAvatarUploadAbortError: jest.fn(),
+  removeUserAvatar: jest.fn(),
   uploadImage: jest.fn(),
 }))
 
@@ -60,6 +67,8 @@ jest.mock('next/image', () => ({
 }))
 
 const mockedGetUserData = jest.mocked(getUserData)
+const mockedIsAvatarUploadAbortError = jest.mocked(isAvatarUploadAbortError)
+const mockedRemoveUserAvatar = jest.mocked(removeUserAvatar)
 const mockedUploadImage = jest.mocked(uploadImage)
 
 function avatarFile() {
@@ -88,6 +97,14 @@ describe('ImageUpload', () => {
       } as never,
     })
     mockedUploadImage.mockResolvedValue(undefined)
+    mockedIsAvatarUploadAbortError.mockReturnValue(false)
+    mockedRemoveUserAvatar.mockResolvedValue({
+      id: 'u1',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      email: 'ada@example.com',
+      avatarLink: null,
+    } as never)
     mockedGetUserData.mockResolvedValue({
       id: 'u1',
       firstName: 'Ada',
@@ -106,7 +123,13 @@ describe('ImageUpload', () => {
     })
 
     await waitFor(() => {
-      expect(mockedUploadImage).toHaveBeenCalledWith(file, undefined)
+      expect(mockedUploadImage).toHaveBeenCalledWith(
+        file,
+        undefined,
+        expect.objectContaining({
+          onStageChange: expect.any(Function),
+        }),
+      )
     })
   })
 
@@ -176,7 +199,13 @@ describe('ImageUpload', () => {
     })
 
     await waitFor(() => {
-      expect(mockedUploadImage).toHaveBeenCalledWith(file, undefined)
+      expect(mockedUploadImage).toHaveBeenCalledWith(
+        file,
+        undefined,
+        expect.objectContaining({
+          onStageChange: expect.any(Function),
+        }),
+      )
     })
     await waitFor(() => {
       expect(screen.getByAltText('Profile photo')).toHaveAttribute(
@@ -225,8 +254,169 @@ describe('ImageUpload', () => {
     })
 
     await waitFor(() => {
-      expect(mockedUploadImage).toHaveBeenCalledWith(file, 'turnstile-token')
+      expect(mockedUploadImage).toHaveBeenCalledWith(
+        file,
+        'turnstile-token',
+        expect.objectContaining({
+          onStageChange: expect.any(Function),
+        }),
+      )
     })
     expect(mockTurnstileReset).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows upload stage messaging while the presigned flow is processing', async () => {
+    let resolveUpload: () => void
+
+    mockedUploadImage.mockImplementation(
+      async (_file, _token, options) => {
+        options?.onStageChange?.('requesting-upload-intent')
+        options?.onUploadProgress?.(55)
+        options?.onStageChange?.('processing')
+        options?.onUploadProgress?.(null)
+
+        await new Promise<void>((resolve) => {
+          resolveUpload = resolve
+        })
+      },
+    )
+
+    render(<ImageUpload />)
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [avatarFile()] },
+    })
+
+    expect(
+      await screen.findByText('Processing profile photo...'),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+
+    await act(async () => {
+      resolveUpload!()
+    })
+  })
+
+  it('shows upload progress while the file is being sent', async () => {
+    let resolveUpload: () => void
+
+    mockedUploadImage.mockImplementation(
+      async (_file, _token, options) => {
+        options?.onStageChange?.('uploading')
+        options?.onUploadProgress?.(42)
+
+        await new Promise<void>((resolve) => {
+          resolveUpload = resolve
+        })
+      },
+    )
+
+    render(<ImageUpload />)
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [avatarFile()] },
+    })
+
+    expect(
+      await screen.findByRole('progressbar', {
+        name: 'Avatar upload progress',
+      }),
+    ).toHaveAttribute('aria-valuenow', '42')
+    expect(screen.getByText('Uploading profile photo...')).toBeInTheDocument()
+
+    await act(async () => {
+      resolveUpload!()
+    })
+  })
+
+  it('keeps the preview and offers retry after an upload failure', async () => {
+    mockedUploadImage
+      .mockRejectedValueOnce(new Error('upload failed'))
+      .mockResolvedValueOnce(undefined)
+
+    render(<ImageUpload />)
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [avatarFile()] },
+    })
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(screen.getByAltText('Profile photo')).toHaveAttribute(
+      'src',
+      'blob:avatar',
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry upload' }))
+
+    await waitFor(() => {
+      expect(mockedUploadImage).toHaveBeenCalledTimes(2)
+    })
+    expect(mockedUploadImage.mock.calls[1][0]).toBe(
+      mockedUploadImage.mock.calls[0][0],
+    )
+  })
+
+  it('lets the user cancel an in-flight upload and keeps the file ready for retry', async () => {
+    let rejectUpload: (error: Error) => void
+
+    mockedUploadImage.mockImplementation(
+      (_file, _token, options) =>
+        new Promise<void>((_resolve, reject) => {
+          rejectUpload = reject
+          options?.onStageChange?.('uploading')
+        }),
+    )
+    mockedIsAvatarUploadAbortError.mockImplementation(
+      (error) => (error as Error).name === 'AbortError',
+    )
+
+    render(<ImageUpload />)
+
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [avatarFile()] },
+    })
+
+    expect(
+      await screen.findByRole('button', { name: 'Cancel upload' }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel upload' }))
+
+    await act(async () => {
+      rejectUpload!(Object.assign(new Error('aborted'), { name: 'AbortError' }))
+    })
+
+    expect(await screen.findByText('Upload canceled.')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Retry upload' }),
+    ).toBeInTheDocument()
+    expect(screen.getByAltText('Profile photo')).toHaveAttribute(
+      'src',
+      'blob:avatar',
+    )
+  })
+
+  it('removes the stored avatar and refreshes the user state', async () => {
+    useAuthStore.setState({
+      userData: {
+        id: 'u1',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        email: 'ada@example.com',
+        avatarLink: 'https://cdn.example.com/avatar.png',
+      } as never,
+    })
+
+    render(<ImageUpload />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove photo' }))
+
+    await waitFor(() => {
+      expect(mockedRemoveUserAvatar).toHaveBeenCalledTimes(1)
+    })
+    expect(useAuthStore.getState().userData?.avatarLink).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: 'Remove photo' }),
+    ).not.toBeInTheDocument()
   })
 })

@@ -104,6 +104,7 @@ export default function LoginForm() {
       />
       {turnstile.shouldRender && (
         <TurnstileWidget
+          action="login"
           ref={turnstile.ref}
           onVerify={turnstile.handleVerify}
         />

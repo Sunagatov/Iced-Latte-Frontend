@@ -184,6 +184,7 @@ export default function GuestResetPassForm() {
 
                 {turnstile.shouldRender && (
                   <TurnstileWidget
+                    action="change_password"
                     ref={turnstile.ref}
                     onVerify={turnstile.handleVerify}
                   />

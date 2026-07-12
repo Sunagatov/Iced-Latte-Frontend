@@ -167,6 +167,7 @@ export default function SupportChatWidget() {
 
               {showTurnstile && canUseChat && (
                 <TurnstileWidget
+                  action="support_chat"
                   ref={turnstileRef}
                   onVerify={handleTurnstileVerify}
                 />

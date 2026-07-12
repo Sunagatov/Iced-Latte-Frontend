@@ -1,20 +1,28 @@
 import type { UserData } from './types'
 import {
+  deleteUserAvatar,
   editUserProfile as editGeneratedUserProfile,
   getUserProfile,
   type UpdateUserAccountRequest,
   uploadUserAvatar,
 } from '@/shared/api/generated/user'
+import {
+  isAvatarUploadAbortError,
+  type AvatarUploadOptions,
+  type AvatarUploadStage,
+  uploadAvatarWithPresignedFlow,
+} from './avatarUpload'
+import { getAvatarUploadMode } from './config'
+
+type UserRequestConfig = object & {
+  skipAuthRetry?: boolean
+}
 
 function normalizeUserData(data: UserData): UserData {
   return {
     ...data,
     address: data.address ?? {},
   }
-}
-
-type UserRequestConfig = object & {
-  skipAuthRetry?: boolean
 }
 
 export type UpdateUserProfileInput = Omit<
@@ -54,12 +62,30 @@ export const editUserProfile = async (
   return getUserData()
 }
 
+export const removeUserAvatar = async (): Promise<UserData> => {
+  await deleteUserAvatar()
+
+  return getUserData()
+}
+
 export async function uploadImage(
   file: File,
   turnstileToken?: string,
+  options?: AvatarUploadOptions,
 ): Promise<void> {
+  if (getAvatarUploadMode() === 'presigned') {
+    await uploadAvatarWithPresignedFlow(file, turnstileToken, options)
+
+    return
+  }
+
+  options?.onStageChange?.('uploading')
+  options?.onUploadProgress?.(null)
   await uploadUserAvatar({
     file,
     ...(turnstileToken ? { turnstileToken } : {}),
-  })
+  }, { signal: options?.signal })
 }
+
+export { isAvatarUploadAbortError }
+export type { AvatarUploadOptions, AvatarUploadStage }

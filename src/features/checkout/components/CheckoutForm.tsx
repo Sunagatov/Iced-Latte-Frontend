@@ -109,6 +109,7 @@ export default function CheckoutForm() {
 
         {checkoutTurnstileEnabled && (
           <TurnstileWidget
+            action="checkout"
             ref={turnstileRef}
             onVerify={handleTurnstileVerify}
           />

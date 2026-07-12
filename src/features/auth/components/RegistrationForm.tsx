@@ -140,6 +140,7 @@ export default function RegistrationForm() {
       />
       {turnstile.shouldRender && (
         <TurnstileWidget
+          action="register"
           ref={turnstile.ref}
           onVerify={turnstile.handleVerify}
         />

@@ -16,6 +16,66 @@ export interface UploadUserAvatarRequest {
   turnstileToken?: string;
 }
 
+export type CreateAvatarUploadRequestContentType = typeof CreateAvatarUploadRequestContentType[keyof typeof CreateAvatarUploadRequestContentType];
+
+
+export const CreateAvatarUploadRequestContentType = {
+  'image/jpeg': 'image/jpeg',
+  'image/png': 'image/png',
+  'image/webp': 'image/webp',
+} as const;
+
+export interface CreateAvatarUploadRequest {
+  contentType: CreateAvatarUploadRequestContentType;
+  /** @minimum 1 */
+  sizeBytes: number;
+  /**
+     * Cloudflare Turnstile verification token. Required when avatar upload bot protection is enabled.
+     * @maxLength 2048
+     */
+  turnstileToken?: string;
+}
+
+export type AvatarUploadStatus = typeof AvatarUploadStatus[keyof typeof AvatarUploadStatus];
+
+
+export const AvatarUploadStatus = {
+  PENDING_UPLOAD: 'PENDING_UPLOAD',
+  UPLOADED: 'UPLOADED',
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED',
+  SUPERSEDED: 'SUPERSEDED',
+} as const;
+
+/**
+ * @nullable
+ */
+export type AvatarUploadTargetResponse = {
+  method?: 'POST' | 'PUT';
+  url?: string;
+  fields?: {[key: string]: string};
+  headers?: {[key: string]: string};
+} | null;
+
+export interface AvatarUploadIntentResponse {
+  uploadId: string;
+  status: AvatarUploadStatus;
+  upload?: AvatarUploadTargetResponse | null;
+  expiresAt: string;
+}
+
+export interface AvatarUploadStatusResponse {
+  uploadId: string;
+  status: AvatarUploadStatus;
+  /** @nullable */
+  avatarLink?: string | null;
+  /** @nullable */
+  failureCode?: string | null;
+  expiresAt: string;
+}
+
 /**
  * Address details of the user.
  */
@@ -218,6 +278,14 @@ export interface SuccessResponse {
   message: string;
 }
 
+export type CreateAvatarUploadHeaders = {
+/**
+ * @minLength 1
+ * @maxLength 100
+ */
+'Idempotency-Key': string;
+};
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -388,6 +456,48 @@ export const deleteUserAvatar = (
       options);
     }
 
+/**
+ * Create a short-lived avatar upload intent for direct storage upload. Disabled unless presigned avatar upload mode is configured.
+ * @summary Create avatar upload intent
+ */
+export const createAvatarUpload = (
+    createAvatarUploadRequest: BodyType<CreateAvatarUploadRequest>,
+    headers: CreateAvatarUploadHeaders,
+ options?: SecondParameter<typeof orvalMutator<AvatarUploadIntentResponse>>,) => {
+      return orvalMutator<AvatarUploadIntentResponse>(
+      {url: `/api/v1/users/avatar/uploads`, method: 'POST',
+      headers: {'Content-Type': 'application/json', ...headers},
+      data: createAvatarUploadRequest
+    },
+      options);
+    }
+
+/**
+ * Get the current status for an avatar upload owned by the authenticated user.
+ * @summary Get avatar upload status
+ */
+export const getAvatarUpload = (
+    uploadId: string,
+ options?: SecondParameter<typeof orvalMutator<AvatarUploadStatusResponse>>,) => {
+      return orvalMutator<AvatarUploadStatusResponse>(
+      {url: `/api/v1/users/avatar/uploads/${uploadId}`, method: 'GET'
+    },
+      options);
+    }
+
+/**
+ * Cancel the authenticated user's in-flight or pending avatar upload intent. Idempotent and safe to retry.
+ * @summary Cancel avatar upload
+ */
+export const cancelAvatarUpload = (
+    uploadId: string,
+ options?: SecondParameter<typeof orvalMutator<void>>,) => {
+      return orvalMutator<void>(
+      {url: `/api/v1/users/avatar/uploads/${uploadId}`, method: 'DELETE'
+    },
+      options);
+    }
+
 export type GetUserProfileResult = NonNullable<Awaited<ReturnType<typeof getUserProfile>>>
 export type EditUserProfileResult = NonNullable<Awaited<ReturnType<typeof editUserProfile>>>
 export type ChangeUserPasswordResult = NonNullable<Awaited<ReturnType<typeof changeUserPassword>>>
@@ -400,3 +510,6 @@ export type SetDefaultDeliveryAddressResult = NonNullable<Awaited<ReturnType<typ
 export type UploadUserAvatarResult = NonNullable<Awaited<ReturnType<typeof uploadUserAvatar>>>
 export type GetUserAvatarLinkResult = NonNullable<Awaited<ReturnType<typeof getUserAvatarLink>>>
 export type DeleteUserAvatarResult = NonNullable<Awaited<ReturnType<typeof deleteUserAvatar>>>
+export type CreateAvatarUploadResult = NonNullable<Awaited<ReturnType<typeof createAvatarUpload>>>
+export type GetAvatarUploadResult = NonNullable<Awaited<ReturnType<typeof getAvatarUpload>>>
+export type CancelAvatarUploadResult = NonNullable<Awaited<ReturnType<typeof cancelAvatarUpload>>>

@@ -13,6 +13,10 @@ const ERROR_MESSAGES: Record<string, string> = {
   'session-not-found': 'Your session could not be found. Please sign in again.',
   'session-access-denied': 'You do not have access to this session.',
   'turnstile-failed': 'Verification failed. Please retry the challenge and submit again.',
+  'avatar-upload-failed': 'Your profile photo could not be processed. Please try a different image or try again.',
+  'avatar-upload-expired': 'Your profile photo upload expired before finishing. Please try again.',
+  'avatar-upload-timeout': 'Your profile photo is taking longer than expected. Please try again.',
+  'file-upload-failed': 'Your profile photo could not be uploaded right now. Please try again.',
 
   // Orders
   'order-not-found': 'We couldn\'t find this order.',

@@ -18,11 +18,12 @@ describe('TurnstileWidget', () => {
   it('clears the token for non-success Turnstile lifecycle events', () => {
     const onVerify = jest.fn()
 
-    render(<TurnstileWidget onVerify={onVerify} />)
+    render(<TurnstileWidget action="checkout" onVerify={onVerify} />)
 
     const props = jest.mocked(Turnstile).mock.calls[0][0]
 
     expect(props.options).toEqual(expect.objectContaining({
+      action: 'checkout',
       appearance: 'always',
       feedbackEnabled: false,
       refreshExpired: 'auto',

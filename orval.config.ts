@@ -23,6 +23,11 @@ const frontendExcludedPathsBySpec: Record<string, string[]> = {
 
 const frontendExcludedSchemasBySpec: Record<string, (string | RegExp)[]> = {
   order: [
+    'CreateAvatarUploadRequest',
+    'AvatarUploadIntentResponse',
+    'AvatarUploadStatusResponse',
+    'AvatarUploadStatus',
+    'AvatarUploadTargetResponse',
     'AdminOrderStatusUpdateDto',
     'UploadUserAvatarRequest',
     'UpdateUserAccountRequest',
@@ -35,6 +40,11 @@ const frontendExcludedSchemasBySpec: Record<string, (string | RegExp)[]> = {
     'DeliveryAddressRequest',
   ],
   payment: [
+    'CreateAvatarUploadRequest',
+    'AvatarUploadIntentResponse',
+    'AvatarUploadStatusResponse',
+    'AvatarUploadStatus',
+    'AvatarUploadTargetResponse',
     'UploadUserAvatarRequest',
     'UpdateUserAccountRequest',
     'PasswordField',
@@ -57,6 +67,11 @@ const frontendExcludedSchemasBySpec: Record<string, (string | RegExp)[]> = {
     'OrderStatusHistoryDto',
   ],
   security: [
+    'CreateAvatarUploadRequest',
+    'AvatarUploadIntentResponse',
+    'AvatarUploadStatusResponse',
+    'AvatarUploadStatus',
+    'AvatarUploadTargetResponse',
     'UploadUserAvatarRequest',
     'UpdateUserAccountRequest',
     'PasswordFieldD2fd7b5',

@@ -197,6 +197,7 @@ export default function ForgotPassForm() {
           />
           {turnstile.shouldRender && (
             <TurnstileWidget
+              action="forgot_password"
               ref={turnstile.ref}
               onVerify={turnstile.handleVerify}
             />

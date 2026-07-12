@@ -48,7 +48,11 @@ export const useErrorHandler = () => {
     setErrorMessage(getUserMessage(error))
   }, [])
 
-  return { errorMessage, handleError }
+  const clearError = useCallback(() => {
+    setErrorMessage(null)
+  }, [])
+
+  return { errorMessage, handleError, clearError }
 }
 
 export function useFormErrorHandler<T extends FieldValues>(setError: UseFormSetError<T>) {

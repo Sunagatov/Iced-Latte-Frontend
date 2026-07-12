@@ -155,7 +155,11 @@ const ReviewForm = ({
       </div>
 
       {reviewsTurnstileEnabled && (
-        <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
+        <TurnstileWidget
+          action="review"
+          ref={turnstileRef}
+          onVerify={handleTurnstileVerify}
+        />
       )}
 
       {(errorMessage || turnstileError) && (

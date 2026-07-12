@@ -41,4 +41,26 @@ describe('user config', () => {
 
     expect(avatarTurnstileEnabled).toBe(false)
   })
+
+  it('avatarUploadMode defaults to backend', async () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_AVATAR_UPLOAD_MODE: '',
+    }
+
+    const { avatarUploadMode } = await import('@/features/user/config')
+
+    expect(avatarUploadMode).toBe('backend')
+  })
+
+  it('avatarUploadMode enables presigned uploads when configured', async () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_AVATAR_UPLOAD_MODE: 'presigned',
+    }
+
+    const { avatarUploadMode } = await import('@/features/user/config')
+
+    expect(avatarUploadMode).toBe('presigned')
+  })
 })
