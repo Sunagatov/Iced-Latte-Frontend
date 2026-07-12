@@ -4,9 +4,11 @@ export const EXTERNAL_LINKS = {
     backend: 'https://github.com/Sunagatov/Iced-Latte',
     frontend: 'https://github.com/Sunagatov/Iced-Latte-Frontend',
     apiDocs: 'https://github.com/Sunagatov/Iced-Latte#-guides--features',
-    contributing: 'https://github.com/Sunagatov/Iced-Latte/blob/development/.github/CONTRIBUTING.md',
+    contributing:
+      'https://github.com/Sunagatov/Iced-Latte/blob/development/.github/CONTRIBUTING.md',
     issues: 'https://github.com/Sunagatov/Iced-Latte/issues',
-    termsSource: 'https://github.com/Sunagatov/Iced-Latte/blob/development/docs/terms-of-use.md',
+    termsSource:
+      'https://github.com/Sunagatov/Iced-Latte/blob/development/docs/terms-of-use.md',
   },
   social: {
     telegram: 'https://t.me/lucky_1uck',
@@ -14,5 +16,6 @@ export const EXTERNAL_LINKS = {
     whatsapp: 'https://wa.me/447405503609',
   },
   email: 'mailto:zufar.sunagatov@gmail.com',
-  license: 'https://www.apache.org/licenses/LICENSE-2.0',
+  license:
+    'https://github.com/Sunagatov/Iced-Latte-Frontend/blob/development/LICENSE',
 } as const

@@ -3,7 +3,7 @@ import { EXTERNAL_LINKS } from '@/shared/config/links'
 import { ROUTES } from '@/shared/config/routes'
 
 export const TERMS_EFFECTIVE_DATE = 'May 3, 2026'
-export const TERMS_LAST_UPDATED = 'June 4, 2026'
+export const TERMS_LAST_UPDATED = 'July 12, 2026'
 
 export const termsSections = [
   {
@@ -13,11 +13,11 @@ export const termsSections = [
     ],
   },
   {
-    title: '2. Repository License',
+    title: '2. Repository License & Restricted Use',
     body: [
-      'The repository source code and related repository material are licensed under the Apache License 2.0 in the repository LICENSE file.',
-      'That license allows open-source use, modification, distribution, private use, and commercial use subject to its terms.',
-      'The Apache License 2.0 does not grant rights to use the Iced Latte name, logo, domain, visual identity, or other brand assets in a way that suggests official endorsement, partnership, or ownership without explicit written permission.',
+      'The repository source code and related repository material are licensed under the Iced Latte Personal Evaluation License 2026 in the repository LICENSE file.',
+      'That license grants only limited personal local evaluation rights. You may inspect the code, clone it, run it locally, and make private local modifications for your own learning and evaluation.',
+      'Commercial use, remote hosting, publication, redistribution, sublicensing, public forks, mirrors, derivative repositories, educational use, public presentation, and any transfer or sharing of the repository material or derivatives require prior written permission signed by the author and legally verified as required by the author.',
     ],
   },
   {
@@ -38,7 +38,7 @@ export const termsSections = [
       'Scrape, crawl, or use automated tools to extract data beyond normal API usage.',
       'Upload malicious content, spam, or any material that infringes on the rights of others.',
       'Impersonate another person or misrepresent your affiliation with any entity.',
-      'Interfere with or disrupt the platform\'s infrastructure.',
+      "Interfere with or disrupt the platform's infrastructure.",
     ],
   },
   {
@@ -71,7 +71,7 @@ export const termsSections = [
     bullets: [
       'No real money is charged, transferred, or held.',
       'No real goods or services are sold or delivered.',
-      'Credit card numbers entered in the demo environment are processed by Stripe\'s test sandbox and are not real charges.',
+      "Credit card numbers entered in the demo environment are processed by Stripe's test sandbox and are not real charges.",
       'The author assumes no liability for any financial loss arising from misuse or misunderstanding of the payment demonstration features.',
     ],
   },
@@ -97,9 +97,9 @@ export const termsSections = [
     ],
     bullets: [
       'Your contribution is your original work or you have the right to submit it.',
-      'Contributions are accepted under the project\'s Apache License 2.0 contribution terms.',
-      'Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Iced Latte is submitted under Apache License 2.0, without any additional terms or conditions.',
-      'By submitting a contribution, you confirm that you have the right to submit it and that it can be licensed as part of the project under Apache License 2.0.',
+      "Contributions are accepted only under the project's license terms.",
+      'By submitting a contribution, you irrevocably assign to the author all right, title, and interest in and to the contribution, including all copyright and other intellectual property rights.',
+      'Contributors do not receive ownership, copyright, trademark, commercial, publication, hosting, sublicensing, or redistribution rights.',
       'You must not submit code, text, images, designs, assets, test data, or other material that you do not have the right to contribute.',
       'If you do not agree with these contribution terms, do not submit a contribution.',
     ],
@@ -125,7 +125,7 @@ export default function TermsOfUsePage() {
               Terms of Use
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70 sm:text-base">
-              Welcome to Iced Latte, an open-source specialty coffee
+              Welcome to Iced Latte, a source-available specialty coffee
               marketplace. By accessing or using the platform you agree to these
               terms. If you do not agree, please do not use the platform.
             </p>
@@ -245,7 +245,7 @@ export default function TermsOfUsePage() {
                     rel="noopener noreferrer"
                     className="text-brand decoration-brand/30 hover:decoration-brand font-medium underline underline-offset-4 transition"
                   >
-                    Apache License 2.0 legal code
+                    Iced Latte Personal Evaluation License 2026
                   </a>
                   . Contributors can also review the{' '}
                   <a

@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     template: '%s | Iced Latte',
   },
   description:
-    'Discover thousands of products from trusted sellers. An open-source marketplace built by the community.',
+    'Discover thousands of products from trusted sellers. A source-available marketplace project.',
   openGraph: {
     title: 'Iced Latte — Marketplace',
     description:
-      'Discover thousands of products from trusted sellers. An open-source marketplace built by the community.',
+      'Discover thousands of products from trusted sellers. A source-available marketplace project.',
     url: siteUrl,
     siteName: 'Iced Latte',
     locale: 'en_US',

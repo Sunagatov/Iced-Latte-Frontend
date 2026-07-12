@@ -4,23 +4,24 @@ Iced Latte Frontend is built in the open so engineers can practice on a real
 Next.js and React codebase with product flows, API integration, state
 management, UI work, tests, and pull requests.
 
-## License
+## License & Contribution Terms
 
-Iced Latte Frontend is licensed under the Apache License 2.0. See
-[LICENSE](../LICENSE) for details.
+Iced Latte Frontend is licensed under the Iced Latte Personal Evaluation License
+2026. See [LICENSE](../LICENSE) for details.
 
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in Iced Latte Frontend is submitted under the Apache License 2.0,
-without any additional terms or conditions.
+This is not an open source license. Personal local evaluation is allowed.
+Public, educational, remote-hosted, commercial, redistributed, sublicensed, or
+derivative use requires prior written permission signed by the author and legally
+verified as required by the author.
 
-By opening a pull request, you confirm that you have the right to submit the
-contribution and that it can be licensed as part of the project under Apache
-License 2.0.
+By opening a PR, issue patch, code suggestion, documentation change, design,
+test, or other contribution, you assign the contribution rights to the author.
+Contributors do not receive ownership, copyright, trademark, commercial,
+publication, hosting, sublicensing, or redistribution rights.
 
 The Iced Latte name, logo, domain, visual identity, and other brand assets are
-project brand assets. The Apache License 2.0 does not grant trademark rights or
-permission to use those assets in a way that suggests official endorsement,
-partnership, or ownership.
+project brand assets. No permission is granted to use those assets without the
+author's signed written permission.
 
 ## Ground Rules
 
