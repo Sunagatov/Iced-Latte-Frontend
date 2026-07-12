@@ -1,119 +1,157 @@
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
+import { isTokenExpired } from '@/shared/auth/token'
+import { NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
+import { getAllowedFrontendOrigins } from '@/shared/config/frontendOrigins'
+import {
+  getApiBaseUrl,
+  type ProxyMethod,
+} from './proxyConstants'
+import {
+  fetchWithTimeout,
+  forwardHeaders,
+  readProxyBody,
+  sanitizePath,
+  sanitizeQueryString,
+} from './proxyRequest'
+import { refreshAuthHeaderIfNeeded, rotateRefreshToken } from './proxyAuth'
+import { createProxyResponse } from './proxyResponse'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
-const FETCH_TIMEOUT_MS = 30000
-
-const ALLOWED_PATH_RE = /^[a-zA-Z0-9/_-]+$/
-const FORWARDED_HEADERS = ['Authorization', 'X-Session-ID', 'X-Trace-ID', 'X-Correlation-ID']
-
-function sanitizePath(segments: string[]): string | null {
-  const joined = segments.join('/')
-
-  return ALLOWED_PATH_RE.test(joined) ? joined : null
+type RouteContext = {
+  params: Promise<{ path: string[] }>
 }
 
-function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+const MUTATING_METHODS = new Set<ProxyMethod>(['POST', 'PUT', 'PATCH', 'DELETE'])
 
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer))
-}
+function extractRequestOrigin(request: NextRequest): string | undefined {
+  const rawOrigin =
+    request.headers.get('origin') || request.headers.get('referer')
 
-function forwardHeaders(request: NextRequest): HeadersInit {
-  const headers: Record<string, string> = {}
-  const contentType = request.headers.get('Content-Type')
+  if (!rawOrigin) return undefined
 
-  if (contentType) headers['Content-Type'] = contentType
-
-  for (const name of FORWARDED_HEADERS) {
-    const value = request.headers.get(name)
-
-    if (value) headers[name] = value
-  }
-
-  return headers
-}
-
-async function readBody(request: NextRequest): Promise<BodyInit | undefined> {
   try {
-    const arrayBuffer = await request.arrayBuffer()
-
-    return arrayBuffer.byteLength > 0 ? arrayBuffer : undefined
+    return new URL(rawOrigin).origin
   } catch {
     return undefined
   }
 }
 
+function hasAllowedOrigin(request: NextRequest, method: ProxyMethod): boolean {
+  if (!MUTATING_METHODS.has(method)) {
+    return true
+  }
+
+  const requestOrigin = extractRequestOrigin(request)
+
+  if (!requestOrigin) {
+    return false
+  }
+
+  return getAllowedFrontendOrigins().includes(requestOrigin)
+}
+
 async function handleProxy(
   request: NextRequest,
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  method: ProxyMethod,
   path: string[],
 ) {
-  const pathString = path.join('/')
-
-  if (method === 'POST' && pathString.includes('telemetry')) {
-    return createCorsResponse({ message: 'Telemetry endpoint not implemented' }, 202)
-  }
-
+  const requestOrigin = extractRequestOrigin(request)
   const safePath = sanitizePath(path)
 
-  if (!safePath) return createCorsResponse({ error: 'Invalid path' }, 400)
+  if (!safePath) {
+    return createCorsResponse({ error: 'Invalid path' }, 400, requestOrigin)
+  }
+
+  const apiBaseUrl = getApiBaseUrl()
+
+  if (!apiBaseUrl) {
+    return createCorsResponse({ error: 'API unavailable' }, 503, requestOrigin)
+  }
+
+  if (!hasAllowedOrigin(request, method)) {
+    return createCorsResponse(
+      { error: 'Invalid request origin' },
+      403,
+      requestOrigin,
+    )
+  }
+
+  if (safePath === 'auth/refresh') {
+    const refreshToken = request.cookies.get(COOKIE_NAMES.refresh)?.value
+
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      const refreshedTokens = await rotateRefreshToken(refreshToken)
+
+      if (refreshedTokens) {
+        return createProxyResponse(
+          new Response(JSON.stringify(refreshedTokens), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+          safePath,
+          null,
+        )
+      }
+    }
+  }
 
   const url = new URL(request.url)
-  const apiUrl = `${API_BASE_URL}/${safePath}${url.search}`
-  const body = method === 'GET' ? undefined : await readBody(request)
+  const apiUrl = `${apiBaseUrl}/${safePath}${sanitizeQueryString(url.searchParams)}`
+  const body = await readProxyBody(request, method, requestOrigin)
+
+  if (body instanceof NextResponse) return body
+
+  const headers = forwardHeaders(request, safePath) as Record<string, string>
+  const refreshedTokens = await refreshAuthHeaderIfNeeded(
+    request,
+    safePath,
+    headers,
+  )
 
   try {
-    const response = await fetchWithTimeout(apiUrl, {
-      method,
-      headers: forwardHeaders(request),
-      body,
-    })
-    const contentType = response.headers.get('content-type') ?? ''
-    const rawBody = await response.text()
+    const response = await fetchWithTimeout(apiUrl, { method, headers, body })
 
-    const data: unknown = contentType.includes('application/json') && rawBody
-      ? (JSON.parse(rawBody) as unknown)
-      : rawBody
-
-    if (!response.ok) return createCorsResponse(data, response.status)
-
-    return createCorsResponse(data)
+    return createProxyResponse(
+      response,
+      safePath,
+      refreshedTokens,
+      requestOrigin,
+    )
   } catch {
-    return createCorsResponse({ error: 'API unavailable' }, 503)
+    return createCorsResponse({ error: 'API unavailable' }, 503, requestOrigin)
   }
 }
 
-export async function OPTIONS() {
-  return handleOptions()
+export function OPTIONS(request: NextRequest) {
+  return handleOptions(request)
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   const { path } = await params
 
   return handleProxy(request, 'GET', path)
 }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(request: NextRequest, { params }: RouteContext) {
   const { path } = await params
 
   return handleProxy(request, 'POST', path)
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   const { path } = await params
 
   return handleProxy(request, 'PUT', path)
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const { path } = await params
 
   return handleProxy(request, 'PATCH', path)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const { path } = await params
 
   return handleProxy(request, 'DELETE', path)

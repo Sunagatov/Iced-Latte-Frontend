@@ -1,11 +1,35 @@
 import axios from 'axios'
-import { setupCache } from 'axios-cache-interceptor'
-import { getSessionId, generateTraceId } from '@/shared/utils/sessionUtils'
-import { useAuthStore } from '@/features/auth/store'
+import { setupCache, AxiosCacheInstance } from 'axios-cache-interceptor'
+import { getSessionId, generateTraceId } from '@/shared/auth/sessionTracing'
+import { API_TIMEOUT_SSR_MS, API_TIMEOUT_BROWSER_MS } from '@/shared/config/constants'
 
 const instance = axios.create({
-  timeout: typeof window === 'undefined' ? 5000 : 15000,
+  timeout: typeof window === 'undefined' ? API_TIMEOUT_SSR_MS : API_TIMEOUT_BROWSER_MS,
+  paramsSerializer: {
+    indexes: null,
+  },
 })
+
+function getServerApiBaseUrl(): string {
+  if (process.env.NODE_ENV === 'production') {
+    const internalApiUrl = process.env.INTERNAL_API_URL
+
+    if (!internalApiUrl) {
+      throw new Error('INTERNAL_API_URL is required in production server-side runtime')
+    }
+
+    return internalApiUrl
+  }
+
+  const baseUrl =
+    process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL
+
+  if (!baseUrl) {
+    throw new Error('API base URL is not configured')
+  }
+
+  return baseUrl
+}
 
 instance.interceptors.request.use((config) => {
   const path = config.url!.replace(/^\//, '')
@@ -13,18 +37,9 @@ instance.interceptors.request.use((config) => {
     typeof FormData !== 'undefined' && config.data instanceof FormData
 
   if (typeof window === 'undefined') {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL
-
-    config.url = `${baseUrl}/${path}`
+    config.url = `${getServerApiBaseUrl()}/${path}`
   } else {
     config.url = `/api/proxy/${path}`
-
-    try {
-      const token = useAuthStore.getState().token
-
-      if (token) config.headers['Authorization'] = `Bearer ${token}`
-    } catch { /* store not yet initialized */ }
-
     config.headers['X-Session-ID'] = getSessionId()
     config.headers['X-Trace-ID'] = generateTraceId()
   }
@@ -38,4 +53,6 @@ instance.interceptors.request.use((config) => {
   return config
 })
 
-export const api = setupCache(instance, { cacheTakeover: false })
+export const api: AxiosCacheInstance = setupCache(instance, {
+  cacheTakeover: false,
+})

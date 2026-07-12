@@ -1,9 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import { cache } from 'react'
-import Hero from '@/shared/components/Hero/Hero'
+import Hero from '@/features/home/components/Hero'
+import {
+  getProductBrands,
+  getProductSellers,
+} from '@/features/products/public'
 import ProductCatalog from '@/features/products/components/ProductCatalog/ProductCatalog'
-import { getProductBrands, getProductSellers } from '@/features/products/api'
 
 const getBrands = cache(async () => {
   try {
@@ -25,9 +28,11 @@ const getSellers = cache(async () => {
   }
 })
 
-export default async function Home() {
-  const productBrands = await getBrands()
-  const productSellers = await getSellers()
+export default async function HomePage() {
+  const [productBrands, productSellers] = await Promise.all([
+    getBrands(),
+    getSellers(),
+  ])
 
   return (
     <>

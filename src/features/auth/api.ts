@@ -1,33 +1,72 @@
-import { AxiosResponse } from 'axios'
-import { api } from '@/shared/api/client'
 import {
-  SuccessResponse,
+  AuthChangePasswordCredentials,
+  ForgotPasswordCredentials,
+  GuestResetPasswordCredentials,
   LoginCredentials,
   RegisterCredentials,
-  ConfirmEmailResponse,
+  SuccessResponse,
 } from './types'
+import {
+  authenticate,
+  changePassword,
+  confirmEmail,
+  forgotPassword,
+  logout,
+  register,
+} from '@/shared/api/generated/security'
+import { changeUserPassword } from '@/shared/api/generated/user'
 
-export async function apiRegisterUser(credentials: RegisterCredentials): Promise<string> {
-  const response: AxiosResponse<string> = await api.post('/auth/register', credentials)
-
-  return response.data
+type AuthSessionResult = {
+  authenticated?: boolean
 }
 
-export async function apiConfirmEmail(token: string | null): Promise<ConfirmEmailResponse> {
-  if (!token) throw new Error('Token is null or undefined')
-  const response = await api.post('/auth/confirm', { token })
+export async function apiRegisterUser(
+  credentials: RegisterCredentials,
+): Promise<boolean> {
+  const result: Awaited<ReturnType<typeof register>> & AuthSessionResult =
+    await register(credentials)
 
-  return { token: response.data, httpStatusCode: response.status }
+  return result.authenticated === true
 }
 
-export async function apiLoginUser(credentials: LoginCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post('/auth/authenticate', credentials)
+export async function verifyEmailCode(
+  code: string,
+): Promise<void> {
+  if (!code) throw new Error('Verification code is required')
 
-  return response.data
+  await confirmEmail({ token: code })
 }
 
-export async function apiLogoutUser(): Promise<string> {
-  const response: AxiosResponse<string> = await api.post('/auth/logout')
+export async function apiLoginUser(
+  credentials: LoginCredentials,
+): Promise<void> {
+  await authenticate(credentials)
+}
 
-  return response.data
+export async function apiLogoutUser(): Promise<void> {
+  await logout()
+}
+
+export async function apiForgotPassword(
+  email: ForgotPasswordCredentials,
+): Promise<SuccessResponse> {
+  await forgotPassword(email)
+
+  return {}
+}
+
+export async function apiGuestResetPassword(
+  credentials: GuestResetPasswordCredentials,
+): Promise<SuccessResponse> {
+  await changePassword(credentials)
+
+  return {}
+}
+
+export async function apiAuthChangePassword(
+  credentials: AuthChangePasswordCredentials,
+): Promise<SuccessResponse> {
+  await changeUserPassword(credentials)
+
+  return {}
 }

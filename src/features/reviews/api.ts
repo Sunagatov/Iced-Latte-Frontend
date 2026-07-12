@@ -1,6 +1,16 @@
-import { AxiosResponse } from 'axios'
 import { Review, IProductReviewsStatistics } from './types'
-import { api } from '@/shared/api/client'
+import axios from 'axios'
+import {
+  addNewProductReview,
+  addProductReviewLike,
+  deleteProductReview,
+  getProductReview,
+  getProductReviewsAndRatings,
+  getRatingAndReviewStat,
+  getUserReviews,
+  type GetProductReviewsAndRatingsParams,
+  type ProductReviewRatingStats,
+} from '@/shared/api/generated/productReview'
 
 export interface IReviews {
   reviewsWithRatings: Review[]
@@ -16,55 +26,110 @@ export interface SubmittedReviewInfo {
   createdAt: string
 }
 
-export async function apiGetProductReviews(productId: string, page = 0, size = 3): Promise<IReviews> {
-  const response: AxiosResponse<IReviews> = await api.get(
-    `/products/${productId}/reviews?page=${page}${size ? '&size=' + size : ''}`,
-  )
+function getReviewParamsFromPath(url: string): {
+  params: GetProductReviewsAndRatingsParams
+  productId: string
+} {
+  const [path, queryString = ''] = url.split('?')
+  const productId = path.match(/\/products\/([^/]+)\/reviews/)?.[1]
+  const searchParams = new URLSearchParams(queryString)
+  const getNumber = (name: string) => {
+    const value = searchParams.get(name)
 
-  return response.data
+    return value ? Number(value) : undefined
+  }
+  const productRatings = searchParams.get('productRatings')
+
+  if (!productId) {
+    throw new Error(`Unsupported product reviews URL: ${url}`)
+  }
+
+  return {
+    productId,
+    params: {
+      page: getNumber('page'),
+      size: getNumber('size'),
+      sort_attribute: searchParams.get('sort_attribute') as GetProductReviewsAndRatingsParams['sort_attribute'],
+      sort_direction: searchParams.get('sort_direction') as GetProductReviewsAndRatingsParams['sort_direction'],
+      productRatings: productRatings
+        ? productRatings.split(',').filter(Boolean).map(Number)
+        : undefined,
+    },
+  }
 }
 
-export async function apiGetAllReviews(url: string) {
-  const response: AxiosResponse<IReviews> = await api.get(url, { cache: false })
+export async function apiGetAllReviews(url: string): Promise<IReviews> {
+  const { params, productId } = getReviewParamsFromPath(url)
+  const options = { cache: false } as object
 
-  return response.data
+  return (await getProductReviewsAndRatings(productId, params, options)) as IReviews
 }
 
 export async function apiAddProductReview(
   productId: string,
   reviewText: string,
   currentRating: number,
+  turnstileToken?: string,
 ): Promise<SubmittedReviewInfo> {
-  const response: AxiosResponse<SubmittedReviewInfo> = await api.post(
-    `/products/${productId}/reviews`,
-    { text: reviewText, rating: currentRating },
-  )
-
-  return response.data
+  return (await addNewProductReview(productId, {
+    text: reviewText,
+    rating: currentRating,
+    ...(turnstileToken ? { turnstileToken } : {}),
+  })) as SubmittedReviewInfo
 }
 
-export async function apiDeleteProductReview(productReviewId: string, productId: string): Promise<void> {
-  await api.delete(`/products/${productId}/reviews/${productReviewId}`)
+export async function apiDeleteProductReview(
+  productReviewId: string,
+  productId: string,
+): Promise<void> {
+  await deleteProductReview(productId, productReviewId)
 }
 
-export async function apiGetProductUserReview(productId: string): Promise<Review> {
-  const response: AxiosResponse<Review> = await api.get(`/products/${productId}/review`)
+export async function apiGetProductUserReview(
+  productId: string,
+): Promise<Review | null> {
+  const options = { cache: false } as object
 
-  return response.data
+  try {
+    return (await getProductReview(productId, options)) as Review
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null
+    }
+
+    throw error
+  }
 }
 
 export async function apiGetUserReviews(): Promise<Review[]> {
-  const response: AxiosResponse<{ reviewsWithRatings: Review[] }> = await api.get('/users/reviews', { cache: false })
+  const options = { cache: false } as object
+  const firstPage = (await getUserReviews({ page: 0 }, options)) as IReviews
 
-  return response.data.reviewsWithRatings
+  if (!firstPage.totalPages || firstPage.totalPages <= 1) {
+    return firstPage.reviewsWithRatings
+  }
+
+  const pages = [firstPage]
+
+  for (let page = 1; page < firstPage.totalPages; page += 1) {
+    pages.push((await getUserReviews({
+      page,
+      size: firstPage.size || undefined,
+    }, options)) as IReviews)
+  }
+
+  return pages.flatMap((page) => page.reviewsWithRatings)
 }
 
-export async function apiGetProductReviewsStatistics(productId: string) {
-  const response: AxiosResponse<IProductReviewsStatistics> = await api.get(
-    `/products/${productId}/reviews/statistics`,
-  )
+export async function apiGetProductReviewsStatistics(
+  productId: string,
+): Promise<IProductReviewsStatistics> {
+  const options = { cache: false } as object
 
-  return response.data
+  return (await getRatingAndReviewStat(
+    productId,
+    options,
+  )) as ProductReviewRatingStats
 }
 
 export async function apiRateProductReview(
@@ -72,11 +137,7 @@ export async function apiRateProductReview(
   productReviewId: string,
   isLike: boolean,
 ): Promise<Review> {
-  const response: AxiosResponse<Review> = await api.post(
-    `/products/${productId}/reviews/${productReviewId}/likes`,
-    { isLike },
-  )
-
-  return response.data
+  return (await addProductReviewLike(productId, productReviewId, {
+    isLike,
+  })) as Review
 }
-

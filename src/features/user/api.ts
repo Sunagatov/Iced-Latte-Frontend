@@ -1,46 +1,91 @@
-import { AxiosResponse } from 'axios'
-import { api } from '@/shared/api/client'
-import { UserData } from './types'
+import type { UserData } from './types'
 import {
-  SuccessResponse,
-  ForgotPasswordCredentials,
-  GuestResetPasswordCredentials,
-  AuthChangePasswordCredentials,
-} from '@/features/auth/types'
+  deleteUserAvatar,
+  editUserProfile as editGeneratedUserProfile,
+  getUserProfile,
+  type UpdateUserAccountRequest,
+  uploadUserAvatar,
+} from '@/shared/api/generated/user'
+import {
+  isAvatarUploadAbortError,
+  type AvatarUploadOptions,
+  type AvatarUploadStage,
+  uploadAvatarWithPresignedFlow,
+} from './avatarUpload'
+import { getAvatarUploadMode } from './config'
 
-export const getUserData = async (): Promise<UserData> => {
-  const response: AxiosResponse<UserData> = await api.get('/users')
-
-  return response.data
+type UserRequestConfig = object & {
+  skipAuthRetry?: boolean
 }
 
-export const editUserProfile = async (updatedUserData: Partial<UserData>): Promise<UserData> => {
-  const response: AxiosResponse<UserData> = await api.put('/users', updatedUserData)
-
-  return response.data
+function normalizeUserData(data: UserData): UserData {
+  return {
+    ...data,
+    address: data.address ?? {},
+  }
 }
 
-export async function uploadImage(file: File): Promise<void> {
-  const formData = new FormData()
-
-  formData.append('file', file)
-  await api.post('/users/avatar', formData)
+export type UpdateUserProfileInput = Omit<
+  UpdateUserAccountRequest,
+  'address'
+> & {
+  address?: UserData['address'] | null
 }
 
-export async function apiForgotPassword(email: ForgotPasswordCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post('/auth/password/forgot', email)
+export const getUserData = async (
+  config?: UserRequestConfig,
+): Promise<UserData> => {
+  const data = (await getUserProfile({
+    cache: false,
+    ...config,
+  } as object)) as UserData
 
-  return response.data
+  return normalizeUserData(data)
 }
 
-export async function apiGuestResetPassword(credentials: GuestResetPasswordCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.post('/auth/password/change', credentials)
+export const editUserProfile = async (
+  updatedUserData: UpdateUserProfileInput,
+): Promise<UserData> => {
+  const address = updatedUserData.address
+  const isEmptyAddress =
+    !address ||
+    (!address.country && !address.city && !address.line && !address.postcode)
+  const payload = {
+    ...updatedUserData,
+    address: isEmptyAddress ? null : address,
+  }
 
-  return response.data
+  await editGeneratedUserProfile(
+    payload as unknown as Parameters<typeof editGeneratedUserProfile>[0],
+  )
+
+  return getUserData()
 }
 
-export async function apiAuthChangePassword(credentials: AuthChangePasswordCredentials): Promise<SuccessResponse> {
-  const response: AxiosResponse<SuccessResponse> = await api.patch('/users', credentials)
+export const removeUserAvatar = async (): Promise<UserData> => {
+  await deleteUserAvatar()
 
-  return response.data
+  return getUserData()
 }
+
+export async function uploadImage(
+  file: File,
+  turnstileToken?: string,
+  options?: AvatarUploadOptions,
+): Promise<void> {
+  if (getAvatarUploadMode() === 'presigned') {
+    await uploadAvatarWithPresignedFlow(file, turnstileToken, options)
+
+    return
+  }
+
+  options?.onStageChange?.('uploading')
+  options?.onUploadProgress?.(null)
+  await uploadUserAvatar({
+    file,
+    ...(turnstileToken ? { turnstileToken } : {}),
+  }, { signal: options?.signal })
+}
+
+export { isAvatarUploadAbortError }
+export type { AvatarUploadOptions, AvatarUploadStage }

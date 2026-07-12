@@ -1,24 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const ALLOWED_REDIRECT_ORIGINS = (process.env.ALLOWED_REDIRECT_ORIGINS ?? '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean)
+import { getSafeNext } from '@/shared/utils/navigation'
+import { getBackendOAuthUrl, getFrontendOrigin } from '../oauthUrls'
 
 export async function GET(request: NextRequest) {
-  const redirectUrl = request.nextUrl.searchParams.get('redirectUrl') ?? ''
+  const requestedNext = request.nextUrl.searchParams.get('next')
+  const next = getSafeNext(requestedNext)
 
-  if (redirectUrl && !ALLOWED_REDIRECT_ORIGINS.includes(redirectUrl)) {
+  if (requestedNext && !next) {
     return new NextResponse(null, { status: 400 })
   }
 
-  const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google?redirectUrl=${encodeURIComponent(redirectUrl)}`
-  const response = await fetch(backendUrl, { redirect: 'manual' })
-  const location = response.headers.get('location')
+  const backendUrl = getBackendOAuthUrl('/auth/oauth/google')
 
-  if (location && new URL(location).hostname.endsWith('.google.com')) {
-    return NextResponse.redirect(location)
+  if (!backendUrl) {
+    return NextResponse.json(
+      { error: 'Google OAuth is not configured' },
+      { status: 500 },
+    )
   }
 
-  return new NextResponse(null, { status: response.status })
+  const callbackUrl = new URL(
+    '/auth/google/callback',
+    getFrontendOrigin(request),
+  )
+
+  if (next) {
+    callbackUrl.searchParams.set('next', next)
+  }
+
+  backendUrl.searchParams.set('redirectUrl', callbackUrl.toString())
+
+  return NextResponse.redirect(backendUrl.toString())
 }

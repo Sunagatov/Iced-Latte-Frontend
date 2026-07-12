@@ -1,5 +1,14 @@
 import * as yup from 'yup'
 
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+const URL_SAFE_TOKEN_REGEX = /^[A-Za-z0-9_-]{43}$/
+const PASSWORD_HINT =
+  'Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit'
+
+export function isUrlSafeToken(value: string | null | undefined): value is string {
+  return typeof value === 'string' && URL_SAFE_TOKEN_REGEX.test(value)
+}
+
 export const loginSchema = yup.object().shape({
   email: yup
     .string()
@@ -8,12 +17,9 @@ export const loginSchema = yup.object().shape({
     .max(254, 'Email must be at most 254 characters'),
   password: yup
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
-      'Password must contain at least one letter, one number, and be 8+ characters',
-    )
-    .required('Password is a required field'),
+    .required('Password is a required field')
+    .min(1, 'Password is a required field')
+    .max(128, 'Password must be at most 128 characters'),
 })
 
 const nameRules = (field: string) =>
@@ -23,7 +29,7 @@ const nameRules = (field: string) =>
     .min(2, `${field} must be at least 2 characters`)
     .max(64, `${field} must be at most 64 characters`)
     .matches(
-      /^[a-zA-ZÀ-ÖØ-öø-ÿ\s''-]+$/,
+      /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’-]+$/,
       `${field} can only contain letters, spaces, hyphens, and apostrophes`,
     )
 
@@ -40,26 +46,20 @@ export const registrationSchema = yup.object().shape({
     .required('Password is required')
     .min(8, 'Password must be between 8 and 128 characters')
     .max(128, 'Password must be between 8 and 128 characters')
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
-      'Password must contain at least 1 letter, 1 digit, and may include @$!%*?&',
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_HINT),
 })
 
 export const changePassSchema = yup.object().shape({
   code: yup
     .string()
     .required('Code is required')
-    .matches(/^\d{9}$/, 'Code must be exactly 9 digits'),
+    .matches(URL_SAFE_TOKEN_REGEX, 'Code must be a valid reset token'),
   password: yup
     .string()
     .required('Password is a required field')
     .min(8, 'Password should have a length between 8 and 128 characters')
     .max(128, 'Password should have a length between 8 and 128 characters')
-    .matches(
-      /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
-      'Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_HINT),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref('password')], 'Passwords must match')
@@ -72,20 +72,17 @@ export const authChangePassSchema = yup.object().shape({
     .required('Old Password is a required field')
     .min(8, 'Old Password should have a length between 8 and 128 characters')
     .max(128, 'Old Password should have a length between 8 and 128 characters')
-    .matches(
-      /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
-      'Old Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
-    ),
+    .matches(PASSWORD_REGEX, PASSWORD_HINT),
   newPassword: yup
     .string()
     .required('New Password is a required field')
     .min(8, 'New Password should have a length between 8 and 128 characters')
     .max(128, 'New Password should have a length between 8 and 128 characters')
-    .matches(
-      /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z@$!%*?&]{8,}$/,
-      'New Password should contain at least 1 letter, 1 digit, and may include special characters "@$!%*?&"',
-    )
-    .notOneOf([yup.ref('oldPassword')], 'New Password must not be the same as Old Password'),
+    .matches(PASSWORD_REGEX, PASSWORD_HINT)
+    .notOneOf(
+      [yup.ref('oldPassword')],
+      'New Password must not be the same as Old Password',
+    ),
 })
 
 export const forgotPassSchema = yup.object().shape({
@@ -93,16 +90,12 @@ export const forgotPassSchema = yup.object().shape({
     .string()
     .required('Email is required')
     .email('Enter a valid email address')
-    .test('email-format', 'Enter a valid email address', (value) => {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-      return emailRegex.test(value ?? '')
-    }),
+    .max(254, 'Email must be at most 254 characters'),
 })
 
-export const confirmPasswordSchema = yup.object().shape({
-  confirmPassword: yup
+export const verifyEmailCodeSchema = yup.object().shape({
+  verificationCode: yup
     .string()
     .required('Confirmation code is required')
-    .matches(/^\d{9}$/, 'Invalid code format'),
+    .matches(URL_SAFE_TOKEN_REGEX, 'Invalid confirmation token format'),
 })

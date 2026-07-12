@@ -1,17 +1,38 @@
-import { api } from '@/shared/api/client'
-import { DeliveryAddress, AddressFormData } from './types'
+import type { DeliveryAddress, AddressFormData } from './types'
+import {
+  addDeliveryAddress,
+  deleteDeliveryAddress,
+  type DeliveryAddressDto,
+  getDeliveryAddresses,
+  setDefaultDeliveryAddress,
+  updateDeliveryAddress,
+} from '@/shared/api/generated/user'
+
+function normalizeAddress(address: DeliveryAddressDto): DeliveryAddress {
+  return {
+    city: address.city ?? '',
+    country: address.country ?? '',
+    id: address.id ?? '',
+    isDefault: address.isDefault ?? false,
+    label: address.label ?? '',
+    line: address.line ?? '',
+    postcode: address.postcode ?? '',
+  }
+}
 
 export const getAddresses = () =>
-  api.get<DeliveryAddress[]>('/users/addresses').then((r) => r.data)
+  getDeliveryAddresses({ cache: false } as object).then((addresses) =>
+    addresses.map(normalizeAddress),
+  )
 
 export const createAddress = (data: AddressFormData) =>
-  api.post<DeliveryAddress>('/users/addresses', data).then((r) => r.data)
+  addDeliveryAddress(data).then(normalizeAddress)
 
 export const updateAddress = (id: string, data: AddressFormData) =>
-  api.put<DeliveryAddress>(`/users/addresses/${id}`, data).then((r) => r.data)
+  updateDeliveryAddress(id, data).then(normalizeAddress)
 
 export const deleteAddress = (id: string) =>
-  api.delete(`/users/addresses/${id}`)
+  deleteDeliveryAddress(id)
 
 export const setDefaultAddress = (id: string) =>
-  api.patch<DeliveryAddress>(`/users/addresses/${id}/default`).then((r) => r.data)
+  setDefaultDeliveryAddress(id).then(normalizeAddress)

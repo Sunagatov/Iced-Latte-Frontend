@@ -1,100 +1,158 @@
 'use client'
 
-import Loader from '@/shared/components/Loader/Loader'
-import Button from '@/shared/components/Buttons/Button/Button'
-import FormInput from '@/shared/components/FormInput/FormInput'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { changePassSchema } from '@/features/auth/validation'
+import { useEffect, useState } from 'react'
+import type * as React from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useErrorHandler } from '@/shared/utils/apiError'
-import { apiGuestResetPassword } from '@/features/user/api'
 import { useForm } from 'react-hook-form'
-import { GuestResetPasswordCredentials } from '@/features/auth/types'
-import { RiLockPasswordLine, RiCheckboxCircleLine, RiArrowLeftLine } from 'react-icons/ri'
+import {
+  RiArrowLeftLine,
+  RiCheckboxCircleLine,
+  RiLockPasswordLine,
+} from 'react-icons/ri'
+import { apiGuestResetPassword } from '@/features/auth/api'
+import { ROUTES } from '@/shared/config/routes'
+import {
+  changePassSchema,
+  isUrlSafeToken,
+} from '@/features/auth/validation'
+import { authTurnstileEnabled } from '@/features/auth/config'
+import type { GuestResetPasswordCredentials } from '@/features/auth/types'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
+import { useTurnstileVerification } from '@/features/auth/hooks/useTurnstileVerification'
+import { useErrorHandler } from '@/shared/utils/apiError'
+import Button from '@/shared/ui/Button'
+import FormInput from '@/shared/ui/FormInput'
+import Loader from '@/shared/ui/Loader'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
 import PasswordStrengthBar from './PasswordStrengthBar'
 
-interface IChangeValues { code: string; password: string; confirmPassword: string }
+interface IChangeValues {
+  code: string
+  password: string
+  confirmPassword: string
+}
 
 export default function GuestResetPassForm() {
   const [loading, setLoading] = useState(false)
   const [newPw, setNewPw] = useState('')
   const [resetSuccessful, setResetSuccessful] = useState(false)
+  const turnstile = useTurnstileVerification(
+    'Please complete verification before resetting your password.',
+    authTurnstileEnabled,
+  )
   const { errorMessage, handleError } = useErrorHandler()
 
-  const { handleSubmit, register, formState: { errors } } = useForm<IChangeValues>({
+  const {
+    handleSubmit,
+    register,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<IChangeValues>({
     resolver: yupResolver(changePassSchema),
     defaultValues: { code: '', password: '', confirmPassword: '' },
     mode: 'onChange',
   })
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const tokenFromUrl = searchParams.get('token')
+  const hasValidUrlToken = isUrlSafeToken(tokenFromUrl)
+
+  useEffect(() => {
+    if (isUrlSafeToken(tokenFromUrl)) {
+      setValue('code', tokenFromUrl)
+    }
+  }, [setValue, tokenFromUrl])
 
   const onSubmit = async (values: IChangeValues) => {
     const { code, password } = values
-    const data: GuestResetPasswordCredentials = { code, password }
+    const data: GuestResetPasswordCredentials = {
+      code,
+      password,
+      turnstileToken: turnstile.token,
+    }
+
+    if (!turnstile.requireVerified()) return
 
     try {
       setLoading(true)
       await apiGuestResetPassword(data)
       setResetSuccessful(true)
+      reset()
+      setNewPw('')
     } catch (error) {
       handleError(error)
+      turnstile.resetChallenge()
     } finally {
       setLoading(false)
     }
   }
 
   const handleReturnHome = () => {
-    router.push('/signin')
+    router.push(ROUTES.signin)
   }
 
   const strength = getPasswordStrength(newPw)
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-secondary px-4 py-12">
+    <div className="bg-secondary flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-
         {resetSuccessful ? (
-          <div className="rounded-2xl bg-primary p-8 shadow-sm ring-1 ring-black/5 text-center">
+          <div className="bg-primary rounded-2xl p-8 text-center shadow-sm ring-1 ring-black/5">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-              <RiCheckboxCircleLine className="h-8 w-8 text-positive" />
+              <RiCheckboxCircleLine className="text-positive h-8 w-8" />
             </div>
-            <h2 className="mb-2 text-2xl font-bold text-primary">Password updated!</h2>
-            <p className="mb-6 text-sm text-secondary">Your password has been changed successfully. You can now sign in with your new password.</p>
-            <Button id="return-btn" onClick={handleReturnHome} className="w-full justify-center">
+            <h2 className="text-primary mb-2 text-2xl font-bold">
+              Password updated!
+            </h2>
+            <p className="text-secondary mb-6 text-sm">
+              Your password has been changed successfully. You can now sign in
+              with your new password.
+            </p>
+            <Button
+              id="return-btn"
+              onClick={handleReturnHome}
+              className="w-full justify-center"
+            >
               Sign in
             </Button>
           </div>
         ) : (
-          <div className="rounded-2xl bg-primary shadow-sm ring-1 ring-black/5 overflow-hidden">
+          <div className="bg-primary overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5">
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand to-brand-solid-hover px-6 py-8 text-center">
+            <div className="from-brand to-brand-solid-hover bg-gradient-to-r px-6 py-8 text-center">
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
                 <RiLockPasswordLine className="h-7 w-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">Reset your password</h2>
-              <p className="mt-1 text-sm text-white/70">Enter the code from your email and choose a new password</p>
+              <h2 className="text-2xl font-bold text-white">
+                Reset your password
+              </h2>
+              <p className="mt-1 text-sm text-white/70">
+                Enter the code from your email and choose a new password
+              </p>
             </div>
 
             {/* Form */}
             <div className="p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {errorMessage && (
-                  <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-negative">
-                    {errorMessage}
+                {(errorMessage || turnstile.error) && (
+                  <div className="text-negative rounded-lg bg-red-50 px-4 py-3 text-sm">
+                    {errorMessage || turnstile.error}
                   </div>
                 )}
 
-                <FormInput
-                  id="code"
-                  register={register}
-                  name="code"
-                  label="Code from email"
-                  type="text"
-                  placeholder="Enter the code you received"
-                  error={errors.code}
-                />
+                {!hasValidUrlToken && (
+                  <FormInput
+                    id="code"
+                    register={register}
+                    name="code"
+                    label="Code from email"
+                    type="text"
+                    placeholder="Enter the code you received"
+                    error={errors.code}
+                  />
+                )}
 
                 <div>
                   <FormInput
@@ -103,9 +161,12 @@ export default function GuestResetPassForm() {
                     name="password"
                     label="New password"
                     type="password"
+                    autoComplete="new-password"
                     placeholder="Minimum 8 characters, one letter, one digit"
                     error={errors.password}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPw(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setNewPw(e.target.value)
+                    }
                   />
                   {newPw && <PasswordStrengthBar {...strength} />}
                 </div>
@@ -116,22 +177,33 @@ export default function GuestResetPassForm() {
                   name="confirmPassword"
                   label="Confirm new password"
                   type="password"
+                  autoComplete="new-password"
                   placeholder="Repeat your new password"
                   error={errors.confirmPassword}
                 />
 
+                {turnstile.shouldRender && (
+                  <TurnstileWidget
+                    action="change_password"
+                    ref={turnstile.ref}
+                    onVerify={turnstile.handleVerify}
+                  />
+                )}
+
                 <Button
                   id="reset-btn"
                   type="submit"
-                  className="mt-2 w-full justify-center hover:bg-brand-solid-hover"
+                  disabled={loading}
+                  className="hover:bg-brand-solid-hover mt-2 w-full justify-center"
                 >
                   {loading ? <Loader /> : 'Reset password'}
                 </Button>
               </form>
 
               <button
+                type="button"
                 onClick={() => router.back()}
-                className="mt-4 flex w-full items-center justify-center gap-1.5 text-sm text-secondary hover:text-primary transition-colors"
+                className="text-secondary hover:text-primary mt-4 flex w-full items-center justify-center gap-1.5 text-sm transition-colors"
               >
                 <RiArrowLeftLine className="h-4 w-4" />
                 Go back

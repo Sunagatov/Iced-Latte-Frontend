@@ -1,0 +1,187 @@
+'use client'
+import StarRating from '@/features/reviews/components/StarRating'
+import Loader from '@/shared/ui/Loader'
+import { useRef, useState } from 'react'
+import { useProductRatingStore } from '@/features/reviews/store'
+import { useErrorHandler } from '@/shared/utils/apiError'
+import { apiAddProductReview } from '@/features/reviews/api'
+import { useAuthStore } from '@/features/auth/public'
+import { useRouter } from 'next/navigation'
+import { getProductReviewSignInUrl } from '@/features/reviews/navigation'
+import TurnstileWidget from '@/shared/ui/TurnstileWidget'
+import { reviewsTurnstileEnabled } from '@/features/reviews/config'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
+
+interface ReviewFormProps {
+  productId: string
+  showForm: boolean
+  setShowForm: (v: boolean) => void
+  onReviewSubmitted?: () => void
+}
+
+const ReviewForm = ({
+  productId,
+  showForm,
+  setShowForm,
+  onReviewSubmitted,
+}: ReviewFormProps) => {
+  const [loading, setLoading] = useState(false)
+  const [reviewText, setReviewText] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState('')
+  const turnstileRef = useRef<TurnstileInstance>(null)
+  const { errorMessage, handleError } = useErrorHandler()
+  const { ratings, setRating } = useProductRatingStore()
+  const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
+  const router = useRouter()
+
+  const currentRating = (ratings[productId] || { rating: 0 }).rating
+  const canSubmit = currentRating > 0 && reviewText.trim().length > 0
+
+  const handleAddReview = async () => {
+    const trimmedText = reviewText.trim()
+
+    if (!currentRating || !trimmedText) return
+
+    if (reviewsTurnstileEnabled && !turnstileToken) {
+      setTurnstileError(
+        'Please complete verification before submitting your review.',
+      )
+
+      return
+    }
+
+    try {
+      setLoading(true)
+      setTurnstileError('')
+      await apiAddProductReview(
+        productId,
+        trimmedText,
+        currentRating,
+        reviewsTurnstileEnabled ? turnstileToken : undefined,
+      )
+      onReviewSubmitted?.()
+      setRating(productId, 0)
+      setReviewText('')
+      setTurnstileToken('')
+      setShowForm(false)
+    } catch (error) {
+      handleError(error)
+      setTurnstileToken('')
+      turnstileRef.current?.reset()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleClickReview = () => {
+    if (isLoggedIn) {
+      setShowForm(true)
+    } else {
+      router.push(getProductReviewSignInUrl(productId))
+    }
+  }
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token)
+    setTurnstileError('')
+  }
+
+  if (!showForm) {
+    return (
+      <div className="mb-6 flex items-center justify-between rounded-2xl border border-black/6 bg-white px-5 py-4 shadow-sm">
+        <span className="text-sm font-medium text-slate-700">
+          Share your thoughts
+        </span>
+        <button
+          id="add-review-btn"
+          onClick={handleClickReview}
+          className="bg-brand text-inverted hover:bg-brand-solid-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+          Write a review
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mt-2 mb-8 rounded-2xl border border-black/8 bg-white p-5 shadow-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-primary text-base font-semibold">Your review</h3>
+        <button
+          onClick={() => {
+            setShowForm(false)
+            setRating(productId, 0)
+            setReviewText('')
+            setTurnstileToken('')
+            setTurnstileError('')
+            turnstileRef.current?.reset()
+          }}
+          className="text-tertiary hover:text-primary text-xs transition"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <div className="mb-4">
+        <p className="text-tertiary mb-2 text-xs font-medium tracking-wider uppercase">
+          Rating
+        </p>
+        <StarRating
+          productId={productId}
+          count={5}
+          activeColor="var(--color-brand-solid)"
+          size="lg"
+        />
+      </div>
+
+      <div>
+        <p className="text-tertiary mb-2 text-xs font-medium tracking-wider uppercase">
+          Review
+        </p>
+        <textarea
+          id="review-textarea"
+          className="bg-secondary text-primary focus:border-brand focus:ring-brand/20 placeholder:text-tertiary w-full resize-none rounded-xl border border-black/10 px-4 py-3 text-sm transition outline-none focus:ring-2"
+          value={reviewText}
+          onChange={(e) => setReviewText(e.target.value)}
+          placeholder="What did you like or dislike? How was the taste, aroma, packaging?"
+          maxLength={1500}
+          rows={4}
+        />
+        <div className="text-tertiary mt-1 text-right text-xs">
+          {reviewText.length}/1500
+        </div>
+      </div>
+
+      {reviewsTurnstileEnabled && (
+        <TurnstileWidget
+          action="review"
+          ref={turnstileRef}
+          onVerify={handleTurnstileVerify}
+        />
+      )}
+
+      {(errorMessage || turnstileError) && (
+        <p className="text-negative mt-2 text-xs">
+          {errorMessage || turnstileError}
+        </p>
+      )}
+
+      <button
+        id="submit-review-btn"
+        onClick={handleAddReview}
+        disabled={!canSubmit || loading}
+        className={`text-inverted mt-4 flex w-full items-center justify-center rounded-xl py-3 text-sm font-semibold transition sm:w-auto sm:px-8 ${
+          canSubmit && !loading
+            ? 'bg-brand hover:bg-brand-solid-hover'
+            : 'bg-tertiary text-disabled cursor-not-allowed'
+        }`}
+      >
+        {loading ? <Loader /> : 'Submit review'}
+      </button>
+    </div>
+  )
+}
+
+export default ReviewForm

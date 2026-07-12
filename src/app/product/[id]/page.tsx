@@ -1,29 +1,46 @@
+import type { Metadata } from 'next'
+import { isAxiosError } from 'axios'
 import { notFound } from 'next/navigation'
-import { IProduct } from '@/features/products/types'
+import { cache } from 'react'
+import ProductWithReviews from '@/features/products/components/ProductWithReviews'
 import { getProduct } from '@/features/products/api'
-import ProductWithReviews from '@/features/products/components/ProductWithReviews/ProductWithReviews'
+import type { IProduct } from '@/features/products/types'
 
-type ProductProps = {
+type ProductDetailsPageProps = {
   params: Promise<{
     id: string
   }>
 }
 
-async function getProductById(id: string): Promise<IProduct | null> {
+const getProductById = cache(async (id: string): Promise<IProduct> => {
   try {
     return await getProduct(id)
-  } catch {
-    return null
-  }
-}
+  } catch (err) {
+    if (isAxiosError(err) && [400, 404].includes(err.response?.status ?? 0)) {
+      notFound()
+    }
 
-export default async function Page({ params }: Readonly<ProductProps>) {
+    throw err
+  }
+})
+
+export async function generateMetadata({
+  params,
+}: Readonly<ProductDetailsPageProps>): Promise<Metadata> {
   const { id } = await params
   const product = await getProductById(id)
 
-  if (!product) notFound()
+  return {
+    title: product.name,
+    description: product.description,
+  }
+}
 
-  return (
-    <ProductWithReviews product={product} />
-  )
+export default async function ProductDetailsPage({
+  params,
+}: Readonly<ProductDetailsPageProps>) {
+  const { id } = await params
+  const product = await getProductById(id)
+
+  return <ProductWithReviews product={product} />
 }

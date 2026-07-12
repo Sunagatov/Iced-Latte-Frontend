@@ -1,3 +1,5 @@
+import type { RatingMap } from '@/shared/api/generated/productReview'
+
 export interface Review {
   productId: string
   productReviewId: string | null
@@ -5,15 +7,14 @@ export interface Review {
   text: string | null
   createdAt: string | null
   userName: string | null
-  userLastName: string | null
+  userLastname: string | null
   isCurrentUserComment?: boolean
   likesCount: number
   dislikesCount: number
-  aiSummary?: string | null
 }
 
 export interface IProductReviewsStatistics {
   avgRating: number
   reviewsCount: number
-  ratingMap: Record<string, number>
+  ratingMap: RatingMap
 }

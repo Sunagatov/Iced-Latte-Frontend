@@ -1,0 +1,87 @@
+import Link from 'next/link'
+import { Suspense } from 'react'
+import { FEATURES } from '@/shared/config/features'
+import { ROUTES } from '@/shared/config/routes'
+import RestrictRoute from '@/features/auth/RestrictRoute'
+import LoginForm from '@/features/auth/components/LoginForm'
+import SocialAuthButtons from '@/features/auth/components/SocialAuthButtons'
+import { getCopyrightLabel } from '@/shared/config/copyright'
+
+export default function SignInPage() {
+  const hasSocialAuth = FEATURES.googleAuth || FEATURES.githubAuth
+  const copyrightLabel = getCopyrightLabel()
+
+  return (
+    <RestrictRoute>
+      <div className="flex min-h-[calc(100vh-112px)]">
+        <div className="hidden bg-brand-solid lg:block lg:w-[45%]">
+          <div className="sticky top-0 flex h-[calc(100vh-112px)] flex-col justify-end gap-16 px-12 pt-10 pb-12 text-white">
+            <div>
+              <p className="text-4xl leading-tight font-bold">
+                Your daily brew,
+                <br />
+                delivered with love.
+              </p>
+              <p className="mt-4 text-sm text-white/50">
+                Specialty coffee, curated for you.
+              </p>
+            </div>
+            <p className="text-xs text-white/30">
+              {copyrightLabel}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center overflow-y-auto px-6 py-12">
+          <div className="w-full max-w-[400px]">
+            <h1 className="text-[28px] font-bold text-[#0D0D0D]">
+              Welcome back
+            </h1>
+            <p className="mt-1 text-sm text-[#64748B]">
+              Sign in to your account
+            </p>
+
+            <div className="mt-8">
+              <Suspense fallback={null}>
+                <SocialAuthButtons mode="signin" />
+              </Suspense>
+            </div>
+
+            {hasSocialAuth && (
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#E2E8F0]" />
+                <span className="text-xs text-[#94A3B8]">
+                  or continue with email
+                </span>
+                <div className="h-px flex-1 bg-[#E2E8F0]" />
+              </div>
+            )}
+
+            <LoginForm />
+
+            {FEATURES.emailConfirmation && (
+              <div className="mt-4 text-center">
+                <Link
+                  href={ROUTES.forgotpass}
+                  className="text-sm text-brand hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            )}
+
+            <p className="mt-6 text-center text-sm text-[#64748B]">
+              Don&apos;t have an account?{' '}
+              <Link
+                href={ROUTES.signup}
+                className="font-semibold text-[#0D0D0D] hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </RestrictRoute>
+  )
+}

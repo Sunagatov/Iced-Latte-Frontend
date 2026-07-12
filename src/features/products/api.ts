@@ -1,33 +1,62 @@
-import { AxiosResponse } from 'axios'
-import { IGetProductBrands, IGetProductSellers, IProduct, IProductsList } from './types'
-import { api } from '@/shared/api/client'
+import type {
+  IGetProductBrands,
+  IGetProductSellers,
+  IProduct,
+  IProductsList,
+} from './types'
+import {
+  getAllBrands,
+  getAllSellers,
+  getProductById,
+  getProducts,
+  getProductsByIds,
+  type GetProductsParams,
+} from '@/shared/api/generated/product'
 
-export async function getAllProducts(url: string) {
-  const response: AxiosResponse<IProductsList> = await api.get(url)
+function getProductParamsFromPath(url: string): GetProductsParams {
+  const [, queryString = ''] = url.split('?')
+  const params = new URLSearchParams(queryString)
+  const getNumber = (name: string) => {
+    const value = params.get(name)
 
-  return response.data
+    return value ? Number(value) : undefined
+  }
+  const getArray = (name: string) => {
+    const value = params.get(name)
+
+    return value ? value.split(',').filter(Boolean) : undefined
+  }
+
+  return {
+    page: getNumber('page'),
+    size: getNumber('size'),
+    sort_attribute: params.get('sort_attribute') as GetProductsParams['sort_attribute'],
+    sort_direction: params.get('sort_direction') as GetProductsParams['sort_direction'],
+    min_price: getNumber('min_price'),
+    max_price: getNumber('max_price'),
+    minimum_average_rating: getNumber('minimum_average_rating'),
+    brand_names: getArray('brand_names'),
+    seller_names: getArray('seller_names'),
+    keyword: params.get('keyword') ?? undefined,
+  }
 }
 
-export async function getProduct(id: string) {
-  const response: AxiosResponse<IProduct> = await api.get(`/products/${id}`)
-
-  return response.data
+export async function getAllProducts(url: string): Promise<IProductsList> {
+  return getProducts(getProductParamsFromPath(url))
 }
 
-export async function getProductByIds(ids: string[]) {
-  const response: AxiosResponse<IProduct[]> = await api.post('/products/ids', { productIds: ids })
+export async function getProduct(id: string): Promise<IProduct> {
+  return getProductById(id)
+}
 
-  return response.data
+export async function getProductByIds(ids: string[]): Promise<IProduct[]> {
+  return getProductsByIds({ productIds: ids })
 }
 
 export const getProductSellers = async (): Promise<IGetProductSellers> => {
-  const response: AxiosResponse<IGetProductSellers> = await api.get('/products/sellers')
-
-  return response.data
+  return getAllSellers()
 }
 
 export const getProductBrands = async (): Promise<IGetProductBrands> => {
-  const response: AxiosResponse<IGetProductBrands> = await api.get('/products/brands')
-
-  return response.data
+  return getAllBrands()
 }
