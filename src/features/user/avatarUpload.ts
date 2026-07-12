@@ -34,34 +34,31 @@ export async function uploadAvatarWithPresignedFlow(
   turnstileToken?: string,
   options?: AvatarUploadOptions,
 ): Promise<void> {
-  let uploadId: string | null = null
+  assertNotAborted(options?.signal)
+  options?.onStageChange?.('requesting-upload-intent')
+  options?.onUploadProgress?.(null)
+  const upload = await createAvatarUpload(
+    {
+      contentType:
+        file.type as (typeof CreateAvatarUploadRequestContentType)[keyof typeof CreateAvatarUploadRequestContentType],
+      sizeBytes: file.size,
+      ...(turnstileToken ? { turnstileToken } : {}),
+    },
+    { 'Idempotency-Key': crypto.randomUUID() },
+    { signal: options?.signal },
+  )
+
+  const target = upload.upload
+
+  if (!target?.url || !target.method) {
+    throw avatarUploadError(
+      'file-upload-failed',
+      'Avatar upload target is unavailable.',
+    )
+  }
 
   try {
     assertNotAborted(options?.signal)
-    options?.onStageChange?.('requesting-upload-intent')
-    options?.onUploadProgress?.(null)
-    const upload = await createAvatarUpload(
-      {
-        contentType: file.type as typeof CreateAvatarUploadRequestContentType[keyof typeof CreateAvatarUploadRequestContentType],
-        sizeBytes: file.size,
-        ...(turnstileToken ? { turnstileToken } : {}),
-      },
-      { 'Idempotency-Key': crypto.randomUUID() },
-      { signal: options?.signal },
-    )
-
-    uploadId = upload.uploadId
-    assertNotAborted(options?.signal)
-
-    const target = upload.upload
-
-    if (!target?.url || !target.method) {
-      throw avatarUploadError(
-        'file-upload-failed',
-        'Avatar upload target is unavailable.',
-      )
-    }
-
     options?.onStageChange?.('uploading')
     options?.onUploadProgress?.(0)
     await uploadFileToTarget(file, target, options)
@@ -70,8 +67,8 @@ export async function uploadAvatarWithPresignedFlow(
     options?.onUploadProgress?.(null)
     await waitForAvatarUploadReady(upload.uploadId, options?.signal)
   } catch (error) {
-    if (uploadId && isAvatarUploadAbortError(error)) {
-      await cancelAvatarUploadSilently(uploadId)
+    if (isAvatarUploadAbortError(error)) {
+      await cancelAvatarUploadSilently(upload.uploadId)
     }
 
     throw error
@@ -123,7 +120,13 @@ async function uploadFileWithPost(
 
   formData.append('file', file)
 
-  return uploadWithXhr('POST', target.url!, formData, target.headers ?? {}, options)
+  return uploadWithXhr(
+    'POST',
+    target.url!,
+    formData,
+    target.headers ?? {},
+    options,
+  )
 }
 
 async function uploadFileWithPut(
@@ -145,12 +148,16 @@ async function waitForAvatarUploadReady(
   uploadId: string,
   signal?: AbortSignal,
 ): Promise<void> {
-  for (let attempt = 0; attempt < AVATAR_UPLOAD_POLL_MAX_ATTEMPTS; attempt += 1) {
+  for (
+    let attempt = 0;
+    attempt < AVATAR_UPLOAD_POLL_MAX_ATTEMPTS;
+    attempt += 1
+  ) {
     assertNotAborted(signal)
-    const status = await getAvatarUpload(
-      uploadId,
-      { cache: false, signal } as Parameters<typeof getAvatarUpload>[1],
-    )
+    const status = await getAvatarUpload(uploadId, {
+      cache: false,
+      signal,
+    } as Parameters<typeof getAvatarUpload>[1])
 
     if (status.status === 'READY') {
       return
@@ -189,7 +196,11 @@ async function waitForAvatarUploadReady(
 }
 
 function isTerminalUnexpectedStatus(status: AvatarUploadStatus): boolean {
-  return status !== 'PENDING_UPLOAD' && status !== 'UPLOADED' && status !== 'PROCESSING'
+  return (
+    status !== 'PENDING_UPLOAD' &&
+    status !== 'UPLOADED' &&
+    status !== 'PROCESSING'
+  )
 }
 
 function avatarUploadError(
@@ -205,19 +216,13 @@ function avatarUploadError(
   }
   const config = { headers: {} } as InternalAxiosRequestConfig
 
-  return new AxiosError(
-    detail,
-    'ERR_BAD_RESPONSE',
+  return new AxiosError(detail, 'ERR_BAD_RESPONSE', config, undefined, {
+    status,
+    statusText: status === 503 ? 'Service Unavailable' : 'Bad Request',
+    headers: {},
     config,
-    undefined,
-    {
-      status,
-      statusText: status === 503 ? 'Service Unavailable' : 'Bad Request',
-      headers: {},
-      config,
-      data: responseData,
-    },
-  )
+    data: responseData,
+  })
 }
 
 function uploadWithXhr(

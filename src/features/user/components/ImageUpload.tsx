@@ -144,12 +144,10 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
         turnstileRef.current?.reset()
       }
     } finally {
-      if (!isMountedRef.current) {
-        return
+      if (isMountedRef.current) {
+        uploadAbortControllerRef.current = null
+        setLoading(false)
       }
-
-      uploadAbortControllerRef.current = null
-      setLoading(false)
     }
   }
 
@@ -204,11 +202,9 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
 
       handleError(error)
     } finally {
-      if (!isMountedRef.current) {
-        return
+      if (isMountedRef.current) {
+        setRemoving(false)
       }
-
-      setRemoving(false)
     }
   }
 
@@ -318,14 +314,17 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
               aria-valuenow={uploadProgress}
             >
               <div
-                className="h-full rounded-full bg-red transition-[width]"
+                className="bg-red h-full rounded-full transition-[width]"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
           )}
         </div>
       )}
-      {uploadNotice && !errorMessage && !turnstileError && !uploadStatusMessage && (
+      {uploadNotice &&
+        !errorMessage &&
+        !turnstileError &&
+        !uploadStatusMessage && (
         <p
           className="mt-1 text-center text-xs text-neutral-500"
           role="status"
