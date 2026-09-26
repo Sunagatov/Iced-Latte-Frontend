@@ -177,9 +177,11 @@ export default function ProductCatalog({
         </div>
 
         <div className="flex w-full justify-center gap-x-8">
-          <FilterSidebar className="sticky top-[120px] hidden max-h-[calc(100vh-140px)] self-start overflow-y-auto min-[1100px]:block">
-            <Filters brands={brands} sellers={sellers} />
-          </FilterSidebar>
+          <div className="sticky top-[120px] hidden max-h-[calc(100vh-140px)] min-[1100px]:block">
+            <FilterSidebar className="max-h-full overflow-y-auto">
+              <Filters brands={brands} sellers={sellers} />
+            </FilterSidebar>
+          </div>
           {isMobileFilterOpen && (
             <MobileFilterSidebar
               id="mobile-filter-sidebar"
