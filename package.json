@@ -31,7 +31,7 @@
     "@types/react-dom": "^19.2.3",
     "@vercel/otel": "2.1.2",
     "autoprefixer": "^10",
-    "axios": "1.16.1",
+    "axios": "1.21.0",
     "axios-cache-interceptor": "^1.11.4",
     "next": "16.2.6",
     "postcss": "8.5.10",
