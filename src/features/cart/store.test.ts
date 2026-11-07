@@ -1,10 +1,7 @@
-import {
-  MAX_CART_ITEM_QUANTITY,
-  useCartStore,
-} from '@/features/cart/public'
+import { MAX_CART_ITEM_QUANTITY, useCartStore } from '@/features/cart/public'
 import * as cartApi from '@/features/cart/cartApi'
 import * as productsApi from '@/features/products/api'
-import type { ICartItem } from '@/features/cart/cartTypes'
+import type { ICart, ICartItem } from '@/features/cart/cartTypes'
 import { setClientAuthStatus } from '@/shared/auth/sessionStatus'
 
 jest.mock('@/features/cart/cartApi', () => ({
@@ -43,6 +40,25 @@ function makeCartItem(id: string, qty = 1): ICartItem {
   }
 }
 
+function makeCart(items: ICartItem[]): ICart {
+  return {
+    id: 'cart',
+    userId: 'user',
+    createdAt: '',
+    closedAt: null,
+    items,
+    itemsQuantity: items.length,
+    productsQuantity: items.reduce(
+      (sum, item) => sum + item.productQuantity,
+      0,
+    ),
+    itemsTotalPrice: items.reduce(
+      (sum, item) => sum + item.productInfo.price * item.productQuantity,
+      0,
+    ),
+  }
+}
+
 beforeEach(() => {
   useCartStore.setState({
     itemsIds: [],
@@ -50,9 +66,89 @@ beforeEach(() => {
     count: 0,
     totalPrice: 0,
     isSync: false,
+    pendingProductIds: new Set(),
   })
   jest.clearAllMocks()
   setClientAuthStatus('anonymous')
+})
+
+describe('cart response ordering', () => {
+  it('does not restore an item removed during guest hydration', async () => {
+    let finish!: (products: ReturnType<typeof makeProduct>[]) => void
+
+    mockedProductsApi.getProductByIds.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finish = resolve
+      }),
+    )
+    useCartStore.getState().add('p1')
+    useCartStore.getState().removeFullProduct('p1')
+    finish([makeProduct('p1')])
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(useCartStore.getState().count).toBe(0)
+    expect(useCartStore.getState().tempItems).toEqual([])
+  })
+
+  it('preserves another product added while guest hydration is pending', async () => {
+    let first!: (products: ReturnType<typeof makeProduct>[]) => void
+    let second!: (products: ReturnType<typeof makeProduct>[]) => void
+
+    mockedProductsApi.getProductByIds
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          first = resolve
+        }),
+      )
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          second = resolve
+        }),
+      )
+    useCartStore.getState().add('p1')
+    useCartStore.getState().add('p2')
+    first([makeProduct('p1')])
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(
+      useCartStore.getState().itemsIds.map((item) => item.productId),
+    ).toContain('p2')
+    second([makeProduct('p1'), makeProduct('p2')])
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(useCartStore.getState().count).toBe(2)
+    expect(useCartStore.getState().tempItems).toHaveLength(2)
+  })
+
+  it('keeps completed quantity edits when responses for different products arrive out of order', async () => {
+    setClientAuthStatus('authenticated')
+    useCartStore
+      .getState()
+      .setTempItems([makeCartItem('p1'), makeCartItem('p2')])
+    let first!: (cart: ICart) => void
+    let second!: (cart: ICart) => void
+
+    mockedCartApi.changeCartItemQuantity
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          first = resolve
+        }),
+      )
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          second = resolve
+        }),
+      )
+    useCartStore.getState().add('p1')
+    useCartStore.getState().add('p2')
+    second(makeCart([makeCartItem('p1', 2), makeCartItem('p2', 2)]))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    first(makeCart([makeCartItem('p1', 2), makeCartItem('p2', 1)]))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(useCartStore.getState().count).toBe(4)
+    expect(useCartStore.getState().totalPrice).toBe(40)
+    expect(
+      useCartStore.getState().itemsIds.find((item) => item.productId === 'p2')
+        ?.productQuantity,
+    ).toBe(2)
+  })
 })
 
 describe('cart store — guest add/remove', () => {

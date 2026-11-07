@@ -93,6 +93,7 @@ export function useFavoriteProductActions(
   useEffect(() => {
     if (authStatus !== 'authenticated') {
       pendingCartAnalyticsRef.current = null
+
       return
     }
 
@@ -166,6 +167,7 @@ export function useFavoriteProductActions(
           baselineQuantity: quantity,
           type: 'add',
         }
+
         return
       }
 
@@ -186,6 +188,7 @@ export function useFavoriteProductActions(
           baselineQuantity: quantity,
           type: 'remove',
         }
+
         return
       }
 
@@ -211,6 +214,7 @@ export function useFavoriteProductActions(
           baselineQuantity: quantity,
           type: 'remove_full',
         }
+
         return
       }
 

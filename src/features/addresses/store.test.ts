@@ -53,13 +53,15 @@ describe('address store', () => {
     useAddressStore.setState({ addresses: [addr('a1')], loading: false })
     mockedApi.createAddress.mockRejectedValue(error)
 
-    await expect(useAddressStore.getState().add({
-      label: 'home',
-      line: 's',
-      city: 'c',
-      country: 'uk',
-      postcode: '1',
-    })).rejects.toBe(error)
+    await expect(
+      useAddressStore.getState().add({
+        label: 'home',
+        line: 's',
+        city: 'c',
+        country: 'uk',
+        postcode: '1',
+      }),
+    ).rejects.toBe(error)
 
     expect(useAddressStore.getState().addresses).toEqual([addr('a1')])
     expect(useAddressStore.getState().error).toBeTruthy()
@@ -84,13 +86,15 @@ describe('address store', () => {
     useAddressStore.setState({ addresses: [addr('a1')], loading: false })
     mockedApi.updateAddress.mockRejectedValue(error)
 
-    await expect(useAddressStore.getState().update('a1', {
-      label: 'home',
-      line: 's',
-      city: 'London',
-      country: 'uk',
-      postcode: '1',
-    })).rejects.toBe(error)
+    await expect(
+      useAddressStore.getState().update('a1', {
+        label: 'home',
+        line: 's',
+        city: 'London',
+        country: 'uk',
+        postcode: '1',
+      }),
+    ).rejects.toBe(error)
 
     expect(useAddressStore.getState().addresses[0]).toEqual(addr('a1'))
     expect(useAddressStore.getState().error).toBeTruthy()
@@ -101,6 +105,14 @@ describe('address store', () => {
     mockedApi.deleteAddress.mockResolvedValue(null as never)
     await useAddressStore.getState().remove('a1')
     expect(useAddressStore.getState().addresses).toHaveLength(0)
+  })
+
+  it('reloads the replacement default after deleting the default address', async () => {
+    useAddressStore.setState({ addresses: [addr('a1', true), addr('a2')] })
+    mockedApi.deleteAddress.mockResolvedValue(undefined as never)
+    mockedApi.getAddresses.mockResolvedValue([addr('a2', true)])
+    await useAddressStore.getState().remove('a1')
+    expect(useAddressStore.getState().addresses).toEqual([addr('a2', true)])
   })
 
   it('remove rejects and keeps the address when the API fails', async () => {
@@ -141,12 +153,18 @@ describe('address store', () => {
     })
     mockedApi.setDefaultAddress.mockRejectedValue(error)
 
-    await expect(useAddressStore.getState().setDefault('a2')).rejects.toBe(error)
+    await expect(useAddressStore.getState().setDefault('a2')).rejects.toBe(
+      error,
+    )
 
     const addresses = useAddressStore.getState().addresses
 
-    expect(addresses.find((a: DeliveryAddress) => a.id === 'a1')?.isDefault).toBe(true)
-    expect(addresses.find((a: DeliveryAddress) => a.id === 'a2')?.isDefault).toBe(false)
+    expect(
+      addresses.find((a: DeliveryAddress) => a.id === 'a1')?.isDefault,
+    ).toBe(true)
+    expect(
+      addresses.find((a: DeliveryAddress) => a.id === 'a2')?.isDefault,
+    ).toBe(false)
     expect(useAddressStore.getState().error).toBeTruthy()
   })
 })

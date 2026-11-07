@@ -5,7 +5,10 @@ import {
   mergeGuestCartIntoBackend,
 } from '@/features/cart/cart.mutations'
 import type { ICartItem } from '@/features/cart/cartTypes'
-import { normalizeCartItems } from '@/features/cart/utils/cartUtils'
+import {
+  getProductsCount,
+  normalizeCartItems,
+} from '@/features/cart/utils/cartUtils'
 import {
   setCartError,
   setCartItems,
@@ -145,24 +148,45 @@ async function loadGuestCart(set: StoreSet, get: StoreGet): Promise<void> {
     }
 
     const productList = await getProductByIds(ids)
-    const quantityByProductId = new Map(
-      itemsIds.map((item) => [item.productId, item.productQuantity]),
+    const loadedIds = new Set(productList.map((item) => item.id))
+    const requestedIds = new Set(ids)
+    const currentItems = normalizeCartItems(get().itemsIds).filter(
+      (item) =>
+        !requestedIds.has(item.productId) || loadedIds.has(item.productId),
     )
-    const cartItems: ICartItem[] = productList.flatMap((item) => {
-      const productQuantity = quantityByProductId.get(item.id)
+    const quantityByProductId = new Map(
+      currentItems.map((item) => [item.productId, item.productQuantity]),
+    )
+    // Another load may already have supplied products added during this request.
+    const productsById = new Map(
+      get().tempItems.map((item) => [item.productInfo.id, item.productInfo]),
+    )
 
-      if (!productQuantity) {
-        return []
-      }
+    productList.forEach((item) => productsById.set(item.id, item))
+    const cartItems: ICartItem[] = Array.from(productsById.values()).flatMap(
+      (item) => {
+        const productQuantity = quantityByProductId.get(item.id)
 
-      return [{
-        id: item.id,
-        productInfo: { ...item },
-        productQuantity,
-      }]
+        if (!productQuantity) {
+          return []
+        }
+
+        return [
+          {
+            id: item.id,
+            productInfo: { ...item },
+            productQuantity,
+          },
+        ]
+      },
+    )
+
+    setCartItems(set, cartItems, {
+      itemsIds: currentItems,
+      count: getProductsCount(currentItems),
+      lastError: null,
+      status: 'ready',
     })
-
-    setCartItems(set, cartItems, { lastError: null, status: 'ready' })
   } catch (err) {
     setCartError(set, 'Failed to load cart', err)
   }

@@ -27,14 +27,15 @@ const PriceFilter = () => {
   const [toInput, setToInput] = useState(toPriceFilter)
   const [rangeError, setRangeError] = useState('')
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const priceRevision = useProductFiltersStore((s) => s.priceRevision)
 
   // Sync local state when store is reset externally
   useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
     setFromInput(fromPriceFilter)
-  }, [fromPriceFilter])
-  useEffect(() => {
     setToInput(toPriceFilter)
-  }, [toPriceFilter])
+    setRangeError('')
+  }, [fromPriceFilter, toPriceFilter, priceRevision])
 
   useEffect(() => {
     return () => {
@@ -81,9 +82,11 @@ const PriceFilter = () => {
       <FiltersGroupTitle title="Price" />
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/30">$</span>
+          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/30">
+            $
+          </span>
           <input
-            className="text-primary focus:border-black/30 h-9 w-full rounded-lg border border-black/8 bg-white pr-3 pl-6 text-sm outline-none placeholder:text-black/30"
+            className="text-primary h-9 w-full rounded-lg border border-black/8 bg-white pr-3 pl-6 text-sm outline-none placeholder:text-black/30 focus:border-black/30"
             id="from-price-input"
             onChange={handleFromChange}
             placeholder="Min"
@@ -93,9 +96,11 @@ const PriceFilter = () => {
         </div>
         <span className="text-black/20">—</span>
         <div className="relative flex-1">
-          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/30">$</span>
+          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-xs text-black/30">
+            $
+          </span>
           <input
-            className="text-primary focus:border-black/30 h-9 w-full rounded-lg border border-black/8 bg-white pr-3 pl-6 text-sm outline-none placeholder:text-black/30"
+            className="text-primary h-9 w-full rounded-lg border border-black/8 bg-white pr-3 pl-6 text-sm outline-none placeholder:text-black/30 focus:border-black/30"
             id="to-price-input"
             onChange={handleToChange}
             placeholder="Max"

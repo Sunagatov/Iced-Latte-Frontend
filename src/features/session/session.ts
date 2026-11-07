@@ -21,6 +21,12 @@ export async function bootstrapClientSession(): Promise<void> {
     } catch (error) {
       if (isAuthFailure(error)) {
         useAuthStore.getState().setAnonymous()
+      } else {
+        useAuthStore
+          .getState()
+          .setBootstrapError(
+            'Could not connect to your account. Please try again.',
+          )
       }
     }
   }
@@ -39,8 +45,10 @@ export async function refreshAuthenticatedSession(options?: {
 }
 
 function isAuthFailure(error: unknown): boolean {
-  return axios.isAxiosError(error) &&
+  return (
+    axios.isAxiosError(error) &&
     [401, 403].includes(error.response?.status ?? 0)
+  )
 }
 
 export async function clearClientSession(): Promise<void> {
@@ -64,7 +72,10 @@ export async function syncSessionStores(
     }
 
     if (useCartStore.getState().itemsIds.length > 0) {
-      void useCartStore.getState().hydrate(undefined, status).catch(() => {})
+      void useCartStore
+        .getState()
+        .hydrate(undefined, status)
+        .catch(() => {})
     }
 
     if (useFavouritesStore.getState().isSync) {
@@ -78,15 +89,27 @@ export async function syncSessionStores(
   const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
 
   if (!cartIsSync && itemsIds.length > 0) {
-    void useCartStore.getState().syncSession(signal, status).catch(() => {})
+    void useCartStore
+      .getState()
+      .syncSession(signal, status)
+      .catch(() => {})
   } else {
-    void useCartStore.getState().hydrate(signal, status).catch(() => {})
+    void useCartStore
+      .getState()
+      .hydrate(signal, status)
+      .catch(() => {})
   }
 
   if (!favIsSync && favouriteIds.length > 0) {
-    void useFavouritesStore.getState().syncSession(signal, status).catch(() => {})
+    void useFavouritesStore
+      .getState()
+      .syncSession(signal, status)
+      .catch(() => {})
   } else {
-    void useFavouritesStore.getState().hydrate(signal, status).catch(() => {})
+    void useFavouritesStore
+      .getState()
+      .hydrate(signal, status)
+      .catch(() => {})
   }
 }
 

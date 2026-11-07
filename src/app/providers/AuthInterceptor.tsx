@@ -56,8 +56,7 @@ export function isRateLimitRetrySafeRequest(
   }
 
   const idempotencyKey =
-    headers?.['Idempotency-Key'] ??
-    headers?.['idempotency-key']
+    headers?.['Idempotency-Key'] ?? headers?.['idempotency-key']
 
   return typeof idempotencyKey === 'string' && idempotencyKey.length > 0
 }
@@ -166,8 +165,12 @@ const AuthInterceptor = ({ children }: Readonly<AuthInterceptorProps>) => {
             return apiClient.request(originalRequest)
           } catch (refreshError: unknown) {
             refreshPromise = null
-            await clearClientSession()
-            router.push(ROUTES.signin)
+            const status = (refreshError as AxiosError | null)?.response?.status
+
+            if (status === 401 || status === 403) {
+              await clearClientSession()
+              router.push(ROUTES.signin)
+            }
             throw refreshError
           }
         }

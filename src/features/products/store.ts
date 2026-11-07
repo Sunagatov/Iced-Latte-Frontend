@@ -7,6 +7,7 @@ import { getDefaultSortOption } from '@/shared/utils/getDefaultSortOption'
 export type StarsType = 1 | 2 | 3 | 4 | 5
 
 interface IProductFiltersStore {
+  priceRevision: number
   fromPriceFilter: string
   toPriceFilter: string
   selectedBrandOptions: string[]
@@ -42,6 +43,7 @@ export const defaultProductsFilters: Omit<
 }
 
 export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
+  priceRevision: 0,
   toPriceFilter: '',
   fromPriceFilter: '',
   ratingFilter: null,
@@ -53,6 +55,15 @@ export const useProductFiltersStore = create<IProductFiltersStore>()((set) => ({
     set((state) => ({
       ...state,
       ...defaultProductsFilters,
+      priceRevision: state.priceRevision + 1,
     })),
-  setFilters: (slice) => set((state) => ({ ...state, ...slice })),
+  setFilters: (slice) =>
+    set((state) => ({
+      ...state,
+      ...slice,
+      priceRevision:
+        'fromPriceFilter' in slice || 'toPriceFilter' in slice
+          ? state.priceRevision + 1
+          : state.priceRevision,
+    })),
 }))

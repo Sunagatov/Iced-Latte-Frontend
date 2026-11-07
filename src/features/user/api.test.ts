@@ -165,7 +165,7 @@ describe('user api', () => {
     expect(result.address).toEqual({})
   })
 
-  it('editUserProfile calls PUT /users and normalizes empty address to null', async () => {
+  it('editUserProfile leaves an omitted address unchanged', async () => {
     mockedApi.mockResolvedValueOnce({
       data: { firstName: 'Jane' },
     })
@@ -181,7 +181,7 @@ describe('user api', () => {
         data: {
           firstName: 'Jane',
           lastName: 'Doe',
-          address: null,
+          address: undefined,
         },
         method: 'PUT',
         url: '/users',
@@ -231,6 +231,25 @@ describe('user api', () => {
         },
         method: 'PUT',
         url: '/users',
+      }),
+    )
+  })
+
+  it('clears an explicitly emptied address using the backend empty-object contract', async () => {
+    mockedApi.mockResolvedValue({
+      data: { firstName: 'Jane', lastName: 'Doe', address: null },
+    })
+    await userApi.editUserProfile({
+      firstName: 'Jane',
+      lastName: 'Doe',
+      address: { country: '', city: '', line: '', postcode: '' },
+    })
+    expect(mockedApi).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        method: 'PUT',
+        url: '/users',
+        data: { firstName: 'Jane', lastName: 'Doe', address: {} },
       }),
     )
   })
@@ -407,10 +426,7 @@ describe('user api', () => {
         url: '/users/avatar/uploads/upload-1',
       }),
     )
-    expect(onStageChange).toHaveBeenNthCalledWith(
-      1,
-      'requesting-upload-intent',
-    )
+    expect(onStageChange).toHaveBeenNthCalledWith(1, 'requesting-upload-intent')
     expect(onStageChange).toHaveBeenNthCalledWith(2, 'uploading')
     expect(onStageChange).toHaveBeenNthCalledWith(3, 'processing')
     expect(onUploadProgress).toHaveBeenNthCalledWith(1, null)

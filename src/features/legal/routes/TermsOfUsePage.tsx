@@ -38,7 +38,7 @@ export const termsSections = [
       'Scrape, crawl, or use automated tools to extract data beyond normal API usage.',
       'Upload malicious content, spam, or any material that infringes on the rights of others.',
       'Impersonate another person or misrepresent your affiliation with any entity.',
-      "Interfere with or disrupt the platform's infrastructure.",
+      'Interfere with or disrupt the platform\'s infrastructure.',
     ],
   },
   {
@@ -71,7 +71,7 @@ export const termsSections = [
     bullets: [
       'No real money is charged, transferred, or held.',
       'No real goods or services are sold or delivered.',
-      "Credit card numbers entered in the demo environment are processed by Stripe's test sandbox and are not real charges.",
+      'Credit card numbers entered in the demo environment are processed by Stripe\'s test sandbox and are not real charges.',
       'The author assumes no liability for any financial loss arising from misuse or misunderstanding of the payment demonstration features.',
     ],
   },
@@ -97,7 +97,7 @@ export const termsSections = [
     ],
     bullets: [
       'Your contribution is your original work or you have the right to submit it.',
-      "Contributions are accepted only under the project's license terms.",
+      'Contributions are accepted only under the project\'s license terms.',
       'By submitting a contribution, you irrevocably assign to the author all right, title, and interest in and to the contribution, including all copyright and other intellectual property rights.',
       'Contributors do not receive ownership, copyright, trademark, commercial, publication, hosting, sublicensing, or redistribution rights.',
       'You must not submit code, text, images, designs, assets, test data, or other material that you do not have the right to contribute.',

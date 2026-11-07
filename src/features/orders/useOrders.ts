@@ -30,7 +30,8 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
 
   useEffect(() => {
     const queryChanged =
-      activeQueryRef.current.filter !== filter || activeQueryRef.current.year !== year
+      activeQueryRef.current.filter !== filter ||
+      activeQueryRef.current.year !== year
 
     if (queryChanged) {
       activeQueryRef.current = { filter, year }
@@ -61,6 +62,14 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
     )
       .then((data: OrderPageDto) => {
         if (!active || controller.signal.aborted) return
+
+        const lastPage = Math.max(0, data.totalPages - 1)
+
+        if (page > lastPage) {
+          setPage(lastPage)
+
+          return
+        }
 
         setOrders(data.content)
         setTotalPages(data.totalPages)

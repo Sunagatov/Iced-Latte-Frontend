@@ -30,7 +30,6 @@ export function useReviewsSectionController({
 }: UseReviewsSectionControllerParams) {
   const { errorMessage, handleError } = useErrorHandler()
   const authStatus = useAuthStore((state) => state.status)
-  const userData = useAuthStore((state) => state.userData)
   const isLoggedIn = authStatus === 'authenticated'
   const [userReview, setUserReview] = useState<Review | null>(null)
   const [isUserReviewLoading, setIsUserReviewLoading] = useState(
@@ -43,16 +42,21 @@ export function useReviewsSectionController({
     IOption<ISortParams>
   >(() => getDefaultSortOption(reviewsSortOptions))
   const filterRef = useRef<HTMLDivElement>(null)
+  const reviewRequestRef = useRef(0)
 
   useOnClickOutside(filterRef as React.RefObject<HTMLDivElement>, () =>
     setShowFilterDropdown(false),
   )
 
   const refreshUserReview = useCallback(async () => {
+    const requestId = ++reviewRequestRef.current
+
     setIsUserReviewLoading(true)
 
     try {
       const review = await apiGetProductUserReview(productId)
+
+      if (requestId !== reviewRequestRef.current) return
       const nextUserReview = checkIfUserReviewExists(review) ? review : null
 
       setUserReview(nextUserReview)
@@ -61,9 +65,9 @@ export function useReviewsSectionController({
         setShowForm(false)
       }
     } catch {
-      setUserReview(null)
+      if (requestId === reviewRequestRef.current) setUserReview(null)
     } finally {
-      setIsUserReviewLoading(false)
+      if (requestId === reviewRequestRef.current) setIsUserReviewLoading(false)
     }
   }, [productId])
 
@@ -85,6 +89,10 @@ export function useReviewsSectionController({
     }
 
     void refreshUserReview()
+
+    return () => {
+      reviewRequestRef.current += 1
+    }
   }, [authStatus, isLoggedIn, refreshUserReview])
 
   const reviewsState = useReviews({
@@ -94,38 +102,21 @@ export function useReviewsSectionController({
     ratingFilter: selectedFilterRating,
   })
 
-  const fallbackUserReview = useMemo(() => {
-    if (userReview || !isLoggedIn || !userData) {
-      return null
-    }
-
-    const normalizedFirstName = userData.firstName.trim().toLowerCase()
-    const normalizedLastName = userData.lastName.trim().toLowerCase()
-    const matchingReviews = reviewsState.data.filter((review) => (
-      review.userName?.trim().toLowerCase() === normalizedFirstName
-      && review.userLastname?.trim().toLowerCase() === normalizedLastName
-    ))
-
-    return matchingReviews.length === 1 ? matchingReviews[0] : null
-  }, [isLoggedIn, reviewsState.data, userData, userReview])
-
-  const resolvedUserReview = userReview ?? fallbackUserReview
-
   useEffect(() => {
-    if (resolvedUserReview) {
+    if (userReview) {
       setShowForm(false)
     }
-  }, [resolvedUserReview])
+  }, [userReview])
 
   const visibleReviewData = useMemo(() => {
-    if (!resolvedUserReview) {
+    if (!userReview) {
       return reviewsState.data
     }
 
     return reviewsState.data.filter(
-      (review) => review.productReviewId !== resolvedUserReview.productReviewId,
+      (review) => review.productReviewId !== userReview.productReviewId,
     )
-  }, [resolvedUserReview, reviewsState.data])
+  }, [userReview, reviewsState.data])
 
   const toggleRatingFilter = useCallback((value: number) => {
     setSelectedFilterRating((previous) => {
@@ -162,15 +153,11 @@ export function useReviewsSectionController({
     const reviewsCount = reviewsStatistics?.reviewsCount ?? 0
 
     return {
-      hasAnyReviews: visibleReviewData.length > 0 || !!resolvedUserReview,
+      hasAnyReviews: visibleReviewData.length > 0 || !!userReview,
       hasStatistics: Boolean(reviewsStatistics && reviewsCount > 0),
       reviewsCount,
     }
-  }, [
-    visibleReviewData.length,
-    reviewsStatistics,
-    resolvedUserReview,
-  ])
+  }, [visibleReviewData.length, reviewsStatistics, userReview])
 
   return {
     clearRatingFilters,
@@ -193,6 +180,6 @@ export function useReviewsSectionController({
     showFilterDropdown,
     showForm,
     toggleRatingFilter,
-    userReview: resolvedUserReview,
+    userReview: userReview,
   }
 }

@@ -50,6 +50,7 @@ const mockedRefreshToken = jest.mocked(refreshToken)
 const mockedUseAuthStore = jest.mocked(useAuthStore)
 const setAuthenticated = jest.fn()
 const setAnonymous = jest.fn()
+const setBootstrapError = jest.fn()
 
 function makeAxiosError(status: number): AxiosError {
   const error = new AxiosError('request failed')
@@ -62,21 +63,22 @@ function makeAxiosError(status: number): AxiosError {
 describe('session orchestration', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockedRefreshToken.mockResolvedValue({} as Awaited<
-      ReturnType<typeof refreshToken>
-    >)
+    mockedRefreshToken.mockResolvedValue(
+      {} as Awaited<ReturnType<typeof refreshToken>>,
+    )
     mockedUseAuthStore.getState.mockReturnValue({
       setAnonymous,
       setAuthenticated,
+      setBootstrapError,
     } as unknown as ReturnType<typeof useAuthStore.getState>)
   })
 
   it('passes retry-skip options through the post-refresh user lookup', async () => {
     const userData = { email: 'user@example.com' }
 
-    mockedGetUserData.mockResolvedValue(userData as Awaited<
-      ReturnType<typeof getUserData>
-    >)
+    mockedGetUserData.mockResolvedValue(
+      userData as Awaited<ReturnType<typeof getUserData>>,
+    )
 
     await expect(
       refreshAuthenticatedSession({ skipAuthRetry: true }),
@@ -94,6 +96,9 @@ describe('session orchestration', () => {
     await bootstrapClientSession()
 
     expect(setAnonymous).not.toHaveBeenCalled()
+    expect(setBootstrapError).toHaveBeenCalledWith(
+      expect.stringContaining('Please try again'),
+    )
   })
 
   it('marks the user anonymous when bootstrap refresh fails with an auth error', async () => {

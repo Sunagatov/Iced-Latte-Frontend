@@ -76,6 +76,37 @@ beforeEach(() => {
   setAuthStatus('anonymous')
 })
 
+it('does not restore a removed favourite when an earlier add finishes', async () => {
+  setAuthStatus('authenticated')
+  setFavState({
+    favouriteIds: [PRODUCT_ID_ONE],
+    favourites: [makeProduct(PRODUCT_ID_ONE)],
+    isSync: true,
+    status: 'ready',
+  })
+  let finish!: (
+    response: Awaited<ReturnType<typeof favsApi.syncFavourites>>,
+  ) => void
+
+  mockedSyncFavourites.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve
+    }),
+  )
+  mockedRemoveFavourite.mockResolvedValueOnce(undefined)
+  const adding = getFavState().toggleFavourite(PRODUCT_ID_TWO)
+
+  await getFavState().toggleFavourite(PRODUCT_ID_ONE)
+  finish({
+    products: [makeProduct(PRODUCT_ID_ONE), makeProduct(PRODUCT_ID_TWO)],
+  })
+  await adding
+  expect(getFavState().favouriteIds).toEqual([PRODUCT_ID_TWO])
+  expect(getFavState().favourites.map((product) => product.id)).toEqual([
+    PRODUCT_ID_TWO,
+  ])
+})
+
 describe('favourites store — toggleFavourite (guest add)', () => {
   it('adds product locally', async () => {
     mockedGetProductByIds.mockResolvedValue([makeProduct(PRODUCT_ID_ONE)])
@@ -90,11 +121,15 @@ describe('favourites store — toggleFavourite (authenticated add)', () => {
   beforeEach(() => setAuthStatus('authenticated'))
 
   it('calls syncFavourites and updates state', async () => {
-    mockedSyncFavourites.mockResolvedValue({ products: [makeProduct(PRODUCT_ID_ONE)] })
+    mockedSyncFavourites.mockResolvedValue({
+      products: [makeProduct(PRODUCT_ID_ONE)],
+    })
 
     await getFavState().toggleFavourite(PRODUCT_ID_ONE)
 
-    expect(mockedSyncFavourites).toHaveBeenCalledWith({ productIds: [PRODUCT_ID_ONE] })
+    expect(mockedSyncFavourites).toHaveBeenCalledWith({
+      productIds: [PRODUCT_ID_ONE],
+    })
     expect(getFavState().favouriteIds).toContain(PRODUCT_ID_ONE)
   })
 
@@ -190,7 +225,9 @@ describe('favourites store — syncSession', () => {
   it('merges and updates state', async () => {
     setAuthStatus('authenticated')
     setFavState({ favouriteIds: [PRODUCT_ID_ONE] })
-    mockedSyncFavourites.mockResolvedValue({ products: [makeProduct(PRODUCT_ID_ONE)] })
+    mockedSyncFavourites.mockResolvedValue({
+      products: [makeProduct(PRODUCT_ID_ONE)],
+    })
 
     await getFavState().syncSession()
 
@@ -225,7 +262,8 @@ describe('favourites store — syncSession', () => {
     setAuthStatus('authenticated')
     const favouriteIds = Array.from(
       { length: 101 },
-      (_, index) => `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`,
+      (_, index) =>
+        `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`,
     )
 
     setFavState({ favouriteIds, isSync: false })

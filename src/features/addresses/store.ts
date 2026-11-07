@@ -15,89 +15,92 @@ interface AddressStore {
   setDefault: (id: string) => Promise<void>
 }
 
-export const useAddressStore = create<AddressStore>()(
-  (set) => ({
-    addresses: [],
-    loading: false,
-    error: null,
+export const useAddressStore = create<AddressStore>()((set, get) => ({
+  addresses: [],
+  loading: false,
+  error: null,
 
-    fetch: async () => {
-      set({ loading: true, error: null })
-      try {
-        const addresses = await api.getAddresses()
+  fetch: async () => {
+    set({ loading: true, error: null })
+    try {
+      const addresses = await api.getAddresses()
 
-        set({ addresses })
-      } catch {
-        set({ error: 'Failed to load addresses. Please try again.' })
-      } finally {
-        set({ loading: false })
-      }
-    },
+      set({ addresses })
+    } catch {
+      set({ error: 'Failed to load addresses. Please try again.' })
+    } finally {
+      set({ loading: false })
+    }
+  },
 
-    add: async (data) => {
-      try {
-        const address = await api.createAddress(data)
+  add: async (data) => {
+    try {
+      const address = await api.createAddress(data)
 
-        set((s) => ({ addresses: [...s.addresses, address], error: null }))
-      } catch (err) {
-        const msg = getUserMessage(err)
+      set((s) => ({ addresses: [...s.addresses, address], error: null }))
+    } catch (err) {
+      const msg = getUserMessage(err)
 
-        set({ error: msg })
-        toastError(err)
-        throw err
-      }
-    },
+      set({ error: msg })
+      toastError(err)
+      throw err
+    }
+  },
 
-    update: async (id, data) => {
-      try {
-        const updated = await api.updateAddress(id, data)
+  update: async (id, data) => {
+    try {
+      const updated = await api.updateAddress(id, data)
 
-        set((s) => ({
-          addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
-          error: null,
-        }))
-      } catch (err) {
-        const msg = getUserMessage(err)
+      set((s) => ({
+        addresses: s.addresses.map((a) => (a.id === id ? updated : a)),
+        error: null,
+      }))
+    } catch (err) {
+      const msg = getUserMessage(err)
 
-        set({ error: msg })
-        toastError(err)
-        throw err
-      }
-    },
+      set({ error: msg })
+      toastError(err)
+      throw err
+    }
+  },
 
-    remove: async (id) => {
-      try {
-        await api.deleteAddress(id)
-        set((s) => ({
-          addresses: s.addresses.filter((a) => a.id !== id),
-          error: null,
-        }))
-      } catch (err) {
-        const msg = getUserMessage(err)
+  remove: async (id) => {
+    try {
+      const wasDefault = get().addresses.some(
+        (address) => address.id === id && address.isDefault,
+      )
 
-        set({ error: msg })
-        toastError(err)
-        throw err
-      }
-    },
+      await api.deleteAddress(id)
+      set((s) => ({
+        addresses: s.addresses.filter((a) => a.id !== id),
+        error: null,
+      }))
+      if (wasDefault) await get().fetch()
+    } catch (err) {
+      const msg = getUserMessage(err)
 
-    setDefault: async (id) => {
-      try {
-        await api.setDefaultAddress(id)
-        set((s) => ({
-          addresses: s.addresses.map((a) => ({
-            ...a,
-            isDefault: a.id === id,
-          })),
-          error: null,
-        }))
-      } catch (err) {
-        const msg = getUserMessage(err)
+      set({ error: msg })
+      toastError(err)
+      throw err
+    }
+  },
 
-        set({ error: msg })
-        toastError(err)
-        throw err
-      }
-    },
-  }),
-)
+  setDefault: async (id) => {
+    try {
+      await api.setDefaultAddress(id)
+      set((s) => ({
+        addresses: s.addresses.map((a) => ({
+          ...a,
+          isDefault: a.id === id,
+        })),
+        error: null,
+      }))
+    } catch (err) {
+      const msg = getUserMessage(err)
+
+      set({ error: msg })
+      toastError(err)
+      throw err
+    }
+  },
+}))

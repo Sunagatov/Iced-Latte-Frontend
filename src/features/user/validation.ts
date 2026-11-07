@@ -38,33 +38,43 @@ export const validationSchema = yup.object().shape({
       message: 'Phone must be in international format, e.g. +12025550123',
       excludeEmptyString: true,
     }),
-  address: yup.object().shape({
-    country: yup
-      .string()
-      .nullable()
-      .when(['city', 'line', 'postcode'], {
-        is: (city: string, line: string, postcode: string) =>
-          !!(city || line || postcode),
-        then: (schema) =>
-          schema.required('Country is required when filling in an address'),
-        otherwise: (schema) => schema.nullable(),
-      }),
-    city: yup
-      .string()
-      .nullable()
-      .max(128, 'City must be at most 128 characters'),
-    line: yup
-      .string()
-      .nullable()
-      .max(128, 'Address must be at most 128 characters'),
-    postcode: yup
-      .string()
-      .nullable()
-      .transform((v) => (v === '' ? null : v))
-      .max(16, 'Postcode must be at most 16 characters')
-      .matches(/^[A-Z0-9\s-]{2,16}$/i, {
-        message: 'Enter a valid postcode',
-        excludeEmptyString: true,
-      }),
-  }),
+  address: yup
+    .object()
+    .shape({
+      country: yup.string().nullable(),
+      city: yup
+        .string()
+        .nullable()
+        .max(128, 'City must be at most 128 characters'),
+      line: yup
+        .string()
+        .nullable()
+        .max(128, 'Address must be at most 128 characters'),
+      postcode: yup
+        .string()
+        .nullable()
+        .transform((v) => (v === '' ? null : v))
+        .max(16, 'Postcode must be at most 16 characters')
+        .matches(/^[A-Z0-9\s-]{2,16}$/i, {
+          message: 'Enter a valid postcode',
+          excludeEmptyString: true,
+        }),
+    })
+    .test(
+      'complete-address',
+      'Complete all address fields',
+      function(address) {
+        const fields = ['country', 'city', 'line', 'postcode'] as const
+
+        if (!fields.some((field) => address?.[field]?.trim())) return true
+        const missing = fields.find((field) => !address?.[field]?.trim())
+
+        return missing
+          ? this.createError({
+            path: `${this.path}.${missing}`,
+            message: `${missing === 'line' ? 'Address' : missing[0].toUpperCase() + missing.slice(1)} is required when filling in an address`,
+          })
+          : true
+      },
+    ),
 })

@@ -1,5 +1,9 @@
 import { render, waitFor } from '@testing-library/react'
-import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios'
 import { createElement } from 'react'
 import AuthInterceptor, {
   getRetryAfterDelayMs,
@@ -58,7 +62,9 @@ jest.mock('@/features/auth/public', () => ({
 }))
 
 const mockedApi = api as unknown as MockApiClient
-const mockedRefreshAuthenticatedSession = jest.mocked(refreshAuthenticatedSession)
+const mockedRefreshAuthenticatedSession = jest.mocked(
+  refreshAuthenticatedSession,
+)
 const mockedClearClientSession = jest.mocked(clearClientSession)
 const mockedUseAuthStore = jest.mocked(useAuthStore)
 
@@ -82,17 +88,23 @@ function makeAxiosError(
 
 describe('AuthInterceptor URL guards', () => {
   it('matches auth endpoints that should never trigger refresh recursion', () => {
-    expect(isAuthRefreshExcludedRequest('/api/proxy/auth/authenticate')).toBe(true)
+    expect(isAuthRefreshExcludedRequest('/api/proxy/auth/authenticate')).toBe(
+      true,
+    )
     expect(isAuthRefreshExcludedRequest('/api/proxy/auth/refresh')).toBe(true)
     expect(isAuthRefreshExcludedRequest('/api/proxy/auth/register')).toBe(true)
-    expect(isAuthRefreshExcludedRequest('/api/v1/auth/password/forgot')).toBe(true)
+    expect(isAuthRefreshExcludedRequest('/api/v1/auth/password/forgot')).toBe(
+      true,
+    )
     expect(isAuthRefreshExcludedRequest('/auth/logout')).toBe(true)
     expect(isAuthRefreshExcludedRequest('/api/v1/auth/refresh')).toBe(true)
   })
 
   it('does not exclude regular application endpoints from refresh handling', () => {
     expect(isAuthRefreshExcludedRequest('/api/proxy/users')).toBe(false)
-    expect(isAuthRefreshExcludedRequest('/api/proxy/users/addresses')).toBe(false)
+    expect(isAuthRefreshExcludedRequest('/api/proxy/users/addresses')).toBe(
+      false,
+    )
     expect(isAuthRefreshExcludedRequest('/api/proxy/products')).toBe(false)
   })
 
@@ -143,9 +155,9 @@ describe('AuthInterceptor runtime behavior', () => {
     })
     mockedApi.interceptors.response.eject.mockImplementation(jest.fn())
     mockedApi.request = jest.fn().mockResolvedValue({ data: 'retried' })
-    mockedRefreshAuthenticatedSession.mockResolvedValue({} as Awaited<
-      ReturnType<typeof refreshAuthenticatedSession>
-    >)
+    mockedRefreshAuthenticatedSession.mockResolvedValue(
+      {} as Awaited<ReturnType<typeof refreshAuthenticatedSession>>,
+    )
     mockedClearClientSession.mockResolvedValue(undefined)
     mockedUseAuthStore.getState.mockReturnValue({
       status: 'authenticated',
@@ -165,7 +177,9 @@ describe('AuthInterceptor runtime behavior', () => {
       url: '/users',
     } as InternalAxiosRequestConfig
 
-    await expect(rejectResponse(makeAxiosError(401, originalRequest))).resolves.toEqual({
+    await expect(
+      rejectResponse(makeAxiosError(401, originalRequest)),
+    ).resolves.toEqual({
       data: 'retried',
     })
 
@@ -180,8 +194,10 @@ describe('AuthInterceptor runtime behavior', () => {
     )
   })
 
-  it('clears the client session and redirects to signin when refresh fails', async () => {
-    mockedRefreshAuthenticatedSession.mockRejectedValue(new Error('refresh failed'))
+  it('clears the client session and redirects when refresh is rejected as unauthorized', async () => {
+    const refreshError = makeAxiosError(401)
+
+    mockedRefreshAuthenticatedSession.mockRejectedValue(refreshError)
 
     render(createElement(AuthInterceptor, null, createElement('div')))
 
@@ -189,11 +205,24 @@ describe('AuthInterceptor runtime behavior', () => {
       expect(mockedApi.interceptors.response.use).toHaveBeenCalledTimes(1),
     )
 
-    await expect(rejectResponse(makeAxiosError(401))).rejects.toThrow('refresh failed')
+    await expect(rejectResponse(makeAxiosError(401))).rejects.toBe(refreshError)
 
     expect(mockedClearClientSession).toHaveBeenCalledTimes(1)
     expect(routerPush).toHaveBeenCalledWith(ROUTES.signin)
     expect(mockedApi.request).not.toHaveBeenCalled()
+  })
+
+  it('preserves the session when refresh fails with a temporary server error', async () => {
+    const refreshError = makeAxiosError(503)
+
+    mockedRefreshAuthenticatedSession.mockRejectedValueOnce(refreshError)
+    render(createElement(AuthInterceptor, null, createElement('div')))
+    await waitFor(() =>
+      expect(mockedApi.interceptors.response.use).toHaveBeenCalledTimes(1),
+    )
+    await expect(rejectResponse(makeAxiosError(401))).rejects.toBe(refreshError)
+    expect(mockedClearClientSession).not.toHaveBeenCalled()
+    expect(routerPush).not.toHaveBeenCalled()
   })
 
   it('does not refresh when the auth store already knows the visitor is anonymous', async () => {
@@ -232,7 +261,9 @@ describe('AuthInterceptor runtime behavior', () => {
       url: '/users',
     } as InternalAxiosRequestConfig
 
-    await expect(rejectResponse(makeAxiosError(401, originalRequest))).resolves.toEqual({
+    await expect(
+      rejectResponse(makeAxiosError(401, originalRequest)),
+    ).resolves.toEqual({
       data: 'retried',
     })
 

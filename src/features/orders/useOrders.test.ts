@@ -110,4 +110,44 @@ describe('useOrders', () => {
       expect.anything(),
     )
   })
+  it('shrinking filtered results must recover an out-of-range current page', async () => {
+    const summary = {
+      id: 'order-1',
+      status: 'CREATED',
+      createdAt: '2026-11-01T12:00:00Z',
+      itemsQuantity: 1,
+      itemsTotalPrice: 12,
+      firstItemName: 'Coffee',
+      itemCount: 1,
+    } as const
+
+    mockedOrdersApi.fetchOrders.mockResolvedValue({
+      ...emptyPage,
+      content: [summary],
+      totalPages: 2,
+      totalElements: 11,
+    })
+    const { result } = renderHook(() => useOrders('CREATED'))
+
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    act(() => result.current.goToPage(1))
+    await waitFor(() =>
+      expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledTimes(2),
+    )
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    mockedOrdersApi.fetchOrders.mockImplementation(async (params) => ({
+      ...emptyPage,
+      page: params?.page ?? 0,
+      content: params?.page === 0 ? [summary] : [],
+      totalPages: 1,
+      totalElements: 10,
+    }))
+    act(() => result.current.retry())
+    await waitFor(() =>
+      expect(mockedOrdersApi.fetchOrders).toHaveBeenCalledTimes(3),
+    )
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.page).toBe(0)
+    expect(result.current.orders.length).toBeGreaterThan(0)
+  })
 })

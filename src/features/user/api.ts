@@ -52,7 +52,8 @@ export const editUserProfile = async (
     (!address.country && !address.city && !address.line && !address.postcode)
   const payload = {
     ...updatedUserData,
-    address: isEmptyAddress ? null : address,
+    // The backend treats null as unchanged and an empty object as clear.
+    address: address && isEmptyAddress ? {} : address,
   }
 
   await editGeneratedUserProfile(
@@ -81,10 +82,13 @@ export async function uploadImage(
 
   options?.onStageChange?.('uploading')
   options?.onUploadProgress?.(null)
-  await uploadUserAvatar({
-    file,
-    ...(turnstileToken ? { turnstileToken } : {}),
-  }, { signal: options?.signal })
+  await uploadUserAvatar(
+    {
+      file,
+      ...(turnstileToken ? { turnstileToken } : {}),
+    },
+    { signal: options?.signal },
+  )
 }
 
 export { isAvatarUploadAbortError }

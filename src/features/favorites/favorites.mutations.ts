@@ -6,8 +6,8 @@ import {
   clearPendingFavourite,
   type FavStoreGet,
   type FavStoreSet,
-  mapProductsToFavourites,
   normalizeFavouriteIds,
+  normalizeProducts,
   restoreRemovedFavourite,
   setPendingFavourite,
 } from '@/features/favorites/state/favoritesStore.utils'
@@ -59,9 +59,24 @@ export async function toggleFavouriteInStore(
   try {
     if (isAuthenticated) {
       if (wasAdded) {
-        const response = await syncFavourites({ productIds: [normalizedProductId] })
+        const response = await syncFavourites({
+          productIds: [normalizedProductId],
+        })
 
-        set(mapProductsToFavourites(response.products))
+        const addedProduct = normalizeProducts(response.products).find(
+          (product) => product.id === normalizedProductId,
+        )
+
+        if (addedProduct && get().pendingIds.has(normalizedProductId)) {
+          set((state) => ({
+            favourites: [
+              ...state.favourites.filter(
+                (product) => product.id !== normalizedProductId,
+              ),
+              addedProduct,
+            ],
+          }))
+        }
       } else {
         await removeFavourite(normalizedProductId)
       }
@@ -70,9 +85,23 @@ export async function toggleFavouriteInStore(
     }
 
     if (wasAdded) {
-      const products = await getProductByIds(normalizeFavouriteIds(get().favouriteIds))
+      const products = await getProductByIds(
+        normalizeFavouriteIds(get().favouriteIds),
+      )
 
-      set(mapProductsToFavourites(products))
+      const currentIds = new Set(get().favouriteIds)
+      const byId = new Map(
+        get().favourites.map((product) => [product.id, product]),
+      )
+
+      normalizeProducts(products).forEach((product) =>
+        byId.set(product.id, product),
+      )
+      set({
+        favourites: Array.from(byId.values()).filter((product) =>
+          currentIds.has(product.id),
+        ),
+      })
     }
   } catch (err) {
     toastError(err)
@@ -91,7 +120,10 @@ export async function toggleFavouriteInStore(
             ...state.favouriteIds,
             normalizedProductId,
           ]),
-          favourites: restoreRemovedFavourite(state.favourites, previousProduct),
+          favourites: restoreRemovedFavourite(
+            state.favourites,
+            previousProduct,
+          ),
         },
     )
   } finally {

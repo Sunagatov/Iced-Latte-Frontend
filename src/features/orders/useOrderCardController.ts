@@ -9,7 +9,10 @@ import {
   refundOrder,
   reorderOrder,
 } from '@/features/orders/ordersApi'
-import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/orderTypes'
+import type {
+  OrderDetailDto,
+  OrderSummaryDto,
+} from '@/features/orders/orderTypes'
 import { ROUTES } from '@/shared/config/routes'
 
 export type OrderActionModal = 'cancel' | 'refund' | null
@@ -34,6 +37,19 @@ export function useOrderCardController({
   const [refundReason, setRefundReason] = useState('')
   const hydrateCart = useCartStore((state) => state.hydrate)
   const detailRequestRef = useRef<AbortController | null>(null)
+  const previousStatusRef = useRef(order.status)
+
+  useEffect(() => {
+    if (previousStatusRef.current !== order.status) {
+      previousStatusRef.current = order.status
+      detailRequestRef.current?.abort()
+      detailRequestRef.current = null
+      setDetail(null)
+      setLoadingDetail(false)
+      setExpanded(false)
+      setModal(null)
+    }
+  }, [order.status])
 
   useEffect(() => {
     return () => {
@@ -60,7 +76,10 @@ export function useOrderCardController({
       try {
         const data = await fetchOrder(order.id, controller.signal)
 
-        if (!controller.signal.aborted && detailRequestRef.current === controller) {
+        if (
+          !controller.signal.aborted &&
+          detailRequestRef.current === controller
+        ) {
           setDetail(data)
         }
       } catch {
@@ -70,7 +89,10 @@ export function useOrderCardController({
 
         setActionError('Could not load order details.')
       } finally {
-        if (!controller.signal.aborted && detailRequestRef.current === controller) {
+        if (
+          !controller.signal.aborted &&
+          detailRequestRef.current === controller
+        ) {
           setLoadingDetail(false)
           detailRequestRef.current = null
         }
@@ -104,7 +126,10 @@ export function useOrderCardController({
     setActionError('')
     setActionMessage('')
     try {
-      const updated = await refundOrder(order.id, reason ? { reason } : undefined)
+      const updated = await refundOrder(
+        order.id,
+        reason ? { reason } : undefined,
+      )
 
       setDetail(updated)
       onStatusChange?.()

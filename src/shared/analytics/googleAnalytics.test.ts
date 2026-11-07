@@ -35,6 +35,7 @@ describe('google analytics helpers', () => {
 
   it('forwards events to gtag when available', () => {
     const gtag = jest.fn()
+
     ;(window as Window & { gtag?: typeof gtag }).gtag = gtag
 
     trackGoogleAnalyticsEvent('add_to_cart', {
@@ -72,6 +73,7 @@ describe('google analytics helpers', () => {
     const gtag = jest.fn(() => {
       throw new Error('blocked')
     })
+
     ;(window as Window & { gtag?: typeof gtag }).gtag = gtag
 
     expect(() =>

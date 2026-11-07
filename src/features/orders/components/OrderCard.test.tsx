@@ -1,8 +1,17 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import OrderCard from '@/features/orders/components/OrderCard'
 import * as ordersApi from '@/features/orders/ordersApi'
 import { type CartSliceStore, useCartStore } from '@/features/cart/public'
-import type { OrderDetailDto, OrderSummaryDto } from '@/features/orders/orderTypes'
+import type {
+  OrderDetailDto,
+  OrderSummaryDto,
+} from '@/features/orders/orderTypes'
 
 const push = jest.fn()
 
@@ -49,7 +58,9 @@ describe('OrderCard', () => {
 
   afterEach(() => {
     cleanup()
-    useCartStore.setState({ hydrate: originalHydrate } as Partial<CartSliceStore>)
+    useCartStore.setState({
+      hydrate: originalHydrate,
+    } as Partial<CartSliceStore>)
     jest.restoreAllMocks()
   })
 
@@ -102,5 +113,16 @@ describe('OrderCard', () => {
     })
 
     expect(screen.queryByText('Could not re-order.')).not.toBeInTheDocument()
+  })
+  it('refreshed order status must supersede previously expanded details', async () => {
+    mockedOrdersApi.fetchOrder.mockResolvedValue(detail)
+    const { rerender } = render(<OrderCard order={order} />)
+
+    fireEvent.click(screen.getByRole('button', { name: /order #order-12/i }))
+    await screen.findByRole('button', { name: /buy again/i })
+    expect(screen.getByText('Paid')).toBeInTheDocument()
+    rerender(<OrderCard order={{ ...order, status: 'SHIPPED' }} />)
+    expect(screen.getByText('Shipped')).toBeInTheDocument()
+    expect(screen.queryByText('Paid')).not.toBeInTheDocument()
   })
 })

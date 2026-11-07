@@ -8,6 +8,8 @@ import {
 export type { AuthStatus }
 
 export interface AuthStore {
+  bootstrapError: string | null
+  setBootstrapError: (message: string | null) => void
   status: AuthStatus
   userData: UserData | null
   isLoggedIn: boolean
@@ -19,24 +21,41 @@ export interface AuthStore {
 }
 
 export const useAuthStore = create<AuthStore>()((set) => ({
+  bootstrapError: null,
+  setBootstrapError: (message) => set({ bootstrapError: message }),
   status: 'loading',
   userData: null,
   isLoggedIn: false,
   setAuthenticated: (userData) => {
     setClientAuthStatus('authenticated')
-    set({ status: 'authenticated', isLoggedIn: true, userData })
+    set({
+      status: 'authenticated',
+      isLoggedIn: true,
+      userData,
+      bootstrapError: null,
+    })
   },
   setAnonymous: () => {
     setClientAuthStatus('anonymous')
-    set({ status: 'anonymous', isLoggedIn: false, userData: null })
+    set({
+      status: 'anonymous',
+      isLoggedIn: false,
+      userData: null,
+      bootstrapError: null,
+    })
   },
   setLoading: () => {
     setClientAuthStatus('loading')
-    set({ status: 'loading' })
+    set({ status: 'loading', bootstrapError: null })
   },
   reset: () => {
     setClientAuthStatus('anonymous')
-    set({ status: 'anonymous', isLoggedIn: false, userData: null })
+    set({
+      status: 'anonymous',
+      isLoggedIn: false,
+      userData: null,
+      bootstrapError: null,
+    })
   },
   setUserData: (userData) => set({ userData }),
 }))
