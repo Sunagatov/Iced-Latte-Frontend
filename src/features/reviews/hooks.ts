@@ -35,7 +35,7 @@ export function useReviews({
     Error
   >(getKey, apiGetAllReviews, { initialSize: 1, revalidateFirstPage: false })
 
-  const totalPages = data?.[0]?.totalPages ?? 0
+  const totalPages = data?.at(-1)?.totalPages ?? 0
   const fetchNext = () => setSize((size) => size + 1)
   const allLoadedReviews =
     data?.flatMap((page) => page.reviewsWithRatings) ?? []
@@ -92,7 +92,7 @@ export function useReviews({
     hasNextPage: size < totalPages,
     isLoading,
     isFetchingNextPage:
-      size > 0 && data && typeof data[size - 1] === 'undefined',
+      !error && size > 0 && data && typeof data[size - 1] === 'undefined',
     error,
     refreshReviews,
     removeReviewFromCache,

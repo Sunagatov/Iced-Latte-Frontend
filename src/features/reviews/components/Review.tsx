@@ -91,7 +91,7 @@ const Review: React.FC<Readonly<IReview>> = ({
 
       <p
         className={twMerge(
-          'text-sm leading-relaxed text-black/70',
+          'text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] text-black/70',
           !review.text && 'text-black/30 italic',
         )}
       >

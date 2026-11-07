@@ -1,13 +1,19 @@
-import { render, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import type { IProduct } from '@/features/products/types'
 import ProductWithReviews from '@/features/products/components/ProductWithReviews'
 import { trackGoogleAnalyticsEvent } from '@/shared/analytics/googleAnalytics'
 import * as reviewsApi from '@/features/reviews/public'
 import type { IProductReviewsStatistics } from '@/features/reviews/public'
 
+const mockHandleError = jest.fn()
+
 jest.mock('@/features/products/components/ProductOverview', () => ({
   __esModule: true,
-  default: () => <div data-testid="product-overview" />,
+  default: ({ reviewsStatistics }: { reviewsStatistics: unknown }) => (
+    <div data-testid="product-overview">
+      {JSON.stringify(reviewsStatistics)}
+    </div>
+  ),
 }))
 
 jest.mock('next/dynamic', () => ({
@@ -17,7 +23,7 @@ jest.mock('next/dynamic', () => ({
 
 jest.mock('@/shared/utils/apiError', () => ({
   useToastErrorHandler: () => ({
-    handleError: jest.fn(),
+    handleError: mockHandleError,
   }),
 }))
 
@@ -40,6 +46,40 @@ const mockedReviewsApi = jest.mocked(reviewsApi)
 const mockedTrackGoogleAnalyticsEvent = jest.mocked(trackGoogleAnalyticsEvent)
 
 describe('ProductWithReviews', () => {
+  it('ignores a statistics response from the previously viewed product', async () => {
+    let resolveOld!: (value: IProductReviewsStatistics) => void
+
+    mockedReviewsApi.apiGetProductReviewsStatistics
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveOld = resolve
+        }),
+      )
+      .mockResolvedValueOnce({
+        avgRating: 5,
+        reviewsCount: 3,
+        ratingMap: { star1: 0, star2: 0, star3: 0, star4: 0, star5: 3 },
+      })
+    const first = { id: 'first', name: 'First', price: 1 } as IProduct
+    const view = render(<ProductWithReviews product={first} />)
+
+    view.rerender(<ProductWithReviews product={{ ...first, id: 'second' }} />)
+    await waitFor(() =>
+      expect(screen.getByTestId('product-overview')).toHaveTextContent(
+        '"reviewsCount":3',
+      ),
+    )
+    await act(async () =>
+      resolveOld({
+        avgRating: 1,
+        reviewsCount: 99,
+        ratingMap: { star1: 99, star2: 0, star3: 0, star4: 0, star5: 0 },
+      }),
+    )
+    expect(screen.getByTestId('product-overview')).toHaveTextContent(
+      '"reviewsCount":3',
+    )
+  })
   beforeEach(() => {
     jest.clearAllMocks()
     mockedReviewsApi.apiGetProductReviewsStatistics.mockResolvedValue({

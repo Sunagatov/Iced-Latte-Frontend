@@ -13,6 +13,7 @@ interface StarRatingProps {
   count: number
   activeColor?: string
   size?: 'sm' | 'md' | 'lg'
+  disabled?: boolean
 }
 
 const labels: Record<number, string> = {
@@ -28,6 +29,7 @@ const StarRating = ({
   count,
   activeColor = 'var(--color-brand-solid)',
   size = 'lg',
+  disabled = false,
 }: StarRatingProps) => {
   const [hoverItem, setHoverItem] = useState(-1)
   const { ratings, setRating } = useProductRatingStore()
@@ -61,6 +63,8 @@ const StarRating = ({
               <button
                 key={index}
                 type="button"
+                disabled={disabled}
+                aria-pressed={currentRating === index + 1}
                 onClick={() => handleRatingClick(index)}
                 onMouseEnter={() => setHoverItem(index)}
                 onMouseLeave={() => setHoverItem(-1)}

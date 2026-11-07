@@ -32,6 +32,7 @@ export function useReviewsSectionController({
   const authStatus = useAuthStore((state) => state.status)
   const isLoggedIn = authStatus === 'authenticated'
   const [userReview, setUserReview] = useState<Review | null>(null)
+  const [userReviewError, setUserReviewError] = useState<string | null>(null)
   const [isUserReviewLoading, setIsUserReviewLoading] = useState(
     authStatus !== 'anonymous',
   )
@@ -52,6 +53,7 @@ export function useReviewsSectionController({
     const requestId = ++reviewRequestRef.current
 
     setIsUserReviewLoading(true)
+    setUserReviewError(null)
 
     try {
       const review = await apiGetProductUserReview(productId)
@@ -65,7 +67,9 @@ export function useReviewsSectionController({
         setShowForm(false)
       }
     } catch {
-      if (requestId === reviewRequestRef.current) setUserReview(null)
+      if (requestId === reviewRequestRef.current) {
+        setUserReviewError('Could not check your review. Please try again.')
+      }
     } finally {
       if (requestId === reviewRequestRef.current) setIsUserReviewLoading(false)
     }
@@ -81,6 +85,7 @@ export function useReviewsSectionController({
     }
 
     if (!isLoggedIn) {
+      setUserReviewError(null)
       setUserReview(null)
       setShowForm(false)
       setIsUserReviewLoading(false)
@@ -144,6 +149,7 @@ export function useReviewsSectionController({
     (reviewId: string) => {
       void refreshUserReview()
       reviewsState.removeReviewFromCache(reviewId)
+      void reviewsState.refreshReviews()
       void refreshStatistics()
     },
     [refreshStatistics, refreshUserReview, reviewsState],
@@ -174,6 +180,8 @@ export function useReviewsSectionController({
     selectedFilterRating,
     selectedSortOption,
     isUserReviewLoading,
+    userReviewError,
+    refreshUserReview,
     setSelectedSortOption,
     setShowFilterDropdown,
     setShowForm,

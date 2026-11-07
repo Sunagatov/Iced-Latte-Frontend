@@ -15,8 +15,7 @@ import {
 import { useToastErrorHandler } from '@/shared/utils/apiError'
 
 const ReviewsSection = dynamic(
-  () =>
-    import('@/features/reviews/public').then((mod) => mod.ReviewsSection),
+  () => import('@/features/reviews/public').then((mod) => mod.ReviewsSection),
   { ssr: false },
 )
 
@@ -29,21 +28,29 @@ const ProductWithReviews: React.FC<IProductWithReviews> = ({ product }) => {
     useState<IProductReviewsStatistics | null>(null)
   const { handleError } = useToastErrorHandler()
   const viewTrackedProductIdRef = useRef<string | null>(null)
+  const statisticsRequestRef = useRef(0)
 
   const refreshStatistics = useCallback(async () => {
+    const requestId = ++statisticsRequestRef.current
+
     try {
       const stats: IProductReviewsStatistics =
         await apiGetProductReviewsStatistics(product.id)
 
-      setReviewsStatistics(stats)
+      if (requestId === statisticsRequestRef.current)
+        setReviewsStatistics(stats)
     } catch (error) {
-      handleError(error)
+      if (requestId === statisticsRequestRef.current) handleError(error)
     }
   }, [product.id, handleError])
 
   useEffect(() => {
     setReviewsStatistics(null)
     void refreshStatistics()
+
+    return () => {
+      statisticsRequestRef.current += 1
+    }
   }, [refreshStatistics])
 
   useEffect(() => {

@@ -4,7 +4,11 @@ import Loader from '@/shared/ui/Loader'
 import { useRef, useState } from 'react'
 import { useProductRatingStore } from '@/features/reviews/store'
 import { useErrorHandler } from '@/shared/utils/apiError'
-import { apiAddProductReview } from '@/features/reviews/api'
+import {
+  apiAddProductReview,
+  apiGetProductUserReview,
+} from '@/features/reviews/api'
+import axios from 'axios'
 import { useAuthStore } from '@/features/auth/public'
 import { useRouter } from 'next/navigation'
 import { getProductReviewSignInUrl } from '@/features/reviews/navigation'
@@ -30,7 +34,7 @@ const ReviewForm = ({
   const [turnstileToken, setTurnstileToken] = useState('')
   const [turnstileError, setTurnstileError] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
-  const { errorMessage, handleError } = useErrorHandler()
+  const { errorMessage, handleError, clearError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
   const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
   const router = useRouter()
@@ -41,7 +45,7 @@ const ReviewForm = ({
   const handleAddReview = async () => {
     const trimmedText = reviewText.trim()
 
-    if (!currentRating || !trimmedText) return
+    if (loading || !currentRating || !trimmedText) return
 
     if (reviewsTurnstileEnabled && !turnstileToken) {
       setTurnstileError(
@@ -53,6 +57,7 @@ const ReviewForm = ({
 
     try {
       setLoading(true)
+      clearError()
       setTurnstileError('')
       await apiAddProductReview(
         productId,
@@ -66,6 +71,28 @@ const ReviewForm = ({
       setTurnstileToken('')
       setShowForm(false)
     } catch (error) {
+      // A lost response does not mean the server failed to save the review.
+      if (
+        !axios.isAxiosError(error) ||
+        !error.response ||
+        error.response.status === 409
+      ) {
+        try {
+          const savedReview = await apiGetProductUserReview(productId)
+
+          if (savedReview) {
+            onReviewSubmitted?.()
+            setRating(productId, 0)
+            setReviewText('')
+            setTurnstileToken('')
+            setShowForm(false)
+
+            return
+          }
+        } catch {
+          /* Keep the draft when recovery is unavailable. */
+        }
+      }
       handleError(error)
       setTurnstileToken('')
       turnstileRef.current?.reset()
@@ -76,6 +103,7 @@ const ReviewForm = ({
 
   const handleClickReview = () => {
     if (isLoggedIn) {
+      clearError()
       setShowForm(true)
     } else {
       router.push(getProductReviewSignInUrl(productId))
@@ -98,7 +126,16 @@ const ReviewForm = ({
           onClick={handleClickReview}
           className="bg-brand text-inverted hover:bg-brand-solid-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition"
         >
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+          <svg
+            className="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
           Write a review
         </button>
       </div>
@@ -110,7 +147,9 @@ const ReviewForm = ({
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-primary text-base font-semibold">Your review</h3>
         <button
+          disabled={loading}
           onClick={() => {
+            clearError()
             setShowForm(false)
             setRating(productId, 0)
             setReviewText('')
@@ -133,6 +172,7 @@ const ReviewForm = ({
           count={5}
           activeColor="var(--color-brand-solid)"
           size="lg"
+          disabled={loading}
         />
       </div>
 
@@ -144,6 +184,7 @@ const ReviewForm = ({
           id="review-textarea"
           className="bg-secondary text-primary focus:border-brand focus:ring-brand/20 placeholder:text-tertiary w-full resize-none rounded-xl border border-black/10 px-4 py-3 text-sm transition outline-none focus:ring-2"
           value={reviewText}
+          disabled={loading}
           onChange={(e) => setReviewText(e.target.value)}
           placeholder="What did you like or dislike? How was the taste, aroma, packaging?"
           maxLength={1500}

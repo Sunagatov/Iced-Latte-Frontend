@@ -13,6 +13,8 @@ import Review from '@/features/reviews/components/Review'
 import { useAuthStore } from '@/features/auth/public'
 import { useRouter } from 'next/navigation'
 import { getProductReviewSignInUrl } from '@/features/reviews/navigation'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 interface IReviewsList {
   productId: string
@@ -73,7 +75,13 @@ const ReviewsList: React.FC<IReviewsList> = ({
 
       onReviewRated?.(updated)
     } catch (error) {
-      handleError(error)
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        toast.error(
+          'Your vote changed in another request. Please try voting again.',
+        )
+      } else {
+        handleError(error)
+      }
     } finally {
       setIsPending(false)
     }

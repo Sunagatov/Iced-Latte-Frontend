@@ -7,13 +7,15 @@ import Loader from '@/shared/ui/Loader'
 import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import { RiStarLine } from 'react-icons/ri'
+import { useAuthStore } from '@/features/auth/public'
 
 export default function UserReviews() {
+  const account = useAuthStore((state) => state.userData?.email)
   const {
     data: reviews,
     isLoading,
     error,
-  } = useSWR('/users/reviews', apiGetUserReviews)
+  } = useSWR(account ? ['/users/reviews', account] : null, apiGetUserReviews)
 
   if (isLoading)
     return (

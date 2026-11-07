@@ -61,6 +61,8 @@ function makeReview(): Review {
 
 function mockController(overrides: Partial<ReturnType<typeof useReviewsSectionController>> = {}) {
   mockedUseReviewsSectionController.mockReturnValue({
+    userReviewError: null,
+    refreshUserReview: jest.fn(),
     clearRatingFilters: jest.fn(),
     errorMessage: null,
     filterRef: { current: null },

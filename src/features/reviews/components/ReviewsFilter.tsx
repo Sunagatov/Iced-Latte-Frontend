@@ -16,7 +16,7 @@ const RATING_FILTERS = [
 
 interface ReviewsFilterProps {
   filterRef: React.RefObject<HTMLDivElement | null>
-  reviewsStatistics: IProductReviewsStatistics
+  reviewsStatistics: IProductReviewsStatistics | null
   selectedFilterRating: number[]
   showFilterDropdown: boolean
   setShowFilterDropdown: React.Dispatch<React.SetStateAction<boolean>>
@@ -49,14 +49,20 @@ export default function ReviewsFilter({
             {selectedFilterRating.length}
           </span>
         )}
-        <svg className="h-3 w-3 text-brand" viewBox="0 0 20 20" fill="currentColor"><path d={STAR_PATH} /></svg>
+        <svg
+          className="text-brand h-3 w-3"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d={STAR_PATH} />
+        </svg>
       </button>
       {showFilterDropdown && (
         <div className="border-primary bg-primary absolute top-[calc(100%+8px)] right-0 z-10 w-56 rounded-xl border shadow-xl">
           <div className="flex flex-col gap-0.5 p-2">
             {RATING_FILTERS.map(({ value, key }) => {
-              const count = reviewsStatistics.ratingMap[key] ?? 0
-              const total = reviewsStatistics.reviewsCount ?? 0
+              const count = reviewsStatistics?.ratingMap[key] ?? 0
+              const total = reviewsStatistics?.reviewsCount ?? 0
               const width = total > 0 ? Math.round((count / total) * 100) : 0
               const isChecked = selectedFilterRating.includes(value)
 
@@ -73,16 +79,26 @@ export default function ReviewsFilter({
                   <span className="text-primary w-3 text-right font-semibold">
                     {value}
                   </span>
-                  <svg className="h-3.5 w-3.5 shrink-0 text-amber-500" viewBox="0 0 20 20" fill="currentColor"><path d={STAR_PATH} /></svg>
-                  <div className="bg-secondary h-1.5 flex-1 overflow-hidden rounded-full">
-                    <div
-                      className="bg-positive h-full rounded-full transition-all duration-300"
-                      style={{ width: `${width}%` }}
-                    />
-                  </div>
-                  <span className="text-tertiary w-5 text-right text-xs">
-                    {count}
-                  </span>
+                  <svg
+                    className="h-3.5 w-3.5 shrink-0 text-amber-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d={STAR_PATH} />
+                  </svg>
+                  {reviewsStatistics && (
+                    <div className="bg-secondary h-1.5 flex-1 overflow-hidden rounded-full">
+                      <div
+                        className="bg-positive h-full rounded-full transition-all duration-300"
+                        style={{ width: `${width}%` }}
+                      />
+                    </div>
+                  )}
+                  {reviewsStatistics && (
+                    <span className="text-tertiary w-5 text-right text-xs">
+                      {count}
+                    </span>
+                  )}
                 </button>
               )
             })}
