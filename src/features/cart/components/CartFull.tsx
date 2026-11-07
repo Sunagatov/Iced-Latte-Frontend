@@ -4,10 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore, type AuthStore } from '@/features/auth/public'
 import { ROUTES } from '@/shared/config/routes'
 import { FREE_SHIPPING_THRESHOLD } from '@/shared/config/constants'
-import {
-  type CartSliceStore,
-  useCartStore,
-} from '@/features/cart/public'
+import { type CartSliceStore, useCartStore } from '@/features/cart/public'
 import { hostedCheckoutEnabled } from '@/features/payment/public'
 import type { ICartItem as CartItem } from '@/features/cart/cartTypes'
 import CartElement from './CartElement'
@@ -27,7 +24,8 @@ const selectRemoveFullProduct = (
 ): CartSliceStore['removeFullProduct'] => state.removeFullProduct
 const selectClearCart = (state: CartSliceStore): CartSliceStore['clearCart'] =>
   state.clearCart
-const selectIsLoggedIn = (state: AuthStore): boolean => state.status === 'authenticated'
+const selectIsLoggedIn = (state: AuthStore): boolean =>
+  state.status === 'authenticated'
 
 export default function CartFull() {
   const tempItems = useCartStore(selectTempItems)
@@ -41,6 +39,9 @@ export default function CartFull() {
   const clearCart = useCartStore(selectClearCart)
 
   const isLoggedIn = useAuthStore(selectIsLoggedIn)
+  const initializing =
+    useCartStore((state) => !state.isSync || Boolean(state.pendingMerge)) &&
+    isLoggedIn
 
   const router = useRouter()
 
@@ -76,7 +77,9 @@ export default function CartFull() {
           {tempItems.map((item: CartItem) => (
             <CartElement
               add={() => add(item.productInfo.id)}
-              isPending={pendingProductIds.has(item.productInfo.id)}
+              isPending={
+                initializing || pendingProductIds.has(item.productInfo.id)
+              }
               key={item.id}
               product={item}
               remove={() => remove(item.productInfo.id)}
@@ -86,7 +89,7 @@ export default function CartFull() {
 
           <button
             className="mt-1 self-start text-sm text-black/30 underline-offset-2 transition-colors hover:text-red-500 hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={status === 'syncing'}
+            disabled={initializing || status === 'syncing'}
             onClick={handleClearCart}
           >
             Clear all
@@ -97,7 +100,7 @@ export default function CartFull() {
         <div className="lg:sticky lg:top-6 lg:w-[320px]">
           <div className="overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-sm">
             <div className="px-5 pt-5 pb-4">
-              <p className="text-xs font-bold tracking-widest uppercase text-black/40">
+              <p className="text-xs font-bold tracking-widest text-black/40 uppercase">
                 Order summary
               </p>
             </div>
@@ -107,16 +110,19 @@ export default function CartFull() {
               <div className="mb-4 rounded-xl bg-[#F0F7F4] px-3.5 py-3">
                 {amountToFreeShipping > 0 ? (
                   <p className="mb-2 text-xs text-black/50">
-                    <span className="font-semibold text-brand">${amountToFreeShipping.toFixed(2)}</span> away from free shipping
+                    <span className="text-brand font-semibold">
+                      ${amountToFreeShipping.toFixed(2)}
+                    </span>{' '}
+                    away from free shipping
                   </p>
                 ) : (
-                  <p className="mb-2 text-xs font-semibold text-brand">
+                  <p className="text-brand mb-2 text-xs font-semibold">
                     You qualify for free shipping!
                   </p>
                 )}
                 <div className="h-1.5 overflow-hidden rounded-full bg-black/[0.06]">
                   <div
-                    className="h-full rounded-full bg-brand-solid transition-all duration-500"
+                    className="bg-brand-solid h-full rounded-full transition-all duration-500"
                     style={{ width: `${shippingProgress * 100}%` }}
                   />
                 </div>
@@ -135,8 +141,11 @@ export default function CartFull() {
                         x{item.productQuantity}
                       </span>
                     </span>
-                    <span className="shrink-0 text-sm font-medium tabular-nums text-black/70">
-                      ${(item.productInfo.price * item.productQuantity).toFixed(2)}
+                    <span className="shrink-0 text-sm font-medium text-black/70 tabular-nums">
+                      $
+                      {(item.productInfo.price * item.productQuantity).toFixed(
+                        2,
+                      )}
                     </span>
                   </div>
                 ))}
@@ -145,17 +154,19 @@ export default function CartFull() {
               <div className="border-t border-black/[0.06]" />
 
               <div className="mt-4 mb-5 flex items-center justify-between">
-                <span className="text-sm font-semibold text-black/70">Subtotal</span>
+                <span className="text-sm font-semibold text-black/70">
+                  Subtotal
+                </span>
                 <div className="flex items-baseline gap-0.5">
                   <span className="text-xs font-medium text-black/40">$</span>
-                  <span className="text-2xl font-bold tabular-nums text-brand">
+                  <span className="text-brand text-2xl font-bold tabular-nums">
                     {totalPrice.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               <button
-                className="block w-full rounded-full bg-brand-solid py-3.5 text-center text-base font-semibold text-white transition-colors hover:bg-brand-solid-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-brand-solid hover:bg-brand-solid-hover block w-full rounded-full py-3.5 text-center text-base font-semibold text-white transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!hostedCheckoutEnabled}
                 onClick={handleCheckout}
               >
@@ -163,7 +174,15 @@ export default function CartFull() {
               </button>
 
               <p className="mt-3 flex items-center justify-center gap-1 text-xs text-black/30">
-                <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                <svg
+                  className="h-3 w-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
                 {hostedCheckoutEnabled
                   ? 'Secure checkout'
                   : 'Checkout disabled in this environment'}

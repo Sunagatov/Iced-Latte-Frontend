@@ -13,6 +13,7 @@ import {
 } from '@/features/favorites/state/favoritesStore.utils'
 import { getProductByIds } from '@/features/products/api'
 import { toastError } from '@/shared/utils/apiError'
+import { captureAccountScope } from '@/features/auth/accountScope'
 
 export async function toggleFavouriteInStore(
   set: FavStoreSet,
@@ -20,6 +21,7 @@ export async function toggleFavouriteInStore(
   productId: string,
   isAuthenticated: boolean,
 ): Promise<void> {
+  const account = captureAccountScope()
   const [normalizedProductId] = normalizeFavouriteIds([productId])
 
   if (!normalizedProductId) {
@@ -38,15 +40,32 @@ export async function toggleFavouriteInStore(
     favourites.find((product) => product.id === normalizedProductId) ?? null
 
   setPendingFavourite(set, normalizedProductId)
+  if (isAuthenticated) {
+    try {
+      if (wasAdded) await syncFavourites({ productIds: [normalizedProductId] })
+      else await removeFavourite(normalizedProductId)
+    } catch (error) {
+      if (account.isCurrent()) {
+        toastError(error)
+        set({ status: 'error' })
+      }
+    } finally {
+      clearPendingFavourite(set, normalizedProductId)
+    }
+
+    return
+  }
   set((state) =>
     wasAdded
       ? {
+        isSync: isAuthenticated || state.isSync,
         favouriteIds: normalizeFavouriteIds([
           ...state.favouriteIds,
           normalizedProductId,
         ]),
       }
       : {
+        isSync: isAuthenticated || state.isSync,
         favouriteIds: normalizeFavouriteIds(state.favouriteIds).filter(
           (id) => id !== normalizedProductId,
         ),
@@ -57,33 +76,6 @@ export async function toggleFavouriteInStore(
   )
 
   try {
-    if (isAuthenticated) {
-      if (wasAdded) {
-        const response = await syncFavourites({
-          productIds: [normalizedProductId],
-        })
-
-        const addedProduct = normalizeProducts(response.products).find(
-          (product) => product.id === normalizedProductId,
-        )
-
-        if (addedProduct && get().pendingIds.has(normalizedProductId)) {
-          set((state) => ({
-            favourites: [
-              ...state.favourites.filter(
-                (product) => product.id !== normalizedProductId,
-              ),
-              addedProduct,
-            ],
-          }))
-        }
-      } else {
-        await removeFavourite(normalizedProductId)
-      }
-
-      return
-    }
-
     if (wasAdded) {
       const products = await getProductByIds(
         normalizeFavouriteIds(get().favouriteIds),
@@ -104,6 +96,7 @@ export async function toggleFavouriteInStore(
       })
     }
   } catch (err) {
+    if (!account.isCurrent()) return
     toastError(err)
     set((state) =>
       wasAdded

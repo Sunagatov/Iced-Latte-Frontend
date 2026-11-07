@@ -6,8 +6,14 @@ import {
 } from '@/shared/auth/sessionStatus'
 
 export type { AuthStatus }
+export const accountIdentity = (user: UserData | null | undefined) =>
+  user?.id ?? user?.email ?? null
 
 export interface AuthStore {
+  profileGeneration: number
+  profileWrite: () => () => void
+  accountVersion: number
+  sessionVersion: number
   bootstrapError: string | null
   setBootstrapError: (message: string | null) => void
   status: AuthStatus
@@ -21,6 +27,15 @@ export interface AuthStore {
 }
 
 export const useAuthStore = create<AuthStore>()((set) => ({
+  profileGeneration: 0,
+  profileWrite: () => {
+    set((state) => ({ profileGeneration: state.profileGeneration + 1 }))
+
+    return () =>
+      set((state) => ({ profileGeneration: state.profileGeneration + 1 }))
+  },
+  accountVersion: 0,
+  sessionVersion: 0,
   bootstrapError: null,
   setBootstrapError: (message) => set({ bootstrapError: message }),
   status: 'loading',
@@ -28,34 +43,62 @@ export const useAuthStore = create<AuthStore>()((set) => ({
   isLoggedIn: false,
   setAuthenticated: (userData) => {
     setClientAuthStatus('authenticated')
-    set({
+    set((state) => ({
+      accountVersion:
+        state.accountVersion +
+        (state.status !== 'authenticated' ||
+        accountIdentity(state.userData) !== accountIdentity(userData)
+          ? 1
+          : 0),
+      sessionVersion: state.sessionVersion + 1,
       status: 'authenticated',
       isLoggedIn: true,
-      userData,
+      userData:
+        accountIdentity(state.userData) === accountIdentity(userData) &&
+        (state.userData?.profileRevision ?? 0) >
+          (userData?.profileRevision ?? 0)
+          ? state.userData
+          : userData,
       bootstrapError: null,
-    })
+    }))
   },
   setAnonymous: () => {
     setClientAuthStatus('anonymous')
-    set({
+    set((state) => ({
+      accountVersion: state.accountVersion + 1,
+      sessionVersion: state.sessionVersion + 1,
       status: 'anonymous',
       isLoggedIn: false,
       userData: null,
       bootstrapError: null,
-    })
+    }))
   },
   setLoading: () => {
     setClientAuthStatus('loading')
-    set({ status: 'loading', bootstrapError: null })
+    set((state) => ({
+      accountVersion: state.accountVersion + 1,
+      sessionVersion: state.sessionVersion + 1,
+      status: 'loading',
+      bootstrapError: null,
+    }))
   },
   reset: () => {
     setClientAuthStatus('anonymous')
-    set({
+    set((state) => ({
+      accountVersion: state.accountVersion + 1,
+      sessionVersion: state.sessionVersion + 1,
       status: 'anonymous',
       isLoggedIn: false,
       userData: null,
       bootstrapError: null,
-    })
+    }))
   },
-  setUserData: (userData) => set({ userData }),
+  setUserData: (userData) =>
+    set((state) =>
+      state.status === 'authenticated' &&
+      accountIdentity(userData) === accountIdentity(state.userData) &&
+      (userData?.profileRevision ?? 0) >= (state.userData?.profileRevision ?? 0)
+        ? { userData, profileGeneration: state.profileGeneration + 1 }
+        : {},
+    ),
 }))

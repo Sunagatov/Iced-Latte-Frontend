@@ -1,6 +1,7 @@
 'use client'
 
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import type { Resolver } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
@@ -15,7 +16,10 @@ import type { UserData } from '@/features/user/types'
 import { validationSchema } from '@/features/user/validation'
 import { useFormErrorHandler } from '@/shared/utils/apiError'
 import Button from '@/shared/ui/Button'
+import { captureAccountScope } from '@/features/auth/accountScope'
 import FormInput from '@/shared/ui/FormInput'
+import { isSyncRejected } from '@/features/session/syncCommands'
+import { keepProfileEdits } from '@/features/user/profileConflict'
 
 interface FormProfileProps {
   initialUserData: UserData | null
@@ -64,9 +68,22 @@ const FormProfile = ({
   updateUserData,
   initialUserData,
 }: Readonly<FormProfileProps>) => {
+  const [base, setBase] = useState(initialUserData)
+  const [conflict, setConflict] = useState<{
+    latest: UserData
+    draft: UserData
+  } | null>(null)
+  const conflictRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (!conflict) return
+    conflictRef.current?.focus({ preventScroll: true })
+    conflictRef.current?.scrollIntoView({ block: 'center' })
+  }, [conflict])
   const {
     register,
     handleSubmit,
+    reset,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -74,23 +91,82 @@ const FormProfile = ({
     defaultValues: initialUserData ?? undefined,
     mode: 'onChange',
   })
-  const { errorMessage, handleError } =
+  const { errorMessage, handleError, clearError } =
     useFormErrorHandler<FormValues>(setError)
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    try {
-      const saved = await editUserProfile(data as UpdateUserProfileInput)
+    clearError()
+    const account = captureAccountScope()
 
+    try {
+      const saved = await editUserProfile(
+        data as UpdateUserProfileInput,
+        base?.profileRevision,
+      )
+
+      if (!account.isCurrent()) return
       updateUserData(saved)
       onSuccessEdit()
     } catch (error) {
-      handleError(error)
+      if (!account.isCurrent()) return
+      if (isSyncRejected(error) && error.result.code === 'REVISION_CONFLICT') {
+        setConflict({
+          latest: error.result.snapshot.data as unknown as UserData,
+          draft: data as UserData,
+        })
+      } else handleError(error)
     }
   }
 
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
+        {conflict && (
+          <section
+            ref={conflictRef}
+            tabIndex={-1}
+            role="alert"
+            className="mb-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm"
+          >
+            <p className="font-semibold">
+              Your profile changed on another device.
+            </p>
+            <p className="mt-1">
+              Your unsaved edits are kept here. Load the latest profile, or keep
+              your edited fields and review them before saving.
+            </p>
+            <p className="mt-2">
+              Latest name: {conflict.latest.firstName}{' '}
+              {conflict.latest.lastName}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <button
+                type="button"
+                className="underline"
+                onClick={() => {
+                  reset(conflict.latest)
+                  setBase(conflict.latest)
+                  setConflict(null)
+                }}
+              >
+                Load latest profile
+              </button>
+              <button
+                type="button"
+                className="underline"
+                onClick={() => {
+                  reset(
+                    keepProfileEdits(base!, conflict.draft, conflict.latest),
+                  )
+                  setBase(conflict.latest)
+                  setConflict(null)
+                }}
+              >
+                Keep my edits and review
+              </button>
+            </div>
+          </section>
+        )}
         <h2 className="text-primary text-2xl font-medium">Personal details</h2>
         <div className="flex flex-col md:flex-row md:gap-[16px]">
           {nameFields.map((field) => (
@@ -172,7 +248,7 @@ const FormProfile = ({
           <Button
             id="save-btn"
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || Boolean(conflict)}
             className={`${
               Object.keys(errors).length > 0 || isSubmitting
                 ? 'bg-brand-solid cursor-not-allowed opacity-20'

@@ -10,6 +10,7 @@ import {
 import { useAuthStore, AuthStatus } from '@/features/auth/public'
 import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
 import { useEffect, useState } from 'react'
+import GuestDraftReview from '@/features/session/GuestDraftReview'
 
 interface PersistApi {
   persist: {
@@ -24,16 +25,17 @@ export default function FavouritesPage() {
     (s: FavStoreState): FavoriteProduct[] => s.favourites,
   )
   const status: FavStatus = useFavouritesStore((s) => s.status)
-  const hydrate: () => Promise<void> = useFavouritesStore(
-    (s) => s.hydrate,
-  )
+  const hydrate: () => Promise<void> = useFavouritesStore((s) => s.hydrate)
   const authStatus: AuthStatus = useAuthStore((s) => s.status)
+  const draft = useFavouritesStore((state) => state.guestConflict)
+  const editDraft = useFavouritesStore((state) => state.editGuestDraft)
+  const retryDraft = useFavouritesStore((state) => state.retryGuestDraft)
   const hasPersistHydrated = () => favPersist?.hasHydrated?.() ?? true
   const [hydrated, setHydrated] = useState(hasPersistHydrated)
 
   // Only fav store is persisted; auth state resolves during app session bootstrap.
   useEffect(() => {
-    if (hasPersistHydrated()) {
+    if (favPersist?.hasHydrated?.() ?? true) {
       setHydrated(true)
 
       return
@@ -63,7 +65,7 @@ export default function FavouritesPage() {
       <div className="flex flex-col items-center gap-3 pt-20 text-center">
         <p className="text-sm text-black/40">Couldn&apos;t load favourites</p>
         <button
-          className="rounded-full bg-brand-solid px-4 py-2 text-sm font-semibold text-white hover:bg-brand-solid-hover"
+          className="bg-brand-solid hover:bg-brand-solid-hover rounded-full px-4 py-2 text-sm font-semibold text-white"
           onClick={() => void hydrate()}
         >
           Retry
@@ -72,5 +74,29 @@ export default function FavouritesPage() {
     )
   }
 
-  return <>{favourites.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}</>
+  return (
+    <>
+      {draft && (
+        <GuestDraftReview
+          message={draft.message}
+          busy={false}
+          entries={draft.productIds.map((id) => ({
+            id,
+            label:
+              draft.names?.[id] ??
+              favourites.find((product) => product.id === id)?.name ??
+              `Unavailable product (${id.slice(0, 8)})`,
+          }))}
+          onRemove={(id) =>
+            editDraft(draft.productIds.filter((productId) => productId !== id))
+          }
+          onDiscard={() => editDraft([])}
+          onRetry={() => {
+            void retryDraft().catch(() => {})
+          }}
+        />
+      )}
+      {favourites.length > 0 ? <FavouritesFull /> : <FavouritesEmpty />}
+    </>
+  )
 }

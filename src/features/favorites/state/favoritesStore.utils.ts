@@ -1,8 +1,20 @@
 import type { FavoriteProduct } from '@/features/favorites/favoritesTypes'
+import type { AuthStatus } from '@/shared/auth/sessionStatus'
 
 export type FavStatus = 'idle' | 'syncing' | 'ready' | 'error'
 
 export type FavStoreSlice = {
+  guestConflict: {
+    productIds: string[]
+    message: string
+    accountEmail?: string | null
+    names?: Record<string, string>
+  } | null
+  pendingSync: {
+    productIds: string[]
+    accountEmail: string | null
+    key?: string
+  } | null
   favouriteIds: string[]
   favourites: FavoriteProduct[]
   isSync: boolean
@@ -15,10 +27,11 @@ export type FavStoreSet = {
   (fn: (state: FavStoreSlice) => Partial<FavStoreSlice>): void
 }
 
-export type FavStoreGet = () => FavStoreSlice
+export type FavStoreGet = () => FavStoreSlice & {
+  hydrate: (signal?: AbortSignal, authStatus?: AuthStatus) => Promise<void>
+}
 
-const uniqueIds = (ids: readonly string[]): string[] =>
-  Array.from(new Set(ids))
+const uniqueIds = (ids: readonly string[]): string[] => Array.from(new Set(ids))
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -31,11 +44,7 @@ export const normalizeFavouriteIds = (ids: unknown): string[] => {
     return []
   }
 
-  return uniqueIds(
-    ids
-      .filter(isProductId)
-      .map((id) => id.trim()),
-  )
+  return uniqueIds(ids.filter(isProductId).map((id) => id.trim()))
 }
 
 const isProduct = (value: unknown): value is FavoriteProduct => {
@@ -80,10 +89,7 @@ export function mapProductsToFavourites(products: unknown): {
   }
 }
 
-export function setPendingFavourite(
-  set: FavStoreSet,
-  productId: string,
-): void {
+export function setPendingFavourite(set: FavStoreSet, productId: string): void {
   set((state) => {
     const pendingIds = new Set(state.pendingIds)
 

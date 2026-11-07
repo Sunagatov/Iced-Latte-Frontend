@@ -11,6 +11,10 @@ import {
 } from '@/features/user/api'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import { useAuthStore } from '@/features/auth/public'
+import {
+  captureAccountScope,
+  useAccountScopeKey,
+} from '@/features/auth/accountScope'
 import Loader from '@/shared/ui/Loader'
 import { RiCameraLine } from 'react-icons/ri'
 import TurnstileWidget from '@/shared/ui/TurnstileWidget'
@@ -25,6 +29,8 @@ type ImageUploadProps = {
 }
 
 const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
+  const accountKey = useAccountScopeKey()
+  const previewAccountRef = useRef(accountKey)
   const [loading, setLoading] = useState(false)
   const [removing, setRemoving] = useState(false)
   const [pendingFile, setPendingFile] = useState<File | null>(null)
@@ -55,6 +61,30 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
     }
   }, [onPreviewChange])
 
+  useEffect(() => {
+    if (previewAccountRef.current === accountKey) return
+    previewAccountRef.current = accountKey
+    // Upload work and local previews belong to one account, even if this
+    // component stays mounted while the cookie-backed account changes.
+    uploadAbortControllerRef.current?.abort()
+    uploadAbortControllerRef.current = null
+    if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
+    prevPreviewRef.current = null
+    setPreview(null)
+    setPendingFile(null)
+    setInputKey((current) => current + 1)
+    setAvatarRevision((current) => current + 1)
+    setLoading(false)
+    setRemoving(false)
+    setUploadStage(null)
+    setUploadProgress(null)
+    setUploadNotice(null)
+    setTurnstileToken('')
+    setTurnstileError('')
+    turnstileRef.current?.reset()
+    onPreviewChange?.(false)
+  }, [accountKey, onPreviewChange])
+
   const clearPreview = () => {
     if (prevPreviewRef.current) {
       URL.revokeObjectURL(prevPreviewRef.current)
@@ -75,6 +105,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
 
   const performUpload = async (file: File, refreshPreview: boolean) => {
     if (loading || removing) return
+    const account = captureAccountScope()
 
     if (avatarTurnstileEnabled && !turnstileToken) {
       setTurnstileError(
@@ -109,9 +140,10 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
           signal: controller.signal,
         },
       )
+      if (!account.isCurrent() || !isMountedRef.current) return
       const updated = await getUserData()
 
-      if (!isMountedRef.current) {
+      if (!isMountedRef.current || !account.isCurrent()) {
         return
       }
 
@@ -125,7 +157,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } catch (error) {
-      if (!isMountedRef.current) {
+      if (!isMountedRef.current || !account.isCurrent()) {
         return
       }
 
@@ -144,7 +176,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
         turnstileRef.current?.reset()
       }
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && account.isCurrent()) {
         uploadAbortControllerRef.current = null
         setLoading(false)
       }
@@ -175,6 +207,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
     if (loading || removing) {
       return
     }
+    const account = captureAccountScope()
 
     try {
       setRemoving(true)
@@ -183,7 +216,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
       setTurnstileError('')
       const updated = await removeUserAvatar()
 
-      if (!isMountedRef.current) {
+      if (!isMountedRef.current || !account.isCurrent()) {
         return
       }
 
@@ -196,13 +229,13 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
       setTurnstileToken('')
       turnstileRef.current?.reset()
     } catch (error) {
-      if (!isMountedRef.current) {
+      if (!isMountedRef.current || !account.isCurrent()) {
         return
       }
 
       handleError(error)
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && account.isCurrent()) {
         setRemoving(false)
       }
     }

@@ -75,6 +75,9 @@ failure: POST /auth/refresh, then retry user lookup or setAnonymous()
 
 This is the single source of truth for client auth status.
 
+Account-owned requests and guest-to-account merging follow the shared
+[session synchronization rules](architecture/session-sync.md).
+
 Main files:
 
 | File | Responsibility |

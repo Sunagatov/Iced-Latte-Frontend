@@ -65,6 +65,9 @@ function errorTypeSlug(type: string): string {
 }
 
 export function getUserMessage(error: unknown): string {
+  if (error instanceof Error && ['SyncRejectedError', 'SyncUnknownError'].includes(error.name)) {
+    return error.message
+  }
   if (!axios.isAxiosError(error) || !error.response) {
     return 'Network error. Please check your connection.'
   }

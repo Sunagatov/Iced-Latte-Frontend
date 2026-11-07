@@ -1,24 +1,38 @@
-import axios from 'axios'
+import axios, { CanceledError } from 'axios'
 import type { AuthStatus } from '@/features/auth/public'
 import { useAuthStore } from '@/features/auth/public'
 import { useCartStore } from '@/features/cart/public'
 import { useFavouritesStore } from '@/features/favorites/public'
+import { useAddressStore } from '@/features/addresses/store'
 import { getUserData } from '@/features/user/public'
 import type { UserData } from '@/features/user/public'
 import { refreshToken } from '@/shared/api/generated/security'
 import { clearAuthCookies } from '@/shared/auth/cookies'
 
 export async function bootstrapClientSession(): Promise<void> {
+  const version = useAuthStore.getState().sessionVersion
+  const profile = useAuthStore.getState().profileGeneration
+
   try {
     const userData = await getUserData({ skipAuthRetry: true })
 
-    useAuthStore.getState().setAuthenticated(userData)
+    if (version !== useAuthStore.getState().sessionVersion) return
+    const current = useAuthStore.getState()
+
+    current.setAuthenticated(
+      profile !== current.profileGeneration &&
+        current.userData?.email === userData.email
+        ? current.userData
+        : userData,
+    )
 
     return
   } catch {
+    if (version !== useAuthStore.getState().sessionVersion) return
     try {
       await refreshAuthenticatedSession({ skipAuthRetry: true })
     } catch (error) {
+      if (version !== useAuthStore.getState().sessionVersion) return
       if (isAuthFailure(error)) {
         useAuthStore.getState().setAnonymous()
       } else {
@@ -35,13 +49,27 @@ export async function bootstrapClientSession(): Promise<void> {
 export async function refreshAuthenticatedSession(options?: {
   skipAuthRetry?: boolean
 }): Promise<UserData> {
+  const version = useAuthStore.getState().sessionVersion
+  const profile = useAuthStore.getState().profileGeneration
+
   await refreshToken(options ? (options as object) : undefined)
+  if (version !== useAuthStore.getState().sessionVersion)
+    throw new CanceledError('Session changed during refresh')
 
   const userData = await getUserData(options)
 
-  useAuthStore.getState().setAuthenticated(userData)
+  if (version !== useAuthStore.getState().sessionVersion)
+    throw new CanceledError('Session changed during refresh')
+  const current = useAuthStore.getState()
+  const resolved =
+    profile !== current.profileGeneration &&
+    current.userData?.email === userData.email
+      ? current.userData
+      : userData
 
-  return userData
+  current.setAuthenticated(resolved)
+
+  return resolved
 }
 
 function isAuthFailure(error: unknown): boolean {
@@ -52,10 +80,16 @@ function isAuthFailure(error: unknown): boolean {
 }
 
 export async function clearClientSession(): Promise<void> {
-  await clearAuthCookies()
+  // Invalidate pending reads immediately, including while cookie cleanup waits.
   useAuthStore.getState().reset()
-  useFavouritesStore.getState().resetFav()
-  useCartStore.getState().resetCart()
+  resetSessionStores()
+  await clearAuthCookies()
+}
+
+export function resetSessionStores(preserveGuest = false): void {
+  useCartStore.getState().resetCart(preserveGuest)
+  useFavouritesStore.getState().resetFav(preserveGuest)
+  useAddressStore.getState().reset()
 }
 
 export async function syncSessionStores(
@@ -67,6 +101,7 @@ export async function syncSessionStores(
   }
 
   if (status === 'anonymous') {
+    useAddressStore.getState().reset()
     if (useCartStore.getState().isSync) {
       useCartStore.getState().resetCart()
     }
@@ -85,10 +120,14 @@ export async function syncSessionStores(
     return
   }
 
-  const { isSync: cartIsSync, itemsIds } = useCartStore.getState()
-  const { favouriteIds, isSync: favIsSync } = useFavouritesStore.getState()
+  const { isSync: cartIsSync, itemsIds, pendingMerge } = useCartStore.getState()
+  const {
+    favouriteIds,
+    isSync: favIsSync,
+    pendingSync,
+  } = useFavouritesStore.getState()
 
-  if (!cartIsSync && itemsIds.length > 0) {
+  if (pendingMerge || (!cartIsSync && itemsIds.length > 0)) {
     void useCartStore
       .getState()
       .syncSession(signal, status)
@@ -100,7 +139,7 @@ export async function syncSessionStores(
       .catch(() => {})
   }
 
-  if (!favIsSync && favouriteIds.length > 0) {
+  if (pendingSync || (!favIsSync && favouriteIds.length > 0)) {
     void useFavouritesStore
       .getState()
       .syncSession(signal, status)

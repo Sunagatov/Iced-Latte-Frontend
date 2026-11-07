@@ -1,6 +1,7 @@
 import { render, screen, act } from '@testing-library/react'
 import CartPage from '@/features/cart/routes/CartPage'
 import { useCartStore } from '@/features/cart/public'
+import { useAuthStore } from '@/features/auth/public'
 
 jest.mock('@/features/cart/components/CartFull', () => ({
   __esModule: true,
@@ -16,6 +17,7 @@ jest.mock('@/shared/ui/Loader', () => ({
 }))
 
 beforeEach(() => {
+  useAuthStore.getState().setAnonymous()
   useCartStore.setState({
     itemsIds: [],
     tempItems: [],

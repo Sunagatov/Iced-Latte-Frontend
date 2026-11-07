@@ -123,6 +123,13 @@ export interface SuccessResponse {
   message: string;
 }
 
+export type AddNewItemToShoppingCartHeaders = {
+/**
+ * Stable UUID for retrying a guest-cart merge without adding its quantities twice. Reuse with a different payload is rejected; a retry returns the current cart.
+ */
+'Idempotency-Key'?: string;
+};
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -131,10 +138,11 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  */
 export const addNewItemToShoppingCart = (
     addNewItemsToShoppingCartRequest: BodyType<AddNewItemsToShoppingCartRequest>,
+    headers?: AddNewItemToShoppingCartHeaders,
  options?: SecondParameter<typeof orvalMutator<ShoppingCartDto>>,) => {
       return orvalMutator<ShoppingCartDto>(
       {url: `/api/v1/cart/items`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
+      headers: {'Content-Type': 'application/json', ...headers},
       data: addNewItemsToShoppingCartRequest
     },
       options);

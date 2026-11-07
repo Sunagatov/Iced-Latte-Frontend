@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { useAuthStore } from '@/features/auth/store'
 import AddToCartButton from '@/features/products/components/AddToCart'
 import { useCartStore } from '@/features/cart/public'
 import type { IProduct } from '@/features/products/types'
@@ -19,6 +20,7 @@ const product: IProduct = {
 
 describe('AddToCartButton', () => {
   beforeEach(() => {
+    useAuthStore.getState().setAnonymous()
     useCartStore.setState({
       count: 0,
       isSync: false,

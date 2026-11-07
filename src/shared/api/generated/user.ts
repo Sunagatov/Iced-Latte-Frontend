@@ -151,6 +151,11 @@ export interface ChangeUserPasswordRequest {
  * A user profile in the Iced-Latte system.
  */
 export interface UserDto {
+  /**
+     * Revision of the editable profile fields.
+     * @minimum 0
+     */
+  profileRevision?: number;
   /** The unique identifier for the user. */
   id?: string;
   /**

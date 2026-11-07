@@ -1,4 +1,6 @@
 import type { AuthStatus } from '@/features/auth/public'
+import { useAuthStore } from '@/features/auth/store'
+import { isSyncRejected } from '@/features/session/syncCommands'
 import { fetchCart } from '@/features/cart/cartApi'
 import {
   clearCartStore as clearCartStoreState,
@@ -30,6 +32,7 @@ export async function hydrateCartStore(
   authStatus: AuthStatus,
   signal?: AbortSignal,
 ): Promise<void> {
+  if (signal?.aborted || authStatus === 'loading') return
   if (authStatus === 'authenticated') {
     await loadAuthenticatedCart(set, get, signal)
 
@@ -45,6 +48,7 @@ export async function syncCartStoreWithSession(
   authStatus: AuthStatus,
   signal?: AbortSignal,
 ): Promise<void> {
+  if (signal?.aborted || authStatus === 'loading') return
   if (authStatus === 'anonymous') {
     if (get().isSync) {
       set({
@@ -68,29 +72,76 @@ export async function syncCartStoreWithSession(
     return
   }
 
-  if (!get().isSync && get().itemsIds.length > 0) {
-    const guestItems = normalizeCartItems(get().itemsIds)
+  if (get().pendingMerge || (!get().isSync && get().itemsIds.length > 0)) {
+    const pending = get().pendingMerge
+    const accountEmail = useAuthStore.getState().userData?.email ?? null
+
+    if (pending && pending.accountEmail !== accountEmail) {
+      set({ pendingMerge: null, isSync: true })
+      await get().hydrate(signal, authStatus)
+
+      return
+    }
+    const names = {
+      ...get().guestConflict?.names,
+      ...Object.fromEntries(
+        get().tempItems.map((item) => [
+          item.productInfo.id,
+          item.productInfo.name,
+        ]),
+      ),
+    }
+    const guestItems = normalizeCartItems(pending?.items ?? get().itemsIds)
 
     if (guestItems.length > 0) {
-      await mergeGuestCartIntoBackend(set, guestItems)
+      const merge = pending ?? {
+        key: crypto.randomUUID(),
+        items: guestItems,
+        accountEmail,
+      }
+
+      set({ pendingMerge: merge })
+      try {
+        await mergeGuestCartIntoBackend(set, guestItems, signal, merge.key)
+      } catch (error) {
+        if (!isSyncRejected(error)) throw error
+        set({
+          pendingMerge: null,
+          guestConflict: {
+            items: guestItems,
+            message: error.message,
+            names,
+            accountEmail,
+          },
+          isSync: true,
+        })
+        await get().hydrate(signal, authStatus)
+      }
 
       return
     }
 
-    await loadAuthenticatedCart(set, get, signal)
+    set({ pendingMerge: null, isSync: true, itemsIds: [] })
+    await get().hydrate(signal, authStatus)
 
     return
   }
 
-  await loadAuthenticatedCart(set, get, signal)
+  await get().hydrate(signal, authStatus)
 }
 
 export async function clearCartStoreForSession(
   set: StoreSet,
   get: StoreGet,
   authStatus: AuthStatus,
+  productIds?: Set<string>,
 ): Promise<void> {
-  await clearCartStoreState(set, get, authStatus === 'authenticated')
+  await clearCartStoreState(
+    set,
+    get,
+    authStatus === 'authenticated',
+    productIds,
+  )
 }
 
 async function loadAuthenticatedCart(
@@ -101,23 +152,9 @@ async function loadAuthenticatedCart(
   set({ status: 'loading', lastError: null })
 
   try {
-    const cart = await fetchCart(signal)
-
+    await fetchCart(signal)
     if (signal?.aborted) return
-
-    if (cart.items.length === 0 && get().itemsIds.length > 0 && !get().isSync) {
-      set({ lastError: null, status: 'ready' })
-
-      return
-    }
-
-    setCartItems(set, cart.items, {
-      count: cart.productsQuantity,
-      isSync: cart.items.length > 0,
-      lastError: null,
-      status: 'ready',
-      totalPrice: cart.itemsTotalPrice,
-    })
+    set({ isSync: true, lastError: null, status: 'ready' })
   } catch (err) {
     if (isAbortError(err)) {
       return

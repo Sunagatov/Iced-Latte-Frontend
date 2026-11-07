@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { useAuthStore } from '@/features/auth/store'
 import { type OrderFilter, useOrders } from '@/features/orders/useOrders'
 import * as ordersApi from '@/features/orders/ordersApi'
 import type { OrderPageDto } from '@/features/orders/orderTypes'
@@ -17,6 +18,9 @@ const emptyPage: OrderPageDto = {
 
 describe('useOrders', () => {
   beforeEach(() => {
+    useAuthStore
+      .getState()
+      .setAuthenticated({ email: 'orders@example.invalid' } as never)
     jest.clearAllMocks()
   })
 

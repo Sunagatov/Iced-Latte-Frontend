@@ -16,6 +16,7 @@ import {
   useFavouritesStore,
 } from '@/features/favorites/state/favoritesStore'
 import { getClientAuthStatus } from '@/shared/auth/sessionStatus'
+import { useAuthStore } from '@/features/auth/store'
 
 type ProductAnalyticsInfo = {
   brandName?: string | null
@@ -79,12 +80,28 @@ export function useFavoriteProductActions(
     (state: CartSliceStore): CartSliceStore['pendingProductIds'] =>
       state.pendingProductIds,
   )
+  const cartInitializing = useCartStore(
+    (state) =>
+      (!state.isSync || Boolean(state.pendingMerge)) &&
+      state.status !== 'error',
+  )
+  const favouritesInitializing = useFavouritesStore(
+    (state) =>
+      (!state.isSync || Boolean(state.pendingSync)) && state.status !== 'error',
+  )
+  const sessionStatus = useAuthStore((state) => state.status)
 
   const quantity =
     items.find((item) => item.productId === productId)?.productQuantity ?? 0
   const isFavourited = favouriteIds.includes(productId)
-  const isPending = pendingIds.has(productId)
-  const isCartPending = pendingProductIds.has(productId)
+  const isPending =
+    pendingIds.has(productId) ||
+    sessionStatus === 'loading' ||
+    (sessionStatus === 'authenticated' && favouritesInitializing)
+  const isCartPending =
+    pendingProductIds.has(productId) ||
+    sessionStatus === 'loading' ||
+    (sessionStatus === 'authenticated' && cartInitializing)
   const authStatus = getClientAuthStatus()
   const pendingCartAnalyticsRef = useRef<PendingCartAnalyticsAction | null>(
     null,

@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
+import { useAuthStore } from '@/features/auth/store'
 import { MAX_CART_ITEM_QUANTITY, useCartStore } from '@/features/cart/public'
 import { useFavouritesStore } from '@/features/favorites/public'
 import { trackGoogleAnalyticsEvent } from '@/shared/analytics/googleAnalytics'
@@ -14,6 +15,7 @@ const mockedTrackGoogleAnalyticsEvent = jest.mocked(trackGoogleAnalyticsEvent)
 
 describe('useFavoriteProductActions', () => {
   beforeEach(() => {
+    useAuthStore.getState().setAnonymous()
     jest.clearAllMocks()
     useCartStore.setState({
       count: 0,
@@ -59,7 +61,9 @@ describe('useFavoriteProductActions', () => {
   it('does not track add to cart when the item is already at the quantity limit', () => {
     useCartStore.setState({
       count: MAX_CART_ITEM_QUANTITY,
-      itemsIds: [{ productId: PRODUCT_ID, productQuantity: MAX_CART_ITEM_QUANTITY }],
+      itemsIds: [
+        { productId: PRODUCT_ID, productQuantity: MAX_CART_ITEM_QUANTITY },
+      ],
       tempItems: [
         {
           id: PRODUCT_ID,

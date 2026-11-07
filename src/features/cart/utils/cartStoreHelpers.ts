@@ -1,7 +1,5 @@
-import type {
-  ICartItem,
-  ICartPushItem,
-} from '@/features/cart/cartTypes'
+import type { ICartItem, ICartPushItem } from '@/features/cart/cartTypes'
+import type { AuthStatus } from '@/shared/auth/sessionStatus'
 import { getUserMessage } from '@/shared/utils/errorMessages'
 import {
   createItemsIdsFromCart,
@@ -11,6 +9,17 @@ import {
 type CartStatus = 'idle' | 'loading' | 'syncing' | 'ready' | 'error'
 
 export type CartStoreState = {
+  guestConflict: {
+    items: ICartPushItem[]
+    message: string
+    accountEmail?: string | null
+    names?: Record<string, string>
+  } | null
+  pendingMerge: {
+    key: string
+    items: ICartPushItem[]
+    accountEmail: string | null
+  } | null
   count: number
   isSync: boolean
   itemsIds: ICartPushItem[]
@@ -22,7 +31,7 @@ export type CartStoreState = {
 }
 
 type CartStoreMethods = {
-  hydrate: (signal?: AbortSignal) => Promise<void>
+  hydrate: (signal?: AbortSignal, authStatus?: AuthStatus) => Promise<void>
 }
 
 export type StoreSet = {
@@ -32,10 +41,9 @@ export type StoreSet = {
 
 export type StoreGet = () => CartStoreState & CartStoreMethods
 
-export function getCartSnapshot(items: ICartItem[]): Pick<
-  CartStoreState,
-  'count' | 'itemsIds' | 'tempItems' | 'totalPrice'
-> {
+export function getCartSnapshot(
+  items: ICartItem[],
+): Pick<CartStoreState, 'count' | 'itemsIds' | 'tempItems' | 'totalPrice'> {
   const normalizedItems = normalizeCartItemList(items)
 
   return {
@@ -68,7 +76,10 @@ export function setCartError(
   const message = getUserMessage(err)
 
   set({
-    lastError: message === 'Something went wrong. Please try again.' ? fallbackMessage : message,
+    lastError:
+      message === 'Something went wrong. Please try again.'
+        ? fallbackMessage
+        : message,
     status: 'error',
   })
 }

@@ -67,7 +67,7 @@ export function useFormErrorHandler<T extends FieldValues>(setError: UseFormSetE
     setErrorMessage(getUserMessage(error))
   }, [setError])
 
-  return { errorMessage, handleError }
+  return { errorMessage, handleError, clearError: () => setErrorMessage(null) }
 }
 
 export function toastError(error: unknown): void {

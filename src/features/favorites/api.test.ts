@@ -1,29 +1,43 @@
-import { fetchFavourites } from '@/features/favorites/favoritesApi'
-import { api } from '@/shared/api/client'
+import {
+  fetchFavourites,
+  syncFavourites,
+  removeFavourite,
+} from './favoritesApi'
+import { executeCommand, readConfirmed } from '@/features/session/syncCommands'
 
-jest.mock('@/shared/api/client', () => ({
-  api: jest.fn(),
+jest.mock('@/features/session/syncCommands', () => ({
+  executeCommand: jest.fn(),
+  readConfirmed: jest.fn(),
 }))
 
-const mockedApi = jest.mocked(api)
+test('loads confirmed favourites through the command gateway', async () => {
+  jest.mocked(readConfirmed).mockResolvedValue({ products: [] })
+  expect(await fetchFavourites()).toEqual([])
+  expect(readConfirmed).toHaveBeenCalledWith('favourites')
+})
 
-describe('favorites api', () => {
-  beforeEach(() => jest.clearAllMocks())
-
-  it('fetchFavourites disables cache for authenticated server data', async () => {
-    const signal = new AbortController().signal
-
-    mockedApi.mockResolvedValue({
-      data: { products: [] },
-    })
-
-    await fetchFavourites(signal)
-
-    expect(mockedApi).toHaveBeenCalledWith(expect.objectContaining({
-      cache: false,
-      method: 'GET',
-      signal,
-      url: '/favorites',
-    }))
+test('saves explicit membership and keeps the guest merge operation ID', async () => {
+  await syncFavourites({ productIds: ['product'] })
+  expect(executeCommand).toHaveBeenLastCalledWith(
+    'favourites',
+    'save',
+    { productId: 'product', saved: true },
+    { operationId: undefined },
+  )
+  await removeFavourite('product')
+  expect(executeCommand).toHaveBeenLastCalledWith('favourites', 'save', {
+    productId: 'product',
+    saved: false,
   })
+  await syncFavourites(
+    { productIds: ['product', 'another'] },
+    undefined,
+    'merge-id',
+  )
+  expect(executeCommand).toHaveBeenLastCalledWith(
+    'favourites',
+    'merge',
+    { productIds: ['product', 'another'] },
+    { operationId: 'merge-id' },
+  )
 })

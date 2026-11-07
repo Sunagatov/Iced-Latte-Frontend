@@ -1,4 +1,6 @@
 export interface UserData {
+  id?: string
+  profileRevision?: number
   firstName: string
   lastName: string
   birthDate?: string | null

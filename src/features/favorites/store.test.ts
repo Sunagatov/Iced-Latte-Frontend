@@ -1,18 +1,16 @@
 import { useFavouritesStore } from '@/features/favorites/public'
 import type { FavStoreState } from '@/features/favorites/public'
 import * as favsApi from '@/features/favorites/favoritesApi'
+import { useAuthStore } from '@/features/auth/store'
 import * as productsApi from '@/features/products/api'
 import type { IProduct } from '@/features/products/types'
-import {
-  setClientAuthStatus,
-  type AuthStatus,
-} from '@/shared/auth/sessionStatus'
+import { type AuthStatus } from '@/shared/auth/sessionStatus'
 
-jest.mock('@/features/favorites/favoritesApi', () => ({
-  syncFavourites: jest.fn(),
-  removeFavourite: jest.fn(),
-  fetchFavourites: jest.fn(),
-}))
+jest.mock('@/features/favorites/favoritesApi', () =>
+  jest
+    .requireActual('@/features/session/syncApi.testUtils')
+    .favouritesApiMock(),
+)
 
 jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
@@ -67,7 +65,12 @@ function makeProduct(id: string): IProduct {
 }
 
 function setAuthStatus(status: AuthStatus): void {
-  setClientAuthStatus(status)
+  if (status === 'authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'favs@example.invalid' } as never)
+  else if (status === 'loading') useAuthStore.getState().setLoading()
+  else useAuthStore.getState().reset()
 }
 
 beforeEach(() => {
@@ -98,7 +101,7 @@ it('does not restore a removed favourite when an earlier add finishes', async ()
 
   await getFavState().toggleFavourite(PRODUCT_ID_ONE)
   finish({
-    products: [makeProduct(PRODUCT_ID_ONE), makeProduct(PRODUCT_ID_TWO)],
+    products: [makeProduct(PRODUCT_ID_TWO)],
   })
   await adding
   expect(getFavState().favouriteIds).toEqual([PRODUCT_ID_TWO])
@@ -251,38 +254,32 @@ describe('favourites store — syncSession', () => {
 
     await getFavState().syncSession()
 
-    expect(mockedSyncFavourites).toHaveBeenCalledWith({
-      productIds: [PRODUCT_ID_ONE, PRODUCT_ID_TWO],
-    })
+    expect(mockedSyncFavourites).toHaveBeenCalledWith(
+      {
+        productIds: [PRODUCT_ID_ONE, PRODUCT_ID_TWO],
+      },
+      undefined,
+      expect.any(String),
+    )
     expect(getFavState().favouriteIds).toEqual([PRODUCT_ID_ONE, PRODUCT_ID_TWO])
     expect(getFavState().isSync).toBe(true)
   })
 
-  it('syncs guest favourites in backend-sized batches', async () => {
+  it('submits one immutable guest merge instead of partially applying batches', async () => {
     setAuthStatus('authenticated')
-    const favouriteIds = Array.from(
-      { length: 101 },
-      (_, index) =>
-        `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`,
-    )
+    const favouriteIds = [PRODUCT_ID_ONE, PRODUCT_ID_TWO]
 
     setFavState({ favouriteIds, isSync: false })
-    mockedSyncFavourites
-      .mockResolvedValueOnce({
-        products: favouriteIds.slice(0, 100).map(makeProduct),
-      })
-      .mockResolvedValueOnce({
-        products: favouriteIds.slice(100).map(makeProduct),
-      })
-
+    mockedSyncFavourites.mockResolvedValueOnce({
+      products: favouriteIds.map(makeProduct),
+    })
     await getFavState().syncSession()
-
-    expect(mockedSyncFavourites).toHaveBeenNthCalledWith(1, {
-      productIds: favouriteIds.slice(0, 100),
-    })
-    expect(mockedSyncFavourites).toHaveBeenNthCalledWith(2, {
-      productIds: favouriteIds.slice(100),
-    })
+    expect(mockedSyncFavourites).toHaveBeenCalledTimes(1)
+    expect(mockedSyncFavourites).toHaveBeenCalledWith(
+      { productIds: favouriteIds },
+      undefined,
+      expect.any(String),
+    )
     expect(getFavState().favouriteIds).toEqual(favouriteIds)
     expect(getFavState().isSync).toBe(true)
   })

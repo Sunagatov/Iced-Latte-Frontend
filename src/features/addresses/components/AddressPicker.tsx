@@ -20,12 +20,14 @@ export default function AddressPicker({
   onSelect,
   selected,
 }: Props) {
-  const { addresses, fetch, loading } = useAddressStore()
+  const { addresses, fetch, loading, error } = useAddressStore()
+  const account = useAuthStore((state) => state.userData?.email ?? null)
   const [initialFetchComplete, setInitialFetchComplete] = useState(false)
   const authStatus = useAuthStore(
     (state: AuthStore): AuthStore['status'] => state.status,
   )
-  const defaultAddress = addresses.find((address) => address.isDefault) ?? addresses[0] ?? null
+  const defaultAddress =
+    addresses.find((address) => address.isDefault) ?? addresses[0] ?? null
 
   useEffect(() => {
     if (authStatus !== 'authenticated') {
@@ -47,15 +49,22 @@ export default function AddressPicker({
     return () => {
       cancelled = true
     }
-  }, [authStatus, fetch])
+  }, [authStatus, account, fetch])
 
   useEffect(() => {
+    if (authStatus === 'anonymous' || error) {
+      onModeChange(authStatus === 'anonymous' ? 'new' : 'loading')
+      onSelect(null)
+
+      return
+    }
     if (
       authStatus === 'loading' ||
       (authStatus === 'authenticated' && !initialFetchComplete) ||
-      (loading && addresses.length === 0)
+      loading
     ) {
       onModeChange('loading')
+      if (selected) onSelect(null)
 
       return
     }
@@ -76,6 +85,7 @@ export default function AddressPicker({
     }
   }, [
     addresses,
+    error,
     authStatus,
     defaultAddress,
     initialFetchComplete,
@@ -86,10 +96,27 @@ export default function AddressPicker({
     selected,
   ])
 
+  if (authStatus === 'anonymous') return null
+
+  if (error) {
+    return (
+      <div role="alert" className="text-negative mb-3 text-sm">
+        <p>{error}</p>
+        <button
+          type="button"
+          className="mt-2 underline"
+          onClick={() => void fetch()}
+        >
+          Try again
+        </button>
+      </div>
+    )
+  }
+
   if (
     authStatus === 'loading' ||
     (authStatus === 'authenticated' && !initialFetchComplete) ||
-    (loading && addresses.length === 0)
+    loading
   ) {
     return (
       <p className="text-secondary mb-2 text-sm">Loading saved addresses...</p>

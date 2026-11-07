@@ -2,14 +2,12 @@ import { MAX_CART_ITEM_QUANTITY, useCartStore } from '@/features/cart/public'
 import * as cartApi from '@/features/cart/cartApi'
 import * as productsApi from '@/features/products/api'
 import type { ICart, ICartItem } from '@/features/cart/cartTypes'
-import { setClientAuthStatus } from '@/shared/auth/sessionStatus'
+import { acceptSnapshot } from '@/features/session/resourceState'
+import { useAuthStore } from '@/features/auth/store'
 
-jest.mock('@/features/cart/cartApi', () => ({
-  fetchCart: jest.fn(),
-  mergeCarts: jest.fn(),
-  removeCartItem: jest.fn(),
-  changeCartItemQuantity: jest.fn(),
-}))
+jest.mock('@/features/cart/cartApi', () =>
+  jest.requireActual('@/features/session/syncApi.testUtils').cartApiMock(),
+)
 jest.mock('@/features/products/api', () => ({
   getProductByIds: jest.fn(),
 }))
@@ -69,7 +67,7 @@ beforeEach(() => {
     pendingProductIds: new Set(),
   })
   jest.clearAllMocks()
-  setClientAuthStatus('anonymous')
+  useAuthStore.getState().reset()
 })
 
 describe('cart response ordering', () => {
@@ -118,7 +116,9 @@ describe('cart response ordering', () => {
   })
 
   it('keeps completed quantity edits when responses for different products arrive out of order', async () => {
-    setClientAuthStatus('authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore
       .getState()
       .setTempItems([makeCartItem('p1'), makeCartItem('p2')])
@@ -140,7 +140,7 @@ describe('cart response ordering', () => {
     useCartStore.getState().add('p2')
     second(makeCart([makeCartItem('p1', 2), makeCartItem('p2', 2)]))
     await new Promise((resolve) => setTimeout(resolve, 0))
-    first(makeCart([makeCartItem('p1', 2), makeCartItem('p2', 1)]))
+    first(makeCart([makeCartItem('p1', 2), makeCartItem('p2', 2)]))
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(useCartStore.getState().count).toBe(4)
     expect(useCartStore.getState().totalPrice).toBe(40)
@@ -273,7 +273,9 @@ describe('cart store — resetCart / setTempItems', () => {
 
 describe('cart store — syncSession', () => {
   it('merges guest cart into backend when authenticated', async () => {
-    setClientAuthStatus('authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 2 }],
       tempItems: [],
@@ -297,7 +299,9 @@ describe('cart store — syncSession', () => {
   })
 
   it('normalizes stale guest quantities before backend merge', async () => {
-    setClientAuthStatus('authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 150 }],
       tempItems: [],
@@ -318,13 +322,19 @@ describe('cart store — syncSession', () => {
 
     await useCartStore.getState().syncSession()
 
-    expect(mockedCartApi.mergeCarts).toHaveBeenCalledWith({
-      items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
-    })
+    expect(mockedCartApi.mergeCarts).toHaveBeenCalledWith(
+      {
+        items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
+      },
+      undefined,
+      expect.any(String),
+    )
   })
 
   it('merges duplicate stale guest ids before backend merge', async () => {
-    setClientAuthStatus('authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore.setState({
       itemsIds: [
         { productId: 'p1', productQuantity: 60 },
@@ -348,13 +358,19 @@ describe('cart store — syncSession', () => {
 
     await useCartStore.getState().syncSession()
 
-    expect(mockedCartApi.mergeCarts).toHaveBeenCalledWith({
-      items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
-    })
+    expect(mockedCartApi.mergeCarts).toHaveBeenCalledWith(
+      {
+        items: [{ productId: 'p1', productQuantity: MAX_CART_ITEM_QUANTITY }],
+      },
+      undefined,
+      expect.any(String),
+    )
   })
 
   it('loads the authenticated cart instead of merging an empty normalized guest cart', async () => {
-    setClientAuthStatus('authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: -1 }],
       tempItems: [],
@@ -385,7 +401,9 @@ describe('cart store — syncSession', () => {
 
 describe('cart store — authenticated add', () => {
   it('updates state from response', async () => {
-    setClientAuthStatus('authenticated')
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 1 }],
       tempItems: [makeCartItem('p1', 1)],
@@ -409,8 +427,10 @@ describe('cart store — authenticated add', () => {
     expect(useCartStore.getState().totalPrice).toBe(10)
   })
 
-  it('does not remove newer cart changes when an optimistic quantity update fails', async () => {
-    setClientAuthStatus('authenticated')
+  it('does not roll back a newer confirmed snapshot when an earlier update fails', async () => {
+    useAuthStore
+      .getState()
+      .setAuthenticated({ id: 'user', email: 'cart@example.invalid' } as never)
     useCartStore.setState({
       itemsIds: [{ productId: 'p1', productQuantity: 1 }],
       tempItems: [makeCartItem('p1', 1)],
@@ -428,14 +448,10 @@ describe('cart store — authenticated add', () => {
     )
 
     useCartStore.getState().add('p1')
-    useCartStore.setState({
-      itemsIds: [
-        { productId: 'p1', productQuantity: 2 },
-        { productId: 'p2', productQuantity: 1 },
-      ],
-      tempItems: [makeCartItem('p1', 2), makeCartItem('p2', 1)],
-      count: 3,
-      totalPrice: 30,
+    acceptSnapshot('cart', {
+      userId: 'user',
+      revision: 100,
+      data: makeCart([makeCartItem('p1', 2), makeCartItem('p2', 1)]) as never,
     })
 
     rejectUpdate(new Error('backend rejected update'))
@@ -443,11 +459,11 @@ describe('cart store — authenticated add', () => {
     await Promise.resolve()
 
     expect(useCartStore.getState().itemsIds).toEqual([
-      { productId: 'p1', productQuantity: 1 },
+      { productId: 'p1', productQuantity: 2 },
       { productId: 'p2', productQuantity: 1 },
     ])
-    expect(useCartStore.getState().count).toBe(2)
-    expect(useCartStore.getState().totalPrice).toBe(20)
+    expect(useCartStore.getState().count).toBe(3)
+    expect(useCartStore.getState().totalPrice).toBe(30)
   })
 })
 

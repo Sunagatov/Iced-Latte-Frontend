@@ -1,5 +1,10 @@
 import * as userApi from '@/features/user/api'
 import { api } from '@/shared/api/client'
+import { executeCommand } from '@/features/session/syncCommands'
+import { useAuthStore } from '@/features/auth/store'
+jest.mock('@/features/session/syncCommands', () => ({
+  executeCommand: jest.fn(),
+}))
 
 jest.mock('@/shared/api/client', () => ({
   api: jest.fn(),
@@ -103,6 +108,9 @@ class MockXMLHttpRequest {
 describe('user api', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockedApi.mockReset()
+    jest.mocked(executeCommand).mockReset()
+    useAuthStore.getState().reset()
     process.env.NEXT_PUBLIC_AVATAR_UPLOAD_MODE = 'backend'
     Object.defineProperty(global, 'crypto', {
       configurable: true,
@@ -165,133 +173,106 @@ describe('user api', () => {
     expect(result.address).toEqual({})
   })
 
-  it('editUserProfile leaves an omitted address unchanged', async () => {
-    mockedApi.mockResolvedValueOnce({
-      data: { firstName: 'Jane' },
-    })
-    mockedApi.mockResolvedValueOnce({
-      data: { firstName: 'Jane' },
-    })
+  it('profile commands keep omitted addresses unchanged and use the editor revision', async () => {
+    jest
+      .mocked(executeCommand)
+      .mockResolvedValue({ firstName: 'Jane', address: null })
+    const result = await userApi.editUserProfile(completeProfileUpdate, 7)
 
-    const result = await userApi.editUserProfile(completeProfileUpdate)
-
-    expect(mockedApi).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        data: {
-          firstName: 'Jane',
-          lastName: 'Doe',
-          address: undefined,
-        },
-        method: 'PUT',
-        url: '/users',
-      }),
-    )
-    expect(mockedApi).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        cache: false,
-        method: 'GET',
-        url: '/users',
-      }),
-    )
-    expect(result.firstName).toBe('Jane')
-  })
-
-  it('editUserProfile keeps non-empty address', async () => {
-    mockedApi.mockResolvedValueOnce({
-      data: { firstName: 'Jane' },
-    })
-    mockedApi.mockResolvedValueOnce({
-      data: { firstName: 'Jane' },
-    })
-
-    await userApi.editUserProfile({
-      firstName: 'Jane',
-      lastName: 'Doe',
-      address: {
-        country: 'UK',
-        city: 'London',
-        line: '221B Baker Street',
-        postcode: 'NW1',
+    expect(executeCommand).toHaveBeenCalledWith(
+      'profile',
+      'update',
+      {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthDate: undefined,
+        phoneNumber: undefined,
+        address: undefined,
       },
-    })
+      { expectedRevision: 7 },
+    )
+    expect(result.address).toEqual({})
+    expect(mockedApi).not.toHaveBeenCalled()
+  })
 
-    expect(mockedApi).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: {
-          firstName: 'Jane',
-          lastName: 'Doe',
-          address: {
-            country: 'UK',
-            city: 'London',
-            line: '221B Baker Street',
-            postcode: 'NW1',
-          },
-        },
-        method: 'PUT',
-        url: '/users',
-      }),
+  it('keeps a non-empty address but omits read-only profile metadata', async () => {
+    jest.mocked(executeCommand).mockResolvedValue({ firstName: 'Jane' })
+    const address = {
+      country: 'UK',
+      city: 'London',
+      line: '221B Baker Street',
+      postcode: 'NW1',
+    }
+
+    await userApi.editUserProfile({
+      ...completeProfileUpdate,
+      address,
+      email: 'ignored',
+      profileRevision: 8,
+    } as never)
+    expect(executeCommand).toHaveBeenCalledWith(
+      'profile',
+      'update',
+      {
+        ...completeProfileUpdate,
+        birthDate: undefined,
+        phoneNumber: undefined,
+        address,
+      },
+      { expectedRevision: undefined },
     )
   })
 
-  it('clears an explicitly emptied address using the backend empty-object contract', async () => {
-    mockedApi.mockResolvedValue({
-      data: { firstName: 'Jane', lastName: 'Doe', address: null },
-    })
+  it('clears an explicitly empty address using the backend empty-object contract', async () => {
+    jest
+      .mocked(executeCommand)
+      .mockResolvedValue({ ...completeProfileUpdate, address: null })
     await userApi.editUserProfile({
-      firstName: 'Jane',
-      lastName: 'Doe',
+      ...completeProfileUpdate,
       address: { country: '', city: '', line: '', postcode: '' },
     })
-    expect(mockedApi).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        method: 'PUT',
-        url: '/users',
-        data: { firstName: 'Jane', lastName: 'Doe', address: {} },
-      }),
+    expect(executeCommand).toHaveBeenCalledWith(
+      'profile',
+      'update',
+      expect.objectContaining({ address: {} }),
+      { expectedRevision: undefined },
     )
   })
 
-  it('editUserProfile normalizes nullable backend address in the response', async () => {
-    mockedApi.mockResolvedValueOnce({
-      data: { firstName: 'Jane' },
+  it('returns the canonical command snapshot including its avatar, without a racing GET', async () => {
+    jest.mocked(executeCommand).mockResolvedValue({
+      ...completeProfileUpdate,
+      avatarLink: 'https://cdn.example.com/avatar.jpg',
     })
-    mockedApi.mockResolvedValueOnce({
-      data: {
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'jane@example.com',
-        address: null,
-      },
-    })
-
-    const result = await userApi.editUserProfile(completeProfileUpdate)
-
-    expect(result.address).toEqual({})
+    expect(
+      (await userApi.editUserProfile(completeProfileUpdate)).avatarLink,
+    ).toBe('https://cdn.example.com/avatar.jpg')
+    expect(mockedApi).not.toHaveBeenCalled()
   })
 
-  it('editUserProfile returns refreshed user data with avatarLink from GET /users', async () => {
-    mockedApi.mockResolvedValueOnce({
-      data: {
-        firstName: 'Jane',
-        avatarLink: null,
-      },
-    })
-    mockedApi.mockResolvedValueOnce({
-      data: {
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'jane@example.com',
-        address: null,
-        avatarLink: 'https://cdn.example.com/avatar.jpg',
-      },
-    })
+  it('does not let an older profile GET overwrite a completed profile write', async () => {
+    const profile = {
+      ...completeProfileUpdate,
+      email: 'jane@example.com',
+      address: {},
+      profileRevision: 4,
+    }
 
-    const result = await userApi.editUserProfile(completeProfileUpdate)
+    useAuthStore.getState().setAuthenticated(profile)
+    let resolve!: (value: unknown) => void
 
-    expect(result.avatarLink).toBe('https://cdn.example.com/avatar.jpg')
+    mockedApi.mockReturnValueOnce(
+      new Promise((done) => {
+        resolve = done
+      }) as never,
+    )
+    const reading = userApi.getUserData()
+
+    useAuthStore
+      .getState()
+      .setUserData({ ...profile, firstName: 'Newer', profileRevision: 5 })
+    resolve({ data: profile })
+    expect((await reading).firstName).toBe('Newer')
   })
 
   it('uploadImage sends the file and optional Turnstile token', async () => {

@@ -44,6 +44,7 @@ export interface ICartPushItem {
 }
 
 export interface ICartUpdatedItem {
+  productId?: string
   shoppingCartItemId: string
   productQuantityChange: number
 }

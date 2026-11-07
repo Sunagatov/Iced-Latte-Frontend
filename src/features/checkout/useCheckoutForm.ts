@@ -94,20 +94,34 @@ function hasRequiredCheckoutFields(
 
 export function useCheckoutForm() {
   const { status, userData } = useAuthStore()
-  const hasSavedAddresses = useAddressStore((state) => state.addresses.length > 0)
+  const hasSavedAddresses = useAddressStore(
+    (state) => state.addresses.length > 0,
+  )
   const { tempItems } = useCartStore()
   const [selectedAddress, setSelectedAddress] =
     useState<DeliveryAddress | null>(null)
-  const [addressMode, setAddressMode] =
-    useState<CheckoutAddressMode>('loading')
+  const [addressMode, setAddressMode] = useState<CheckoutAddressMode>('loading')
   const [form, setForm] = useState<CheckoutFormValues>(getInitialFormValues)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
   const checkoutInFlightRef = useRef(false)
+  const formAccount = useRef(userData?.email ?? null)
 
   useEffect(() => {
+    const account = userData?.email ?? null
+
+    if (formAccount.current !== account) {
+      formAccount.current = account
+      setForm(getInitialFormValues())
+      setSelectedAddress(null)
+      setAddressMode('loading')
+      setError('')
+      setTurnstileToken('')
+
+      return
+    }
     if (!userData) {
       return
     }

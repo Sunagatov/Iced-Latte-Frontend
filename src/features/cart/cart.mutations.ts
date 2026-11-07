@@ -3,22 +3,15 @@ import {
   mergeCarts,
   removeCartItem,
 } from '@/features/cart/cartApi'
-import type {
-  ICartItem,
-  ICartPushItem,
-  ICartUpdatedItem,
-} from '@/features/cart/cartTypes'
+import type { ICartPushItem } from '@/features/cart/cartTypes'
 import {
   setCartError,
-  setCartItems,
-  type CartStoreState,
   type StoreGet,
   type StoreSet,
 } from '@/features/cart/utils/cartStoreHelpers'
 import {
   addToCart,
   clearPending,
-  getProductCartSlotId,
   getProductsCount,
   getTotalPrice,
   MAX_CART_ITEM_QUANTITY,
@@ -101,276 +94,150 @@ export function applyGuestRemoveFullProduct(
   })
 }
 
+// Authenticated data is published by the command gateway. These handlers own
+// pending indicators and errors only; they never infer or roll back server data.
+async function runCartWrite(
+  set: StoreSet,
+  ids: string[],
+  work: () => Promise<unknown>,
+) {
+  ids.forEach((id) => setPending(set, id))
+  set({ status: 'syncing', lastError: null })
+  try {
+    await work()
+  } catch (error) {
+    setCartError(set, 'Failed to update cart', error)
+  } finally {
+    ids.forEach((id) => clearPending(set, id))
+    set((state) => ({
+      status:
+        state.status === 'error'
+          ? 'error'
+          : state.pendingProductIds.size
+            ? 'syncing'
+            : 'ready',
+    }))
+  }
+}
+
 export function applyAuthenticatedAdd(
   set: StoreSet,
   get: StoreGet,
   productId: string,
-): void {
-  const { itemsIds, tempItems, pendingProductIds } = get()
-  const cartItem = itemsIds.find((item) => item.productId === productId)
+): void | Promise<void> {
+  const current = get()
+  const item = current.tempItems.find((row) => row.productInfo.id === productId)
 
-  if (cartItem && cartItem.productQuantity >= MAX_CART_ITEM_QUANTITY) return
-  if (pendingProductIds.has(productId)) return
-
-  if (!cartItem) {
-    setPending(set, productId)
-    void mergeCarts({ items: [{ productId, productQuantity: 1 }] })
-      .then((cart) =>
-        updateProductFromResponse(set, get, productId, cart.items),
-      )
-      .catch((err) => setCartError(set, 'Failed to update cart', err))
-      .finally(() => clearPending(set, productId))
-
+  if (
+    current.pendingProductIds.has(productId) ||
+    (item?.productQuantity ?? 0) >= MAX_CART_ITEM_QUANTITY
+  )
     return
-  }
 
-  const shoppingCartItemId = getProductCartSlotId(productId, tempItems)
-
-  if (!shoppingCartItemId) return
-
-  const optimisticIds = itemsIds.map((item) =>
-    item.productId === productId
-      ? { ...item, productQuantity: item.productQuantity + 1 }
-      : item,
-  )
-  const optimisticItems = tempItems.map((item) =>
-    item.productInfo.id === productId
-      ? { ...item, productQuantity: item.productQuantity + 1 }
-      : item,
-  )
-
-  set({
-    count: getProductsCount(optimisticIds),
-    itemsIds: optimisticIds,
-    tempItems: optimisticItems,
-    totalPrice: getTotalPrice(optimisticItems),
-  })
-  setPending(set, productId)
-
-  void updateBackendCartItem(set, get, productId, {
-    productQuantityChange: 1,
-    shoppingCartItemId,
-  })
-    .catch(() => {
-      rollbackOptimisticProductQuantity(set, get, productId, {
-        expectedQuantity: cartItem.productQuantity + 1,
-        itemsIds,
-        tempItems,
+  return runCartWrite(set, [productId], () =>
+    item
+      ? changeCartItemQuantity({
+        productId,
+        shoppingCartItemId: item.id,
+        productQuantityChange: 1,
       })
-    })
-    .finally(() => clearPending(set, productId))
+      : mergeCarts({ items: [{ productId, productQuantity: 1 }] }),
+  )
 }
 
 export function applyAuthenticatedRemove(
   set: StoreSet,
   get: StoreGet,
   productId: string,
-): void {
-  const { itemsIds, tempItems, pendingProductIds } = get()
-
-  if (pendingProductIds.has(productId)) return
-
-  const shoppingCartItemId = getProductCartSlotId(productId, tempItems)
-
-  if (!shoppingCartItemId) return
-
-  const currentItem = tempItems.find(
-    (item) => item.productInfo.id === productId,
-  )
-
-  if (currentItem && currentItem.productQuantity <= 1) {
-    applyAuthenticatedRemoveFullProduct(set, get, productId)
-
-    return
-  }
-
-  const optimisticIds = itemsIds.map((item) =>
-    item.productId === productId
-      ? { ...item, productQuantity: item.productQuantity - 1 }
-      : item,
-  )
-  const optimisticItems = tempItems.map((item) =>
-    item.productInfo.id === productId
-      ? { ...item, productQuantity: item.productQuantity - 1 }
-      : item,
-  )
-
-  set({
-    count: getProductsCount(optimisticIds),
-    itemsIds: optimisticIds,
-    tempItems: optimisticItems,
-    totalPrice: getTotalPrice(optimisticItems),
-  })
-  setPending(set, productId)
-
-  void updateBackendCartItem(set, get, productId, {
-    productQuantityChange: -1,
-    shoppingCartItemId,
-  })
-    .catch(() => {
-      rollbackOptimisticProductQuantity(set, get, productId, {
-        expectedQuantity: (currentItem?.productQuantity ?? 0) - 1,
-        itemsIds,
-        tempItems,
-      })
-    })
-    .finally(() => clearPending(set, productId))
-}
-
-function rollbackOptimisticProductQuantity(
-  set: StoreSet,
-  get: StoreGet,
-  productId: string,
-  snapshot: Pick<CartStoreState, 'itemsIds' | 'tempItems'> & {
-    expectedQuantity: number
-  },
-): void {
+): void | Promise<void> {
   const current = get()
-  const currentItem = current.itemsIds.find(
-    (item) => item.productId === productId,
-  )
+  const item = current.tempItems.find((row) => row.productInfo.id === productId)
 
-  if (currentItem?.productQuantity !== snapshot.expectedQuantity) {
-    return
-  }
+  if (!item || current.pendingProductIds.has(productId)) return
+  if (item.productQuantity <= 1)
+    return applyAuthenticatedRemoveFullProduct(set, get, productId)
 
-  const snapshotItem = snapshot.itemsIds.find(
-    (item) => item.productId === productId,
+  return runCartWrite(set, [productId], () =>
+    changeCartItemQuantity({
+      productId,
+      shoppingCartItemId: item.id,
+      productQuantityChange: -1,
+    }),
   )
-  const snapshotTempItem = snapshot.tempItems.find(
-    (item) => item.productInfo.id === productId,
-  )
-  const itemsIds = snapshotItem
-    ? current.itemsIds.map((item) =>
-      item.productId === productId ? snapshotItem : item,
-    )
-    : current.itemsIds.filter((item) => item.productId !== productId)
-  const tempItems = snapshotTempItem
-    ? current.tempItems.map((item) =>
-      item.productInfo.id === productId ? snapshotTempItem : item,
-    )
-    : current.tempItems.filter((item) => item.productInfo.id !== productId)
-
-  set({
-    count: getProductsCount(itemsIds),
-    itemsIds,
-    tempItems,
-    totalPrice: getTotalPrice(tempItems),
-  })
 }
 
 export function applyAuthenticatedRemoveFullProduct(
   set: StoreSet,
   get: StoreGet,
   productId: string,
-): void {
-  const { tempItems, pendingProductIds } = get()
+): void | Promise<void> {
+  if (get().pendingProductIds.has(productId)) return
+  const item = get().tempItems.find((row) => row.productInfo.id === productId)
 
-  if (pendingProductIds.has(productId)) return
+  if (!item) return
 
-  const shoppingCartItemId = getProductCartSlotId(productId, tempItems)
-
-  if (!shoppingCartItemId) return
-
-  setPending(set, productId)
-
-  void removeCartItem([shoppingCartItemId])
-    .then((cart) => {
-      updateProductFromResponse(set, get, productId, cart.items)
-    })
-    .catch((err) => setCartError(set, 'Failed to remove item', err))
-    .finally(() => clearPending(set, productId))
+  return runCartWrite(set, [productId], () =>
+    removeCartItem([item.id], [productId]),
+  )
 }
 
 export async function clearCartStore(
   set: StoreSet,
   get: StoreGet,
-  isAuthenticated: boolean,
-): Promise<void> {
-  const { tempItems, isSync } = get()
+  authenticated: boolean,
+  productIds?: Set<string>,
+) {
+  const ids =
+    productIds ?? new Set(get().itemsIds.map((item) => item.productId))
 
-  set({ status: 'syncing' })
+  if (authenticated) {
+    if (ids.size)
+      await runCartWrite(set, [...ids], () =>
+        removeCartItem(
+          get()
+            .tempItems.filter((item) => ids.has(item.productInfo.id))
+            .map((item) => item.id),
+          [...ids],
+        ),
+      )
 
-  try {
-    if (isAuthenticated && isSync && tempItems.length > 0) {
-      await removeCartItem(tempItems.map((item) => item.id))
-    }
-
-    set({
-      count: 0,
-      isSync: isAuthenticated,
-      itemsIds: [],
-      lastError: null,
-      pendingProductIds: new Set(),
-      status: 'ready',
-      tempItems: [],
-      totalPrice: 0,
-    })
-  } catch (err) {
-    setCartError(set, 'Failed to clear cart', err)
+    return
   }
+  const itemsIds = get().itemsIds.filter((item) => !ids.has(item.productId))
+  const tempItems = get().tempItems.filter(
+    (item) => !ids.has(item.productInfo.id),
+  )
+
+  set({
+    itemsIds,
+    tempItems,
+    count: getProductsCount(itemsIds),
+    totalPrice: getTotalPrice(tempItems),
+    status: 'ready',
+  })
 }
 
 export async function mergeGuestCartIntoBackend(
   set: StoreSet,
   items: ICartPushItem[],
-): Promise<void> {
+  signal?: AbortSignal,
+  operationId?: string,
+) {
+  if (signal?.aborted) return
   set({ status: 'syncing' })
-
   try {
-    const mergedCart = await mergeCarts({ items: normalizeCartItems(items) })
-
-    setCartItems(set, mergedCart.items, {
-      count: mergedCart.productsQuantity,
+    await mergeCarts({ items: normalizeCartItems(items) }, signal, operationId)
+    if (signal?.aborted) return
+    set({
       isSync: true,
+      pendingMerge: null,
+      guestConflict: null,
+      lastError: null,
       status: 'ready',
-      totalPrice: mergedCart.itemsTotalPrice,
     })
-  } catch (err) {
-    setCartError(set, 'Failed to update cart', err)
-    throw err
+  } catch (error) {
+    if (signal?.aborted || (error as Error).name === 'CanceledError') return
+    setCartError(set, 'Failed to update cart', error)
+    throw error
   }
-}
-
-async function updateBackendCartItem(
-  set: StoreSet,
-  get: StoreGet,
-  productId: string,
-  updatedItem: ICartUpdatedItem,
-): Promise<void> {
-  set({ status: 'syncing' })
-
-  try {
-    const cart = await changeCartItemQuantity(updatedItem)
-
-    updateProductFromResponse(set, get, productId, cart.items)
-  } catch (err) {
-    setCartError(set, 'Failed to update cart', err)
-    throw err
-  }
-}
-
-function updateProductFromResponse(
-  set: StoreSet,
-  get: StoreGet,
-  productId: string,
-  responseItems: ICartItem[],
-): void {
-  if (!get().pendingProductIds.has(productId)) return
-
-  // Each mutation owns one product; other rows may have newer in-flight edits.
-  const updated = responseItems.find(
-    (item) => item.productInfo.id === productId && item.productQuantity > 0,
-  )
-  const currentItems = get().tempItems
-  const items = currentItems.flatMap((item) =>
-    item.productInfo.id === productId ? (updated ? [updated] : []) : [item],
-  )
-
-  if (
-    updated &&
-    !currentItems.some((item) => item.productInfo.id === productId)
-  )
-    items.push(updated)
-  setCartItems(set, items, { isSync: true, status: 'ready' })
 }

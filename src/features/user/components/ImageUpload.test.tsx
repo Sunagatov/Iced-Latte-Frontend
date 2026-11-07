@@ -77,6 +77,9 @@ function avatarFile() {
 
 describe('ImageUpload', () => {
   beforeEach(() => {
+    useAuthStore
+      .getState()
+      .setAuthenticated({ email: 'ada@example.com' } as never)
     jest.clearAllMocks()
     mockTurnstileReset.mockClear()
     mockAvatarTurnstileEnabled = false
@@ -112,6 +115,40 @@ describe('ImageUpload', () => {
       email: 'ada@example.com',
       avatarLink: 'https://cdn.example.com/avatar.png',
     } as never)
+  })
+
+  it('cancels an old account upload and ignores its late completion after switching accounts', async () => {
+    let finish!: () => void
+
+    mockedUploadImage.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        finish = resolve
+      }),
+    )
+    render(<ImageUpload />)
+    fireEvent.change(screen.getByLabelText('Upload profile photo'), {
+      target: { files: [avatarFile()] },
+    })
+    await waitFor(() => expect(mockedUploadImage).toHaveBeenCalledTimes(1))
+    const options = mockedUploadImage.mock.calls[0][2]!
+
+    act(() =>
+      useAuthStore.getState().setAuthenticated({
+        email: 'other@example.invalid',
+        firstName: 'Other',
+        lastName: 'User',
+        address: {},
+      }),
+    )
+    expect(options.signal?.aborted).toBe(true)
+    await act(async () => {
+      finish()
+    })
+    expect(mockedGetUserData).not.toHaveBeenCalled()
+    expect(useAuthStore.getState().userData?.email).toBe(
+      'other@example.invalid',
+    )
+    expect(screen.getByLabelText('Upload profile photo')).toBeEnabled()
   })
 
   it('uploads avatar without Turnstile token when avatar protection is disabled', async () => {
@@ -268,18 +305,16 @@ describe('ImageUpload', () => {
   it('shows upload stage messaging while the presigned flow is processing', async () => {
     let resolveUpload: () => void
 
-    mockedUploadImage.mockImplementation(
-      async (_file, _token, options) => {
-        options?.onStageChange?.('requesting-upload-intent')
-        options?.onUploadProgress?.(55)
-        options?.onStageChange?.('processing')
-        options?.onUploadProgress?.(null)
+    mockedUploadImage.mockImplementation(async (_file, _token, options) => {
+      options?.onStageChange?.('requesting-upload-intent')
+      options?.onUploadProgress?.(55)
+      options?.onStageChange?.('processing')
+      options?.onUploadProgress?.(null)
 
-        await new Promise<void>((resolve) => {
-          resolveUpload = resolve
-        })
-      },
-    )
+      await new Promise<void>((resolve) => {
+        resolveUpload = resolve
+      })
+    })
 
     render(<ImageUpload />)
 
@@ -300,16 +335,14 @@ describe('ImageUpload', () => {
   it('shows upload progress while the file is being sent', async () => {
     let resolveUpload: () => void
 
-    mockedUploadImage.mockImplementation(
-      async (_file, _token, options) => {
-        options?.onStageChange?.('uploading')
-        options?.onUploadProgress?.(42)
+    mockedUploadImage.mockImplementation(async (_file, _token, options) => {
+      options?.onStageChange?.('uploading')
+      options?.onUploadProgress?.(42)
 
-        await new Promise<void>((resolve) => {
-          resolveUpload = resolve
-        })
-      },
-    )
+      await new Promise<void>((resolve) => {
+        resolveUpload = resolve
+      })
+    })
 
     render(<ImageUpload />)
 

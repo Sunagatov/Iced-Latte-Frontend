@@ -9,16 +9,9 @@ const mutator = {
 }
 
 const frontendExcludedPathsBySpec: Record<string, string[]> = {
-  order: [
-    '/api/v1/admin/orders',
-    '/api/v1/admin/orders/{orderId}/status',
-  ],
-  payment: [
-    '/api/v1/payment/stripe/webhook',
-  ],
-  supportChat: [
-    '/api/v1/support-chat/telegram/webhook',
-  ],
+  order: ['/api/v1/admin/orders', '/api/v1/admin/orders/{orderId}/status'],
+  payment: ['/api/v1/payment/stripe/webhook'],
+  supportChat: ['/api/v1/support-chat/telegram/webhook'],
 }
 
 const frontendExcludedSchemasBySpec: Record<string, (string | RegExp)[]> = {
@@ -133,6 +126,7 @@ const makeApi = (specName: string, outputName: string) => ({
 })
 
 export default defineConfig({
+  sync: makeApi('sync', 'sync'),
   cart: makeApi('cart', 'cart'),
   favorite: makeApi('favorite', 'favorite'),
   order: makeApi('order', 'order'),

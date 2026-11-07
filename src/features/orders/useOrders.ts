@@ -1,6 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  captureAccountScope,
+  useAccountScopeKey,
+} from '@/features/auth/accountScope'
+import { useAuthStore } from '@/features/auth/store'
 import { fetchOrders } from '@/features/orders/ordersApi'
 import type {
   OrderPageDto,
@@ -19,6 +24,11 @@ function isCanceledRequest(err: unknown): boolean {
 }
 
 export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
+  const accountKey = useAccountScopeKey()
+  const authenticated = useAuthStore(
+    (state) => state.status === 'authenticated',
+  )
+  const [owner, setOwner] = useState(accountKey)
   const [orders, setOrders] = useState<OrderSummaryDto[]>([])
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
@@ -26,15 +36,16 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
-  const activeQueryRef = useRef({ filter, year })
+  const activeQueryRef = useRef({ filter, year, accountKey })
 
   useEffect(() => {
     const queryChanged =
       activeQueryRef.current.filter !== filter ||
-      activeQueryRef.current.year !== year
+      activeQueryRef.current.year !== year ||
+      activeQueryRef.current.accountKey !== accountKey
 
     if (queryChanged) {
-      activeQueryRef.current = { filter, year }
+      activeQueryRef.current = { filter, year, accountKey }
 
       if (page !== 0) {
         setPage(0)
@@ -44,10 +55,20 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
     }
 
     const controller = new AbortController()
+    const account = captureAccountScope()
     let active = true
 
+    setOwner(accountKey)
+    setOrders([])
+    setTotalElements(0)
+    setTotalPages(0)
     setLoading(true)
     setError(false)
+    if (!authenticated) {
+      setLoading(false)
+
+      return
+    }
 
     fetchOrders(
       {
@@ -61,7 +82,7 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
       controller.signal,
     )
       .then((data: OrderPageDto) => {
-        if (!active || controller.signal.aborted) return
+        if (!active || controller.signal.aborted || !account.isCurrent()) return
 
         const lastPage = Math.max(0, data.totalPages - 1)
 
@@ -76,12 +97,12 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
         setTotalElements(data.totalElements)
       })
       .catch((err) => {
-        if (active && !isCanceledRequest(err)) {
+        if (active && account.isCurrent() && !isCanceledRequest(err)) {
           setError(true)
         }
       })
       .finally(() => {
-        if (active && !controller.signal.aborted) {
+        if (active && !controller.signal.aborted && account.isCurrent()) {
           setLoading(false)
         }
       })
@@ -90,7 +111,7 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
       active = false
       controller.abort()
     }
-  }, [filter, page, pageSize, year, retryKey])
+  }, [filter, page, pageSize, year, retryKey, accountKey, authenticated])
 
   const goToPage = useCallback(
     (p: number) =>
@@ -103,13 +124,13 @@ export function useOrders(filter: OrderFilter, pageSize = 10, year?: number) {
   )
 
   return {
-    error,
+    error: owner === accountKey && error,
     goToPage,
-    loading,
-    orders,
-    page,
+    loading: authenticated && (owner !== accountKey || loading),
+    orders: owner === accountKey ? orders : [],
+    page: owner === accountKey ? page : 0,
     retry: () => setRetryKey((value) => value + 1),
-    totalElements,
-    totalPages,
+    totalElements: owner === accountKey ? totalElements : 0,
+    totalPages: owner === accountKey ? totalPages : 0,
   }
 }
