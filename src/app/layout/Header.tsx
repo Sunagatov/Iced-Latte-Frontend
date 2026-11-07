@@ -8,6 +8,7 @@ import LoginIcon from '@/features/auth/components/AuthIcon/LoginIcon'
 import CartButton from '@/features/cart/components/CartButton'
 import HeaderHeart from '@/features/favorites/components/HeaderHeart'
 import SearchBar from '@/features/products/components/search/SearchBar'
+import CoffeeSupportLink from './CoffeeSupportLink'
 
 export default function Header() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
@@ -46,7 +47,7 @@ export default function Header() {
   const showSearch = isHome && !heroVisible
 
   return (
-    <header className="sticky top-0 left-0 z-50 flex h-14 w-full items-center gap-4 border-b border-black/[0.06] bg-white px-4 sm:px-8">
+    <header className="sticky top-0 left-0 z-50 flex h-14 w-full items-center gap-2 border-b border-black/[0.06] bg-white px-4 sm:gap-4 sm:px-8">
       {mobileSearchOpen && showSearch ? (
         <div className="flex w-full items-center gap-2">
           <SearchBar autoFocus onBlur={() => setMobileSearchOpen(false)} />
@@ -83,13 +84,17 @@ export default function Header() {
             </span>
           </Link>
 
-          {showSearch && (
-            <div className="hidden flex-1 justify-center animate-[fade-in-down_0.25s_ease-out] sm:flex">
+          {showSearch ? (
+            <div className="hidden min-w-0 flex-1 justify-center animate-[fade-in-down_0.25s_ease-out] sm:flex">
               <SearchBar />
+            </div>
+          ) : (
+            <div className="flex min-w-0 flex-1 justify-center sm:absolute sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2">
+              <CoffeeSupportLink compact />
             </div>
           )}
 
-          <div className="ml-auto flex items-center gap-0.5">
+          <div className="ml-auto flex shrink-0 items-center gap-0.5">
             {showSearch && (
               <button
                 type="button"

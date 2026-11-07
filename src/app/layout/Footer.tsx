@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ROUTES } from '@/shared/config/routes'
 import { EXTERNAL_LINKS } from '@/shared/config/links'
 import { getCopyrightLabel } from '@/shared/config/copyright'
+import CoffeeSupportLink from './CoffeeSupportLink'
 
 export default function Footer() {
   const copyrightLabel = getCopyrightLabel()
@@ -21,6 +22,9 @@ export default function Footer() {
               A source-available marketplace project for practical engineering
               learning.
             </p>
+            <div>
+              <CoffeeSupportLink />
+            </div>
             <div className="flex items-center gap-3">
               <a
                 href={EXTERNAL_LINKS.github.org}

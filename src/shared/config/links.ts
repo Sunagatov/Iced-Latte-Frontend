@@ -1,4 +1,5 @@
 export const EXTERNAL_LINKS = {
+  buyMeACoffee: 'https://buymeacoffee.com/lucky_1uck',
   github: {
     org: 'https://github.com/Sunagatov',
     backend: 'https://github.com/Sunagatov/Iced-Latte',
