@@ -30,6 +30,11 @@
     <a href="https://github.com/Sunagatov/Iced-Latte-Frontend/commits"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/Sunagatov/Iced-Latte-Frontend?style=flat-square&logo=github"></a>
     <a href="https://github.com/Sunagatov/Iced-Latte-Frontend/pulse"><img alt="Commit Activity" src="https://img.shields.io/github/commit-activity/m/Sunagatov/Iced-Latte-Frontend?style=flat-square&logo=github"></a>
   </p>
+  <p>
+    <a href="https://buymeacoffee.com/lucky_1uck">
+      <img src="https://img.shields.io/badge/Support_the_project-FFDD00?style=for-the-badge&amp;logo=buymeacoffee&amp;logoColor=black" alt="Support the project" width="260" height="40">
+    </a>
+  </p>
 </div>
 
 ---
@@ -205,6 +210,18 @@ Before opening a PR:
 - 📖 Read the full [Contributing Guide](.github/CONTRIBUTING.md)
 
 > ⚠️ By contributing, you agree to the project license and contribution terms described in [LICENSE](LICENSE).
+
+---
+
+## ☕ Support the project
+
+If Iced Latte helps you learn or inspires your own projects, you can support its development.
+
+<p>
+  <a href="https://buymeacoffee.com/lucky_1uck">
+    <img src="https://img.shields.io/badge/Support_the_project-FFDD00?style=for-the-badge&amp;logo=buymeacoffee&amp;logoColor=black" alt="Support the project" width="260" height="40">
+  </a>
+</p>
 
 ---
 
