@@ -68,12 +68,23 @@ describe('browser telemetry privacy', () => {
 })
 
 describe('request observation', () => {
+  const originalFetch = Object.getOwnPropertyDescriptor(window, 'fetch')
   let cleanup: (() => void) | undefined
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'fetch', {
+      value: jest.fn(),
+      configurable: true,
+      writable: true,
+    })
+  })
 
   afterEach(() => {
     cleanup?.()
     cleanup = undefined
     jest.restoreAllMocks()
+    if (originalFetch) Object.defineProperty(window, 'fetch', originalFetch)
+    else Reflect.deleteProperty(window, 'fetch')
   })
 
   it('preserves the response and does not report its own collector request', async () => {
