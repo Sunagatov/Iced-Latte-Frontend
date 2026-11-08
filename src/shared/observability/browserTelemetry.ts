@@ -182,6 +182,7 @@ export async function startBrowserTelemetry(
     let resetsAt = Date.now() + 60_000
     const faro = initializeFaro({
       url: endpoint.href,
+      requestCompression: false,
       app: { name: app, environment: 'production' },
       metas: [{ app: { name: app, environment: 'production' } }],
       sessionTracking: { enabled: false },
