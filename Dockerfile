@@ -1,7 +1,7 @@
 # =============================================================================
 # BUILD STAGE
 # =============================================================================
-FROM node:22.18.0-alpine3.22 AS build
+FROM node:22.23.3-alpine AS build
 
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_FRONTEND_URL
@@ -70,7 +70,7 @@ RUN npm run build
 # =============================================================================
 # RUNTIME STAGE
 # =============================================================================
-FROM node:22.18.0-alpine3.22
+FROM node:22.23.3-alpine
 
 LABEL maintainer="Iced-Latte Team" \
       description="Iced-Latte Frontend Application"

@@ -32,7 +32,7 @@ If you are unsure, choose **Option A**.
 | Tool | Required for | Version |
 |---|---|---|
 | Docker Desktop | Every option | latest |
-| Node.js | Frontend locally: Options A and C | 22.18+ |
+| Node.js | Frontend locally: Options A and C | 22.23.3+ |
 | Java JDK | Backend locally: Options C and D | 25 |
 | Maven | Backend locally: Options C and D | 3.9+ |
 | IntelliJ IDEA | Optional, useful for backend debugging | any edition |
@@ -372,7 +372,7 @@ docker compose --env-file .env.example --profile backend --profile frontend up -
 | Backend port `8083` already in use | Stop the process using the port, or run Docker with `BACKEND_HOST_PORT=8084` |
 | Frontend container cannot reach local backend | Rebuild frontend with `FRONTEND_DOCKER_API_URL=http://host.docker.internal:8083/api/v1` |
 | E2E tests fail immediately | Make sure the dev server is running on `http://localhost:3000` |
-| `npm ci` fails | Make sure Node.js is version 22.18 or higher |
+| `npm ci` fails | Make sure Node.js is version 22.23.3 or higher |
 | Login returns `401` | Create a fresh account. With default local config, email sign-up logs you in immediately; if you enabled email confirmation or Google OAuth, complete that provider flow first |
 | Windows says `export` or `source` not found | Use IntelliJ for backend startup, or run the backend command in Git Bash |
 

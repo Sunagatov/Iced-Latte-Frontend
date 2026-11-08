@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: '22.18.0'
+          node-version: '22.23.3'
           cache: 'npm'
 
       - name: Install dependencies
@@ -97,7 +97,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: '22.18.0'
+          node-version: '22.23.3'
           cache: 'npm'
 
       - name: Install dependencies
@@ -159,7 +159,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: '22.18.0'
+          node-version: '22.23.3'
           cache: 'npm'
           cache-dependency-path: Iced-Latte-Frontend/package-lock.json
 
@@ -173,7 +173,13 @@ jobs:
 
       - name: Start default local app
         working-directory: Iced-Latte
-        run: docker compose --env-file .env.example --profile backend --profile frontend up -d --build
+        run: |
+          compose=(docker compose --env-file .env.example
+            -f docker-compose.yml
+            -f ../Iced-Latte-Frontend/e2e/provider-disabled.compose.yml
+            --profile backend --profile frontend)
+          "${compose[@]}" up -d --wait postgres redis
+          "${compose[@]}" up -d --build --no-deps backend frontend
 
       - name: Wait for app readiness
         run: |

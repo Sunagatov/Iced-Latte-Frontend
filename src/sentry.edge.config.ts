@@ -3,6 +3,7 @@ import {
   cleanSentryDsn,
   parseTelemetrySampleRate,
   sanitizeSentryEvent,
+  SENTRY_DATA_COLLECTION,
 } from '@/shared/config/sentry'
 
 const dsn = cleanSentryDsn(process.env.SENTRY_DSN)
@@ -13,7 +14,7 @@ if (sentryEnabled) {
     dsn,
     environment: process.env.SENTRY_ENVIRONMENT || 'production',
     release: process.env.SENTRY_RELEASE || undefined,
-    sendDefaultPii: false,
+    dataCollection: SENTRY_DATA_COLLECTION,
     attachStacktrace: true,
     tracesSampleRate: parseTelemetrySampleRate(
       process.env.SENTRY_TRACES_SAMPLE_RATE,

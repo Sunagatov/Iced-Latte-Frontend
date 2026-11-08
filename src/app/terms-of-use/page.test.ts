@@ -23,7 +23,11 @@ function extractMarkdownValue(markdown: string, label: string): string {
 }
 
 maybeDescribe('terms of use source sync', () => {
-  const backendTerms = fs.readFileSync(backendTermsPath, 'utf8')
+  let backendTerms: string
+
+  beforeAll(() => {
+    backendTerms = fs.readFileSync(backendTermsPath, 'utf8')
+  })
 
   it('keeps frontend effective and last-updated dates aligned with backend terms', () => {
     expect(TERMS_EFFECTIVE_DATE).toBe(

@@ -1,0 +1,6 @@
+# This UI/auth smoke does not exercise object storage. Keep S3 disabled so it
+# does not depend on MinIO's unavailable public images; storage tests live in the backend.
+services:
+  backend:
+    environment:
+      AWS_ENABLED: "false"

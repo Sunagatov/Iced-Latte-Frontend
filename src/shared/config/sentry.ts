@@ -1,5 +1,21 @@
 import type { ErrorEvent } from '@sentry/core'
 
+// Sentry 11 collects more data by default; preserve the previous restricted baseline.
+export const SENTRY_DATA_COLLECTION = {
+  userInfo: false,
+  cookies: false,
+  httpHeaders: {
+    request: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+    response: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+  },
+  httpBodies: [],
+  urlQueryParams: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+  genAI: { inputs: false, outputs: false },
+  databaseQueryData: false,
+  queues: false,
+  graphQL: { document: false, variables: false },
+}
+
 const SENSITIVE_REQUEST_HEADERS = new Set(['authorization', 'cookie'])
 
 export function parseTelemetrySampleRate(value: string | undefined): number {
