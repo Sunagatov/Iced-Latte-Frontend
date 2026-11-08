@@ -4,3 +4,7 @@ services:
   backend:
     environment:
       AWS_ENABLED: "false"
+  frontend:
+    environment:
+      # Standalone builds require the server-side Docker-network API address.
+      INTERNAL_API_URL: ${FRONTEND_DOCKER_API_URL}
