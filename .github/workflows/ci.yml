@@ -197,6 +197,8 @@ jobs:
         timeout-minutes: 5
         working-directory: Iced-Latte-Frontend
         env:
+          # Docker Compose owns the server lifecycle and the readiness step above.
+          PLAYWRIGHT_EXTERNAL_SERVER: "true"
           NEXT_PUBLIC_STRIPE_ENABLED: "false"
           NEXT_PUBLIC_GOOGLE_AUTH_ENABLED: "false"
           NEXT_PUBLIC_AI_ENABLED: "false"

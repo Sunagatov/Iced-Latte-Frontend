@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
 const IS_CI = !!process.env.CI
+const USE_EXTERNAL_SERVER = process.env.PLAYWRIGHT_EXTERNAL_SERVER === 'true'
 
 export default defineConfig({
   testDir: './e2e',
@@ -52,7 +53,7 @@ export default defineConfig({
     },
   ],
 
-  webServer: BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')
+  webServer: !USE_EXTERNAL_SERVER && (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1'))
     ? {
       command: 'npm run dev',
       url: 'http://localhost:3000',
