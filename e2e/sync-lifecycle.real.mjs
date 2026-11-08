@@ -256,7 +256,7 @@ async function main() {
               .click()
             await expect(
               page.getByLabel('First name', { exact: true }),
-            ).toHaveValue('Local')
+            ).toHaveValue('Зуфар')
             await expect(
               page.getByLabel('Last name', { exact: true }),
             ).toHaveValue('Updated')
