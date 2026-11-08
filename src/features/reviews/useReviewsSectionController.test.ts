@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { useReviewsSectionController } from '@/features/reviews/useReviewsSectionController'
 import { useAuthStore } from '@/features/auth/public'
 import { apiGetProductUserReview } from '@/features/reviews/api'
@@ -55,6 +55,49 @@ describe('useReviewsSectionController', () => {
       removeReviewFromCache: jest.fn(),
       updateReviewInCache: jest.fn(),
     })
+  })
+
+  it('clears the previous own review and checks ownership when the authenticated account changes', async () => {
+    mockedApiGetProductUserReview.mockResolvedValueOnce(makeReview())
+      .mockReturnValueOnce(new Promise(() => {}))
+    const { result } = renderHook(() => useReviewsSectionController({
+      productId: 'product-1', reviewsStatistics: null, refreshStatistics: jest.fn(),
+    }))
+
+    await waitFor(() => expect(result.current.userReview?.productReviewId).toBe('review-1'))
+
+    act(() => useAuthStore.getState().setAuthenticated({
+      firstName: 'Other', lastName: 'User', email: 'other@example.com', address: {},
+    }))
+
+    expect(mockedApiGetProductUserReview).toHaveBeenCalledTimes(2)
+    expect(result.current.userReview).toBeNull()
+    expect(result.current.isUserReviewLoading).toBe(true)
+  })
+
+  it.each(['resolve', 'reject'])('ignores an old account review lookup that later %ss', async (outcome) => {
+    let resolveOld!: (review: Review) => void
+    let rejectOld!: (error: Error) => void
+
+    mockedApiGetProductUserReview.mockReturnValueOnce(new Promise((resolve, reject) => {
+      resolveOld = resolve
+      rejectOld = reject
+    })).mockResolvedValueOnce(null)
+    const { result } = renderHook(() => useReviewsSectionController({
+      productId: 'product-1', reviewsStatistics: null, refreshStatistics: jest.fn(),
+    }))
+
+    act(() => useAuthStore.getState().setAuthenticated({
+      firstName: 'Other', lastName: 'User', email: 'other@example.com', address: {},
+    }))
+    await waitFor(() => expect(result.current.isUserReviewLoading).toBe(false))
+    await act(async () => {
+      if (outcome === 'resolve') resolveOld(makeReview())
+      else rejectOld(new Error('Old account request failed'))
+    })
+
+    expect(result.current.userReview).toBeNull()
+    expect(result.current.userReviewError).toBeNull()
   })
 
   it('does not infer review ownership from a matching name when the own-review lookup returns null', async () => {

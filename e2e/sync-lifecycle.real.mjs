@@ -192,6 +192,16 @@ async function main() {
             await expect(
               page.getByText('Your cart is empty', { exact: true }),
             ).toBeVisible()
+            // The proxy must retain spaces and Unicode in the submitted search.
+            // Dropping this keyword would incorrectly return the full catalog.
+            await page.goto(config.url, { waitUntil: 'domcontentloaded' })
+            await expect(page.getByTestId('product-card').first()).toBeVisible()
+            const absentSearch = `No match café ${crypto.randomUUID()}`
+            const search = page.getByRole('textbox', { name: 'Search products' })
+            await search.fill(absentSearch)
+            await search.press('Enter')
+            await expect(page.getByTestId('empty-state')).toContainText(absentSearch)
+            await expect(page.getByTestId('product-card')).toHaveCount(0)
           } else if (scenario === 'favourites') {
             await expect(page.getByTestId('fav-element')).toHaveCount(1)
             loseNext = 'favourites'

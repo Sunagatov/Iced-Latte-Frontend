@@ -32,14 +32,19 @@ function getServerApiBaseUrl(): string {
 }
 
 instance.interceptors.request.use((config) => {
-  const path = config.url!.replace(/^\//, '')
+  const baseUrl = typeof window === 'undefined'
+    ? getServerApiBaseUrl().replace(/\/$/, '')
+    : '/api/proxy'
+  const url = config.url ?? ''
+
+  // Axios retries run request interceptors again with the already rewritten URL.
+  if (url !== baseUrl && !url.startsWith(`${baseUrl}/`) && !url.startsWith(`${baseUrl}?`)) {
+    config.url = `${baseUrl}/${url.replace(/^\/+/, '')}`
+  }
   const isFormData =
     typeof FormData !== 'undefined' && config.data instanceof FormData
 
-  if (typeof window === 'undefined') {
-    config.url = `${getServerApiBaseUrl()}/${path}`
-  } else {
-    config.url = `/api/proxy/${path}`
+  if (typeof window !== 'undefined') {
     config.headers['X-Session-ID'] = getSessionId()
     config.headers['X-Trace-ID'] = generateTraceId()
   }

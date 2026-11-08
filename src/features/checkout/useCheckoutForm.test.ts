@@ -1,4 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
+import { AxiosError } from 'axios'
 import type * as React from 'react'
 import { useCheckoutForm } from '@/features/checkout/useCheckoutForm'
 import * as paymentApi from '@/features/payment/paymentApi'
@@ -287,5 +288,70 @@ describe('useCheckoutForm', () => {
     })
 
     expect(useCartStore.getState().count).toBe(1)
+  })
+
+  it.each(['network', 'server'])('reuses the checkout key after an uncertain %s failure', async (failure) => {
+    const error = failure === 'network' ? new Error('Response lost') : new AxiosError(
+      'Server error', undefined, undefined, undefined,
+      { status: 500 } as never,
+    )
+
+    mockedPaymentApi.createCheckout.mockRejectedValueOnce(error).mockResolvedValueOnce({
+      orderId: 'o1', stripeSessionId: 'cs_test', checkoutUrl: 'https://checkout.stripe.com/test',
+    })
+    const { result } = renderHook(() => useCheckoutForm())
+
+    await act(async () => { await result.current.handleSubmit(mockSubmitEvent()) })
+    await act(async () => { await result.current.handleSubmit(mockSubmitEvent()) })
+
+    expect(mockedPaymentApi.createCheckout).toHaveBeenCalledTimes(2)
+    expect(mockedPaymentApi.createCheckout.mock.calls[1][1]).toBe(
+      mockedPaymentApi.createCheckout.mock.calls[0][1],
+    )
+  })
+
+  it('keeps the same checkout key when only the verification token changes', async () => {
+    mockCheckoutTurnstileEnabled = true
+    mockedPaymentApi.createCheckout.mockRejectedValue(new Error('Response lost'))
+    const { result } = renderHook(() => useCheckoutForm())
+
+    act(() => result.current.handleTurnstileVerify('first-token'))
+    await act(async () => { await result.current.handleSubmit(mockSubmitEvent()) })
+    act(() => result.current.handleTurnstileVerify('renewed-token'))
+    await act(async () => { await result.current.handleSubmit(mockSubmitEvent()) })
+
+    expect(mockedPaymentApi.createCheckout.mock.calls[1][1]).toBe(
+      mockedPaymentApi.createCheckout.mock.calls[0][1],
+    )
+    expect(mockedPaymentApi.createCheckout.mock.calls[1][0].turnstileToken).toBe('renewed-token')
+  })
+
+  it.each(['recipient', 'cart', 'account', 'validation'])('uses a new key after changing %s', async (change) => {
+    mockedPaymentApi.createCheckout.mockRejectedValue(change === 'validation'
+      ? new AxiosError('Expired session', undefined, undefined, undefined, { status: 400 } as never)
+      : new Error('Response lost'))
+    const { result } = renderHook(() => useCheckoutForm())
+
+    await act(async () => { await result.current.handleSubmit(mockSubmitEvent()) })
+
+    act(() => {
+      if (change === 'recipient') {
+        result.current.updateField('recipientName')({ target: { value: 'New name' } } as never)
+      } else if (change === 'cart') {
+        useCartStore.setState({ tempItems: useCartStore.getState().tempItems.map(
+          item => ({ ...item, productQuantity: 2 }),
+        ) })
+      } else if (change === 'account') {
+        useAuthStore.getState().setAuthenticated({
+          ...useAuthStore.getState().userData!, id: 'u2', email: 'other@example.com',
+        })
+      }
+    })
+    await act(async () => { await result.current.handleSubmit(mockSubmitEvent()) })
+
+    expect(mockedPaymentApi.createCheckout).toHaveBeenCalledTimes(2)
+    expect(mockedPaymentApi.createCheckout.mock.calls[1][1]).not.toBe(
+      mockedPaymentApi.createCheckout.mock.calls[0][1],
+    )
   })
 })

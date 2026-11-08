@@ -8,6 +8,8 @@ import {
   type SyntheticEvent,
 } from 'react'
 import { useAuthStore } from '@/features/auth/public'
+import { captureAccountScope } from '@/features/auth/accountScope'
+import axios from 'axios'
 import { useAddressStore } from '@/features/addresses/store'
 import { useCartStore } from '@/features/cart/public'
 import {
@@ -107,6 +109,7 @@ export function useCheckoutForm() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const turnstileRef = useRef<TurnstileInstance>(null)
   const checkoutInFlightRef = useRef(false)
+  const checkoutAttemptRef = useRef<{ fingerprint: string; key: string } | null>(null)
   const formAccount = useRef(userData?.email ?? null)
 
   useEffect(() => {
@@ -174,13 +177,37 @@ export function useCheckoutForm() {
     setLoading(true)
 
     try {
-      const idempotencyKey = crypto.randomUUID()
       const trimmedForm = trimFormValues(form)
 
       if (!hasRequiredCheckoutFields(trimmedForm, selectedAddress)) {
         setError('Please complete all required checkout fields.')
 
         return
+      }
+
+      const account = captureAccountScope()
+      const payload = {
+        recipientName: trimmedForm.recipientName,
+        recipientSurname: trimmedForm.recipientSurname,
+        recipientPhone: trimmedForm.recipientPhone || undefined,
+        ...(selectedAddress
+          ? { deliveryAddressId: selectedAddress.id }
+          : { address: resolveShippingAddress(trimmedForm, null) }),
+      }
+      // A lost response may follow a committed order. Retry that intent with
+      // the same key, including after renewing an expired Turnstile token.
+      const fingerprint = JSON.stringify({
+        account: account.key,
+        payload,
+        items: tempItems.map((item) => ({
+          id: item.productInfo.id,
+          quantity: item.productQuantity,
+          price: item.productInfo.price,
+        })).sort((a, b) => a.id.localeCompare(b.id)),
+      })
+
+      if (checkoutAttemptRef.current?.fingerprint !== fingerprint) {
+        checkoutAttemptRef.current = { fingerprint, key: crypto.randomUUID() }
       }
 
       trackGoogleAnalyticsEvent('begin_checkout', {
@@ -194,21 +221,21 @@ export function useCheckoutForm() {
 
       const checkout = await createCheckout(
         {
-          recipientName: trimmedForm.recipientName,
-          recipientSurname: trimmedForm.recipientSurname,
-          recipientPhone: trimmedForm.recipientPhone || undefined,
+          ...payload,
           ...(checkoutTurnstileEnabled ? { turnstileToken } : {}),
-          ...(selectedAddress
-            ? { deliveryAddressId: selectedAddress.id }
-            : { address: resolveShippingAddress(trimmedForm, null) }),
         },
-        idempotencyKey,
+        checkoutAttemptRef.current.key,
       )
 
       // Redirect to Stripe Hosted Checkout; the backend webhook clears the cart
       // after payment confirmation.
-      redirectToHostedCheckout(checkout.checkoutUrl)
+      if (account.isCurrent()) redirectToHostedCheckout(checkout.checkoutUrl)
     } catch (error) {
+      // Validation errors (including an expired checkout session) explicitly
+      // reject the attempt. Network errors and server failures remain uncertain.
+      if (axios.isAxiosError(error) && [400, 422].includes(error.response?.status ?? 0)) {
+        checkoutAttemptRef.current = null
+      }
       setError(getCheckoutErrorMessage(error))
       setTurnstileToken('')
       turnstileRef.current?.reset()

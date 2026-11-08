@@ -107,6 +107,20 @@ describe('proxy route', () => {
     expect(await res.json()).toEqual({ products: [] })
   })
 
+  it.each(['Cold Brew', 'café 茶', 'latte &size=999#notes'])('preserves the decoded search keyword %s without changing other parameters', async (keyword) => {
+    mockFetch(200, { products: [] })
+    const query = new URLSearchParams({ keyword, size: '6' })
+    const response = await GET(makeRequest('GET', `products?${query}`), {
+      params: Promise.resolve({ path: ['products'] }),
+    })
+    const upstream = new URL(jest.mocked(global.fetch).mock.calls[0][0] as string)
+
+    expect(response.status).toBe(200)
+    expect(upstream.searchParams.get('keyword')).toBe(keyword)
+    expect(upstream.searchParams.getAll('size')).toEqual(['6'])
+    expect(upstream.hash).toBe('')
+  })
+
   it('uses internal API URL when configured', async () => {
     process.env.INTERNAL_API_URL = 'http://iced-latte-backend:8083/api/v1'
     mockFetch(200, { products: [] })

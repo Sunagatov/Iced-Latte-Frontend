@@ -23,10 +23,9 @@ export function sanitizeQueryString(params: URLSearchParams): string {
   const safe = new URLSearchParams()
 
   for (const [key, value] of params.entries()) {
-    if (
-      ALLOWED_QUERY_PARAM_RE.test(key) &&
-      ALLOWED_QUERY_PARAM_RE.test(value)
-    ) {
+    // Values are decoded here; URLSearchParams safely re-encodes spaces,
+    // Unicode and punctuation without turning them into extra parameters.
+    if (ALLOWED_QUERY_PARAM_RE.test(key)) {
       safe.append(key, value)
     }
   }

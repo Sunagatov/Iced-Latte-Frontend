@@ -64,4 +64,23 @@ describe('api client on the server', () => {
       'INTERNAL_API_URL is required in production server-side runtime',
     )
   })
+
+  it('preserves the internal API URL when resending a request config', async () => {
+    const urls: string[] = []
+    const response = await api.get('/products?keyword=Cold%20Brew', {
+      cache: false,
+      adapter: async (config) => {
+        urls.push(config.url!)
+
+        return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+      },
+    })
+
+    await api.request(response.config)
+
+    expect(urls).toEqual([
+      'http://iced-latte-backend:8083/api/v1/products?keyword=Cold%20Brew',
+      'http://iced-latte-backend:8083/api/v1/products?keyword=Cold%20Brew',
+    ])
+  })
 })

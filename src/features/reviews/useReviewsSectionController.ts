@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type * as React from 'react'
 import { useOnClickOutside } from 'usehooks-ts'
 import { useAuthStore } from '@/features/auth/public'
+import { captureAccountScope, useAccountScopeKey } from '@/features/auth/accountScope'
 import { apiGetProductUserReview } from '@/features/reviews/api'
 import { reviewsSortOptions } from '@/features/reviews/constants'
 import { useReviews } from '@/features/reviews/hooks'
@@ -30,12 +31,19 @@ export function useReviewsSectionController({
 }: UseReviewsSectionControllerParams) {
   const { errorMessage, handleError } = useErrorHandler()
   const authStatus = useAuthStore((state) => state.status)
+  const accountKey = useAccountScopeKey()
+  const reviewKey = JSON.stringify([accountKey, productId])
   const isLoggedIn = authStatus === 'authenticated'
-  const [userReview, setUserReview] = useState<Review | null>(null)
-  const [userReviewError, setUserReviewError] = useState<string | null>(null)
-  const [isUserReviewLoading, setIsUserReviewLoading] = useState(
-    authStatus !== 'anonymous',
-  )
+  const [lookup, setLookup] = useState<{
+    key: string
+    review: Review | null
+    error: string | null
+    loading: boolean
+  }>({ key: reviewKey, review: null, error: null, loading: authStatus !== 'anonymous' })
+  const ownsLookup = lookup.key === reviewKey
+  const userReview = ownsLookup ? lookup.review : null
+  const userReviewError = ownsLookup ? lookup.error : null
+  const isUserReviewLoading = ownsLookup ? lookup.loading : authStatus !== 'anonymous'
   const [showForm, setShowForm] = useState(false)
   const [selectedFilterRating, setSelectedFilterRating] = useState<number[]>([])
   const [showFilterDropdown, setShowFilterDropdown] = useState(false)
@@ -50,55 +58,50 @@ export function useReviewsSectionController({
   )
 
   const refreshUserReview = useCallback(async () => {
-    const requestId = ++reviewRequestRef.current
+    const account = captureAccountScope()
 
-    setIsUserReviewLoading(true)
-    setUserReviewError(null)
+    if (account.key !== accountKey) return
+    const requestId = ++reviewRequestRef.current
+    const isCurrent = () => requestId === reviewRequestRef.current && account.isCurrent()
+
+    setLookup((previous) => ({
+      key: reviewKey,
+      review: previous.key === reviewKey ? previous.review : null,
+      error: null,
+      loading: true,
+    }))
 
     try {
       const review = await apiGetProductUserReview(productId)
 
-      if (requestId !== reviewRequestRef.current) return
+      if (!isCurrent()) return
       const nextUserReview = checkIfUserReviewExists(review) ? review : null
 
-      setUserReview(nextUserReview)
+      setLookup({ key: reviewKey, review: nextUserReview, error: null, loading: false })
 
       if (nextUserReview) {
         setShowForm(false)
       }
     } catch {
-      if (requestId === reviewRequestRef.current) {
-        setUserReviewError('Could not check your review. Please try again.')
+      if (isCurrent()) {
+        setLookup((previous) => ({
+          ...previous,
+          error: 'Could not check your review. Please try again.',
+          loading: false,
+        }))
       }
-    } finally {
-      if (requestId === reviewRequestRef.current) setIsUserReviewLoading(false)
     }
-  }, [productId])
+  }, [accountKey, productId, reviewKey])
 
   useEffect(() => {
-    if (authStatus === 'loading') {
-      setIsUserReviewLoading(true)
-      setUserReview(null)
-      setShowForm(false)
-
-      return
-    }
-
-    if (!isLoggedIn) {
-      setUserReviewError(null)
-      setUserReview(null)
-      setShowForm(false)
-      setIsUserReviewLoading(false)
-
-      return
-    }
-
-    void refreshUserReview()
+    setLookup({ key: reviewKey, review: null, error: null, loading: authStatus !== 'anonymous' })
+    setShowForm(false)
+    if (isLoggedIn) void refreshUserReview()
 
     return () => {
       reviewRequestRef.current += 1
     }
-  }, [authStatus, isLoggedIn, refreshUserReview])
+  }, [authStatus, isLoggedIn, refreshUserReview, reviewKey])
 
   const reviewsState = useReviews({
     productId,
