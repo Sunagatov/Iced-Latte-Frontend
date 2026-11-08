@@ -59,6 +59,8 @@ function canonicalFrontendOrigin() {
 }
 
 const nextConfig = {
+  // Keep repository-owned agent guidance unchanged during dev and release checks.
+  agentRules: false,
   output: 'standalone',
   compress: true,
   serverExternalPackages: [],

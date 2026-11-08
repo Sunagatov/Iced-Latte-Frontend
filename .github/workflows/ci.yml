@@ -194,6 +194,7 @@ jobs:
           exit 1
 
       - name: Run local provider-disabled smoke
+        timeout-minutes: 5
         working-directory: Iced-Latte-Frontend
         env:
           NEXT_PUBLIC_STRIPE_ENABLED: "false"
@@ -204,7 +205,7 @@ jobs:
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
           NEXT_PUBLIC_TURNSTILE_SUPPORT_CHAT_ENABLED: "false"
           NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED: "false"
-        run: npm run test:e2e:local-smoke
+        run: npm run test:e2e:local-smoke -- --timeout=120000 --global-timeout=180000 --reporter=line
 
       - name: Upload Playwright report
         if: failure()
