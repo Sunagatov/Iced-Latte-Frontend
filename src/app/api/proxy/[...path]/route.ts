@@ -1,13 +1,15 @@
+import {
+  OAUTH_VERIFIER_COOKIE,
+  RECOVERY_COOKIE,
+  STORED_RECOVERY_TOKEN,
+} from '@/shared/auth/flowCookies'
 import type { NextRequest } from 'next/server'
 import { COOKIE_NAMES } from '@/shared/auth/cookieNames'
 import { isTokenExpired } from '@/shared/auth/token'
 import { NextResponse } from 'next/server'
 import { createCorsResponse, handleOptions } from '@/shared/utils/corsUtils'
 import { getAllowedFrontendOrigins } from '@/shared/config/frontendOrigins'
-import {
-  getApiBaseUrl,
-  type ProxyMethod,
-} from './proxyConstants'
+import { getApiBaseUrl, type ProxyMethod } from './proxyConstants'
 import {
   fetchWithTimeout,
   forwardHeaders,
@@ -22,7 +24,12 @@ type RouteContext = {
   params: Promise<{ path: string[] }>
 }
 
-const MUTATING_METHODS = new Set<ProxyMethod>(['POST', 'PUT', 'PATCH', 'DELETE'])
+const MUTATING_METHODS = new Set<ProxyMethod>([
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+])
 
 function extractRequestOrigin(request: NextRequest): string | undefined {
   const rawOrigin =
@@ -98,11 +105,53 @@ async function handleProxy(
 
   const url = new URL(request.url)
   const apiUrl = `${apiBaseUrl}/${safePath}${sanitizeQueryString(url.searchParams)}`
-  const body = await readProxyBody(request, method, requestOrigin)
+  let body = await readProxyBody(request, method, requestOrigin)
 
   if (body instanceof NextResponse) return body
 
   const headers = forwardHeaders(request, safePath) as Record<string, string>
+
+  if (safePath === 'auth/oauth/token') {
+    const verifier = request.cookies.get(OAUTH_VERIFIER_COOKIE)?.value
+
+    if (
+      method !== 'POST' ||
+      !verifier ||
+      !/^[A-Za-z0-9_-]{43}$/.test(verifier)
+    ) {
+      return createCorsResponse(
+        { error: 'Start sign-in again' },
+        400,
+        requestOrigin,
+      )
+    }
+    headers['X-OAuth-Verifier'] = verifier
+  }
+  if (safePath === 'auth/password/change' && method === 'POST' && body) {
+    try {
+      const payload = JSON.parse(new TextDecoder().decode(body as ArrayBuffer))
+
+      if (payload.code === STORED_RECOVERY_TOKEN) {
+        const token = request.cookies.get(RECOVERY_COOKIE)?.value
+
+        if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) {
+          return createCorsResponse(
+            { error: 'Recovery link expired' },
+            400,
+            requestOrigin,
+          )
+        }
+        payload.code = token
+        body = JSON.stringify(payload)
+      }
+    } catch {
+      return createCorsResponse(
+        { error: 'Invalid recovery request' },
+        400,
+        requestOrigin,
+      )
+    }
+  }
   const refreshedTokens = await refreshAuthHeaderIfNeeded(
     request,
     safePath,
@@ -112,12 +161,22 @@ async function handleProxy(
   try {
     const response = await fetchWithTimeout(apiUrl, { method, headers, body })
 
-    return createProxyResponse(
+    const proxyResponse = await createProxyResponse(
       response,
       safePath,
       refreshedTokens,
       requestOrigin,
     )
+
+    if (safePath === 'auth/oauth/token')
+      proxyResponse.cookies.set(OAUTH_VERIFIER_COOKIE, '', {
+        path: '/api/proxy/auth/oauth/token',
+        maxAge: 0,
+      })
+    if (safePath === 'auth/password/change' && response.ok)
+      proxyResponse.cookies.set(RECOVERY_COOKIE, '', { path: '/', maxAge: 0 })
+
+    return proxyResponse
   } catch {
     return createCorsResponse({ error: 'API unavailable' }, 503, requestOrigin)
   }

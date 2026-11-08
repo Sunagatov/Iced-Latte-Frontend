@@ -33,10 +33,10 @@ describe('AuthResetPassForm', () => {
     render(<AuthResetPassForm />)
 
     fireEvent.change(screen.getByLabelText('Current password'), {
-      target: { value: 'OldPass1' },
+      target: { value: 'old' },
     })
     fireEvent.change(screen.getByLabelText('New password'), {
-      target: { value: 'NewPass1' },
+      target: { value: 'gentle river coffee morning' },
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Change password' }))

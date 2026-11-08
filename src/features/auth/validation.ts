@@ -1,11 +1,11 @@
+import { STORED_RECOVERY_TOKEN } from '@/shared/auth/flowCookies'
 import * as yup from 'yup'
 
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
 const URL_SAFE_TOKEN_REGEX = /^[A-Za-z0-9_-]{43}$/
-const PASSWORD_HINT =
-  'Password must contain at least 1 lowercase letter, 1 uppercase letter, and 1 digit'
 
-export function isUrlSafeToken(value: string | null | undefined): value is string {
+export function isUrlSafeToken(
+  value: string | null | undefined,
+): value is string {
   return typeof value === 'string' && URL_SAFE_TOKEN_REGEX.test(value)
 }
 
@@ -44,22 +44,24 @@ export const registrationSchema = yup.object().shape({
   password: yup
     .string()
     .required('Password is required')
-    .min(8, 'Password must be between 8 and 128 characters')
-    .max(128, 'Password must be between 8 and 128 characters')
-    .matches(PASSWORD_REGEX, PASSWORD_HINT),
+    .min(15, 'Use at least 15 characters; a long passphrase works well')
+    .max(128, 'Password must be at most 128 characters'),
 })
 
 export const changePassSchema = yup.object().shape({
   code: yup
     .string()
     .required('Code is required')
-    .matches(URL_SAFE_TOKEN_REGEX, 'Code must be a valid reset token'),
+    .test(
+      'reset-token',
+      'Code must be a valid reset token',
+      (value) => isUrlSafeToken(value) || value === STORED_RECOVERY_TOKEN,
+    ),
   password: yup
     .string()
     .required('Password is a required field')
-    .min(8, 'Password should have a length between 8 and 128 characters')
-    .max(128, 'Password should have a length between 8 and 128 characters')
-    .matches(PASSWORD_REGEX, PASSWORD_HINT),
+    .min(15, 'Use at least 15 characters; a long passphrase works well')
+    .max(128, 'Password must be at most 128 characters'),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref('password')], 'Passwords must match')
@@ -70,15 +72,14 @@ export const authChangePassSchema = yup.object().shape({
   oldPassword: yup
     .string()
     .required('Old Password is a required field')
-    .min(8, 'Old Password should have a length between 8 and 128 characters')
-    .max(128, 'Old Password should have a length between 8 and 128 characters')
-    .matches(PASSWORD_REGEX, PASSWORD_HINT),
+    .min(1, 'Old Password is a required field')
+    .max(128, 'Old Password must be at most 128 characters'),
   newPassword: yup
     .string()
     .required('New Password is a required field')
-    .min(8, 'New Password should have a length between 8 and 128 characters')
-    .max(128, 'New Password should have a length between 8 and 128 characters')
-    .matches(PASSWORD_REGEX, PASSWORD_HINT)
+    .min(15, 'Use at least 15 characters; a long passphrase works well')
+    .max(128, 'Password must be at most 128 characters')
+
     .notOneOf(
       [yup.ref('oldPassword')],
       'New Password must not be the same as Old Password',

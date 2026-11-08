@@ -9,14 +9,26 @@ export const SENTRY_DATA_COLLECTION = {
     response: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
   },
   httpBodies: [],
-  urlQueryParams: { deny: ['forwarded', '-ip', 'remote-', 'via', '-user'] },
+  urlQueryParams: {
+    deny: [
+      'forwarded',
+      '-ip',
+      'remote-',
+      'via',
+      '-user',
+      'token',
+      'code',
+      'oauthCode',
+      'codeChallenge',
+    ],
+  },
   genAI: { inputs: false, outputs: false },
   databaseQueryData: false,
   queues: false,
   graphQL: { document: false, variables: false },
 }
 
-const SENSITIVE_REQUEST_HEADERS = new Set(['authorization', 'cookie'])
+const SENSITIVE_REQUEST_HEADERS = new Set(['authorization', 'cookie', 'x-oauth-verifier'])
 
 export function parseTelemetrySampleRate(value: string | undefined): number {
   if (!value) return 0

@@ -107,19 +107,24 @@ describe('proxy route', () => {
     expect(await res.json()).toEqual({ products: [] })
   })
 
-  it.each(['Cold Brew', 'café 茶', 'latte &size=999#notes'])('preserves the decoded search keyword %s without changing other parameters', async (keyword) => {
-    mockFetch(200, { products: [] })
-    const query = new URLSearchParams({ keyword, size: '6' })
-    const response = await GET(makeRequest('GET', `products?${query}`), {
-      params: Promise.resolve({ path: ['products'] }),
-    })
-    const upstream = new URL(jest.mocked(global.fetch).mock.calls[0][0] as string)
+  it.each(['Cold Brew', 'café 茶', 'latte &size=999#notes'])(
+    'preserves the decoded search keyword %s without changing other parameters',
+    async (keyword) => {
+      mockFetch(200, { products: [] })
+      const query = new URLSearchParams({ keyword, size: '6' })
+      const response = await GET(makeRequest('GET', `products?${query}`), {
+        params: Promise.resolve({ path: ['products'] }),
+      })
+      const upstream = new URL(
+        jest.mocked(global.fetch).mock.calls[0][0] as string,
+      )
 
-    expect(response.status).toBe(200)
-    expect(upstream.searchParams.get('keyword')).toBe(keyword)
-    expect(upstream.searchParams.getAll('size')).toEqual(['6'])
-    expect(upstream.hash).toBe('')
-  })
+      expect(response.status).toBe(200)
+      expect(upstream.searchParams.get('keyword')).toBe(keyword)
+      expect(upstream.searchParams.getAll('size')).toEqual(['6'])
+      expect(upstream.hash).toBe('')
+    },
+  )
 
   it('uses internal API URL when configured', async () => {
     process.env.INTERNAL_API_URL = 'http://iced-latte-backend:8083/api/v1'
@@ -183,7 +188,12 @@ describe('proxy route', () => {
   it('parses application/problem+json as JSON', async () => {
     mockFetch(
       400,
-      { type: 'about:blank', title: 'Bad Request', status: 400, detail: 'Validation failed' },
+      {
+        type: 'about:blank',
+        title: 'Bad Request',
+        status: 400,
+        detail: 'Validation failed',
+      },
       'application/problem+json',
     )
 
@@ -216,9 +226,14 @@ describe('proxy route', () => {
     global.fetch = jest.fn()
 
     const res = await POST(
-      makeRequest('POST', 'telemetry', { event: 'view' }, {
-        origin: 'https://evil.example',
-      }),
+      makeRequest(
+        'POST',
+        'telemetry',
+        { event: 'view' },
+        {
+          origin: 'https://evil.example',
+        },
+      ),
       {
         params: Promise.resolve({ path: ['telemetry'] }),
       },
@@ -233,10 +248,15 @@ describe('proxy route', () => {
     mockFetch(200, { ok: true })
 
     const res = await POST(
-      makeRequest('POST', 'telemetry', { event: 'view' }, {
-        origin: '',
-        referer: 'http://localhost/account',
-      }),
+      makeRequest(
+        'POST',
+        'telemetry',
+        { event: 'view' },
+        {
+          origin: '',
+          referer: 'http://localhost/account',
+        },
+      ),
       {
         params: Promise.resolve({ path: ['telemetry'] }),
       },
@@ -250,9 +270,14 @@ describe('proxy route', () => {
     global.fetch = jest.fn()
 
     const res = await POST(
-      makeRequest('POST', 'telemetry', { event: 'view' }, {
-        'content-length': String(5 * 1024 * 1024 + 1),
-      }),
+      makeRequest(
+        'POST',
+        'telemetry',
+        { event: 'view' },
+        {
+          'content-length': String(5 * 1024 * 1024 + 1),
+        },
+      ),
       {
         params: Promise.resolve({ path: ['telemetry'] }),
       },
@@ -267,9 +292,14 @@ describe('proxy route', () => {
     global.fetch = jest.fn()
 
     const res = await POST(
-      makeRequest('POST', 'telemetry', { event: 'view' }, {
-        'content-length': '-1',
-      }),
+      makeRequest(
+        'POST',
+        'telemetry',
+        { event: 'view' },
+        {
+          'content-length': '-1',
+        },
+      ),
       {
         params: Promise.resolve({ path: ['telemetry'] }),
       },
@@ -283,11 +313,16 @@ describe('proxy route', () => {
     mockFetch(200, { ok: true })
 
     const res = await POST(
-      makeRequest('POST', 'telemetry', { event: 'view' }, {
-        'x-forwarded-for': '203.0.113.10',
-        'x-forwarded-proto': 'https',
-        'x-real-ip': '203.0.113.11',
-      }),
+      makeRequest(
+        'POST',
+        'telemetry',
+        { event: 'view' },
+        {
+          'x-forwarded-for': '203.0.113.10',
+          'x-forwarded-proto': 'https',
+          'x-real-ip': '203.0.113.11',
+        },
+      ),
       {
         params: Promise.resolve({ path: ['telemetry'] }),
       },
@@ -366,7 +401,6 @@ describe('proxy route', () => {
       json: () => Promise<unknown>
       text: () => Promise<string>
     }
-
     ;(global as { fetch: unknown }).fetch = jest.fn((url: string) => {
       if (url.endsWith('/auth/refresh')) {
         refreshCalls += 1
@@ -449,7 +483,10 @@ describe('proxy route', () => {
           Promise.resolve({ token: 'new-access', refreshToken: 'new-refresh' }),
         text: () =>
           Promise.resolve(
-            JSON.stringify({ token: 'new-access', refreshToken: 'new-refresh' }),
+            JSON.stringify({
+              token: 'new-access',
+              refreshToken: 'new-refresh',
+            }),
           ),
       })
     })
@@ -491,7 +528,6 @@ describe('proxy route', () => {
       json: () => Promise<unknown>
       text: () => Promise<string>
     }
-
     ;(global as { fetch: unknown }).fetch = jest.fn(
       (url: string, options?: RequestInit) => {
         if (url.endsWith('/auth/refresh')) {
@@ -514,7 +550,8 @@ describe('proxy route', () => {
                   ? 'application/json'
                   : null,
             },
-            text: () => Promise.resolve(JSON.stringify({ email: 'alice@example.com' })),
+            text: () =>
+              Promise.resolve(JSON.stringify({ email: 'alice@example.com' })),
           })
         }
 
@@ -579,7 +616,9 @@ describe('proxy route', () => {
     mockFetch(200, { token: 'oauth-access', refreshToken: 'oauth-refresh' })
 
     const res = await POST(
-      makeRequest('POST', 'auth/oauth/token?code=handoff-code'),
+      makeRequest('POST', 'auth/oauth/token?code=handoff-code', undefined, {
+        cookie: 'oauth_browser_verifier=' + 'B'.repeat(43),
+      }),
       {
         params: Promise.resolve({ path: ['auth', 'oauth', 'token'] }),
       },
@@ -588,9 +627,9 @@ describe('proxy route', () => {
     const setCookie = res.headers.getSetCookie()
 
     expect(res.status).toBe(200)
-    expect(setCookie.some((value) => value.includes('token=oauth-access'))).toBe(
-      true,
-    )
+    expect(
+      setCookie.some((value) => value.includes('token=oauth-access')),
+    ).toBe(true)
     expect(
       setCookie.some((value) => value.includes('refreshToken=oauth-refresh')),
     ).toBe(true)
@@ -617,8 +656,12 @@ describe('proxy route', () => {
     const setCookie = res.headers.getSetCookie()
 
     expect(res.status).toBe(200)
-    expect(setCookie.some((value) => value.includes('token=access-token'))).toBe(true)
-    expect(setCookie.some((value) => value.includes('refreshToken=refresh-token'))).toBe(true)
+    expect(
+      setCookie.some((value) => value.includes('token=access-token')),
+    ).toBe(true)
+    expect(
+      setCookie.some((value) => value.includes('refreshToken=refresh-token')),
+    ).toBe(true)
     expect(await res.json()).toEqual({ authenticated: true })
   })
 
@@ -660,7 +703,7 @@ describe('proxy route', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          Authorization: `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${accessToken}`,
           'X-Refresh-Token': 'refresh.jwt.value',
         }),
       }),
@@ -730,5 +773,84 @@ describe('proxy route', () => {
     })
 
     expect(res.status).toBe(200)
+  })
+})
+
+describe('authentication transaction credentials', () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_API_URL = 'http://backend'
+    process.env.NEXT_PUBLIC_FRONTEND_URL = 'http://localhost'
+  })
+  it('rejects an unsolicited handoff, including a caller-supplied verifier header', async () => {
+    mockFetch(200, { token: 'access', refreshToken: 'refresh' })
+    const response = await POST(
+      makeRequest(
+        'POST',
+        'auth/oauth/token?code=' + 'A'.repeat(43),
+        undefined,
+        { 'X-OAuth-Verifier': 'B'.repeat(43) },
+      ),
+      { params: Promise.resolve({ path: ['auth', 'oauth', 'token'] }) },
+    )
+
+    expect(response.status).toBe(400)
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+  it('uses only the HttpOnly-cookie verifier and removes it after completion', async () => {
+    mockFetch(200, { token: 'access', refreshToken: 'refresh' })
+    const response = await POST(
+      makeRequest(
+        'POST',
+        'auth/oauth/token?code=' + 'A'.repeat(43),
+        undefined,
+        {
+          'cookie': 'oauth_browser_verifier=' + 'B'.repeat(43),
+          'X-OAuth-Verifier': 'attacker',
+        },
+      ),
+      { params: Promise.resolve({ path: ['auth', 'oauth', 'token'] }) },
+    )
+
+    expect(response.status).toBe(200)
+    expect(jest.mocked(global.fetch).mock.calls[0][1]?.headers).toMatchObject({
+      'X-OAuth-Verifier': 'B'.repeat(43),
+    })
+    expect(response.cookies.get('oauth_browser_verifier')?.value).toBe('')
+    expect(await response.json()).toEqual({ authenticated: true })
+  })
+  it('redeems a stored recovery link without exposing the token to browser JavaScript', async () => {
+    mockFetch(200, {})
+    const response = await POST(
+      makeRequest(
+        'POST',
+        'auth/password/change',
+        {
+          code: 'stored-recovery-link',
+          password: 'gentle river coffee morning',
+        },
+        { cookie: 'password_recovery=' + 'C'.repeat(43) },
+      ),
+      { params: Promise.resolve({ path: ['auth', 'password', 'change'] }) },
+    )
+
+    expect(response.status).toBe(200)
+    expect(
+      JSON.parse(jest.mocked(global.fetch).mock.calls[0][1]?.body as string)
+        .code,
+    ).toBe('C'.repeat(43))
+    expect(response.cookies.get('password_recovery')?.value).toBe('')
+  })
+  it('rejects a stored-link marker without a recovery cookie', async () => {
+    mockFetch(200, {})
+    const response = await POST(
+      makeRequest('POST', 'auth/password/change', {
+        code: 'stored-recovery-link',
+        password: 'gentle river coffee morning',
+      }),
+      { params: Promise.resolve({ path: ['auth', 'password', 'change'] }) },
+    )
+
+    expect(response.status).toBe(400)
+    expect(global.fetch).not.toHaveBeenCalled()
   })
 })

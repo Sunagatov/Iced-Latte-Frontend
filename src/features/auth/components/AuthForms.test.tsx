@@ -83,7 +83,7 @@ describe('auth submit forms', () => {
       target: { value: 'jane@example.com' },
     })
     fireEvent.change(screen.getByLabelText('Password'), {
-      target: { value: 'Password1' },
+      target: { value: 'gentle river coffee morning' },
     })
 
     const submitButton = screen.getByRole('button', { name: 'Register' })

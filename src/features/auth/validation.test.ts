@@ -1,4 +1,6 @@
 import {
+  authChangePassSchema,
+  loginSchema,
   changePassSchema,
   registrationSchema,
   verifyEmailCodeSchema,
@@ -11,8 +13,8 @@ describe('auth validation schemas', () => {
     await expect(
       changePassSchema.validate({
         code: VALID_TOKEN,
-        password: 'Password1',
-        confirmPassword: 'Password1',
+        password: 'gentle river coffee morning',
+        confirmPassword: 'gentle river coffee morning',
       }),
     ).resolves.toMatchObject({ code: VALID_TOKEN })
   })
@@ -21,8 +23,8 @@ describe('auth validation schemas', () => {
     await expect(
       changePassSchema.validate({
         code: '123456789',
-        password: 'Password1',
-        confirmPassword: 'Password1',
+        password: 'gentle river coffee morning',
+        confirmPassword: 'gentle river coffee morning',
       }),
     ).rejects.toThrow('Code must be a valid reset token')
   })
@@ -45,8 +47,32 @@ describe('auth validation schemas', () => {
         firstName: 'Anne',
         lastName: 'O’Connor',
         email: 'anne@example.com',
-        password: 'Password1',
+        password: 'gentle river coffee morning',
       }),
     ).resolves.toMatchObject({ lastName: 'O’Connor' })
+  })
+})
+
+describe('password compatibility', () => {
+  it('accepts legacy passwords for login and current-password proof', async () => {
+    await expect(
+      loginSchema.validate({ email: 'user@example.com', password: 'old' }),
+    ).resolves.toBeDefined()
+    await expect(
+      authChangePassSchema.validate({
+        oldPassword: 'old',
+        newPassword: 'gentle river coffee morning',
+      }),
+    ).resolves.toBeDefined()
+  })
+  it('rejects short newly created passwords', async () => {
+    await expect(
+      registrationSchema.validate({
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'user@example.com',
+        password: 'ShortPass1',
+      }),
+    ).rejects.toThrow('15')
   })
 })

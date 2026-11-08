@@ -34,6 +34,7 @@ describe('Sentry config helpers', () => {
         headers: {
           Authorization: 'Bearer token',
           Cookie: 'session=value',
+          'X-OAuth-Verifier': 'private-verifier',
           'x-request-id': 'request-id',
         },
       },

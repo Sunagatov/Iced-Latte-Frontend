@@ -50,11 +50,11 @@ export default function ForgotPassForm() {
           </h2>
           <p className="mt-3 text-sm text-[#64748B]">
             Email service is not configured in this environment. Please contact
-            the administrator or reset your password directly in the database.
+            support for help recovering your account.
           </p>
           <Link
             href={ROUTES.signin}
-            className="mt-6 inline-block text-sm text-brand hover:underline"
+            className="text-brand mt-6 inline-block text-sm hover:underline"
           >
             Back to sign in
           </Link>
@@ -85,7 +85,7 @@ export default function ForgotPassForm() {
     return (
       <div className="flex min-h-[calc(100vh-7rem-7rem)] items-center justify-center px-6">
         <div className="w-full max-w-[420px] rounded-2xl border border-[#E2E8F0] bg-white p-10 text-center shadow-sm">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-brand-second text-brand">
+          <div className="bg-brand-second text-brand mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"
@@ -123,7 +123,7 @@ export default function ForgotPassForm() {
           </Button>
           <Link
             href={ROUTES.signin}
-            className="mt-4 block text-sm text-brand hover:underline"
+            className="text-brand mt-4 block text-sm hover:underline"
           >
             Back to sign in
           </Link>

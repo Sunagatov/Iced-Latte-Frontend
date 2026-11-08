@@ -106,6 +106,7 @@ const stripFrontendExcludedPaths = (specName: string) =>
 const makeApi = (specName: string, outputName: string) => ({
   input: {
     target: `${backendSpecsDir}/${specName}-openapi.yaml`,
+    parserOptions: { externalRefs: { allow: ['common-schemas.yaml', './user-openapi.yaml', 'user-openapi.yaml', './product-openapi.yaml', 'order-openapi.yaml'] } },
     filters: {
       mode: 'exclude' as const,
       schemas: frontendExcludedSchemasBySpec[outputName],

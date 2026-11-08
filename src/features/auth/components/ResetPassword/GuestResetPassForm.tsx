@@ -1,5 +1,6 @@
 'use client'
 
+import { STORED_RECOVERY_TOKEN } from '@/shared/auth/flowCookies'
 import { useEffect, useState } from 'react'
 import type * as React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -12,10 +13,7 @@ import {
 } from 'react-icons/ri'
 import { apiGuestResetPassword } from '@/features/auth/api'
 import { ROUTES } from '@/shared/config/routes'
-import {
-  changePassSchema,
-  isUrlSafeToken,
-} from '@/features/auth/validation'
+import { changePassSchema, isUrlSafeToken } from '@/features/auth/validation'
 import { authTurnstileEnabled } from '@/features/auth/config'
 import type { GuestResetPasswordCredentials } from '@/features/auth/types'
 import { getPasswordStrength } from '@/features/auth/passwordStrength'
@@ -56,11 +54,18 @@ export default function GuestResetPassForm() {
   })
   const router = useRouter()
   const searchParams = useSearchParams()
-  const tokenFromUrl = searchParams.get('token')
-  const hasValidUrlToken = isUrlSafeToken(tokenFromUrl)
+  const tokenFromUrl =
+    searchParams.get('recovery') === '1'
+      ? STORED_RECOVERY_TOKEN
+      : searchParams.get('token')
+  const hasValidUrlToken =
+    tokenFromUrl === STORED_RECOVERY_TOKEN || isUrlSafeToken(tokenFromUrl)
 
   useEffect(() => {
-    if (isUrlSafeToken(tokenFromUrl)) {
+    if (
+      tokenFromUrl === STORED_RECOVERY_TOKEN ||
+      isUrlSafeToken(tokenFromUrl)
+    ) {
       setValue('code', tokenFromUrl)
     }
   }, [setValue, tokenFromUrl])
@@ -162,7 +167,7 @@ export default function GuestResetPassForm() {
                     label="New password"
                     type="password"
                     autoComplete="new-password"
-                    placeholder="Minimum 8 characters, one letter, one digit"
+                    placeholder="At least 15 characters; spaces are welcome"
                     error={errors.password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewPw(e.target.value)

@@ -1,3 +1,4 @@
+import { redirectWithOAuthTransaction } from '../oauthTransaction'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSafeNext } from '@/shared/utils/navigation'
 import { getBackendOAuthUrl, getFrontendOrigin } from '../oauthUrls'
@@ -30,5 +31,5 @@ export async function GET(request: NextRequest) {
 
   backendUrl.searchParams.set('redirectUrl', callbackUrl.toString())
 
-  return NextResponse.redirect(backendUrl.toString())
+  return redirectWithOAuthTransaction(backendUrl)
 }

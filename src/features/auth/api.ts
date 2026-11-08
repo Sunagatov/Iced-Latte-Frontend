@@ -16,17 +16,12 @@ import {
 } from '@/shared/api/generated/security'
 import { changeUserPassword } from '@/shared/api/generated/user'
 
-type AuthSessionResult = {
-  authenticated?: boolean
-}
-
 export async function apiRegisterUser(
   credentials: RegisterCredentials,
 ): Promise<boolean> {
-  const result: Awaited<ReturnType<typeof register>> & AuthSessionResult =
-    await register(credentials)
+  await register(credentials)
 
-  return result.authenticated === true
+  return false
 }
 
 export async function verifyEmailCode(

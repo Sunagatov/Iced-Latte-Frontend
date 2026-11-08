@@ -38,7 +38,9 @@ export default function AuthResetPassForm({
 }: Readonly<AuthResetPassFormProps>) {
   const [loading, setLoading] = useState(false)
   const [newPw, setNewPw] = useState('')
-  const [changeSuccessful, setChangeSuccessful] = useState(initialChangeSuccessful)
+  const [changeSuccessful, setChangeSuccessful] = useState(
+    initialChangeSuccessful,
+  )
   const { errorMessage, handleError } = useErrorHandler()
   const {
     handleSubmit,
@@ -109,7 +111,7 @@ export default function AuthResetPassForm({
                 Change your password
               </h2>
               <p className="mt-1 text-sm text-white/70">
-                Minimum 8 characters, one letter, one digit
+                At least 15 characters; spaces are welcome
               </p>
             </div>
 

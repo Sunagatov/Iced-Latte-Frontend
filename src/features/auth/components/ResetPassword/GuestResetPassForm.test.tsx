@@ -61,17 +61,17 @@ describe('GuestResetPassForm', () => {
     expect(screen.queryByLabelText('Code from email')).not.toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('New password'), {
-      target: { value: 'Password1' },
+      target: { value: 'gentle river coffee morning' },
     })
     fireEvent.change(screen.getByLabelText('Confirm new password'), {
-      target: { value: 'Password1' },
+      target: { value: 'gentle river coffee morning' },
     })
     fireEvent.click(screen.getByRole('button', { name: 'Reset password' }))
 
     await waitFor(() => {
       expect(apiGuestResetPassword).toHaveBeenCalledWith({
         code: VALID_TOKEN,
-        password: 'Password1',
+        password: 'gentle river coffee morning',
         turnstileToken: '',
       })
     })

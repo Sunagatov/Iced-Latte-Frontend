@@ -51,7 +51,8 @@ const VerifyEmailCodeForm = () => {
         Confirm registration
       </h1>
       <p className="text-primary mb-[40px] text-[18px] font-medium">
-        Enter the confirmation token from your email to confirm registration.
+        If registration can proceed, check your email for a confirmation code.
+        If you already have an account, sign in or reset your password.
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         {errorMessage && (

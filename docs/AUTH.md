@@ -14,7 +14,7 @@ The backend issues access/refresh tokens. The frontend stores them in `HttpOnly`
 Browser
   ↓
 Next.js proxy / route handlers
-  ↓ forwards cookie header
+  ↓ translates HttpOnly cookies into bearer headers
 Backend API
 ```
 
@@ -22,7 +22,7 @@ Why this matters:
 
 - JavaScript cannot directly read `HttpOnly` cookies.
 - Browser requests can still carry cookies automatically.
-- The Next.js proxy forwards cookies to the backend.
+- The Next.js proxy reads HttpOnly cookies and sends the corresponding bearer credentials to the configured backend.
 - Auth state in React is only a UI view of the backend-confirmed session.
 
 ---
@@ -118,7 +118,7 @@ Main files:
 ## 📧 Email Verification Flow
 
 ```text
-User submits 9-digit code
+User submits the 43-character URL-safe confirmation code
   ↓
 POST /auth/confirm
   ↓
@@ -307,3 +307,15 @@ Auth changes should usually cover:
 | `src/app/api/proxy/[...path]/route.ts` | API proxy that forwards cookies |
 | `src/app/profile/page.tsx` | example protected page |
 | `src/app/auth/google/callback/page.tsx` | Google OAuth callback page |
+
+## Verified registration and password policy
+
+Public password registration always requires email confirmation. Registration returns the same empty accepted response for new and existing addresses; it creates no session. With email delivery disabled, password registration is unavailable. Login and current-password proof continue accepting existing passwords. New passwords require 15–128 characters, allow spaces/passphrases, and are checked against the backend's offline common-password blocklist.
+
+## Browser-bound OAuth completion
+
+The Google/GitHub start route stores a random, short-lived HttpOnly verifier cookie and sends its SHA-256 challenge to the backend. Provider state and the one-time handoff preserve that challenge. Only the same-origin proxy can supply the verifier from its cookie during redemption. Missing or mismatched browser binding is rejected. Existing accounts are never silently linked by email; established provider identities continue working.
+
+## Private password recovery links
+
+The Next.js request proxy intercepts legacy/new reset URLs containing a token before rendering. It saves the credential in a five-minute HttpOnly cookie and redirects to a clean URL containing only a non-secret recovery marker. The browser submits that marker; the server proxy substitutes the stored token. Manual 43-character code entry remains supported. Successful reset clears the recovery cookie; the backend invalidates sessions and sends a password-change notification.
