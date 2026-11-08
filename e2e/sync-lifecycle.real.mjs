@@ -289,6 +289,91 @@ async function main() {
             const observer = await context.newPage()
             await observer.goto(config.url + '/profile')
             await expect(observer.getByRole('heading', { name: 'Зуфар Updated', exact: true })).toBeVisible()
+            // Avatar mutations must invalidate the same profile revision that
+            // protects profile edits, and refresh an already mounted image.
+            const avatar = page.getByRole('img', {
+              name: 'Profile photo',
+              exact: true,
+            })
+            const upload = page.getByLabel('Upload profile photo', {
+              exact: true,
+            })
+            const firstFile = fs.readFileSync(
+              new URL('./fixtures/avatar-teal.png', import.meta.url),
+            )
+            const secondFile = fs.readFileSync(
+              new URL('./fixtures/avatar-blue.png', import.meta.url),
+            )
+            const beforeAvatar = (await read('profile')).revision
+            await upload.setInputFiles({
+              name: 'avatar.png',
+              mimeType: 'image/png',
+              buffer: firstFile,
+            })
+            await expect(
+              page.getByRole('button', { name: 'Remove photo', exact: true }),
+            ).toBeEnabled()
+            await expect(avatar).toHaveJSProperty('naturalWidth', 128)
+            expect((await read('profile')).revision).toBe(beforeAvatar + 1)
+            await observer.bringToFront()
+            await observer
+              .getByRole('button', { name: 'Overview', exact: true })
+              .click()
+            const observerAvatar = observer.getByRole('img', {
+              name: 'Profile photo',
+              exact: true,
+            })
+            await expect(observerAvatar).toHaveJSProperty('naturalWidth', 128)
+            const previousSrc = await observerAvatar.getAttribute('src')
+            await page.bringToFront()
+            await upload.setInputFiles({
+              name: 'replacement.png',
+              mimeType: 'image/png',
+              buffer: secondFile,
+            })
+            await expect(
+              page.getByRole('button', { name: 'Remove photo', exact: true }),
+            ).toBeEnabled()
+            expect((await read('profile')).revision).toBe(beforeAvatar + 2)
+            await observer.bringToFront()
+            await observer
+              .getByRole('button', { name: 'Overview', exact: true })
+              .click()
+            await expect(observerAvatar).not.toHaveAttribute('src', previousSrc)
+            await expect(observerAvatar).toHaveJSProperty('naturalWidth', 128)
+            const imageBytes = await observerAvatar.evaluate(async (image) =>
+              Array.from(
+                new Uint8Array(await (await fetch(image.src)).arrayBuffer()),
+              ),
+            )
+            expect(imageBytes).toEqual(Array.from(secondFile))
+            // Controls fit the hero even on the existing 320px profile check.
+            const controlsBox = await page
+              .getByRole('button', { name: 'Remove photo', exact: true })
+              .boundingBox()
+            const photoBox = await avatar.boundingBox()
+            const heroBox = await page
+              .locator('.bg-gradient-to-r')
+              .boundingBox()
+            expect(controlsBox.y).toBeGreaterThanOrEqual(
+              photoBox.y + photoBox.height,
+            )
+            expect(controlsBox.y + controlsBox.height).toBeLessThanOrEqual(
+              heroBox.y + heroBox.height,
+            )
+            await page.screenshot({
+              path: `${config.output}/avatar-controls-${width}.png`,
+            })
+            await page
+              .getByRole('button', { name: 'Remove photo', exact: true })
+              .click()
+            await expect(avatar).toHaveCount(0)
+            expect((await read('profile')).revision).toBe(beforeAvatar + 3)
+            await observer.bringToFront()
+            await observer
+              .getByRole('button', { name: 'Overview', exact: true })
+              .click()
+            await expect(observerAvatar).toHaveCount(0)
             await page.locator('#logout-btn').click()
             await expect(observer).toHaveURL(/signin/)
             await expect(observer.getByRole('heading', { name: 'Зуфар Updated', exact: true })).toHaveCount(0)

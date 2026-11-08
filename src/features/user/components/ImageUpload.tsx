@@ -253,18 +253,20 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
   const isBusy = loading || removing
   const src =
     preview ??
-    (hasStoredAvatar ? `${AVATAR_IMAGE_ROUTE}?v=${avatarRevision}` : undefined)
+    (hasStoredAvatar
+      ? `${AVATAR_IMAGE_ROUTE}?v=${avatarRevision}&r=${userData?.profileRevision ?? 0}`
+      : undefined)
   const uploadStatusMessage = loading ? stageMessage(uploadStage) : null
   const canRetry = Boolean(pendingFile && !isBusy)
   const canRemove = Boolean(hasStoredAvatar && !preview && !isBusy)
 
   return (
-    <div>
-      <label className="group relative block h-20 w-20 cursor-pointer">
+    <div className="flex w-24 flex-col items-center">
+      <label className="group relative block h-20 w-20 shrink-0 cursor-pointer rounded-full ring-4 ring-white/30">
         <input
           className="sr-only"
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           disabled={isBusy}
           onChange={handleInputChange}
           key={inputKey}
@@ -280,8 +282,9 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
             className="rounded-full object-cover"
           />
         ) : (
-          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-brand-solid text-xl font-bold text-white">
-            {`${userData?.firstName?.[0] ?? ''}${userData?.lastName?.[0] ?? ''}`.toUpperCase() || '?'}
+          <span className="bg-brand-solid absolute inset-0 flex items-center justify-center rounded-full text-xl font-bold text-white">
+            {`${userData?.firstName?.[0] ?? ''}${userData?.lastName?.[0] ?? ''}`.toUpperCase() ||
+              '?'}
           </span>
         )}
         <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition group-hover:opacity-100">
@@ -292,12 +295,12 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
           )}
         </div>
       </label>
-      <div className="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs">
+      <div className="mt-3 flex w-full flex-col items-center justify-center gap-2 text-xs text-white">
         {loading && pendingFile && (
           <button
             type="button"
             onClick={handleCancelUpload}
-            className="font-medium text-neutral-700 underline underline-offset-2"
+            className="font-medium whitespace-nowrap underline underline-offset-2"
           >
             Cancel upload
           </button>
@@ -308,7 +311,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
             onClick={() => {
               void handleRetry()
             }}
-            className="font-medium text-neutral-700 underline underline-offset-2"
+            className="font-medium whitespace-nowrap underline underline-offset-2"
           >
             Retry upload
           </button>
@@ -319,7 +322,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
             onClick={() => {
               void handleRemove()
             }}
-            className="font-medium text-neutral-700 underline underline-offset-2"
+            className="font-medium whitespace-nowrap underline underline-offset-2"
           >
             Remove photo
           </button>
@@ -335,9 +338,9 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
         </div>
       )}
       {uploadStatusMessage && !errorMessage && !turnstileError && (
-        <div className="mt-2 w-40">
+        <div className="mt-2 w-full">
           <p
-            className="text-center text-xs text-neutral-500"
+            className="text-center text-xs text-white/90"
             role="status"
             aria-live="polite"
           >
@@ -365,7 +368,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
         !turnstileError &&
         !uploadStatusMessage && (
         <p
-          className="mt-1 text-center text-xs text-neutral-500"
+          className="mt-1 text-center text-xs text-white/90"
           role="status"
           aria-live="polite"
         >

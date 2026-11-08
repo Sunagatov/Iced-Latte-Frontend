@@ -221,7 +221,54 @@ describe('ImageUpload', () => {
 
     expect(screen.getByAltText('Profile photo')).toHaveAttribute(
       'src',
-      '/api/user/avatar?v=0',
+      '/api/user/avatar?v=0&r=0',
+    )
+  })
+
+  it('refreshes the stored image when a newer profile snapshot arrives from another tab', () => {
+    useAuthStore.getState().setUserData({
+      ...useAuthStore.getState().userData!,
+      avatarLink: 'https://storage.example.com/first.png',
+      profileRevision: 3,
+    })
+    render(<ImageUpload />)
+    const initial = screen.getByAltText('Profile photo').getAttribute('src')
+
+    act(() => {
+      useAuthStore.getState().setUserData({
+        ...useAuthStore.getState().userData!,
+        avatarLink: 'https://storage.example.com/replacement.png',
+        profileRevision: 4,
+      })
+    })
+    expect(screen.getByAltText('Profile photo')).toHaveAttribute(
+      'src',
+      '/api/user/avatar?v=0&r=4',
+    )
+    expect(screen.getByAltText('Profile photo').getAttribute('src')).not.toBe(
+      initial,
+    )
+  })
+
+  it('retries an image that previously failed when a newer avatar revision arrives', () => {
+    useAuthStore.getState().setUserData({
+      ...useAuthStore.getState().userData!,
+      avatarLink: 'https://storage.example.com/first.png',
+      profileRevision: 1,
+    })
+    render(<ImageUpload />)
+    fireEvent.error(screen.getByAltText('Profile photo'))
+    expect(screen.queryByAltText('Profile photo')).not.toBeInTheDocument()
+    act(() => {
+      useAuthStore.getState().setUserData({
+        ...useAuthStore.getState().userData!,
+        avatarLink: 'https://storage.example.com/second.png',
+        profileRevision: 2,
+      })
+    })
+    expect(screen.getByAltText('Profile photo')).toHaveAttribute(
+      'src',
+      '/api/user/avatar?v=0&r=2',
     )
   })
 
@@ -247,7 +294,7 @@ describe('ImageUpload', () => {
     await waitFor(() => {
       expect(screen.getByAltText('Profile photo')).toHaveAttribute(
         'src',
-        '/api/user/avatar?v=1',
+        '/api/user/avatar?v=1&r=0',
       )
     })
     expect(onPreviewChange).toHaveBeenCalledWith(true)

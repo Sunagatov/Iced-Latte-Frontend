@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/auth/store'
 import { captureAccountScope } from '@/features/auth/accountScope'
 import { executeCommand } from '@/features/session/syncCommands'
 import { acceptSnapshot, onSnapshot } from '@/features/session/resourceState'
+import { notifyResourceUpdate } from '@/features/session/resourceUpdates'
 import {
   deleteUserAvatar,
   getUserProfile,
@@ -103,10 +104,12 @@ export const editUserProfile = async (
 }
 
 export const removeUserAvatar = async (): Promise<UserData> => {
+  const owner = useAuthStore.getState().userData?.id
   const end = useAuthStore.getState().profileWrite()
 
   try {
     await deleteUserAvatar()
+    notifyResourceUpdate('profile', owner)
   } finally {
     end()
   }
@@ -119,11 +122,13 @@ export async function uploadImage(
   turnstileToken?: string,
   options?: AvatarUploadOptions,
 ): Promise<void> {
+  const owner = useAuthStore.getState().userData?.id
   const end = useAuthStore.getState().profileWrite()
 
   try {
     if (getAvatarUploadMode() === 'presigned') {
       await uploadAvatarWithPresignedFlow(file, turnstileToken, options)
+      notifyResourceUpdate('profile', owner)
 
       return
     }
@@ -137,6 +142,7 @@ export async function uploadImage(
       },
       { signal: options?.signal },
     )
+    notifyResourceUpdate('profile', owner)
   } finally {
     end()
   }

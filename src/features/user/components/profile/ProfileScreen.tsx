@@ -25,7 +25,6 @@ export default function ProfileScreen() {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<ProfileSection>('overview')
   const [isEditing, setIsEditing] = useState(false)
-  const [hasAvatarPreview, setHasAvatarPreview] = useState(false)
 
   const setUserData = useAuthStore(
     (state: AuthStore): AuthStore['setUserData'] => state.setUserData,
@@ -86,16 +85,8 @@ export default function ProfileScreen() {
       <div className="from-brand-solid to-brand-solid-hover bg-gradient-to-r">
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex items-center gap-5">
-            <div className="relative h-20 w-20 shrink-0">
-              <div className="h-20 w-20 rounded-full ring-4 ring-white/30">
-                <ImageUpload onPreviewChange={setHasAvatarPreview} />
-              </div>
-
-              {!summary.hasCustomAvatar && !hasAvatarPreview && (
-                <div className="bg-brand-solid-hover pointer-events-none absolute inset-0 flex h-20 w-20 items-center justify-center rounded-full text-xl font-bold text-white ring-4 ring-white/30">
-                  {summary.initials}
-                </div>
-              )}
+            <div className="w-24 shrink-0">
+              <ImageUpload />
             </div>
 
             <div className="min-w-0 flex-1">

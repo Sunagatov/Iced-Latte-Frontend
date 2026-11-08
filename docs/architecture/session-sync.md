@@ -132,7 +132,10 @@ isolated Testcontainers PostgreSQL/Redis. `e2e/sync-lifecycle.real.mjs` drives C
 at desktop and phone sizes. Only response delivery is fault-injected after the
 backend commits; API responses are not fabricated. It verifies copied tabs, lost
 responses, favourite replay, profile conflict review and guest-cart correction.
-External mail/storage dependencies are mocked, and images are excluded. It does
+Avatar uploads, replacement, deletion and cross-tab refresh also traverse the
+real proxy and backend. Storage bytes are served by a local test-only image
+server; tests compare the replacement bytes and check the controls at 320px.
+Product images and external mail/storage dependencies remain mocked. It does
 not test production, external providers or Cloudflare. Instructions live in the
 backend's `docs/getting-started.md`; release orchestration belongs to Vault.
 
@@ -144,3 +147,15 @@ Release backend migrations/API before the matching frontend. The new sync paths
 must be included in Cloudflare API schema coverage before enabling this frontend;
 unknown endpoints are blocked there. Runtime/deployment instructions belong to
 Vault. Existing legacy APIs remain available for an older frontend rollback.
+
+Avatar upload, activation and deletion advance the profile revision in the same
+transaction as their metadata writes. Avatar mutations acquire the profile lock
+before the user lock, matching profile edits; failed uploads roll back without
+advancing the revision. The private image route includes that revision in its
+URL, so a fresh profile snapshot refreshes an already mounted image in another
+tab and can retry a previously failed image. Successful upload/removal sends a
+scoped storage invalidation hint so other tabs refresh without a reload; the
+hint contains no profile data or credentials, and snapshots remain authoritative.
+Signed storage URLs remain behind
+the same-origin proxy. Avatar actions and feedback occupy normal header layout
+space instead of overflowing a fixed-height photo wrapper.

@@ -4,6 +4,17 @@ import { isSyncRejected, readConfirmed } from './syncCommands'
 import { toastError } from '@/shared/utils/apiError'
 import type { Resource } from './resourceState'
 
+// Legacy mutations such as multipart uploads do not create sync commands.
+// Publish only an invalidation hint; other tabs still read authoritative data.
+export function notifyResourceUpdate(resource: Resource, owner?: string): void {
+  if (!owner || typeof window === 'undefined') return
+  try {
+    localStorage.setItem(`iced-sync-resource:${owner}:${resource}`, crypto.randomUUID())
+  } catch {
+    // Focus/visibility refresh remains available when storage is blocked.
+  }
+}
+
 // Notifications only request a fresh read. Server receipts/revisions still
 // decide correctness when notifications are delayed or missed.
 export function startResourceUpdates(): () => void {
@@ -41,11 +52,11 @@ export function startResourceUpdates(): () => void {
         refresh(resource)
   }
   const storage = (event: StorageEvent) => {
-    if (
-      event.newValue !== null ||
-      !event.key?.startsWith('iced-sync-operation:')
-    )
-      return
+    if (!event.key) return
+    const legacyUpdate = event.key?.startsWith('iced-sync-resource:') && event.newValue !== null
+    const completedCommand = event.key?.startsWith('iced-sync-operation:') && event.newValue === null
+
+    if (!legacyUpdate && !completedCommand) return
     const [, owner, resource] = event.key.split(':')
 
     if (
