@@ -242,3 +242,13 @@ Commercial use, remote hosting, publication, redistribution, sublicensing, forks
 - 🐛 **Issues:** [GitHub Issues](https://github.com/Sunagatov/Iced-Latte-Frontend/issues)
 
 ❤️
+
+## Browser diagnostics
+
+Set `NEXT_PUBLIC_FARO_URL` at build time to enable optional, self-hosted Faro telemetry.
+The SDK loads separately after startup and collects error types/script locations,
+Core Web Vitals and numeric outcomes for failed or slow requests. It does not
+collect error message text, request URLs, headers, bodies, form values, user IDs
+or session IDs. Each page has a 60-signal/minute limit; telemetry failures do
+not change application requests. Server routing, ingestion limits and dashboard
+configuration belong to Vault.

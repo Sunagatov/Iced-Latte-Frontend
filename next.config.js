@@ -112,6 +112,7 @@ const nextConfig = {
               [
                 'connect-src \'self\'',
                 ...analyticsSources,
+                ...(process.env.NEXT_PUBLIC_FARO_URL ? [new URL(process.env.NEXT_PUBLIC_FARO_URL).origin] : []),
                 ...(sentryConnectSource ? [sentryConnectSource] : []),
               ].join(' '),
               'frame-src https://challenges.cloudflare.com',

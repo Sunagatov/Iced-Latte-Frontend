@@ -1,14 +1,9 @@
 import './sentry.client.config'
-import {
-  reportBrowserError,
-  reportUnhandledRejection,
-} from '@/shared/observability/client'
+import { startBrowserTelemetry } from '@/shared/observability/browserTelemetry'
 
 export { onRouterTransitionStart } from './sentry.client.config'
 
-try {
-  window.addEventListener('error', reportBrowserError)
-  window.addEventListener('unhandledrejection', reportUnhandledRejection)
-} catch {
-  // Observability must never block application startup.
-}
+void startBrowserTelemetry(
+  process.env.NEXT_PUBLIC_FARO_URL,
+  'iced-latte-frontend',
+)

@@ -25,6 +25,7 @@
     "api:check": "npm run api:generate && git diff --exit-code -- src/shared/api/generated && git diff --cached --exit-code -- src/shared/api/generated && test -z \"$(git ls-files --others --exclude-standard src/shared/api/generated)\""
   },
   "dependencies": {
+    "@grafana/faro-web-sdk": "2.13.0",
     "@marsidev/react-turnstile": "1.6.3",
     "@next/third-parties": "^16.4.5",
     "@sentry/nextjs": "11.11.0",
