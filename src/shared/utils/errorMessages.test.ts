@@ -16,6 +16,14 @@ function makeAxiosError(status: number, data: Record<string, unknown>) {
 }
 
 describe('getUserMessage', () => {
+  it.each(['invalid-email-token', 'https://iced-latte.local/problems/invalid-email-token'])(
+    'explains an invalid email token using the %s problem type',
+    (type) => {
+      expect(getUserMessage(makeAxiosError(400, { type, detail: 'Incorrect token' })))
+        .toBe('This email code is invalid, expired or already used. Request a new email.')
+    },
+  )
+
   it('maps known problem detail types to curated user messages', () => {
     expect(
       getUserMessage(

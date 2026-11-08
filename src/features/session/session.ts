@@ -8,6 +8,8 @@ import { getUserData } from '@/features/user/public'
 import type { UserData } from '@/features/user/public'
 import { refreshToken } from '@/shared/api/generated/security'
 import { clearAuthCookies } from '@/shared/auth/cookies'
+import { publishSessionChange } from './sessionEvents'
+import { clearReviewDrafts } from '@/features/reviews/reviewDrafts'
 
 export async function bootstrapClientSession(): Promise<void> {
   const version = useAuthStore.getState().sessionVersion
@@ -83,7 +85,9 @@ export async function clearClientSession(): Promise<void> {
   // Invalidate pending reads immediately, including while cookie cleanup waits.
   useAuthStore.getState().reset()
   resetSessionStores()
+  clearReviewDrafts()
   await clearAuthCookies()
+  publishSessionChange('logout')
 }
 
 export function resetSessionStores(preserveGuest = false): void {

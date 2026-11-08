@@ -53,7 +53,7 @@ export default function RootLayout({
         <ToastContainer />
         <AppProviders>
           <Header />
-          <main className={'min-w-[360px] grow'}>{children}</main>
+          <main className="min-w-0 w-full grow">{children}</main>
           <Footer />
           {GOOGLE_ANALYTICS_MEASUREMENT_ID && (
             <GoogleAnalytics gaId={GOOGLE_ANALYTICS_MEASUREMENT_ID} />

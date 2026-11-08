@@ -36,6 +36,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [avatarRevision, setAvatarRevision] = useState(0)
+  const [failedImage, setFailedImage] = useState<string | null>(null)
   const [inputKey, setInputKey] = useState(0)
   const [uploadStage, setUploadStage] = useState<AvatarUploadStage | null>(null)
   const [uploadProgress, setUploadProgress] = useState<number | null>(null)
@@ -259,7 +260,7 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
 
   return (
     <div>
-      <label className="group relative block h-24 w-24 cursor-pointer">
+      <label className="group relative block h-20 w-20 cursor-pointer">
         <input
           className="sr-only"
           type="file"
@@ -269,15 +270,20 @@ const ImageUpload = ({ onPreviewChange }: ImageUploadProps = {}) => {
           key={inputKey}
           aria-label="Upload profile photo"
         />
-        {src ? (
+        {src && src !== failedImage ? (
           <Image
             src={src!}
             alt="Profile photo"
             fill
             unoptimized
+            onError={() => setFailedImage(src)}
             className="rounded-full object-cover"
           />
-        ) : null}
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-brand-solid text-xl font-bold text-white">
+            {`${userData?.firstName?.[0] ?? ''}${userData?.lastName?.[0] ?? ''}`.toUpperCase() || '?'}
+          </span>
+        )}
         <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 transition group-hover:opacity-100">
           {loading ? (
             <Loader />

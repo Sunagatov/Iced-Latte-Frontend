@@ -17,6 +17,43 @@ export default function AddressForm({ editing, onClose }: Props) {
   const { add, update } = useAddressStore()
   const overlayRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    const dialog = overlayRef.current
+    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), input:not(:disabled), select:not(:disabled), [href], [tabindex="0"]',
+    ) ?? [])
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+      } else if (event.key === 'Tab') {
+        const items = focusable()
+        const first = items[0]
+        const last = items[items.length - 1]
+
+        if (event.shiftKey && (document.activeElement === first || !dialog?.contains(document.activeElement))) {
+          event.preventDefault()
+          last?.focus()
+        } else if (!event.shiftKey && (document.activeElement === last || !dialog?.contains(document.activeElement))) {
+          event.preventDefault()
+          first?.focus()
+        }
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    focusable()[0]?.focus()
+    document.addEventListener('keydown', handleKey)
+
+    return () => {
+      document.removeEventListener('keydown', handleKey)
+      document.body.style.overflow = previousOverflow
+      if (previousFocus?.isConnected) previousFocus.focus()
+    }
+  }, [onClose])
+
   const {
     register,
     handleSubmit,
@@ -72,7 +109,7 @@ export default function AddressForm({ editing, onClose }: Props) {
       }}
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm sm:items-center"
     >
-      <div className="bg-primary w-full max-w-md rounded-2xl shadow-2xl">
+      <div className="bg-primary max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between border-b border-black/5 px-5 py-4">
           <h2 id="address-form-title" className="text-primary font-semibold">
             {editing ? 'Edit address' : 'Add new address'}

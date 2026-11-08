@@ -4,6 +4,7 @@ import { apiAddProductReview } from '@/features/reviews/api'
 import { useAuthStore } from '@/features/auth/public'
 import { useProductRatingStore } from '@/features/reviews/store'
 import type { ForwardedRef } from 'react'
+import { reviewDraftKey, saveReviewDraft } from '@/features/reviews/reviewDrafts'
 
 let mockReviewsTurnstileEnabled = false
 
@@ -65,11 +66,29 @@ function renderReviewForm() {
 describe('ReviewForm', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    sessionStorage.clear()
+    saveReviewDraft(reviewDraftKey('guest', 'p1'), { text: '', rating: 5 })
     mockReviewsTurnstileEnabled = false
     useAuthStore.setState({ status: 'authenticated', isLoggedIn: true })
     useProductRatingStore.setState({
       ratings: { p1: { id: 'p1', rating: 5 } },
     })
+  })
+
+  it('restores text and rating after leaving and returning, but clears an explicit cancel', () => {
+    const first = renderReviewForm()
+
+    fireEvent.change(screen.getByPlaceholderText(/what did you like/i), { target: { value: 'My unfinished review' } })
+    first.unmount()
+    const second = renderReviewForm()
+
+    expect(screen.getByPlaceholderText(/what did you like/i)).toHaveValue('My unfinished review')
+    expect(useProductRatingStore.getState().ratings.p1.rating).toBe(5)
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    second.unmount()
+    renderReviewForm()
+    expect(screen.getByPlaceholderText(/what did you like/i)).toHaveValue('')
+    expect(useProductRatingStore.getState().ratings.p1.rating).toBe(0)
   })
 
   it('submits review without Turnstile token when review protection is disabled', async () => {

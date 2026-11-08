@@ -16,6 +16,7 @@ interface IReview {
   isPending?: boolean
   deleteReview?: (id: string) => void
   rateReview?: (id: string, isLike: boolean) => void
+  clearVote?: (id: string) => void
 }
 
 const Review: React.FC<Readonly<IReview>> = ({
@@ -26,6 +27,7 @@ const Review: React.FC<Readonly<IReview>> = ({
   isPending = false,
   deleteReview,
   rateReview,
+  clearVote,
 }) => {
   const [isReviewExpanded, setIsReviewExpanded] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -136,7 +138,14 @@ const Review: React.FC<Readonly<IReview>> = ({
           </button>
         )}
         {allowVoting && rateReview && (
-          <div className="flex gap-3 xl:ml-auto">
+          <div className="flex flex-wrap gap-3 xl:ml-auto">
+            {clearVote && (
+              <button type="button" disabled={isPending}
+                className="text-black/40 hover:text-brand text-xs disabled:opacity-50"
+                onClick={() => clearVote(review.productReviewId as string)}>
+                Clear vote
+              </button>
+            )}
             <button
               onClick={likeReviewHandler}
               disabled={isPending}

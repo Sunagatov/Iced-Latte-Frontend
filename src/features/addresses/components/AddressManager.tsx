@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAddressStore } from '../store'
 import type { DeliveryAddress } from '../types'
 import AddressCard from './AddressCard'
@@ -25,10 +25,10 @@ export default function AddressManager() {
     setEditing(a)
     setShowForm(true)
   }
-  const closeForm = () => {
+  const closeForm = useCallback(() => {
     setShowForm(false)
     setEditing(null)
-  }
+  }, [])
 
   return (
     <div className="space-y-4">

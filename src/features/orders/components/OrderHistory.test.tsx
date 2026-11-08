@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type * as React from 'react'
 import OrderHistory from '@/features/orders/components/OrderHistory'
 import * as ordersApi from '@/features/orders/ordersApi'
@@ -78,4 +78,15 @@ describe('OrderHistory', () => {
       )
     })
   })
+  it('distinguishes an empty filtered result and lets the user clear it', async () => {
+    mockedOrdersApi.fetchOrders.mockResolvedValue({ content: [], page: 0, size: 10, totalElements: 0, totalPages: 0 })
+    render(<OrderHistory />)
+    await screen.findByText('No orders yet')
+    fireEvent.click(screen.getByRole('button', { name: 'Refunded' }))
+    await screen.findByText('No orders match these filters')
+    expect(screen.queryByText('No orders yet')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }))
+    await screen.findByText('No orders yet')
+  })
+
 })

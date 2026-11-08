@@ -4,6 +4,7 @@ import { STORED_RECOVERY_TOKEN } from '@/shared/auth/flowCookies'
 import { useEffect, useState } from 'react'
 import type * as React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import {
@@ -142,8 +143,17 @@ export default function GuestResetPassForm() {
             <div className="p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {(errorMessage || turnstile.error) && (
-                  <div className="text-negative rounded-lg bg-red-50 px-4 py-3 text-sm">
+                  <div
+                    role="alert"
+                    className="text-negative rounded-lg bg-red-50 px-4 py-3 text-sm"
+                  >
                     {errorMessage || turnstile.error}
+                    <Link
+                      href={ROUTES.forgotpass}
+                      className="mt-2 block font-semibold underline"
+                    >
+                      Request a new reset link
+                    </Link>
                   </div>
                 )}
 

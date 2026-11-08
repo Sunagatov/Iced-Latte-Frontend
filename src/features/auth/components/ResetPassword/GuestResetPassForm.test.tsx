@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import GuestResetPassForm from '@/features/auth/components/ResetPassword/GuestResetPassForm'
 import { apiGuestResetPassword } from '@/features/auth/api'
+import axios from 'axios'
 
 const mockBack = jest.fn()
 const mockPush = jest.fn()
@@ -75,5 +76,35 @@ describe('GuestResetPassForm', () => {
         turnstileToken: '',
       })
     })
+  })
+
+  it.each(['1', null])('offers a fresh reset link after an invalid code (stored recovery: %s)', async (recovery) => {
+    currentSearchParams = new URLSearchParams(recovery ? 'recovery=1' : `token=${VALID_TOKEN}`)
+    const error = new axios.AxiosError('Request failed')
+
+    error.response = {
+      status: 400,
+      data: { type: 'https://iced-latte.local/problems/invalid-email-token' },
+      headers: {},
+      config: {} as never,
+      statusText: 'Bad Request',
+    }
+    jest.mocked(apiGuestResetPassword).mockRejectedValue(error)
+
+    render(<GuestResetPassForm />)
+    fireEvent.change(screen.getByLabelText('New password'), {
+      target: { value: 'gentle river coffee morning' },
+    })
+    fireEvent.change(screen.getByLabelText('Confirm new password'), {
+      target: { value: 'gentle river coffee morning' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Reset password' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This email code is invalid, expired or already used. Request a new email.',
+    )
+    expect(screen.getByRole('link', { name: 'Request a new reset link' }))
+      .toHaveAttribute('href', '/forgotpass')
+    expect(screen.queryByText('Password updated!')).not.toBeInTheDocument()
   })
 })

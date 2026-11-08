@@ -49,14 +49,14 @@ export interface UserRegistrationRequest {
      * User's first name.
      * @minLength 2
      * @maxLength 64
-     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\u2019\-]+$
+     * @pattern ^[\p{L}\p{M} '\u2019\-]+$
      */
   firstName: string;
   /**
      * User's last name.
      * @minLength 2
      * @maxLength 64
-     * @pattern ^[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\u2019\-]+$
+     * @pattern ^[\p{L}\p{M} '\u2019\-]+$
      */
   lastName: string;
   /** User's birth date in YYYY-MM-DD format. */

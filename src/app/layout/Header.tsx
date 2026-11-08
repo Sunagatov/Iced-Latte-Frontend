@@ -61,7 +61,7 @@ export default function Header() {
         </div>
       ) : (
         <>
-          <Link href={ROUTES.home} className="group flex shrink-0 items-center gap-2">
+          <Link href={ROUTES.home} aria-label="Iced Latte" className="group flex shrink-0 items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center text-brand">
               <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
                 <rect width="32" height="32" rx="8" fill="currentColor" />

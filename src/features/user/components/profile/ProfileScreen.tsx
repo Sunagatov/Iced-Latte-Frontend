@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/shared/config/routes'
 import { AddressManager } from '@/features/addresses/public'
+import { useAddressStore } from '@/features/addresses/store'
 import { useAuthStore, useLogout, type AuthStore } from '@/features/auth/public'
 import { useFavouritesStore } from '@/features/favorites/public'
 import type { UserData } from '@/features/user/public'
@@ -35,6 +36,12 @@ export default function ProfileScreen() {
   const status = useAuthStore(
     (state: AuthStore): AuthStore['status'] => state.status,
   )
+  const addresses = useAddressStore((state) => state.addresses)
+  const fetchAddresses = useAddressStore((state) => state.fetch)
+
+  useEffect(() => {
+    if (status === 'authenticated') void fetchAddresses()
+  }, [status, fetchAddresses])
   const favCount = useFavouritesStore((state) => state.favouriteIds.length)
   const logoutState = useLogout()
   const isAuthenticated = status === 'authenticated'
@@ -55,6 +62,9 @@ export default function ProfileScreen() {
   }
 
   const summary = buildProfileSummary(userData)
+  const defaultAddress = addresses.find((address) => address.isDefault)
+
+  if (defaultAddress) summary.city = defaultAddress.city
 
   const handleSectionChange = (section: typeof activeSection): void => {
     setActiveSection(section)
@@ -77,7 +87,7 @@ export default function ProfileScreen() {
         <div className="mx-auto max-w-6xl px-4 py-8">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 shrink-0">
-              <div className="h-20 w-20 overflow-hidden rounded-full ring-4 ring-white/30">
+              <div className="h-20 w-20 rounded-full ring-4 ring-white/30">
                 <ImageUpload onPreviewChange={setHasAvatarPreview} />
               </div>
 
@@ -119,7 +129,7 @@ export default function ProfileScreen() {
 
             <button
               type="button"
-              className="hidden shrink-0 items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20 sm:flex"
+              className="flex shrink-0 items-center gap-2 rounded-xl bg-white/10 px-2 py-2 text-xs font-medium text-white transition hover:bg-white/20 sm:px-4 sm:text-sm"
               id="logout-btn"
               onClick={logoutState.logout}
             >
@@ -175,6 +185,7 @@ export default function ProfileScreen() {
                 onCancel={() => setIsEditing(false)}
                 onSaveSuccess={() => setIsEditing(false)}
                 onStartEditing={() => setIsEditing(true)}
+                onManageAddresses={openAddresses}
                 setUserData={setUserData}
                 summary={summary}
                 userData={userData}

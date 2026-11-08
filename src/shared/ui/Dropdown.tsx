@@ -55,6 +55,12 @@ const Dropdown = <T,>({
       className={twMerge('text-L text-primary relative w-max', className)}
     >
       <button
+        type="button"
+        aria-label={hidePrefix ? selectedOption.label : `Sort by: ${selectedOption.label}`}
+        aria-expanded={isOpen}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') setIsOpen(false)
+        }}
         className={twMerge(
           headerStyles,
           isOpen ? 'bg-black/[0.04] text-black/80' : '',
@@ -64,15 +70,18 @@ const Dropdown = <T,>({
         tabIndex={0}
       >
         {compact ? (
-          <svg
-            className={twMerge(
-              'h-3.5 w-3.5 text-black/40 transition-transform duration-200',
-              isOpen && 'rotate-180',
-            )}
-            fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
-          >
-            <path d="M19 9l-7 7-7-7" />
-          </svg>
+          <>
+            <span className="max-w-28 truncate">{selectedOption.label}</span>
+            <svg
+              className={twMerge(
+                'h-3.5 w-3.5 text-black/40 transition-transform duration-200',
+                isOpen && 'rotate-180',
+              )}
+              fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
+            >
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+          </>
         ) : (
           <>
             <span>

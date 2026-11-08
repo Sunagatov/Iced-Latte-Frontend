@@ -3,6 +3,7 @@ import axios from 'axios'
 import {
   addNewProductReview,
   addProductReviewLike,
+  removeProductReviewLike,
   deleteProductReview,
   getProductReview,
   getProductReviewsAndRatings,
@@ -140,4 +141,8 @@ export async function apiRateProductReview(
   return (await addProductReviewLike(productId, productReviewId, {
     isLike,
   })) as Review
+}
+
+export async function apiClearProductReviewVote(productId: string, reviewId: string): Promise<Review> {
+  return (await removeProductReviewLike(productId, reviewId)) as Review
 }

@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 import { useAuthStore } from '@/features/auth/public'
 import { accountIdentity } from '@/features/auth/store'
 import { startResourceUpdates } from './resourceUpdates'
+import { sessionChangeType } from './sessionEvents'
+import { clearReviewDrafts } from '@/features/reviews/reviewDrafts'
 import {
   bootstrapClientSession,
   onSessionStoresHydrated,
@@ -22,6 +24,28 @@ export function useSessionBootstrap(): void {
   const account = useAuthStore((s) => accountIdentity(s.userData))
   const pathname = usePathname()
   const shouldSkipBootstrap = OAUTH_CALLBACK_PATHS.has(pathname)
+
+  useEffect(() => {
+    if (shouldSkipBootstrap) return
+    const receiveSessionChange = (event: StorageEvent) => {
+      const type = sessionChangeType(event)
+
+      if (!type) return
+      // The originating tab already changed the shared cookies. Never clear
+      // cookies here: a delayed notification must not destroy a newer login.
+      useAuthStore.getState().reset()
+      resetSessionStores()
+      if (type === 'logout') clearReviewDrafts()
+      else {
+        useAuthStore.getState().setLoading()
+        void bootstrapClientSession()
+      }
+    }
+
+    window.addEventListener('storage', receiveSessionChange)
+
+    return () => window.removeEventListener('storage', receiveSessionChange)
+  }, [shouldSkipBootstrap])
 
   useEffect(
     () =>

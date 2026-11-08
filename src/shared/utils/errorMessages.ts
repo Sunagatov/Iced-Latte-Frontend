@@ -4,6 +4,7 @@ import { ErrorResponse } from '@/shared/types/ErrorResponse'
 const ERROR_MESSAGES: Record<string, string> = {
   // Auth & Security
   'invalid-credentials': 'The email or password you entered is incorrect.',
+  'invalid-email-token': 'This email code is invalid, expired or already used. Request a new email.',
   'auth-required': 'Please sign in to continue.',
   'session-expired': 'Your session expired. Please sign in again.',
   'account-locked': 'Your account has been locked. Please contact support.',

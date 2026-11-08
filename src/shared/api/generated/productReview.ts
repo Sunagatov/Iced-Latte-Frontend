@@ -273,6 +273,19 @@ export const addProductReviewLike = (
       options);
     }
 
+/**
+ * @summary Remove the current user's vote, available for authorized users only
+ */
+export const removeProductReviewLike = (
+    productId: string,
+    productReviewId: string,
+ options?: SecondParameter<typeof orvalMutator<ProductReviewDto>>,) => {
+      return orvalMutator<ProductReviewDto>(
+      {url: `/api/v1/products/${productId}/reviews/${productReviewId}/likes`, method: 'DELETE'
+    },
+      options);
+    }
+
 export type GetProductReviewsAndRatingsResult = NonNullable<Awaited<ReturnType<typeof getProductReviewsAndRatings>>>
 export type AddNewProductReviewResult = NonNullable<Awaited<ReturnType<typeof addNewProductReview>>>
 export type DeleteProductReviewResult = NonNullable<Awaited<ReturnType<typeof deleteProductReview>>>
@@ -280,3 +293,4 @@ export type GetProductReviewResult = NonNullable<Awaited<ReturnType<typeof getPr
 export type GetUserReviewsResult = NonNullable<Awaited<ReturnType<typeof getUserReviews>>>
 export type GetRatingAndReviewStatResult = NonNullable<Awaited<ReturnType<typeof getRatingAndReviewStat>>>
 export type AddProductReviewLikeResult = NonNullable<Awaited<ReturnType<typeof addProductReviewLike>>>
+export type RemoveProductReviewLikeResult = NonNullable<Awaited<ReturnType<typeof removeProductReviewLike>>>

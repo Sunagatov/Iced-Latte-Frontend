@@ -39,4 +39,8 @@ describe('user validation schema', () => {
       }),
     ).resolves.toMatchObject({ lastName: 'O’Connor' })
   })
+  it.each(['Зуфар', 'Çağrı', '李明', 'E\u0301lodie'])('accepts Unicode profile name %s', async (firstName) => {
+    await expect(validationSchema.validate({ firstName, lastName: 'Sunagatov' })).resolves.toBeDefined()
+  })
+
 })

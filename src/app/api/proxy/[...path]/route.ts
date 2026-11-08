@@ -136,7 +136,10 @@ async function handleProxy(
 
         if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) {
           return createCorsResponse(
-            { error: 'Recovery link expired' },
+            {
+              type: 'invalid-email-token',
+              error: 'Recovery link expired',
+            },
             400,
             requestOrigin,
           )

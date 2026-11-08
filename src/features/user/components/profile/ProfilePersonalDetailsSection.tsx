@@ -11,6 +11,7 @@ type ProfilePersonalDetailsSectionProps = {
   onCancel: () => void
   onSaveSuccess: () => void
   onStartEditing: () => void
+  onManageAddresses?: () => void
   setUserData: AuthStore['setUserData']
   summary: ProfileSummary
   userData: UserData | null
@@ -37,6 +38,7 @@ export default function ProfilePersonalDetailsSection({
   onCancel,
   onSaveSuccess,
   onStartEditing,
+  onManageAddresses,
   setUserData,
   summary,
   userData,
@@ -91,6 +93,7 @@ export default function ProfilePersonalDetailsSection({
             initialUserData={userData}
             onSuccessEdit={onSaveSuccess}
             updateUserData={setUserData}
+            onManageAddresses={onManageAddresses}
           />
         </div>
       ) : (

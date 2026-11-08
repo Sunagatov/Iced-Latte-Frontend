@@ -3,12 +3,9 @@ import ProductCard from './ProductCard/ProductCard'
 import ProductCardSkeleton from './ProductCard/ProductCardSkeleton'
 
 const SUGGESTIONS = [
-  'Organic',
-  'Bestseller',
-  'New arrivals',
-  'Under $20',
-  'Premium',
-  'Gift sets',
+  'Latte',
+  'Espresso',
+  'Cappuccino',
 ]
 
 interface IProductListProps {
@@ -18,6 +15,7 @@ interface IProductListProps {
   searchQuery?: string
   onResetFilters?: () => void
   onSuggestionClick?: (query: string) => void
+  onPriceSuggestionClick?: () => void
 }
 
 export default function ProductList({
@@ -27,6 +25,7 @@ export default function ProductList({
   searchQuery,
   onResetFilters,
   onSuggestionClick,
+  onPriceSuggestionClick,
 }: Readonly<IProductListProps>) {
   if (error && products.length === 0) {
     return (
@@ -84,6 +83,15 @@ export default function ProductList({
                   {s}
                 </button>
               ))}
+              {onPriceSuggestionClick && (
+                <button
+                  type="button"
+                  onClick={onPriceSuggestionClick}
+                  className="border-brand/30 text-brand hover:bg-brand/10 rounded-full border px-4 py-1.5 text-sm font-medium transition"
+                >
+                  Under $20
+                </button>
+              )}
             </div>
           </>
         ) : (

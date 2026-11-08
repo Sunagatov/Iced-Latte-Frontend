@@ -75,4 +75,8 @@ describe('password compatibility', () => {
       }),
     ).rejects.toThrow('15')
   })
+  it.each(['Зуфар', 'Çağrı', '李明', 'E\u0301lodie'])('accepts Unicode registration name %s', async (firstName) => {
+    await expect(registrationSchema.validate({ firstName, lastName: 'Sunagatov', email: 'qa@example.invalid', password: 'gentle river coffee morning' })).resolves.toBeDefined()
+  })
+
 })

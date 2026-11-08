@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import ProductList from '@/features/products/components/ProductList'
 import type { IProduct } from '@/features/products/types'
 
@@ -39,4 +39,13 @@ describe('ProductList', () => {
     expect(screen.getAllByTestId('product-card')).toHaveLength(2)
     expect(screen.getByText('Product 2')).toBeInTheDocument()
   })
+  it('uses a real price shortcut instead of searching for a price phrase', () => {
+    const price = jest.fn(); const search = jest.fn()
+
+    render(<ProductList products={[]} error={undefined} isLoading={false} searchQuery="missing" onPriceSuggestionClick={price} onSuggestionClick={search} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Under $20' }))
+    expect(price).toHaveBeenCalledTimes(1)
+    expect(search).not.toHaveBeenCalled()
+  })
+
 })

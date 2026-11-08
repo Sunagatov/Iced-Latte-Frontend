@@ -26,8 +26,8 @@ export default function CatalogToolbar({
     totalProducts !== undefined ? `${totalProducts} products` : ''
 
   return (
-    <div className="flex items-center gap-3">
-      <span key={count} className="shrink-0 animate-[fade-in-down_0.2s_ease-out] text-[13px] font-medium text-black/40">
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      <span key={count} className="min-w-0 flex-1 animate-[fade-in-down_0.2s_ease-out] break-words text-[13px] font-medium text-black/40">
         {searchQuery ? (
           <>Results for <span className="text-black/70">&ldquo;{searchQuery}&rdquo;</span></>
         ) : (

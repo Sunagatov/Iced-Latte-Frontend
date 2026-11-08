@@ -1,4 +1,5 @@
 'use client'
+import { publishSessionChange } from '@/features/session/sessionEvents'
 
 import { Suspense, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -85,6 +86,7 @@ function OAuthCallbackInner({
     exchangeOAuthCode(oauthCode)
       .then((userData) => {
         setAuthenticated(userData)
+        publishSessionChange('login')
         router.replace(next)
       })
       .catch(() => {

@@ -851,6 +851,7 @@ describe('authentication transaction credentials', () => {
     )
 
     expect(response.status).toBe(400)
+    expect(await response.json()).toMatchObject({ type: 'invalid-email-token' })
     expect(global.fetch).not.toHaveBeenCalled()
   })
 })

@@ -1,7 +1,8 @@
 'use client'
 import StarRating from '@/features/reviews/components/StarRating'
 import Loader from '@/shared/ui/Loader'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { readReviewDraft, reviewDraftKey, saveReviewDraft } from '@/features/reviews/reviewDrafts'
 import { useProductRatingStore } from '@/features/reviews/store'
 import { useErrorHandler } from '@/shared/utils/apiError'
 import {
@@ -37,10 +38,26 @@ const ReviewForm = ({
   const { errorMessage, handleError, clearError } = useErrorHandler()
   const { ratings, setRating } = useProductRatingStore()
   const isLoggedIn = useAuthStore((state) => state.status === 'authenticated')
+  const owner = useAuthStore((state) => state.userData?.id ?? state.userData?.email ?? 'guest')
+  const draftKey = reviewDraftKey(owner, productId)
+  const [loadedDraftKey, setLoadedDraftKey] = useState<string | null>(null)
   const router = useRouter()
 
   const currentRating = (ratings[productId] || { rating: 0 }).rating
   const canSubmit = currentRating > 0 && reviewText.trim().length > 0
+
+  useEffect(() => {
+    const draft = readReviewDraft(draftKey)
+
+    setReviewText(draft.text)
+    setRating(productId, draft.rating)
+    setLoadedDraftKey(draftKey)
+  }, [draftKey, productId, setRating])
+
+  useEffect(() => {
+    if (loadedDraftKey === draftKey)
+      saveReviewDraft(draftKey, { text: reviewText, rating: currentRating })
+  }, [draftKey, loadedDraftKey, reviewText, currentRating])
 
   const handleAddReview = async () => {
     const trimmedText = reviewText.trim()
@@ -65,6 +82,7 @@ const ReviewForm = ({
         currentRating,
         reviewsTurnstileEnabled ? turnstileToken : undefined,
       )
+      saveReviewDraft(draftKey, { text: '', rating: 0 })
       onReviewSubmitted?.()
       setRating(productId, 0)
       setReviewText('')
@@ -81,6 +99,7 @@ const ReviewForm = ({
           const savedReview = await apiGetProductUserReview(productId)
 
           if (savedReview) {
+            saveReviewDraft(draftKey, { text: '', rating: 0 })
             onReviewSubmitted?.()
             setRating(productId, 0)
             setReviewText('')
@@ -149,6 +168,7 @@ const ReviewForm = ({
         <button
           disabled={loading}
           onClick={() => {
+            saveReviewDraft(draftKey, { text: '', rating: 0 })
             clearError()
             setShowForm(false)
             setRating(productId, 0)

@@ -97,17 +97,26 @@ export default function OrderHistory() {
             <RiTimeLine className="text-disabled h-8 w-8" />
           </div>
           <div>
-            <p className="text-primary font-semibold">No orders yet</p>
+            <p className="text-primary font-semibold">{filter || year ? 'No orders match these filters' : 'No orders yet'}</p>
             <p className="text-secondary mt-1 text-sm">
-              Your order history will appear here.
+              {filter || year ? 'Try another status or year.' : 'Your order history will appear here.'}
             </p>
           </div>
-          <Link
+          {filter || year ? (
+            <button
+              type="button"
+              onClick={() => { setFilter(''); setYear(undefined) }}
+              className="bg-brand-solid text-inverted rounded-full px-6 py-2.5 text-sm font-semibold"
+            >
+              Clear filters
+            </button>
+          ) : <Link
             href={ROUTES.home}
             className="bg-brand-solid text-inverted hover:bg-brand-solid-hover rounded-[48px] px-6 py-2.5 text-sm font-semibold transition"
           >
             Start shopping
           </Link>
+          }
         </div>
       ) : (
         <>

@@ -196,7 +196,7 @@ async function main() {
             // Dropping this keyword would incorrectly return the full catalog.
             await page.goto(config.url, { waitUntil: 'domcontentloaded' })
             await expect(page.getByTestId('product-card').first()).toBeVisible()
-            const absentSearch = `No match café ${crypto.randomUUID()}`
+            const absentSearch = `No match cafР“В© ${crypto.randomUUID()}`
             const search = page.getByRole('textbox', { name: 'Search products' })
             await search.fill(absentSearch)
             await search.press('Enter')
@@ -237,7 +237,7 @@ async function main() {
               firstName: 'Remote',
               lastName: 'Updated',
             })
-            await page.getByLabel('First name', { exact: true }).fill('Local')
+            await page.getByLabel('First name', { exact: true }).fill('Зуфар')
             await page.locator('#save-btn').click()
             await expect(page.locator('form [role=alert]')).toContainText(
               'profile changed on another device',
@@ -263,9 +263,38 @@ async function main() {
             await page.locator('#save-btn').click()
             await expect(page.locator('#edit-btn')).toBeVisible()
             const profile = (await read('profile')).data
-            expect(profile.firstName).toBe('Local')
+            expect(profile.firstName).toBe('Зуфар')
             expect(profile.lastName).toBe('Updated')
             await page.locator('#edit-btn').scrollIntoViewIfNeeded()
+            await page.locator('#edit-btn').click()
+            await expect(page.getByRole('button', { name: 'Manage delivery addresses' })).toBeVisible()
+            await expect(page.getByLabel('Country', { exact: true })).toHaveCount(0)
+            await page.getByRole('button', { name: 'Manage delivery addresses' }).click()
+            await page.getByRole('button', { name: 'Add address', exact: true }).click()
+            const dialog = page.getByRole('dialog')
+            await expect(dialog).toBeVisible()
+            await expect(dialog.getByRole('button', { name: /Close/i })).toBeFocused()
+            if (width === 390) {
+              await page.setViewportSize({ width: 844, height: 390 })
+              const box = await dialog.boundingBox()
+              expect(box.y).toBeGreaterThanOrEqual(0)
+              expect(box.y + box.height).toBeLessThanOrEqual(390)
+              await dialog.getByRole('button', { name: 'Add address', exact: true }).scrollIntoViewIfNeeded()
+              await expect(dialog.getByRole('button', { name: 'Add address', exact: true })).toBeInViewport()
+              await page.setViewportSize({ width: 320, height: 700 })
+            }
+            await page.keyboard.press('Escape')
+            await expect(dialog).toHaveCount(0)
+            expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false)
+            const observer = await context.newPage()
+            await observer.goto(config.url + '/profile')
+            await expect(observer.getByRole('heading', { name: 'Зуфар Updated', exact: true })).toBeVisible()
+            await page.locator('#logout-btn').click()
+            await expect(observer).toHaveURL(/signin/)
+            await expect(observer.getByRole('heading', { name: 'Зуфар Updated', exact: true })).toHaveCount(0)
+            await observer.close()
+            if (width === 390) await page.setViewportSize({ width: 390, height: 844 })
+
           } else {
             const review = page.getByRole('region', {
               name: 'Guest items needing review',

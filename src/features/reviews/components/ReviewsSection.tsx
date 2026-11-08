@@ -1,5 +1,6 @@
 'use client'
 import type { IProduct } from '@/features/products/types'
+import { useAccountScopeKey } from '@/features/auth/accountScope'
 import ReviewForm from './ReviewForm'
 import type { IProductReviewsStatistics } from '@/features/reviews/types'
 import Loader from '@/shared/ui/Loader'
@@ -23,6 +24,7 @@ const ReviewsSection = ({
   refreshStatistics,
 }: ReviewComponentProps) => {
   const { id: productId } = product
+  const accountKey = useAccountScopeKey()
   const {
     clearRatingFilters,
     errorMessage,
@@ -131,6 +133,7 @@ const ReviewsSection = ({
       )}
       {!userReview && !isUserReviewLoading && !userReviewError && (
         <ReviewForm
+          key={`${accountKey}:${productId}`}
           productId={productId}
           showForm={showForm}
           setShowForm={setShowForm}

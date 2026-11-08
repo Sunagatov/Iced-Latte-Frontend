@@ -196,6 +196,10 @@ export default function ProductCatalog({
             searchQuery={searchQuery}
             onResetFilters={resetFilters}
             onSuggestionClick={(query) => setFilters({ searchQuery: query })}
+            onPriceSuggestionClick={() => {
+              resetFilters()
+              setFilters({ searchQuery: '', fromPriceFilter: '', toPriceFilter: '20' })
+            }}
           />
         </div>
 

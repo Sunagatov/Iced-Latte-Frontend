@@ -5,6 +5,7 @@ import React from 'react'
 import {
   apiDeleteProductReview,
   apiRateProductReview,
+  apiClearProductReviewVote,
 } from '@/features/reviews/api'
 import { useToastErrorHandler } from '@/shared/utils/apiError'
 import { Review as ReviewType } from '@/features/reviews/types'
@@ -87,6 +88,18 @@ const ReviewsList: React.FC<IReviewsList> = ({
     }
   }
 
+  const clearVote = async (reviewId: string) => {
+    if (isPending || !isLoggedIn) return
+    setIsPending(true)
+    try {
+      onReviewRated?.(await apiClearProductReviewVote(productId, reviewId))
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setIsPending(false)
+    }
+  }
+
   return (
     <>
       {userReview && (
@@ -116,6 +129,7 @@ const ReviewsList: React.FC<IReviewsList> = ({
               isPending={isPending}
               isUserReview={false}
               rateReview={handleRateReview}
+              clearVote={isLoggedIn ? clearVote : undefined}
               review={review}
             />
           </li>

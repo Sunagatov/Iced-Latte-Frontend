@@ -52,6 +52,21 @@ describe('AddressForm', () => {
     )
   })
 
+  it('focuses inside the dialog, traps both Tab directions, and closes with Escape', () => {
+    const { onClose } = renderAddressForm()
+    const dialog = screen.getByRole('dialog')
+    const controls = dialog.querySelectorAll<HTMLElement>('button, input, select, a[href], [tabindex="0"]')
+
+    expect(dialog).toContainElement(document.activeElement as HTMLElement)
+    controls[controls.length - 1].focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(controls[0]).toHaveFocus()
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })
+    expect(controls[controls.length - 1]).toHaveFocus()
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
   it('keeps the form open when creating an address fails', async () => {
     const onClose = jest.fn()
     const error = new Error('create failed')
