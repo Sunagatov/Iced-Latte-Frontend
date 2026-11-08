@@ -207,14 +207,16 @@ jobs:
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ""
           NEXT_PUBLIC_TURNSTILE_SUPPORT_CHAT_ENABLED: "false"
           NEXT_PUBLIC_TURNSTILE_CHECKOUT_ENABLED: "false"
-        run: npm run test:e2e:local-smoke -- --timeout=120000 --global-timeout=180000 --reporter=line
+        run: npm run test:e2e:local-smoke -- --timeout=120000 --global-timeout=180000 --reporter=line,html --trace=retain-on-failure
 
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: local-smoke-playwright-report
-          path: Iced-Latte-Frontend/playwright-report/
+          path: |
+            Iced-Latte-Frontend/playwright-report/
+            Iced-Latte-Frontend/test-results/
 
       - name: Stop local app
         if: always()
